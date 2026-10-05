@@ -35,6 +35,6 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 
 ## Notes
 
-- Your coins, unlocks and Voice Lab recordings are saved in your browser on that computer.
+- Your coins, unlocks and Voice Lab recordings are saved in your browser on that computer. To move your progress to another computer: **👤 Account → GET MY SAVE CODE**, copy it, then on the other computer paste it into **LOAD SAVE CODE**.
 - If joining an online game gets stuck, the network may be blocking it (common on school Wi-Fi) — try home Wi-Fi or a phone hotspot.
 - To update, download the ZIP again (or just replace `index.html`).

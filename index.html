@@ -226,7 +226,7 @@ canvas {
         <h1>Account, shop &amp; vows</h1>
         <p class="lead">Play matches to earn coins (¥), then spend them on special feats and binding vows.</p>
         <h2>Account</h2>
-        <p>Open <b>👤 Account</b> on the home screen. You can play as a guest (saved in this browser), or create an account with an email and password so your coins, unlocks and stats follow you to any computer. Creating an account keeps everything you earned as a guest.</p>
+        <p>Open <b>👤 Account</b> on the home screen. Your progress is saved in this browser. To move it to another computer, press <b>GET MY SAVE CODE</b>, copy the code, and on the other computer paste it into <b>LOAD SAVE CODE</b>. (If online accounts are ever connected, you can also create an account with an email and password so your coins, unlocks and stats follow you to any computer. Creating an account keeps everything you earned as a guest.)</p>
         <h2>Coins</h2>
         <p>Every finished <b>online</b> match pays <b>¥120</b> for a win or <b>¥50</b> for a loss, plus ¥1 per 4 damage you dealt (up to ¥100). New players start with ¥300. <b>Local matches on one device don't earn coins</b> — otherwise you could just farm yourself.</p>
         <h2>Special feats</h2>
@@ -3537,6 +3537,29 @@ function accWatch(){
   _accLastPhase = phase;
 }
 
+
+// ── Save codes: move a guest profile between computers with no server ──
+function _ccHash(str){ let h = 2166136261 >>> 0; for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return ('0000000' + h.toString(36)).slice(-7); }
+function accExportCode(){
+  const P = ACC.prof;
+  const o = {n:P.name, c:P.coins|0, w:P.wins|0, l:P.losses|0, m:P.matches|0, o:Object.keys(P.owned||{}).filter(k => P.owned[k]),
+             f:Object.keys((P.eq||{}).feats||{}).filter(k => P.eq.feats[k]), v:(P.eq||{}).vows||[]};
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  return 'CC1-' + b64 + '-' + _ccHash('cc1|' + b64);
+}
+function accImportCode(code){
+  code = String(code||'').replace(/\s+/g, '');
+  const m = code.match(/^CC1-([A-Za-z0-9_-]+)-([a-z0-9]{7})$/);
+  if(!m) throw new Error('That doesn\'t look like a Cursed Clash save code.');
+  if(_ccHash('cc1|' + m[1]) !== m[2]) throw new Error('That save code is damaged or was edited — copy the whole thing again.');
+  let o; try{ o = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/'))))); }catch(e){ throw new Error('That save code is damaged.'); }
+  const all = Object.assign({}, SHOP.feats, SHOP.vows), num = (x, d) => Math.max(0, Math.min(1e7, Math.floor(+x || d)));
+  const owned = {}; for(const id of (o.o||[])) if(all[id]) owned[id] = true;
+  const feats = {}; for(const id of (o.f||[])) if(SHOP.feats[id] && owned[id]) feats[id] = true;
+  const vows = (o.v||[]).filter(id => SHOP.vows[id] && owned[id]).slice(0, MAX_VOWS);
+  return {name:String(o.n||'Player').slice(0,16), coins:num(o.c, 0), wins:num(o.w, 0), losses:num(o.l, 0), matches:num(o.m, 0), owned, eq:{feats, vows}};
+}
+
 // ── UI ──
 const accUI = {
   el:null, tab:'account',
@@ -3563,6 +3586,14 @@ const accUI = {
         }
         else if(act==='signout'){ accSignOut(); this.msg('Signed out; now playing as a guest.'); }
         else if(act==='rename'){ const n = name(); if(n){ ACC.prof.name = n; accSave(); this.msg('Name saved.'); } }
+        else if(act==='export'){ this.code = accExportCode(); this.refresh(); const t = el.querySelector('#acCodeOut'); if(t){ t.focus(); t.select(); } }
+        else if(act==='copy'){ const c = this.code || accExportCode(); try{ await navigator.clipboard.writeText(c); this.msg('Save code copied — paste it somewhere safe.'); }catch(e2){ const t = el.querySelector('#acCodeOut'); if(t){ t.select(); document.execCommand('copy'); } this.msg('Save code copied.'); } }
+        else if(act==='import'){
+          const raw = (q('#acCodeIn')||{}).value||'';
+          const prof = accImportCode(raw);
+          if(!confirm(`Load "${prof.name}" (¥${prof.coins}, ${Object.keys(prof.owned).length} unlocks)? This replaces the progress saved in this browser.`)) return;
+          ACC.prof = prof; this.code = null; accSave(); this.msg(`Loaded ${prof.name}'s save. Welcome back!`);
+        }
       }catch(err){ this.msg(err.message || String(err)); }
       ACC.busy = false; this.refresh();
     });
@@ -3588,6 +3619,16 @@ const accUI = {
         <div class="ac-stats"><span><b>${P.wins}</b> wins</span><span><b>${P.losses}</b> losses</span><span><b>${P.matches}</b> matches</span><span><b>¥${P.coins}</b> coins</span></div></div>`;
       if(ACC.user){
         h += `<div class="ac-card"><label>Player name <input id="acName" maxlength="16" value="${esc(P.name)}"></label> <button data-act="rename">SAVE NAME</button> <button data-act="signout" class="ghost">SIGN OUT</button></div>`;
+      } else if(!accOnline()){
+        h += `<div class="ac-card"><label>Player name <input id="acName" maxlength="16" value="${esc(P.name)}"></label> <button data-act="rename">SAVE NAME</button></div>
+          <div class="ac-card"><h3>Save code — take your progress to another computer</h3>
+          <p class="ac-note">Your coins, unlocks and stats are saved in this browser. To play somewhere else, get your save code, keep it somewhere safe (a note, a message to yourself), then load it on the other computer.</p>
+          <div class="ac-row"><button data-act="export">GET MY SAVE CODE</button>${this.code ? '<button data-act="copy">COPY</button>' : ''}</div>
+          ${this.code ? `<textarea id="acCodeOut" readonly rows="3" style="width:100%;box-sizing:border-box;margin:8px 0;padding:8px;font-family:monospace;font-size:12px;background:#0b0a09;color:#e8e2d6;border:1px solid #3a3530;border-radius:6px;resize:vertical">${esc(this.code)}</textarea><p class="ac-note">A new code is made each time — it holds your progress as of now.</p>` : ''}
+          <h3>Load a save code</h3>
+          <textarea id="acCodeIn" rows="3" placeholder="Paste a save code (starts with CC1-)" style="width:100%;box-sizing:border-box;margin:8px 0;padding:8px;font-family:monospace;font-size:12px;background:#0b0a09;color:#e8e2d6;border:1px solid #3a3530;border-radius:6px;resize:vertical"></textarea>
+          <div class="ac-row"><button data-act="import">LOAD SAVE CODE</button></div>
+          <p class="ac-note">Loading replaces the progress in this browser.</p></div>`;
       } else {
         h += `<div class="ac-card"><h3>Sign in or create an account</h3>
           ${accOnline() ? '' : '<p class="ac-note">Online accounts aren\'t connected to a server yet. Until then you play as a guest and everything is saved in this browser.</p>'}
@@ -3597,7 +3638,7 @@ const accUI = {
           <div class="ac-row"><button data-act="signin" ${ACC.busy?'disabled':''}>SIGN IN</button><button data-act="signup" ${ACC.busy?'disabled':''}>CREATE ACCOUNT</button><button data-act="reset" class="ghost">FORGOT PASSWORD</button></div>
           <p class="ac-note">Creating an account keeps your guest coins and unlocks, and lets you play from any computer.</p></div>`;
       }
-      h += `<div class="ac-card"><h3>Earning coins</h3><p class="ac-note">Every finished match: <b>¥120</b> for a win or <b>¥50</b> for a loss, plus ¥1 for every 4 damage you dealt (up to ¥100).</p></div>`;
+      h += `<div class="ac-card"><h3>Earning coins</h3><p class="ac-note">Every finished <b>online</b> match: <b>¥120</b> for a win or <b>¥50</b> for a loss, plus ¥1 for every 4 damage you dealt (up to ¥100). Local and training matches don't pay.</p></div>`;
     } else if(this.tab==='shop' || this.tab==='loadout'){
       const shop = this.tab==='shop';
       for(const kind of ['feats','vows']){
@@ -3616,7 +3657,7 @@ const accUI = {
       if(!shop && !Object.keys(P.owned).length) h += `<p class="ac-note">You don't own anything yet; buy feats and vows in the Shop.</p>`;
       if(!shop) h += `<p class="ac-note">Your loadout is used in every match you play: online, or as Player 1 on this keyboard. Kenjaku's swap key: <b>T</b> online · <b>T</b> for Player 1 locally · <b>Right Shift</b> for Player 2.</p>`;
     } else if(this.tab==='board'){
-      if(!accOnline()) h += `<p class="ac-note">The leaderboard needs online accounts, which aren't connected yet.</p>`;
+      if(!accOnline()) h += `<p class="ac-note">There's no leaderboard without an online server — your stats are on the Account tab.</p>`;
       else if(!ACC.user) h += `<p class="ac-note">Sign in to see the leaderboard.</p>`;
       else if(!this.board) h += `<p class="ac-note">Loading…</p>`;
       else { h += `<table class="ac-board"><tr><th>#</th><th>Player</th><th>Wins</th><th>Losses</th></tr>`; this.board.forEach((r,i) => h += `<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${r.wins}</td><td>${r.losses}</td></tr>`); h += `</table>`; }
