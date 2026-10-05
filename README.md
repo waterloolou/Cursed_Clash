@@ -2,7 +2,11 @@
 
 A Jujutsu Kaisen–inspired 2-player fighting game that runs in your browser — no install, no server.
 
-## How to play
+## ▶ [Play in your browser](https://waterloolou.github.io/Cursed_Clash/)
+
+No download needed — just open the link. (Or download it to play offline, below.)
+
+## Play offline (download)
 
 1. Click the green **Code** button on this page → **Download ZIP**.
 2. Unzip it.
