@@ -19,6 +19,7 @@ That's it. Everything is in that one file.
 - **Local 2 player** — two people on one keyboard. *Local matches don't earn coins.*
 - **Online** — each player on their own computer. One presses **Host online game** and shares the 5-letter code; the other types it in and presses **Join**. Online matches earn coins (¥) for the shop: feats like Six Eyes and Kenjaku, and binding vows.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
+- **🧪 Training (solo)** — just you vs a training dummy, to test any character. Number keys toggle options: **1** infinite meters · **2** no cooldowns · **3** dummy behaviour (stand / jump / block / walk / crouch) · **4** dummy can die · **5** reset · **6 / 7** switch dummy / your fighter · **8** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
 
 ## Controls
 
