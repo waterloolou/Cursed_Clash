@@ -228,7 +228,7 @@ canvas {
         <h2>Account</h2>
         <p>Open <b>👤 Account</b> on the home screen. Your progress is saved in this browser. To move it to another computer, press <b>GET MY SAVE CODE</b>, copy the code, and on the other computer paste it into <b>LOAD SAVE CODE</b>. (If online accounts are ever connected, you can also create an account with an email and password so your coins, unlocks and stats follow you to any computer. Creating an account keeps everything you earned as a guest.)</p>
         <h2>Coins</h2>
-        <p>Every finished <b>online</b> match pays <b>¥120</b> for a win or <b>¥50</b> for a loss, plus ¥1 per 4 damage you dealt (up to ¥100). New players start with ¥300. <b>Local matches on one device don't earn coins</b> — otherwise you could just farm yourself.</p>
+        <p>Every <b>online</b> match you <b>win</b> pays <b>¥5</b> (losses pay nothing). New players start with ¥300. <b>Local matches on one device don't earn coins</b> — otherwise you could just farm yourself.</p>
         <h2>Special feats</h2>
         <table><tr><th>Feat</th><th>Price</th><th>Effect</th></tr>
           <tr><td>Six Eyes</td><td>¥600</td><td>Every cooldown recovers twice as fast.</td></tr>
@@ -3527,7 +3527,7 @@ function accWatch(){
     if(NET.role==='local') ACC.lastAward = {local:true};          // same-device matches never pay out (no farming yourself)
     else if(me){
       const won = winner===me, dmg = Math.round(me.dmgDealt||0);
-      const coins = (won ? 120 : 50) + Math.min(100, Math.floor(dmg/4));
+      const coins = won ? 5 : 0;
       const P = ACC.prof; P.coins += coins; P.matches++; won ? P.wins++ : P.losses++;
       ACC.lastAward = {coins, won, dmg};
       accSave();
@@ -3638,7 +3638,7 @@ const accUI = {
           <div class="ac-row"><button data-act="signin" ${ACC.busy?'disabled':''}>SIGN IN</button><button data-act="signup" ${ACC.busy?'disabled':''}>CREATE ACCOUNT</button><button data-act="reset" class="ghost">FORGOT PASSWORD</button></div>
           <p class="ac-note">Creating an account keeps your guest coins and unlocks, and lets you play from any computer.</p></div>`;
       }
-      h += `<div class="ac-card"><h3>Earning coins</h3><p class="ac-note">Every finished <b>online</b> match: <b>¥120</b> for a win or <b>¥50</b> for a loss, plus ¥1 for every 4 damage you dealt (up to ¥100). Local and training matches don't pay.</p></div>`;
+      h += `<div class="ac-card"><h3>Earning coins</h3><p class="ac-note">Every <b>online</b> match you win pays <b>¥5</b>. Losses, local and training matches don't pay.</p></div>`;
     } else if(this.tab==='shop' || this.tab==='loadout'){
       const shop = this.tab==='shop';
       for(const kind of ['feats','vows']){
