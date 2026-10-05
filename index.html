@@ -294,15 +294,13 @@ canvas {
           <li><b>Endless</b> — no lives. KOs add to a kill counter and the fighter respawns instantly.</li>
         </ul>
         <h2>Training (solo)</h2>
-        <p>Press <b>🧪 Training</b> on the home screen to test any fighter on your own against a <b>training dummy</b>. You use the full online layout (mouse + WASD + Q / E / R / F, block, dash, variants). Pick a map, then your fighter, then the dummy's fighter. Training doesn't earn coins.</p>
+        <p>Press <b>🧪 Training</b> on the home screen to test any fighter on your own. You use the full online layout (mouse + WASD + Q / E / R / F, block, dash, variants) and get a target that stands still, can't die, and heals back up 1.5s after you stop hitting it. Pick a map — including the <b>Training Room</b>, a flat floor with distance markers every 100px that only appears here — then your fighter. Training doesn't earn coins.</p>
         <table><tr><th>Key</th><th>Option</th></tr>
           <tr><td>1</td><td><b>Infinite meters</b> — every super, special and domain / ultimate bar stays full.</td></tr>
           <tr><td>2</td><td><b>No cooldowns</b> — every ability (and variant) is ready instantly.</td></tr>
-          <tr><td>3</td><td><b>Dummy behaviour</b> — cycles Stand / Jump / Block / Walk / Crouch. Block lets you practise guard breaks and crush moves.</td></tr>
-          <tr><td>4</td><td><b>Dummy can die</b> — off by default: the dummy stays at 1 HP. It always refills 1.5s after you stop hitting it.</td></tr>
-          <tr><td>5</td><td><b>Reset</b> — positions, health, terrain.</td></tr>
-          <tr><td>6 / 7</td><td>Switch the <b>dummy's</b> / <b>your</b> fighter on the spot.</td></tr>
-          <tr><td>8</td><td>Switch between the <b>online combat system</b> and the <b>classic</b> local one.</td></tr>
+          <tr><td>3</td><td><b>Reset</b> — positions, health, terrain.</td></tr>
+          <tr><td>4</td><td>Switch to the <b>next fighter</b> on the spot.</td></tr>
+          <tr><td>5</td><td>Switch between the <b>online combat system</b> and the <b>classic</b> local one.</td></tr>
           <tr><td>0</td><td>Hide the options bar.</td></tr></table>
         <p>The readout at the top shows your <b>combo damage</b>, hit count, last hit and best combo. ESC pauses as usual (controls, combat guide, your fighter's moves).</p>
         <ul>
@@ -4297,8 +4295,31 @@ const MAPS = [
   { name:'SISTER SCHOOL EXCHANGE', sub:'Tokyo Jujutsu High · campus, pagoda, cedar forest', w:SSE.W, h:SSE.H, gnd:SSE.GND,
     spawns:[[1040, SSE.GND], [1840, SSE.GND]], build(){ buildSisterBig(); } },
   { name:'SHINJUKU', sub:'Nishi-Shinjuku · street to rubble field', w:SJK.W, h:SJK.H, gnd:SJK.GND,
-    spawns:[[400, SJK.GND], [1750, SJK.GND]], build(){ buildShinjukuBig(); } }
+    spawns:[[400, SJK.GND], [1750, SJK.GND]], build(){ buildShinjukuBig(); } },
+  { name:'TRAINING ROOM', sub:'Flat floor · distance markers · training only', w:1600, h:640, gnd:560, training:true,
+    spawns:[[640, 560], [900, 560]], build(){ /* nothing: a perfectly flat floor */ } }
 ];
+const TRAINING_MAP = 3;
+function mapChoices(){ return (typeof gameMode!=='undefined' && gameMode==='training') ? [TRAINING_MAP, 0, 1, 2] : MAPS.map((m, i) => i).filter(i => !MAPS[i].training); }
+function paintTrainingRoom(g){
+  const w = W, h = H, gnd = GND;
+  const bg = g.createLinearGradient(0, 0, 0, gnd); bg.addColorStop(0, '#1b1f26'); bg.addColorStop(1, '#2a303a');
+  g.fillStyle = bg; g.fillRect(0, 0, w, gnd);
+  g.strokeStyle = 'rgba(255,255,255,0.05)'; g.lineWidth = 1;
+  for(let x=0; x<=w; x+=50){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x, gnd); g.stroke(); }
+  for(let y=gnd; y>=0; y-=50){ g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  g.strokeStyle = 'rgba(255,224,102,0.18)'; g.lineWidth = 1.5;
+  for(let x=0; x<=w; x+=100){ g.beginPath(); g.moveTo(x, gnd-260); g.lineTo(x, gnd); g.stroke(); }
+  g.font = `700 11px Rajdhani, sans-serif`; g.textAlign = 'center'; g.fillStyle = 'rgba(255,224,102,0.45)';
+  for(let x=100; x<w; x+=100) g.fillText(String(x), x, gnd-266);
+  g.textAlign = 'left'; g.fillStyle = 'rgba(255,255,255,0.18)';
+  for(let y=gnd-100; y>gnd-500; y-=100){ g.fillText(`${gnd-y} px up`, 8, y-4); g.strokeStyle = 'rgba(255,255,255,0.08)'; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  g.font = `700 64px Rajdhani, sans-serif`; g.textAlign = 'center'; g.fillStyle = 'rgba(255,255,255,0.06)'; g.fillText('TRAINING ROOM', w/2, gnd-320);
+  const fl = g.createLinearGradient(0, gnd, 0, h); fl.addColorStop(0, '#3a414d'); fl.addColorStop(1, '#22262e');
+  g.fillStyle = fl; g.fillRect(0, gnd, w, h-gnd);
+  g.fillStyle = 'rgba(255,224,102,0.5)'; g.fillRect(0, gnd, w, 2);
+  g.fillStyle = 'rgba(255,255,255,0.12)'; for(let x=0; x<w; x+=100) g.fillRect(x, gnd, 2, 10);
+}
 
 function mapDims(i){ const m = MAPS[i]; return [m.w||960, m.h||520, m.gnd||430]; }
 function setWorld(i){
@@ -4326,7 +4347,7 @@ function getMapBG(i){
   const [mw, mh, mg] = mapDims(i);
   const cv = document.createElement('canvas'); cv.width = mw; cv.height = mh;
   const g = cv.getContext('2d');
-  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig][i](g, _rng(1337+i*101)));
+  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom][i](g, _rng(1337+i*101)));
   _mapBG[i] = cv;
   return cv;
 }
@@ -11854,7 +11875,7 @@ function drawBG(){
 function drawHUDOverlay(){
   ctx.textAlign='center'; ctx.font=`700 14px 'Rajdhani',sans-serif`;
   ctx.fillStyle='rgba(200,195,185,.2)'; ctx.fillText('CURSED CLASH',W/2,30);
-  p1.drawHUD(22,false); p2.drawHUD(W-22,true);
+  p1.drawHUD(22,false); if(!isTraining()) p2.drawHUD(W-22,true);
   drawRps();
   drawTrainPanel();
   for(const [pl, x, al] of [[p1, 22, 'left'], [p2, W-22, 'right']]) if(pl.respawnT>0){
@@ -11872,7 +11893,7 @@ function drawHUDOverlay(){
     ctx.font=`500 10px 'Rajdhani',sans-serif`;
     ctx.fillStyle='rgba(200,195,185,0.35)';
     ctx.fillText('ENDLESS', W/2, ky);
-  } else {
+  } else if(!isTraining()){
     // Lives indicators
     const livesY = 130;
     for(let i=0;i<3;i++){
@@ -12995,7 +13016,7 @@ function respawnFromSky(pl){
   pl.x = x; pl.y = top - PH - 460; pl.vx = 0; pl.vy = 2; pl.onGround = false; pl.ss(S.AIR);
   pl.iframes = RESPAWN_IFRAMES; pl.lastCombatT = terClock;
   addRing(pl.x+PW/2, top, pl.charColor||'#fff', 70);
-  showTxt(pl.name + ' IS BACK', 1000); snd('charge', pl.x);
+  if(!(isTraining() && pl===p2)) showTxt(pl.name + ' IS BACK', 1000); snd('charge', pl.x);
 }
 
 
@@ -13171,7 +13192,7 @@ function drawPauseMenu(){
 // ═══════════════════════════════════════════════════════════════════
 // TRAINING — solo test mode: you vs a training dummy, with toggles for testing everything
 // ═══════════════════════════════════════════════════════════════════
-const trainOpt = {meters:false, nocd:false, dummy:0, immortal:true, ol:true, hide:false};
+const trainOpt = {meters:false, nocd:false, dummy:0, immortal:true, ol:true, hide:false};   // the target always stands still and can't die
 const TRAIN_DUMMY = ['STAND', 'JUMP', 'BLOCK', 'WALK', 'CROUCH'];
 const TRAIN_METERS = [['domainCharge','DOMAIN_CHARGE_REQ'], ['fugaCharge','FUGA_CHARGE_REQ'], ['hollowCharge','HOLLOW_CHARGE_REQ'], ['yujiUltCharge','YUJI_ULT_COST'],
   ['yujiBfCharge','YUJI_BF_REQ'], ['yutaCopyUltCharge','YUTA_COPY_ULT_REQ'], ['chosoCharge','CHOSO_RING_REQ'], ['dagonCharge','DAGON_SWARM_REQ'], ['hakCharge','HAK_PUNCH_REQ'],
@@ -13183,11 +13204,6 @@ function isLocalPair(){ return NET.role==='local' && !isTraining(); }
 function trainDummyHeld(){
   const h = {}, t = Date.now();
   if(phase!=='fight' || paused) return h;
-  const m = TRAIN_DUMMY[trainOpt.dummy];
-  if(m==='JUMP') h.jump = (t % 1400) < 120;
-  else if(m==='BLOCK') h.block = true;
-  else if(m==='WALK'){ if((t % 2400) < 1200) h.left = true; else h.right = true; }
-  else if(m==='CROUCH') h.down = true;
   return h;
 }
 function trainSwap(slot, step){
@@ -13197,7 +13213,7 @@ function trainSwap(slot, step){
   pl.x = old.x; pl.y = old.y; pl.iframes = 300;
   if(slot===1){ p1 = pl; p1CharIdx = idx; } else { p2 = pl; p2CharIdx = idx; }
   clearProjectiles(); activeDomain = null; domainClash = null; rpsGame = null;
-  showTxt((slot===1 ? 'YOU: ' : 'DUMMY: ') + pl.name, 900);
+  if(slot===1) showTxt(pl.name, 900);
 }
 function trainReset(){
   p1.reset(); p2.reset(); clearProjectiles(); terrainReset(); activeDomain = null; domainClash = null; rpsGame = null;
@@ -13207,12 +13223,9 @@ function trainKeys(){
   const k = c => keyPulse[c];
   if(k('Digit1')){ trainOpt.meters = !trainOpt.meters; showTxt('INFINITE METERS ' + (trainOpt.meters ? 'ON' : 'OFF'), 700); }
   if(k('Digit2')){ trainOpt.nocd = !trainOpt.nocd; showTxt('NO COOLDOWNS ' + (trainOpt.nocd ? 'ON' : 'OFF'), 700); }
-  if(k('Digit3')){ trainOpt.dummy = (trainOpt.dummy+1) % TRAIN_DUMMY.length; showTxt('DUMMY: ' + TRAIN_DUMMY[trainOpt.dummy], 700); }
-  if(k('Digit4')){ trainOpt.immortal = !trainOpt.immortal; showTxt(trainOpt.immortal ? 'DUMMY CAN\'T DIE' : 'DUMMY CAN DIE', 700); }
-  if(k('Digit5')) trainReset();
-  if(k('Digit6')) trainSwap(2, 1);
-  if(k('Digit7')) trainSwap(1, 1);
-  if(k('Digit8')){ trainOpt.ol = !trainOpt.ol; showTxt('COMBAT: ' + (trainOpt.ol ? 'ONLINE SYSTEM' : 'CLASSIC (LOCAL)'), 900); }
+  if(k('Digit3')) trainReset();
+  if(k('Digit4')){ trainSwap(1, 1); p2CharIdx = p1CharIdx; }
+  if(k('Digit5')){ trainOpt.ol = !trainOpt.ol; showTxt('COMBAT: ' + (trainOpt.ol ? 'ONLINE SYSTEM' : 'CLASSIC (LOCAL)'), 900); }
   if(k('Digit0')) trainOpt.hide = !trainOpt.hide;
 }
 function trainTick(){
@@ -13240,8 +13253,7 @@ function drawTrainPanel(){
   ctx.fillText(`COMBO ${Math.round(trainStat.combo*10)/10} dmg · ${trainStat.hits} hit${trainStat.hits===1?'':'s'} · last ${Math.round(trainStat.last*10)/10} · best ${Math.round(trainStat.best*10)/10}`, W/2, 46);
   if(!trainOpt.hide){
     const rows = [['1', 'Meters', trainOpt.meters ? 'INFINITE' : 'NORMAL', trainOpt.meters], ['2', 'Cooldowns', trainOpt.nocd ? 'NONE' : 'NORMAL', trainOpt.nocd],
-                  ['3', 'Dummy', TRAIN_DUMMY[trainOpt.dummy]], ['4', 'Dummy dies', trainOpt.immortal ? 'NO' : 'YES'], ['5', 'Reset', '↺'],
-                  ['6', 'Dummy', p2.name], ['7', 'You', p1.name], ['8', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC'], ['0', 'Hide', '']];
+                  ['3', 'Reset', '↺'], ['4', 'Fighter', p1.name], ['5', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC'], ['0', 'Hide', '']];
     ctx.font = `700 10px 'Rajdhani',sans-serif`;
     const widths = rows.map(([k, l, v]) => { ctx.font = `700 10px 'Rajdhani',sans-serif`; const a = ctx.measureText(`[${k}] ${l.toUpperCase()}`).width; ctx.font = `700 11px 'Rajdhani',sans-serif`; return Math.max(a, ctx.measureText(v).width) + 18; });
     const total = widths.reduce((a, b) => a+b, 0), y = H - 46; let cx = W/2 - total/2;
@@ -13484,13 +13496,13 @@ function drawCharSelect(){
   ctx.fillStyle='#d8d4cc';
   ctx.fillText('SELECT CHARACTER', W/2, 55);
   ctx.font=`500 12px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(180,175,165,0.6)';
-  ctx.fillText(isTraining() ? (p1Confirmed ? 'Now pick the TRAINING DUMMY · A / D · SPACE / F to lock in · ESC back' : 'Pick YOUR fighter · A / D · SPACE / F to lock in') : NET.role==='local' ? 'P1: A / D pick · F lock in        P2: ← / → pick · ; lock in' : 'A / D or ← / → to pick  ·  SPACE / ENTER / CLICK to lock in  ·  ESC to change', W/2, 76);
+  ctx.fillText(isTraining() ? 'Pick your fighter · A / D · SPACE / F to lock in · ESC back' : NET.role==='local' ? 'P1: A / D pick · F lock in        P2: ← / → pick · ; lock in' : 'A / D or ← / → to pick  ·  SPACE / ENTER / CLICK to lock in  ·  ESC to change', W/2, 76);
 
   const panelW=200, panelH=220, gap=40;
   const p1x=W/2-panelW-gap/2, p2x=W/2+gap/2;
 
-  for(let p=0;p<2;p++){
-    const px=p===0?p1x:p2x;
+  for(let p=0;p<(isTraining() ? 1 : 2);p++){
+    const px=isTraining() ? W/2-panelW/2 : p===0?p1x:p2x;
     const idx=p===0?p1CharIdx:p2CharIdx;
     const confirmed=p===0?p1Confirmed:p2Confirmed;
     const ch=CHARACTERS[idx];
@@ -13506,7 +13518,7 @@ function drawCharSelect(){
     // Player label
     ctx.fillStyle='rgba(180,175,165,0.55)'; ctx.font=`700 11px 'Rajdhani',sans-serif`;
     const isMe = (NET.role==='host' && p===0) || (NET.role==='guest' && !NET.spectator && p===1);
-    ctx.fillText(isTraining() ? (p===0 ? 'YOU' : 'TRAINING DUMMY') : (p===0 ? (NET.role==='local' ? 'PLAYER 1 · WASD' : 'PLAYER 1 · HOST') : (NET.role==='local' ? 'PLAYER 2 · ARROWS' : 'PLAYER 2')) + (isMe ? '  (YOU)' : ''), px+panelW/2, py+18);
+    ctx.fillText(isTraining() ? 'YOU' : (p===0 ? (NET.role==='local' ? 'PLAYER 1 · WASD' : 'PLAYER 1 · HOST') : (NET.role==='local' ? 'PLAYER 2 · ARROWS' : 'PLAYER 2')) + (isMe ? '  (YOU)' : ''), px+panelW/2, py+18);
 
     // Character avatar / color swatch
     const swatchY=py+34;
@@ -14234,12 +14246,13 @@ function logicModeSelect(){
   if(MI1.confirm){ gameMode = modeSelectIdx===0 ? 'normal' : 'endless'; phase = 'mapSelect'; mapSelectIdx = 0; }
 }
 function logicMapSelect(){
-  const n = MAPS.length + 1;
+  const list = mapChoices(), n = list.length + 1;
   if(MI1.left)  mapSelectIdx = (mapSelectIdx - 1 + n) % n;
   if(MI1.right) mapSelectIdx = (mapSelectIdx + 1) % n;
   if(MI1.back){ if(isTraining()){ netReset(); backToLobby('', false); return; } phase = 'modeSelect'; return; }
   if(MI1.confirm){
-    mapIdx = mapSelectIdx===MAPS.length ? Math.floor(Math.random()*MAPS.length) : mapSelectIdx;
+    const real = MAPS.map((m, i) => i).filter(i => !MAPS[i].training);
+    mapIdx = mapSelectIdx>=list.length ? real[Math.floor(Math.random()*real.length)] : list[mapSelectIdx];
     buildTerrain(mapIdx); terrainReset();
     phase = 'charSelect';
     p1CharIdx = 0; p2CharIdx = Math.min(1, CHARACTERS.length-1);
@@ -14248,7 +14261,7 @@ function logicMapSelect(){
 }
 function logicCharSelect(dt){
   const L = CHARACTERS.length;
-  if(isTraining() && p1Confirmed && !p2Confirmed){ MI2 = MI1; MI1 = {}; if(MI2.back){ p1Confirmed = false; MI2 = {}; } }
+  if(isTraining() && p1Confirmed && !p2Confirmed){ p2CharIdx = p1CharIdx; p2Confirmed = true; MI1 = {}; }
   if(!p1Confirmed){ if(MI1.left) p1CharIdx=(p1CharIdx-1+L)%L; if(MI1.right) p1CharIdx=(p1CharIdx+1)%L; }
   if(!p2Confirmed){ if(MI2.left) p2CharIdx=(p2CharIdx-1+L)%L; if(MI2.right) p2CharIdx=(p2CharIdx+1)%L; }
   if(MI1.confirm) p1Confirmed = true;
@@ -14304,13 +14317,13 @@ function drawMapSelect(){
   ctx.fillText('SELECT MAP', W/2, 58);
   ctx.font=`500 12px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(180,175,165,0.6)';
   ctx.fillText(NET.role==='local' ? 'A / D to choose  ·  F or SPACE to confirm  ·  ESC back' : 'A / D or ← / → to choose  ·  SPACE / ENTER / CLICK to confirm  ·  ESC back', W/2, 78);
-  const n = MAPS.length + 1, cw = 200, ch = 150, gap = 24;
+  const list = mapChoices(), n = list.length + 1, gap = 20, cw = Math.min(200, Math.floor((W - 40 - (n-1)*gap)/n)), ch = 160;
   const x0 = W/2 - (n*cw + (n-1)*gap)/2, y0 = H/2 - ch/2 - 10;
   for(let i=0;i<n;i++){
-    const x = x0 + i*(cw+gap), sel = mapSelectIdx===i;
+    const x = x0 + i*(cw+gap), sel = mapSelectIdx===i, mi = list[i];
     ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(x, y0, cw, ch);
-    if(i < MAPS.length){
-      const pv = getMapPreview(i), bw = cw-8, bh = (cw-8)*VH/VW, s = Math.min(bw/pv.width, bh/pv.height);
+    if(i < list.length){
+      const pv = getMapPreview(mi), bw = cw-8, bh = (cw-8)*VH/VW, s = Math.min(bw/pv.width, bh/pv.height);
       ctx.fillStyle = '#0b0a09'; ctx.fillRect(x+4, y0+4, bw, bh);
       ctx.drawImage(pv, x+4+(bw-pv.width*s)/2, y0+4+(bh-pv.height*s)/2, pv.width*s, pv.height*s);
     }
@@ -14321,9 +14334,9 @@ function drawMapSelect(){
     ctx.strokeStyle = sel ? '#d8d4cc' : 'rgba(255,255,255,0.18)'; ctx.lineWidth = sel ? 2.5 : 1;
     ctx.strokeRect(x, y0, cw, ch);
     ctx.font=`700 13px 'Rajdhani',sans-serif`; ctx.fillStyle = sel ? '#fff' : 'rgba(200,195,185,0.7)';
-    ctx.fillText(i < MAPS.length ? MAPS[i].name : 'RANDOM', x+cw/2, y0+ch-26);
+    ctx.fillText(i < list.length ? MAPS[mi].name : 'RANDOM', x+cw/2, y0+ch-26);
     ctx.font=`500 10px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(170,165,155,0.7)';
-    ctx.fillText(i < MAPS.length ? MAPS[i].sub : 'Let fate decide', x+cw/2, y0+ch-11);
+    ctx.fillText(i < list.length ? MAPS[mi].sub : 'Let fate decide', x+cw/2, y0+ch-11);
   }
   ctx.restore();
   drawWaitingFor();
