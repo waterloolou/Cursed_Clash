@@ -615,9 +615,9 @@ canvas {
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Projection Dash</td><td>Runs forward at full speed and punches the first fighter in his way: 14 damage and a knockback. 40 CE, 3.8s cooldown.</td></tr>
           <tr><td>E</td><td>Frame Barrage</td><td>Hand on his head, eyes closed, not even looking: four backhands a frame apart (3 each), then a launching kick (9). 48 CE, 4.5s cooldown.</td></tr>
-          <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Both fighters freeze. Naoya draws a motion with his movement keys and attack — <b>12 keys</b> on one keyboard, <b>24 online</b>. Then the opponent has to press the same keys in order. One wrong key (or running out of time) and they're <b>frozen in a frame for 8 seconds</b>: they can't move and take <b>14% more damage</b>. If they keep up, Naoya is stunned for a moment instead. Needs 50% CE.</td></tr>
+          <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Both fighters freeze. Naoya draws a motion with his movement keys and attack — <b>12 keys</b> on one keyboard, <b>24 online</b>. Then the opponent has to press the same keys in order. One wrong key (or running out of time) and they're <b>frozen in a frame for 8 seconds</b>: they can't move and take <b>14% more damage</b>. If they keep up, Naoya is the one frozen, for 1.5s. Needs 50% CE.</td></tr>
           <tr><td>F</td><td>—</td><td>No domain while human. His 4th (last) life is spent as a cursed spirit.</td></tr>
-          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> — a free link into the next hit.</td></tr>
+          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> — a free link into the next hit. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his variants, he breaks his own 24 fps motion and is frozen in a frame for 1s</b> (taking 14% more damage).</td></tr>
         </table>
         <h2>Vengeful Cursed Spirit (4th life)</h2>
         <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). Endless mode: after he's been killed three times.</p>
@@ -12378,21 +12378,28 @@ const OL_VARS = {
     1:{name:'Frame Skip', desc:'Skips the frames in between: blinks 220px forward, and anyone he passes takes 6 and is frozen in a frame for 0.6s.', lock:260, run(p){
       const x0 = p.x; safeTeleport(p, p.x + p.facing*220, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:240, dmg:0, col:'#e6d3a3'});
-      for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, 600, p);
+      const hs = olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH);
+      for(const d of hs) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, 600, p);
+      if(!hs.length) olAfter(240, () => naoMissed(p));
       snd('dash', p.x); }},
     2:{name:'Freeze-Frame Jab', desc:'A jab timed between two frames: 5 damage, and the target is frozen in a frame for 1.2s — a free follow-up.', lock:300, run(p){
       const [x,y,w,h] = olFront(p, 74); snd('swing', p.x);
-      for(const d of olArea(p, x, y, w, h)) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, 1200, p); }},
+      const hs = olArea(p, x, y, w, h);
+      for(const d of hs) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, 1200, p);
+      if(!hs.length) olAfter(280, () => naoMissed(p)); }},
   },
   naoyac: {
     1:{name:'Rocket Ram', desc:'A short rocket burst: rams 260px forward through terrain, 12 damage and a big knockback.', lock:300, run(p){
       const x0 = p.x; if(!IS_GUEST) carveRect(Math.min(x0, x0+p.facing*260)-6, p.y-8, 260+PW+12, PH+16);
       safeTeleport(p, p.x + p.facing*260, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#b07cff'});
-      for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 12, {rag:[14,-8,RAGD_MS], col:'#ffb347'});
+      const hs = olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH);
+      for(const d of hs) olHit(p, d, 12, {rag:[14,-8,RAGD_MS], col:'#ffb347'});
+      if(!hs.length) olAfter(280, () => naoMissed(p));
       snd('cannon', p.x); doShake(8); }},
     2:{name:'Frame Snap', desc:'Snaps the nearest foe within 320px into a frame for 1.5s; then it bursts for 8.', lock:300, run(p){
       const d = olNearest(p, 320); snd('tick', p.x);
+      if(!d) olAfter(280, () => naoMissed(p));
       if(d){ framePlayer(d, 1500, p); olAfter(1520, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#d8c8ff', 70); olHit(p, d, 8, {any:true, rag:[8,-6,RAGD_MS], col:'#d8c8ff'}); }); } }},
   },
   takaba: {
@@ -13423,6 +13430,7 @@ const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 4
 const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 8000, NAO_FRAME_DMG_IN = 1.14;
 const NAO_ROCKET_CD = 8000, NAO_ROCKET_MS = 2400, NAO_ROCKET_SPD = 19, NAO_ROCKET_DMG = 20, NAO_ROCKET_TURN = 0.0055;
 const NAO_FIELD_CD = 7000, NAO_FIELD_N = 5, NAO_FIELD_LIFE = 6000, NAO_FIELD_HOLD = 3000, NAO_FIELD_DMG = 10, NAO_FIELD_TRAP_DMG = 22;
+const NAO_MISS_MS = 1000;   // whiffing a move breaks his own 24 fps rule: he's frozen in a frame
 const NAO_PASSIVE_MS = 600, NAO_MOON_TICK = 250, NAO_MOON_DMG = 2;
 const NAO_SYMS = ['left','right','jump','down','atk'], NAO_GLYPH = {left:'←', right:'→', jump:'↑', down:'↓', atk:'●'};
 const naoFrames = [];          // synced: {owner, x, y, t, caught}
@@ -13433,6 +13441,7 @@ function startLivesFor(pl){ return pl && ((pl.baseType||pl.type)==='naoya' || pl
 function livesOf(pl){ return pl===p1 ? p1lives : pl===p2 ? p2lives : 3; }
 
 // ── Frozen in a frame: can't move, takes 14% more damage ──
+function naoMissed(pl){ framePlayer(pl, NAO_MISS_MS, null); addSpeech(pl.x+PW/2, pl.y-24, 'MISSED A FRAME', '#f4f1e6', 800); }
 function framePlayer(pl, ms, by){
   if(!pl || pl.state===S.DEAD) return;
   const ph = [S.RAGD,S.SLAM].includes(pl.state);
@@ -13493,7 +13502,7 @@ function tickNaoGame(dt){
       framePlayer(d, NAO_FRAME_MS, o); showTxt('FROZEN IN A FRAME', 1100); sayFor(o, 'Too slow.');
       addSpeech(d.x+PW/2, d.y-30, 'FROZEN!', '#f4f1e6', 900);
     } else {
-      showTxt(`${d.name} KEPT UP!`, 1000); o.vx = 0; o.ss(S.STUN, 800); addSpeech(o.x+PW/2, o.y-20, 'TCH.', '#ddd', 700);
+      showTxt(`${d.name} KEPT UP!`, 1000); framePlayer(o, 1500, d); addSpeech(o.x+PW/2, o.y-20, 'TCH.', '#ddd', 700);
     }
   }
 }
@@ -13553,7 +13562,7 @@ Player.prototype._naoyaAbilities = function(dt, e1, e2, e3, eD, blocked){
   const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), opp = this===p1 ? p2 : p1;
   if(this.type==='naoya'){
     if(e1 && free && this.naoDashCd<=0){ this.naoDashCd = NAO_DASH_CD; this.naoHit = false; this.naoTrail = []; this.ss(S.NAODASH, NAO_DASH_MS); snd('dash', this.x); addSpeech(this.x+PW/2, this.y-14, 'PROJECTION', '#e6d3a3', 600); }
-    if(e2 && free && this.naoComboCd<=0){ this.naoComboCd = NAO_COMBO_CD; this.naoStep = 0; this.naoTrail = []; this.vx = 0; this.ss(S.NAOCOMBO, NAO_COMBO_MS); snd('swing', this.x); sayFor(this, 'Keep up!'); }
+    if(e2 && free && this.naoComboCd<=0){ this.naoComboCd = NAO_COMBO_CD; this.naoStep = 0; this.naoAny = false; this.naoTrail = []; this.vx = 0; this.ss(S.NAOCOMBO, NAO_COMBO_MS); snd('swing', this.x); sayFor(this, 'Keep up!'); }
     if(eD && free){ addSpeech(this.x+PW/2, this.y-14, 'NO DOMAIN… YET', '#999', 700); }
   } else {
     if(e1 && free && this.naoRocketCd<=0){
@@ -13594,7 +13603,7 @@ Player.prototype._tickNaoDash = function(dt){
       olHit(this, hit, NAO_DASH_DMG, {rag:[13,-6,RAGD_MS], dir:f, col:'#e6d3a3'});
     }
   }
-  if(this.sTimer >= this.sDur){ this.vx *= 0.3; this.ss(this.onGround ? S.IDLE : S.AIR); }
+  if(this.sTimer >= this.sDur){ this.vx *= 0.3; if(this.naoHit) this.ss(this.onGround ? S.IDLE : S.AIR); else naoMissed(this); }
 };
 Player.prototype._tickNaoCombo = function(dt){
   const f = this.facing;
@@ -13605,15 +13614,15 @@ Player.prototype._tickNaoCombo = function(dt){
   while(this.naoStep < NAO_COMBO_HITS.length && t >= NAO_COMBO_HITS[this.naoStep]){
     this.naoStep++; snd('swing', this.x);
     const [x,y,w,h] = olFront(this, 70);
-    for(const d of olArea(this, x, y, w, h)){ olHit(this, d, NAO_COMBO_JAB, {stun:340, push:1.4, dir:f, col:'#f4f1e6'}); addParts(d.x+PW/2-f*8, d.y+PH*0.4, '#f4f1e6', 5, 3); }
+    for(const d of olArea(this, x, y, w, h)){ this.naoAny = true; olHit(this, d, NAO_COMBO_JAB, {stun:340, push:1.4, dir:f, col:'#f4f1e6'}); addParts(d.x+PW/2-f*8, d.y+PH*0.4, '#f4f1e6', 5, 3); }
     this.naoTrail = this.naoTrail || []; this.naoTrail.push({x:this.x + f*(6*this.naoStep), y:this.y, t:terClock});
   }
   if(this.naoStep === NAO_COMBO_HITS.length && t >= NAO_COMBO_FIN){
     this.naoStep++; snd('heavy', this.x);
     const [x,y,w,h] = olFront(this, 84, -6, PH+8);
-    for(const d of olArea(this, x, y, w, h)){ olHit(this, d, NAO_COMBO_KICK, {rag:[11,-9,RAGD_MS], dir:f, col:'#ffe9a8'}); addRing(d.x+PW/2, d.y+PH/2, '#f4f1e6', 56); doShake(8); }
+    for(const d of olArea(this, x, y, w, h)){ this.naoAny = true; olHit(this, d, NAO_COMBO_KICK, {rag:[11,-9,RAGD_MS], dir:f, col:'#ffe9a8'}); addRing(d.x+PW/2, d.y+PH/2, '#f4f1e6', 56); doShake(8); }
   }
-  if(t >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+  if(t >= this.sDur){ if(this.naoAny) this.ss(this.onGround ? S.IDLE : S.AIR); else naoMissed(this); }
 };
 Player.prototype._tickNaoRocket = function(dt){
   const c = this.ctrl, k = dt/16.67;
@@ -14078,7 +14087,7 @@ const CHAR_TIPS = {
   choso:    ['Hold {ab1} to charge Piercing Blood, aim with {jump} / {down}.', 'The Convergence orb follows you — press {ab2} again to detonate it.', 'You leave blood pools when hurt; Supernova ({ult}) detonates all of them, so fight near your blood.'],
   higuruma: ['Double-tap a direction to dash (Objection Step).', 'Heavy Gavel in the air becomes a plunge.', 'Deadly Sentencing is a key-press race — follow the prompts faster than the defendant. Guilty = a 20s instakill sword.'],
   hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Idle Death Gamble rolls a 10% jackpot every 5s; a jackpot makes you unkillable.'],
-  naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.'],
+  naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.', 'Don\'t whiff: a missed Projection Dash or Barrage freezes YOU in a frame for 1s.'],
   naoyac:   ['Rocket steers with {left} {right} {jump} {down}; press {ab1} again to blow up early.', 'Lay a Frame Field where they\'ll walk, then press {ab2} to set it off — caught fighters take 22.', 'In Time Cell Moon Palace they only get hurt while moving: freeze them in frames and let the domain work.'],
   takaba:   ['Rock Paper Scissors: each player picks with their own {ab1} / {ab2} / {ab3} (rock / paper / scissors). Read your opponent!', '1000 Years of Death needs them within about 460px.', 'Counter lasts only 0.45s — press it right as their attack is about to land.', 'The Truck flashes a warning arrow first; it can be jumped over.'],
   mahito:   ['Walk into a thin wall to slip straight through it.', 'Reshape them with Idle Transfiguration first — they\'re slower and take more damage from everything after.', 'Stay unhurt for 4s and you start regenerating.'],
@@ -14456,7 +14465,7 @@ const MOVE_INFO = {
              ['ab3','Gavel Throw · super','Hit = stun + rush them down (8 + 16).'], ['ult','Deadly Sentencing','Key-press trial: win = 20s instakill sword.'], ['move','Objection Step','Double-tap a direction to dash.']],
   hakari:   [['ab1','Pachinko Balls','Spread of bouncing steel balls (4 each).'], ['ab2','Shutter Doors','Doors slam on the foe: 15 + trapped 1s.'],
              ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25s; 10% jackpot every 5s → unkillable.'], ['move','Fever','Faster during a jackpot.']],
-  naoya:    [['ab1','Projection Dash','Runs forward at 24 fps and punches whoever is in the way (14).'], ['ab2','Frame Barrage','Four jabs a frame apart (3 each), then a launching kick (9).'],
+  naoya:    [['ab1','Projection Dash','Runs forward at 24 fps and punches whoever is in the way (14). Miss = frozen in a frame for 1s.'], ['ab2','Frame Barrage','Four jabs a frame apart (3 each), then a launching kick (9). Whiff it all = frozen for 1s.'],
              ['ab3','24 FPS · super','You draw a motion (12 keys; 24 online). If they miss one key, they\'re frozen in a frame for 8s: no moving, +14% damage taken.'], ['ult','Vengeful Curse','No domain while human. His 4th and last life is spent as a cursed spirit with new moves and a domain.'], ['move','Projection Sorcery','Fastest fighter; speed builds as he runs. Every 3rd quick hit freezes the foe in a frame. 4 lives, 75 HP each.']],
   naoyac:   [['ab1','Rocket','Becomes a rocket for 2.4s: steer with the movement keys, smash through terrain (20 per hit). Press again to blow up early.'], ['ab2','Frame Field','Five frames in a row. Walk into one = caught. Press again to detonate: 10 each, 22 to anyone caught.'],
              ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: every motion that breaks 24 fps tears their cells apart (2 every 0.25s while they move). Standing still is safe.'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
