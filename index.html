@@ -10035,8 +10035,13 @@ class Player {
 
   draw(){
     const phys=[S.RAGD,S.SLAM,S.DEAD].includes(this.state);
+    // KO'd and waiting to respawn: fade out quickly, then stay invisible until the sky drop
+    let _koA = 1;
+    if(this.respawnT>0){ const el = (this.respawnTot||RESPAWN_DELAY) - this.respawnT; if(el >= DEATH_FADE) return; _koA = 1 - el/DEATH_FADE; }
     ctx.save();
-    if(this.flash>0) ctx.globalAlpha=.45+.55*Math.abs(Math.sin(this.flash*.055));
+    if(_koA<1){ ctx.globalAlpha = _koA; ctx.translate(0, (1-_koA)*14); }
+    if(_koA<1){}
+    else if(this.flash>0) ctx.globalAlpha=.45+.55*Math.abs(Math.sin(this.flash*.055));
     else if(this.iframes>0) ctx.globalAlpha=.35+.45*Math.abs(Math.sin(this.iframes*.03));
     if(this.state===S.MECHULT){ this._drawMechUlt(); ctx.restore(); return; }
     this._shadow();
@@ -11938,7 +11943,7 @@ function drawHUDOverlay(){
   drawTrainPanel();
   for(const [pl, x, al] of [[p1, 22, 'left'], [p2, W-22, 'right']]) if(pl.respawnT>0 && !(isTraining() && pl===p2)){
     ctx.save(); ctx.textAlign = al; ctx.font = `700 16px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ffd27a';
-    ctx.fillText(`RESPAWNING IN ${Math.ceil(pl.respawnT/1000)}`, x, 186); ctx.restore(); }
+    ctx.fillText(`RESPAWNING IN ${Math.ceil(pl.respawnT/1000)}`, x, 214); ctx.restore(); }
   if(gameMode==='endless'){
     // Kills counter
     const ky=130;
@@ -13060,9 +13065,15 @@ function domainCancelled(owner){
   else owner.domainCharge = Math.max(owner.domainCharge, amt);
   addSpeech(owner.x+PW/2, owner.y-30, 'DOMAIN BROKEN — 50% REFUNDED', '#c9a0ff', 1300);
 }
+const DEATH_FADE = 450;
+function koVanish(pl, ms){
+  pl.respawnT = ms; pl.respawnTot = ms;
+  const cx = pl.x+PW/2, cy = pl.y+PH*0.5;
+  addParts(cx, cy, pl.charColor||'#fff', 22, 4); addParts(cx, cy, '#1a1020', 12, 3); addRing(cx, cy, pl.charColor||'#fff', 46);
+}
 function respawnFromSky(pl){
   const opp = pl===p1 ? p2 : p1;
-  pl.reset(); pl.respawnT = 0;
+  pl.reset(); pl.respawnT = 0; pl.respawnTot = 0;
   const fr = activeDomain && activeDomain.frame && (activeDomain.frame.x || activeDomain.frame.y) ? activeDomain.frame : null;
   let x;
   if(fr) x = fr.x + (opp && opp.x - fr.x < VW/2 ? VW*0.75 : VW*0.25);
@@ -14573,7 +14584,7 @@ function simFight(dt){
     trainTick();
     for(const pl of [p1, p2]) if(pl.respawnT>0){ pl.respawnT -= dt; if(pl.respawnT<=0 && phase==='fight') respawnFromSky(pl); }
     const dn1 = p1.hp<=0 && !(p1.respawnT>0), dn2 = p2.hp<=0 && !(p2.respawnT>0);
-    if(isTraining()){ if(dn1) p1.respawnT = 1200; if(dn2) p2.respawnT = 1200; }
+    if(isTraining()){ if(dn1) koVanish(p1, 1200); if(dn2) koVanish(p2, 1200); }
     else if(!roundWinner){
       if(dn1 && !dn2){ roundWinner=p2; p1lives--; }
       else if(dn2 && !dn1){ roundWinner=p1; p2lives--; }
@@ -14594,7 +14605,7 @@ function simFight(dt){
           phase='roundend'; roundDelay=2400;
         } else {
           // Normal mode: no reset — the winner keeps everything; the fallen fighter drops back in after 5s
-          for(const pl of [p1, p2]) if(dn1 && pl===p1 || dn2 && pl===p2){ pl.respawnT = RESPAWN_DELAY; }
+          for(const pl of [p1, p2]) if(dn1 && pl===p1 || dn2 && pl===p2){ koVanish(pl, RESPAWN_DELAY); }
           showTxt((dn1 && dn2) ? 'DOUBLE KO' : `${(dn1 ? p1 : p2).name} IS DOWN`, 1300);
           roundWinner = null;
         }
