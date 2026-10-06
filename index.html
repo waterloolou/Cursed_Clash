@@ -6811,6 +6811,38 @@ function drawDmgNums(){
 }
 
 // ── PLAYER ─────────────────────────────────────────────────
+
+// ═══ TELEPORTS — one clean landing for every blink / swap ═══
+// Keeps the fighter inside the arena (and an open domain), pushes them out of walls, settles them on a floor that's
+// right under them, kills leftover momentum, and tells the movement code not to "sweep" from the old spot this frame.
+function tpFrame(){ const f = activeDomain && activeDomain.frame; return f && (f.x || f.y) ? f : null; }
+function tpInArena(x, y){ const f = tpFrame(); if(!f) return x > -PW && x < W && y < GND+10; return x > f.x-PW && x < f.x+VW && y > f.y-80 && y < f.y+VH; }
+function tpFree(x, y){ const f = tpFrame(), x0 = f ? f.x+10 : 10, x1 = f ? f.x+VW-PW-10 : W-PW-10; return x >= x0 && x <= x1 && !terSolid(x, y+0.5, PW, PH-1); }
+function safeTeleport(pl, x, y, keepVx){
+  if(!pl) return;
+  const f = tpFrame(), x0 = f ? f.x+10 : 10, x1 = f ? f.x+VW-PW-10 : W-PW-10;
+  pl.x = Math.max(x0, Math.min(x1, x)); pl.y = Math.min(GND-PH, Math.max(f ? f.y-40 : -400, y));
+  if(terSolid(pl.x, pl.y+0.5, PW, PH-1)){
+    // nearest open spot: up first (out of a floor), then sideways, then down
+    let done = false;
+    for(let d=4; d<=160 && !done; d+=4) for(const [ox,oy] of [[0,-d],[-d,0],[d,0],[0,d],[-d,-d],[d,-d]]){
+      if(tpFree(pl.x+ox, pl.y+oy)){ pl.x += ox; pl.y += oy; done = true; break; } }
+    if(!done) pl._unstick();
+    pl.x = Math.max(x0, Math.min(x1, pl.x));
+  }
+  const gap = terGroundTop(pl.x, PW, pl.y+PH-1, true) - (pl.y+PH);
+  if(gap >= -1 && gap < 26){ pl.y += gap; pl.onGround = true; } else pl.onGround = false;
+  pl.vy = 0; if(!keepVx) pl.vx = 0;
+  if([S.RAGD,S.SLAM].includes(pl.state)){ pl.rdX = pl.x; pl.rdY = pl.y; pl.rdVx = 0; pl.rdVy = 0; }
+  else if(!pl.onGround && [S.IDLE,S.WALK].includes(pl.state)) pl.ss(S.AIR);
+  else if(pl.onGround && pl.state===S.AIR) pl.ss(S.IDLE);
+  // anything that was dragging / carrying them lets go, so they don't snap back
+  for(const q of [p1, p2, puppet]){ if(!q || q===pl) continue;
+    if(q.drillTarget===pl) q.drillTarget = null;
+    if(q.grabRef && typeof netRes==='function' && netRes(q.grabRef)===pl){ q.grabRef = null; q.grabPhase = 3; } }
+  pl._tpN = (pl._tpN||0) + 1;
+}
+
 class Player {
   constructor(cfg){
     this.name   = cfg.name;
@@ -7036,7 +7068,7 @@ class Player {
 
   // Wrapper: runs the normal update, then resolves walls/floors/ceilings against the terrain
   update(dt,other){
-    const px=this.x, py=this.y;
+    const px=this.x, py=this.y, tp0=this._tpN||0;
     if(this.dropT>0) this.dropT-=dt;
     const dk = this.isPuppet ? null : this.ctrl.down;
     if(dk && keys[dk] && this.onGround && [S.IDLE,S.WALK].includes(this.state) && !(this.pbChargeTime>0)) this.dropT=220;
@@ -7048,7 +7080,8 @@ class Player {
     this._loadoutPost(dt);
     tickStatus(this, dt);
     if(![S.RAGD,S.SLAM,S.DEAD].includes(this.state) && !this.mechUltPhase){
-      if(this._moveTerrain(px,py)) this.onGround=true;
+      if((this._tpN||0)!==tp0){ if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick(); }   // teleported: already placed cleanly
+      else if(this._moveTerrain(px,py)) this.onGround=true;
     }
     if(activeDomain && activeDomain.frame && (activeDomain.frame.x || activeDomain.frame.y)){
       const fr = activeDomain.frame;
@@ -7313,8 +7346,10 @@ class Player {
         if(Math.hypot(opp.x-this.x, opp.y-this.y) < KAN_RANGE){
           this.takKanCd = TAKA_KAN_CD; this.kanHit = false;
           addParts(this.x+PW/2, this.y+PH/2, '#ffe066', 12, 4); addRing(this.x+PW/2, this.y+PH/2, '#ffe066', 30);
-          this.x = Math.max(10, Math.min(W-PW-10, opp.x - opp.facing*(PW+6))); this.y = opp.y; this.vx = 0; this.vy = 0; this.facing = opp.facing;
-          if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
+          const ph = [S.RAGD,S.SLAM].includes(opp.state), ox = ph ? opp.rdX : opp.x, oy = ph ? opp.rdY : opp.y, of = opp.facing || 1;
+          // right behind them — or, if that's a wall / the edge, on their other side
+          let tx = ox - of*(PW+6); if(!tpFree(tx, oy) && tpFree(ox + of*(PW+6), oy)) tx = ox + of*(PW+6);
+          safeTeleport(this, tx, oy); this.facing = Math.sign(ox - this.x) || of;
           this.ss(S.TAKAKAN, 470); snd('dash', this.x); addParts(this.x+PW/2, this.y+PH/2, '#ffe066', 12, 4);
           addSpeech(this.x+PW/2, this.y-14, '1000 YEARS OF DEATH!', '#ffe066', 1000); sayFor(this, 'One thousand years of death!');
         } else addSpeech(this.x+PW/2, this.y-14, 'TOO FAR', '#888', 500);
@@ -7433,11 +7468,12 @@ class Player {
         } else if(mine){
           // Ui Ui swaps her to where he is standing
           const ox = this.x+PW/2, oy = this.y+PH/2;
-          this.x = Math.max(10, Math.min(W-PW-10, mine.x - PW/2)); this.y = mine.y - PH; this.vx = 0; this.vy = 0;
-          if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
+          if(!tpInArena(mine.x - PW/2, mine.y - PH)){ addSpeech(this.x+PW/2, this.y-10, 'UI UI IS OUTSIDE THE DOMAIN', '#999', 800); }
+          else { safeTeleport(this, mine.x - PW/2, mine.y - PH);
           addRing(ox, oy, '#c9c2e6', 46); addParts(ox, oy, '#c9c2e6', 12, 4);
           addRing(this.x+PW/2, this.y+PH/2, '#ffffff', 50); addParts(this.x+PW/2, this.y+PH/2, '#c9c2e6', 14, 5); snd('orb', this.x);
-          if(![S.IDLE,S.WALK,S.AIR].includes(this.state)) this.ss(S.AIR);   // Ui Ui stays put: teleport again any time
+          if(![S.IDLE,S.WALK,S.AIR].includes(this.state)) this.ss(this.onGround ? S.IDLE : S.AIR);   // Ui Ui stays put: teleport again any time
+          }
         } else if(this.uiuiCd<=0 && free){
           uiuis.push({owner:this, x:this.x+PW/2, y:this.y+PH, t:0});
           addParts(this.x+PW/2, this.y+PH-10, '#c9c2e6', 10, 3); sayFor(this, 'Ui Ui!');
@@ -9636,9 +9672,8 @@ class Player {
     this.todoBwCd = this.todoNoCdT>0 ? 250 : TODO_BW_CD;
     const bro = keys[this.ctrl.down] && brothers.find(b => b.owner===this && !b.fade);
     if(bro){
-      const ax0 = this.x, ay0 = this.y; this.x = Math.max(10, Math.min(W-PW-10, bro.x-PW/2)); this.y = bro.y-PH; this.vy = 0;
-      bro.x = ax0+PW/2; bro.y = ay0+PH; bro.ph = 0;
-      if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
+      const ax0 = this.x, ay0 = this.y; safeTeleport(this, bro.x-PW/2, bro.y-PH, true);
+      bro.x = ax0+PW/2; bro.y = terGroundTop(ax0, PW, ay0+PH-1, true); bro.ph = 0;
       for(const [x,y] of [[ax0+PW/2, ay0+PH/2],[this.x+PW/2, this.y+PH/2]]){ addRing(x, y, '#ffb070', 46); addParts(x, y, '#ffb070', 8, 3); }
       this.flash = 120; return;
     }
@@ -9648,9 +9683,9 @@ class Player {
     if(tgt && !(tgt instanceof Player)){
       const ix = tgt.x - PW/2, iy = tgt.y - PH;
       if(Math.hypot(ix-ax, iy-ay) > TODO_BW_RANGE){ addSpeech(cx, this.y-40, 'TOO FAR', '#999', 800); return; }
-      this.x = ix; this.y = iy; this.vy = 0;
+      if(!tpInArena(ix, iy)){ addSpeech(cx, this.y-40, 'CAN\'T SWAP', '#999', 800); return; }
+      safeTeleport(this, ix, iy, true);
       tgt.x = ax + PW/2; tgt.y = terGroundTop(ax, PW, ay+PH-1, true);
-      if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
       for(const [x,y] of [[ax+PW/2, ay+PH/2],[ix+PW/2, iy+PH/2]]){ addRing(x, y, '#ffe08a', 46); addParts(x, y, '#ffe08a', 8, 3); }
       this.flash = 120;
       return;
@@ -9659,11 +9694,8 @@ class Player {
     const phys = [S.RAGD,S.SLAM].includes(tgt.state);
     const ox = phys ? tgt.rdX : tgt.x, oy = phys ? tgt.rdY : tgt.y;
     if(Math.hypot(ox-ax, oy-ay) > TODO_BW_RANGE){ addSpeech(cx, this.y-40, 'TOO FAR', '#999', 800); return; }
-    this.x = ox; this.y = oy; this.vy = 0;
-    if(phys){ tgt.rdX = ax; tgt.rdY = ay; } tgt.x = ax; tgt.y = ay; tgt.vy = 0;
+    safeTeleport(this, ox, oy, true); safeTeleport(tgt, ax, ay);
     this.facing = tgt.x > this.x ? 1 : -1; if(!phys) tgt.facing = -this.facing;
-    if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
-    if(!phys && terSolid(tgt.x, tgt.y+0.5, PW, PH-1)) tgt._unstick();
     for(const [x,y] of [[ax+PW/2, ay+PH/2],[ox+PW/2, oy+PH/2]]){ addRing(x, y, '#ffe08a', 46); addParts(x, y, '#ffe08a', 8, 3); }
     this.flash = 120; tgt.flash = 120;
     // Their own attacks already in the air now belong to Todo — so they fly into their owner
@@ -12157,7 +12189,7 @@ const OL_VARS = {
   },
   mechamaru: {
     1:{name:'Sword Formation', desc:'Arm becomes a blade and he dashes 160px through the foe: 9 damage.', lock:300, run(p){
-      const f = p.facing, x0 = p.x; p.x = Math.max(10, Math.min(W-PW-10, p.x + f*160)); if(terSolid(p.x, p.y+0.5, PW, PH-1)) p._unstick();
+      const f = p.facing, x0 = p.x; safeTeleport(p, p.x + f*160, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#9fc4ff'});
       for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 9, {rag:[7,-5,RAGD_MS*0.8], col:'#9fc4ff'});
       snd('slash', p.x); }},
@@ -13035,9 +13067,9 @@ const MECH_SWAP_CD = 1500;
 function mechSwapBodies(m){
   const P = puppet; if(!P || P.owner!==m || P.state===S.DEAD) return false;
   const a = {x:m.x, y:m.y, vx:m.vx, vy:m.vy, facing:m.facing};
-  m.x = P.x; m.y = P.y; m.vx = P.vx; m.vy = P.vy; m.facing = P.facing;
-  P.x = a.x; P.y = a.y; P.vx = a.vx; P.vy = a.vy; P.facing = a.facing;
-  for(const q of [m, P]){ if([S.RAGD,S.SLAM].includes(q.state)){ q.rdX = q.x; q.rdY = q.y; } if(terSolid(q.x, q.y+0.5, PW, PH-1)) q._unstick(); }
+  const b = {x:P.x, y:P.y, facing:P.facing};
+  safeTeleport(m, b.x, b.y); m.facing = b.facing;
+  safeTeleport(P, a.x, a.y); P.facing = a.facing;
   if(![S.RAGD,S.SLAM,S.STUN].includes(m.state)) m.ss(m.onGround ? S.IDLE : S.AIR);
   m.swapCd = MECH_SWAP_CD;
   addRing(m.x+PW/2, m.y+PH/2, '#7fb2ff', 50); addRing(P.x+PW/2, P.y+PH/2, '#9aa', 40);
