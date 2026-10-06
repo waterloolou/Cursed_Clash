@@ -1290,7 +1290,8 @@ const vlUI = {
   msg(t){ if(!this.el) return; const m = this.el.querySelector('#vlMsg'); m.textContent = t; clearTimeout(this._mt); this._mt = setTimeout(() => m.textContent = '', 4000); }
 };
 
-function addSpeech(x, y, text, col, ms){ try{ bubbleSound(x, text); }catch(e){}
+const QUIET_TEXT = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STUNNED|STAGGERED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|BODY SWAP|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
+function addSpeech(x, y, text, col, ms){ if(QUIET_TEXT.test(String(text))) return; try{ bubbleSound(x, text); }catch(e){}
   speechFx.push({x, y, text, col:col||'#fff', life:ms||1400, max:ms||1400}); }
 
 function spawnItem(){
@@ -3097,7 +3098,7 @@ function drawHanami(){
     ctx.save(); ctx.globalAlpha = 0.5 + 0.3*Math.sin(t*0.01); ctx.strokeStyle = '#9bc46a'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.arc(pl.rootX, pl.rootY, ROOT_TIP_R, 0, Math.PI*2); ctx.stroke(); ctx.restore();
     ctx.save(); ctx.fillStyle = '#c8e6a0'; ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
-    ctx.fillText(`ROOT RAMPAGE ${Math.ceil(pl.rampT/1000)}s`, pl.x+PW/2, pl.y-14); ctx.restore();
+    ctx.restore();
   }
 }
 // drawn over the fighter: wooden branches growing from her eyes + the grabbing root
@@ -3309,7 +3310,6 @@ function drawMahitoBody(pl){
       ctx.save(); ctx.fillStyle = '#5a6574';      // spines down the back
       for(let k=0;k<4;k++){ const sx = bx - f*7, sy = by+20+k*8; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - f*(9-k), sy-4); ctx.lineTo(sx, sy+4); ctx.fill(); }
       ctx.fillStyle = '#c9a0ff'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
-      ctx.fillText(`DISTORTED KILLING ${Math.ceil(pl.mahiFormT/1000)}s`, bx, by-14);
       ctx.restore();
     }
     if(pl.state===S.MAHIPALM && pl.sTimer < PALM_WIND+120){
@@ -3323,7 +3323,6 @@ function drawMahitoBody(pl){
     for(let k=0;k<3;k++){ const y = by+12+k*16, w = Math.sin(t*0.01+k)*4;
       ctx.beginPath(); ctx.moveTo(bx-9, y); ctx.quadraticCurveTo(bx+w, y+5, bx+9, y-2); ctx.stroke(); }
     ctx.fillStyle = '#c9a0ff'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
-    if(pl.type!=='mahito') ctx.fillText(`RESHAPED ${Math.ceil(pl.reshapeT/1000)}s`, bx, by-8);
     ctx.restore();
   }
 }
@@ -10147,7 +10146,7 @@ class Player {
         g.addColorStop(0,'rgba(255,140,40,0.35)'); g.addColorStop(1,'rgba(255,60,10,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by+PH*0.5, 34, 0, Math.PI*2); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; }
       if(this.emberT>0){ const ex = bx+8, ey = by+PH*0.35; ctx.fillStyle = '#3a1a0a'; ctx.beginPath(); ctx.ellipse(ex, ey, 4, 3, 0, 0, Math.PI*2); ctx.fill();
         ctx.fillStyle = `rgba(255,170,60,${0.6+0.4*Math.sin(Date.now()*0.02)})`; ctx.beginPath(); ctx.arc(ex, ey, 2, 0, Math.PI*2); ctx.fill();
-        ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#ffb347'; ctx.fillText(`+1s CD ${Math.ceil(this.emberT/1000)}s`, bx, by-8); }
+        }
       ctx.restore();
     }
     if(this.type==='hanami') drawHanamiBody(this);
@@ -10170,7 +10169,7 @@ class Player {
     }
     if(this.type==='meimei' && this.state===S.MEICROW){
       ctx.save(); ctx.fillStyle = '#e8e3ff'; ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
-      ctx.globalAlpha = 0.6+0.4*Math.sin(Date.now()*0.01); ctx.fillText('STEERING THE CROW', this.x+PW/2, this.y-14); ctx.restore();
+      ctx.restore();
     }
     // Higuruma: gavel (or the Executioner's Sword) in hand
     if(this.type==='higuruma' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state)){
@@ -12254,7 +12253,6 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
       if(this.varCd[n]>0){ olTag(this, `${Math.ceil(this.varCd[n]/1000)}s`, '#888', 400); continue; }
       this.varCd[n] = v.cd || OL.VAR_CD; this.oaKind = null;
       this.ss(S.OVAR, v.lock||300); this.vx = 0; this.varName = v.name;
-      addSpeech(this.x+PW/2, this.y-12, v.name, this.charColor, 700);
       try{ v.run(this, other); }catch(err){ console.error('variant', this.type, n, err); }
       break;
     }
@@ -12557,12 +12555,12 @@ function drawOlBody(pl){
       for(let k=-3;k<=3;k++){ ctx.beginPath(); ctx.moveTo(cx+k*11, pl.y+PH); ctx.quadraticCurveTo(cx+k*14, pl.y+PH-30, cx+k*6, pl.y-6); ctx.stroke(); } }
     else { ctx.beginPath(); ctx.ellipse(cx, cy, 26, PH*0.62, 0, 0, Math.PI*2); ctx.stroke(); for(let k=0;k<6;k++){ const a = k*1.05 + t*0.003; ctx.beginPath(); ctx.arc(cx+Math.cos(a)*24, cy+Math.sin(a)*34, 2.2, 0, Math.PI*2); ctx.fill(); } }
     ctx.fillStyle = pl.adCol||'#fff'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.globalAlpha = 0.9;
-    ctx.fillText(`${pl.adName.toUpperCase()} ${Math.ceil(pl.adT/1000)}s`, cx, pl.y-10); ctx.restore();
+    ctx.restore();
   }
   if(pl.uiBoxT>0 && pl.uiBox){ const bx = pl.uiBox.x, by = pl.uiBox.y; ctx.save(); ctx.globalAlpha = 0.25 + 0.1*Math.sin(t*0.006); ctx.fillStyle = '#e8e3ff'; ctx.fillRect(bx-110, by-150, 220, 150);
     ctx.globalAlpha = 0.8; ctx.strokeStyle = '#e8e3ff'; ctx.lineWidth = 2; ctx.strokeRect(bx-110, by-150, 220, 150); ctx.fillStyle = '#e8e3ff'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(`SIMPLE DOMAIN ${Math.ceil(pl.uiBoxT/1000)}s`, bx, by-156); ctx.restore(); }
   if(pl.confiscT>0 && !(pl.adAmp && pl.adT>0)){ ctx.save(); ctx.fillStyle = '#f1d27a'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
-    ctx.fillText(`SEALED ${Math.ceil(pl.confiscT/1000)}s`, cx, pl.y-20); ctx.restore(); }
+    ctx.restore(); }
   if(pl.frsT>0){ ctx.save(); ctx.globalAlpha = 0.35; ctx.strokeStyle = '#ff3030'; ctx.lineWidth = 2;
     for(let k=0;k<3;k++){ ctx.beginPath(); ctx.moveTo(cx-8+k*8, pl.y+PH); ctx.lineTo(cx-8+k*8+Math.sin(t*0.02+k)*3, pl.y+6); ctx.stroke(); } ctx.restore(); }
 }
@@ -12869,7 +12867,7 @@ function drawRps(){
 
 function takabaCountered(pl, attacker){
   pl.counterT = 0; pl.iframes = Math.max(pl.iframes, 600); pl.sTimer = Math.max(pl.sTimer, pl.sDur - 120);
-  addSpeech(pl.x+PW/2, pl.y-24, 'COUNTERED! NO DAMAGE!', '#ffe066', 1000); addRing(pl.x+PW/2, pl.y+PH/2, '#ffe066', 80); addParts(pl.x+PW/2, pl.y+PH/2, '#fff3a0', 18, 6);
+  addSpeech(pl.x+PW/2, pl.y-24, 'COUNTER!', '#ffe066', 800); addRing(pl.x+PW/2, pl.y+PH/2, '#ffe066', 80); addParts(pl.x+PW/2, pl.y+PH/2, '#fff3a0', 18, 6);
   snd('parry', pl.x); doShake(8); sayFor(pl, 'Gotcha!');
   if(attacker && attacker!==pl && Math.abs(attacker.x-pl.x) < 230 && ![S.RAGD,S.SLAM,S.DEAD].includes(attacker.state) && !attacker.mechUltPhase){
     attacker.vx = Math.sign(attacker.x-pl.x)*4; attacker.ss(S.STUN, 800); addSpeech(attacker.x+PW/2, attacker.y-10, 'HUH?!', '#ddd', 700);
@@ -12972,7 +12970,6 @@ function drawTakabaBody(pl){
     ctx.fillStyle = '#ffe066'; ctx.font = `900 18px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!', cx, pl.y-8);
   }
   if(pl.state===S.TAKAKAN && pl.sTimer < KAN_HIT_AT+120){
-    ctx.fillStyle = '#ffe066'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('1000 YEARS…', cx, pl.y-10);
   }
   ctx.restore();
 }
@@ -13258,15 +13255,15 @@ function trainSwap(slot, step){
 }
 function trainReset(){
   p1.reset(); p2.reset(); clearProjectiles(); terrainReset(); activeDomain = null; domainClash = null; rpsGame = null;
-  trainStat.combo = 0; trainStat.hits = 0; trainStat.best = 0; showTxt('RESET', 700);
+  trainStat.combo = 0; trainStat.hits = 0; trainStat.best = 0;
 }
 function trainKeys(){
   const k = c => keyPulse[c];
-  if(k('Digit1')){ trainOpt.meters = !trainOpt.meters; showTxt('INFINITE METERS ' + (trainOpt.meters ? 'ON' : 'OFF'), 700); }
-  if(k('Digit2')){ trainOpt.nocd = !trainOpt.nocd; showTxt('NO COOLDOWNS ' + (trainOpt.nocd ? 'ON' : 'OFF'), 700); }
+  if(k('Digit1')){ trainOpt.meters = !trainOpt.meters; }
+  if(k('Digit2')){ trainOpt.nocd = !trainOpt.nocd; }
   if(k('Digit3')) trainReset();
   if(k('Digit4')){ trainSwap(1, 1); p2CharIdx = p1CharIdx; }
-  if(k('Digit5')){ trainOpt.ol = !trainOpt.ol; showTxt('COMBAT: ' + (trainOpt.ol ? 'ONLINE SYSTEM' : 'CLASSIC (LOCAL)'), 900); }
+  if(k('Digit5')){ trainOpt.ol = !trainOpt.ol; }
   if(k('Digit0')) trainOpt.hide = !trainOpt.hide;
 }
 function trainTick(){
