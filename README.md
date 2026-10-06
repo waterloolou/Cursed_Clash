@@ -35,6 +35,7 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 
 ## Notes
 
+- In a fight, small tags under each health bar show that fighter's active effects with timers (red = bad for you, e.g. Burning, Sealed, Reshaped; green = buffs, e.g. Simple Domain, Counter stance). Useful notices like *Too early — combo dropped* or *Q — cooldown 4s* appear underneath in small text and fade after a couple of seconds.
 - Your coins, unlocks and Voice Lab recordings are saved in your browser on that computer. To move your progress to another computer: **👤 Account → GET MY SAVE CODE**, copy it, then on the other computer paste it into **LOAD SAVE CODE**.
 - If joining an online game gets stuck, the network may be blocking it (common on school Wi-Fi) — try home Wi-Fi or a phone hotspot.
 - To update, download the ZIP again (or just replace `index.html`).

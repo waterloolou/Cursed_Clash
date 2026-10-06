@@ -1290,8 +1290,25 @@ const vlUI = {
   msg(t){ if(!this.el) return; const m = this.el.querySelector('#vlMsg'); m.textContent = t; clearTimeout(this._mt); this._mt = setTimeout(() => m.textContent = '', 4000); }
 };
 
-const QUIET_TEXT = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STUNNED|STAGGERED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|BODY SWAP|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
-function addSpeech(x, y, text, col, ms){ if(QUIET_TEXT.test(String(text))) return; try{ bubbleSound(x, text); }catch(e){}
+const QUIET_DROP = /^(STUNNED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|BODY SWAP)$/;
+const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
+const hudFeed = {p1:[], p2:[]};      // small notices under each fighter's HUD (not synced; replayed fx fill it on both sides)
+function feedText(t){
+  if(/^\d+s$/.test(t)) return 'Cooldown ' + t;
+  const m = t.match(/^(.*) (\d+s)$/); if(m) return m[1].charAt(0) + m[1].slice(1).toLowerCase() + ' — cooldown ' + m[2];
+  if(t==='TOO EARLY') return 'Too early — combo dropped';
+  if(/^-\d+% ULT$/.test(t)) return t.replace(' ULT', ' ultimate bar');
+  return t.charAt(0) + t.slice(1).toLowerCase();
+}
+function pushFeed(x, y, text, col){
+  if(typeof p1==='undefined' || !p1) return;
+  const d = q => q ? Math.hypot(q.x+PW/2-x, q.y-y) : 1e9;
+  const ref = d(p1) <= d(p2) ? 'p1' : 'p2', f = hudFeed[ref];
+  const txt = feedText(text);
+  if(f.length && f[f.length-1].text===txt){ f[f.length-1].t = performance.now(); return; }
+  f.push({text:txt, col:col||'#ddd', t:performance.now()}); if(f.length > 3) f.shift();
+}
+function addSpeech(x, y, text, col, ms){ const _T = String(text); if(QUIET_DROP.test(_T)) return; if(QUIET_FEED.test(_T)){ pushFeed(x, y, _T, col); return; } try{ bubbleSound(x, text); }catch(e){}
   speechFx.push({x, y, text, col:col||'#fff', life:ms||1400, max:ms||1400}); }
 
 function spawnItem(){
@@ -11916,9 +11933,10 @@ function drawHUDOverlay(){
   ctx.textAlign='center'; ctx.font=`700 14px 'Rajdhani',sans-serif`;
   ctx.fillStyle='rgba(200,195,185,.2)'; ctx.fillText('CURSED CLASH',W/2,30);
   p1.drawHUD(22,false); if(!isTraining()) p2.drawHUD(W-22,true);
+  drawEffects(p1, 22, false); if(!isTraining()) drawEffects(p2, W-22, true);
   drawRps();
   drawTrainPanel();
-  for(const [pl, x, al] of [[p1, 22, 'left'], [p2, W-22, 'right']]) if(pl.respawnT>0){
+  for(const [pl, x, al] of [[p1, 22, 'left'], [p2, W-22, 'right']]) if(pl.respawnT>0 && !(isTraining() && pl===p2)){
     ctx.save(); ctx.textAlign = al; ctx.font = `700 16px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ffd27a';
     ctx.fillText(`RESPAWNING IN ${Math.ceil(pl.respawnT/1000)}`, x, 186); ctx.restore(); }
   if(gameMode==='endless'){
@@ -13303,6 +13321,50 @@ function drawTrainPanel(){
       cx += widths[i];
     });
   }
+  ctx.restore();
+}
+
+
+// ── Effects bar + notice feed (under each fighter's HUD) ──
+function playerEffects(pl){
+  const E = [], add = (label, ms, good) => E.push({label, ms, good});
+  if(!pl || pl.state===S.DEAD) return E;
+  if(pl.burnT>0) add('Burning', pl.burnT, false);
+  if(pl.emberT>0) add('Ember +1s cooldowns', pl.emberT, false);
+  if(pl.reshapeT>0) add('Reshaped', pl.reshapeT, false);
+  if(pl.confiscT>0 && !(pl.adAmp && pl.adT>0)) add('Sealed', pl.confiscT, false);
+  if(typeof floods!=='undefined' && floods.length && typeof inFlood==='function' && inFlood(pl, false)) add('Slowed (flood)', null, false);
+  if(pl.adT>0 && pl.adName) add(pl.adName + (pl.adAmp ? ' (no abilities)' : ''), pl.adT, true);
+  else if(pl.sdT>0) add('Simple Domain', pl.sdT, true);
+  if(pl.uiBoxT>0) add('Ui Ui\'s Simple Domain', pl.uiBoxT, true);
+  if(pl.frsT>0) add('Flowing Red Scale', pl.frsT, true);
+  if(pl.mahiFormT>0) add('Distorted Killing', pl.mahiFormT, true);
+  if(pl.rampT>0) add('Root Rampage', pl.rampT, true);
+  if(pl.todoNoCdT>0) add('Unlimited Boogie', pl.todoNoCdT, true);
+  if(pl.jackpotT>0) add('Jackpot', pl.jackpotT, true);
+  if(pl.higuSwordT>0) add('Executioner\'s Sword', pl.higuSwordT, true);
+  if(pl.counterT>0) add('Counter stance', pl.counterT, true);
+  if(pl.iframes>250 && !(pl.respawnT>0)) add('Invincible', pl.iframes, true);
+  return E;
+}
+function drawEffects(pl, x, flip){
+  if(!pl) return;
+  const E = playerEffects(pl), ref = pl===p1 ? 'p1' : 'p2', now = performance.now();
+  ctx.save(); ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textBaseline = 'middle';
+  let cx = x; const y = 146;
+  for(const e of E){
+    const txt = e.label.toUpperCase() + (e.ms ? ` ${Math.ceil(e.ms/1000)}s` : ''), w = ctx.measureText(txt).width + 10;
+    const bx = flip ? cx - w : cx;
+    ctx.fillStyle = e.good ? 'rgba(60,120,80,0.75)' : 'rgba(140,50,50,0.75)'; ctx.fillRect(bx, y-6, w, 12);
+    ctx.fillStyle = e.good ? '#c8f5d4' : '#ffd2d2'; ctx.textAlign = 'left'; ctx.fillText(txt, bx+5, y+0.5);
+    cx += flip ? -(w+4) : (w+4);
+  }
+  // notices fade out after ~2.2s
+  const F = hudFeed[ref]; while(F.length && now - F[0].t > 2600) F.shift();
+  ctx.font = `600 10px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left';
+  F.forEach((f, i) => { const a = Math.max(0, Math.min(1, (2600 - (now - f.t))/500));
+    ctx.globalAlpha = a; ctx.fillStyle = 'rgba(0,0,0,0.5)'; const w = ctx.measureText(f.text).width + 8;
+    ctx.fillRect(flip ? x - w : x, 160 + i*13 - 6, w, 12); ctx.fillStyle = '#e8e2d6'; ctx.fillText(f.text, flip ? x-4 : x+4, 160 + i*13 + 0.5); });
   ctx.restore();
 }
 
