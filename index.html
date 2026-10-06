@@ -236,8 +236,8 @@ canvas {
           <tr><td>Kenjaku</td><td>¥1000</td><td>Press the feat key (<b>T</b>; Right Shift for local Player 2) to swap into Kenjaku's moveset mid-fight, and again to swap back. Resets each round.</td></tr></table>
         <h2>Kenjaku's moveset</h2>
         <table><tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Maximum: Uzumaki</td><td>Charge (aim with up / down), then release a crushing spiral of cursed spirits that pierces through everything: 22 damage, bores a tunnel. 32 CE.</td></tr>
-          <tr><td>E</td><td>Cursed Spirit</td><td>Releases a crawling cursed spirit that hunts the opponent over terrain and bites for 10 + a short stun. 28 CE.</td></tr>
+          <tr><td>Q</td><td>Maximum: Uzumaki</td><td>Charge (aim with up / down), then release a crushing spiral of cursed spirits that pierces through everything: 22 damage, bores a tunnel. 64 CE.</td></tr>
+          <tr><td>E</td><td>Cursed Spirit</td><td>Releases a crawling cursed spirit that hunts the opponent over terrain and bites for 10 + a short stun. 56 CE.</td></tr>
           <tr><td>R</td><td>Anti-Gravity System <em>(super, 40)</em></td><td>Everyone nearby is flung into the air, then slammed down for 20.</td></tr>
           <tr><td>F</td><td>Womb Profusion <em>(domain, 150)</em></td><td>Crushing gravity: the opponent moves at 40% speed, can barely jump, and takes 6 damage every 1.5s.</td></tr></table>
         <h2>Binding vows</h2>
@@ -347,26 +347,28 @@ canvas {
           <li><b>Domain</b>: needs its charge and a <b>full</b> CE bar. <b>Ultimates</b> (fighters without a domain) need <b>75%</b>. Both empty the bar, and it doesn't refill while your domain or ultimate is running. A cancelled domain gives back 50% of the domain bar and 50% of your CE.</li>
           <li><b>Variant mode</b> (online, <b>V</b>): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.</li>
           <li>Steering, detonating or swapping with something you already have out (Lapse Blue's orb, Convergence, the puppet, Ui Ui, the crow) is free.</li>
-          <li>Hakari's <b>jackpot</b> gives him infinite cursed energy. The <b>Inverted Spear of Heaven</b> drains 15 CE per hit. Upgrades: <b>Six Eyes</b> and <b>Cursed Energy Flow</b> refill it faster.</li>
+          <li><b>Black Flash</b> (Yuji, Todo, Mahito): your CE refills <b>250% faster</b> for 10 seconds afterwards.</li>
+          <li><b>Choso</b> can keep going when he's out of CE: he pays with his own blood (1 HP = 3 CE, never below 1 HP) and leaves a blood pool, which feeds his Supernova.</li>
+          <li>Hakari's <b>jackpot</b> gives him infinite cursed energy. The <b>Inverted Spear of Heaven</b> drains 30 CE per hit. Upgrades: <b>Six Eyes</b> and <b>Cursed Energy Flow</b> refill it faster.</li>
         </ul>
         <table><tr><th>Fighter</th><th>Max CE</th><th>Refill</th></tr>
-          <tr><td>Sukuna</td><td>140</td><td>12/s</td></tr>
-          <tr><td>Gojo</td><td>120</td><td>13/s</td></tr>
-          <tr><td>Yuji</td><td>100</td><td>7/s</td></tr>
-          <tr><td>Yuta</td><td>220</td><td>9/s</td></tr>
-          <tr><td>Mechamaru</td><td>210</td><td>8/s</td></tr>
-          <tr><td>Todo</td><td>90</td><td>7/s</td></tr>
-          <tr><td>Choso</td><td>110</td><td>7/s</td></tr>
-          <tr><td>Higuruma</td><td>100</td><td>8/s</td></tr>
-          <tr><td>Hakari</td><td>110</td><td>7/s</td></tr>
-          <tr><td>Mei Mei</td><td>100</td><td>7/s</td></tr>
-          <tr><td>Jogo</td><td>150</td><td>9/s</td></tr>
-          <tr><td>Dagon</td><td>140</td><td>8/s</td></tr>
-          <tr><td>Hanami</td><td>140</td><td>8/s</td></tr>
-          <tr><td>Mahito</td><td>130</td><td>9/s</td></tr>
-          <tr><td>Takaba</td><td>85</td><td>6/s</td></tr>
-          <tr><td>Kenjaku (feat)</td><td>160</td><td>10/s</td></tr></table>
-        <p>Yuta and Mechamaru have the biggest reserves; Gojo (Six Eyes) and Sukuna refill fastest; Takaba has the smallest pool.</p>
+          <tr><td>Sukuna ★</td><td>230</td><td>24/s</td></tr>
+          <tr><td>Gojo ★</td><td>220</td><td>26/s</td></tr>
+          <tr><td>Yuji</td><td>110</td><td>5/s</td></tr>
+          <tr><td>Yuta ★</td><td>480</td><td>14/s</td></tr>
+          <tr><td>Mechamaru</td><td>420</td><td>12/s</td></tr>
+          <tr><td>Todo</td><td>100</td><td>5/s</td></tr>
+          <tr><td>Choso</td><td>110</td><td>5/s</td></tr>
+          <tr><td>Higuruma</td><td>110</td><td>5/s</td></tr>
+          <tr><td>Hakari</td><td>120</td><td>5/s</td></tr>
+          <tr><td>Mei Mei</td><td>110</td><td>5/s</td></tr>
+          <tr><td>Jogo ★</td><td>200</td><td>8/s</td></tr>
+          <tr><td>Dagon ★</td><td>190</td><td>7/s</td></tr>
+          <tr><td>Hanami ★</td><td>190</td><td>7/s</td></tr>
+          <tr><td>Mahito ★</td><td>180</td><td>8/s</td></tr>
+          <tr><td>Takaba</td><td>90</td><td>4/s</td></tr>
+          <tr><td>Kenjaku (feat) ★</td><td>220</td><td>9/s</td></tr></table>
+        <p>★ = special grade (sorcerer or curse): much bigger pools. Yuta and Mechamaru have by far the biggest reserves; Gojo (Six Eyes) and Sukuna refill several times faster than anyone else; Takaba has the smallest pool. Moves are expensive — a normal fighter can only fire two or three in a row.</p>
         <h2>Charge meters</h2>
         <ul>
           <li><b>Super</b> (Fuga, Hollow Purple, Copy, Puppet, Imaginary Brother, Slicing Exorcism) — usually <b>40</b> damage dealt, plus 50% CE.</li>
@@ -400,7 +402,7 @@ canvas {
         <table>
           <tr><th>Item</th><th>Lasts</th><th>Effect</th></tr>
           <tr><td><b style="color:#e0533f">Playful Cloud</b></td><td>20s</td><td>Punches swing ~1.7× faster, reach further and deal +3 damage (more on finishers).</td></tr>
-          <tr><td><b style="color:#9cc3dc">Inverted Spear of Heaven</b></td><td>20s</td><td>+2 damage per hit. Every hit drains <b>15 cursed energy</b> and adds <b>2.5s</b> to the opponent's cooldowns, and hitting a domain's caster <b>shatters the domain</b>.</td></tr>
+          <tr><td><b style="color:#9cc3dc">Inverted Spear of Heaven</b></td><td>20s</td><td>+2 damage per hit. Every hit drains <b>30 cursed energy</b> and adds <b>2.5s</b> to the opponent's cooldowns, and hitting a domain's caster <b>shatters the domain</b>.</td></tr>
           <tr><td><b style="color:#6fd3c2">Inumaki's Recording</b></td><td>1 use</td><td>Your next attack plays "動くな — don't move!" and stuns the opponent for <b>5 seconds</b> (about half a screen of range). Your first hit ends the stun, so open with your big move. The mech is immune.</td></tr>
         </table>
       </section>
@@ -410,8 +412,8 @@ canvas {
         <p class="lead">The King of Curses. Ranged slashes, a point-blank shred, a fire arrow and the most destructive domain in the game.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Dismantle</td><td>A fast slicing projectile, 18 damage and a knockdown. In the air you hang for a moment and aim it up or down. 22 CE.</td></tr>
-          <tr><td>E</td><td>Cleave</td><td>Point-blank only. Holds the target while six slashes land for 30 total. 28 CE. <b>In the air:</b> Aerial Cleave, a diving cross-slash that spikes the target into the ground for 20.</td></tr>
+          <tr><td>Q</td><td>Dismantle</td><td>A fast slicing projectile, 18 damage and a knockdown. In the air you hang for a moment and aim it up or down. 44 CE.</td></tr>
+          <tr><td>E</td><td>Cleave</td><td>Point-blank only. Holds the target while six slashes land for 30 total. 56 CE. <b>In the air:</b> Aerial Cleave, a diving cross-slash that spikes the target into the ground for 20.</td></tr>
           <tr><td>R</td><td>Fuga <em>(super, 40)</em></td><td>A 1.4s bow draw (interruptible; aim with up / down), then a flame arrow: 55 damage, fire-pillar explosion. Explodes on walls and terrain too.</td></tr>
           <tr><td>F</td><td>Malevolent Shrine <em>(domain, 150)</em></td><td>10 seconds. The shrine rises, slashes rain across the arena (and through the terrain), and the opponent takes 5 damage per second.</td></tr>
           <tr><td>Movement</td><td>Cursed Step</td><td>Can jump a second time in mid-air, kicking off a burst of cursed energy. Runs 4% faster.</td></tr>
@@ -423,8 +425,8 @@ canvas {
         <p class="lead">The strongest. Controls space with Blue and Red, then finishes with Hollow Purple.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Lapse Blue</td><td>Summons a blue orb you steer with the movement keys for up to 3s (Gojo stands still). Press again to detonate early: 20 damage and a pull. 24 CE.</td></tr>
-          <tr><td>E</td><td>Reversal Red</td><td>A fast red orb that blasts the target away for 20. 24 CE.</td></tr>
+          <tr><td>Q</td><td>Lapse Blue</td><td>Summons a blue orb you steer with the movement keys for up to 3s (Gojo stands still). Press again to detonate early: 20 damage and a pull. 48 CE.</td></tr>
+          <tr><td>E</td><td>Reversal Red</td><td>A fast red orb that blasts the target away for 20. 48 CE.</td></tr>
           <tr><td>R</td><td>Hollow Purple <em>(super, 40)</em></td><td>1.5s to merge Red and Blue (aim with up / down), then a slow orb that deals 50 and bores a round tunnel through everything in its path.</td></tr>
           <tr><td>F</td><td>Infinite Void <em>(domain, 150)</em></td><td>10 seconds of stun-lock on the opponent. Deals no damage by itself — use the time.</td></tr>
           <tr><td>Movement</td><td>Infinity Float</td><td>Hold jump while falling to drift down slowly.</td></tr>
@@ -437,8 +439,8 @@ canvas {
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Attack</td><td>Black Flash</td><td>The 3rd combo hit starts a timing bar. Press attack in the centre zone, then again within 0.6s: 30 damage. Miss and Yuji is stunned for 1s.</td></tr>
-          <tr><td>Q</td><td>Piercing Blood</td><td>Hold to charge up to 3s (aim with up / down while charging), release for a long beam: 10 / 20 / 30 damage by charge. 17 CE.</td></tr>
-          <tr><td>E</td><td>Divergent Combo</td><td>Lunge in, two punches and a finishing kick: 25 total. 24 CE.</td></tr>
+          <tr><td>Q</td><td>Piercing Blood</td><td>Hold to charge up to 3s (aim with up / down while charging), release for a long beam: 10 / 20 / 30 damage by charge. 34 CE.</td></tr>
+          <tr><td>E</td><td>Divergent Combo</td><td>Lunge in, two punches and a finishing kick: 25 total. 48 CE.</td></tr>
           <tr><td>R</td><td>Black Flash <em>(special, 40)</em></td><td>Lunge at the opponent. On contact time slows; press R again while the line is in the centre zone for a Black Flash: 35 damage, a black-and-red spark and a huge launch. Miss the timing and it's a 12-damage punch.</td></tr>
           <tr><td>F</td><td>"Dismantle" <em>(ultimate, 100 damage dealt)</em></td><td>A menacing pause, then a giant Dismantle slash for 70. Needs 75% cursed energy and empties the bar. Yuji has no domain.</td></tr>
           <tr><td>Movement</td><td>Superhuman Body</td><td>Runs 8% faster and jumps 12% higher.</td></tr>
@@ -450,8 +452,8 @@ canvas {
         <p class="lead">Sword fighter who can copy other sorcerers' signature moves.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Slice &amp; Dice</td><td>Five quick slashes (4 each) that drag the target along, last one launches. 20 CE.</td></tr>
-          <tr><td>E</td><td>Cursed Fist</td><td>Sheathe, leap and float while steering, then slam (press Q to slam early): 28 damage in a big crater. 26 CE.</td></tr>
+          <tr><td>Q</td><td>Slice &amp; Dice</td><td>Five quick slashes (4 each) that drag the target along, last one launches. 40 CE.</td></tr>
+          <tr><td>E</td><td>Cursed Fist</td><td>Sheathe, leap and float while steering, then slam (press Q to slam early): 28 damage in a big crater. 52 CE.</td></tr>
           <tr><td>R</td><td>Copy <em>(super, 40)</em></td><td>Touch the opponent (8 damage) to copy their signature move, then press R again to use it once: Yuji → giant Dismantle, Gojo → Hollow Purple, Sukuna → Fuga, Yuta → Slice &amp; Dice.</td></tr>
           <tr><td>F</td><td>Authentic Mutual Love <em>(domain, 150)</em></td><td>15 seconds. Katanas lie on the ground: attack next to one to grab and throw it (6 damage, +1 charge). Four charges unlock <b>Jacob's Ladder</b> (press F): a beam that takes 80% of the opponent's max HP (can't kill).</td></tr>
           <tr><td>Movement</td><td>Special-Grade Speed</td><td>The fastest runner on the roster: 18% faster.</td></tr>
@@ -464,8 +466,8 @@ canvas {
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Jump</td><td>Jet flight</td><td>Hold jump on the ground for 0.5s to lift off and fly freely for 3s.</td></tr>
-          <tr><td>Q</td><td>Drill Drive</td><td>Dash forward drilling through terrain; catches the opponent (22 damage), carries them and stuns for 0.7s. 28 CE.</td></tr>
-          <tr><td>E</td><td>Mini Ultra Cannon</td><td>A short charge (aim with up / down), then a close-range cannon blast: 16 damage, big knockback, blows a cone out of the terrain. Works mid-flight. 26 CE.</td></tr>
+          <tr><td>Q</td><td>Drill Drive</td><td>Dash forward drilling through terrain; catches the opponent (22 damage), carries them and stuns for 0.7s. 56 CE.</td></tr>
+          <tr><td>E</td><td>Mini Ultra Cannon</td><td>A short charge (aim with up / down), then a close-range cannon blast: 16 damage, big knockback, blows a cone out of the terrain. Works mid-flight. 52 CE.</td></tr>
           <tr><td>R</td><td>Summon Puppet <em>(super, 40)</em></td><td>A computer-controlled Mechamaru (30 HP) fights beside you for 20s with melee, Drill Drive and flight. <b>Press R again while it's out to swap bodies</b> — you take over the puppet's position and it takes yours (1.5s cooldown).</td></tr>
           <tr><td>Click + F <em>(online)</em></td><td>Simple Domain (Sealed)</td><td>Kokichi never trained in New Shadow Style — he watched Miwa use Simple Domain and sealed his own copies into the mech. 6 seconds of protection from domain sure-hits, castable even while a domain has you stunned. Only <b>4 charges per match</b>.</td></tr>
           <tr><td>F</td><td>Ultimate Mechamaru <em>(domain, 150)</em></td><td>Sink into the ground and burst out in a giant mech for 20s. Takes half damage and can't be stunned or knocked back. <b>Q</b> Pigeon Viola: six homing lasers (5 each). <b>E</b> Ultra Cannon: close-range blast for 38. <b>Attack</b>: mech punch for 7. <b>Jump</b>: jet-jump up through ceilings. <b>Down</b>: stomp through the floor (it also falls through any opening). When time runs out the mech overloads (20 damage nearby) and <b>Mechamaru dies</b>.</td></tr>
@@ -478,10 +480,10 @@ canvas {
         <p class="lead">Huge fists and Boogie Woogie — swap positions to dodge, set up hits, or turn attacks back on their owner.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Haymaker</td><td>Wind up and lunge: 14 damage, huge knockback, smashes terrain. 14 CE. <b>In the air:</b> Meteor Haymaker, a fist-first dive that spikes the target (16) and craters the landing, knocking back anyone nearby.</td></tr>
-          <tr><td>E</td><td>Boogie Woogie</td><td>Clap to swap places with the opponent (about two-thirds of a screen of range). Any of their attacks still in the air now fly at <b>them</b>. Online, click an item or fighter first to swap with it instead. 28 CE.</td></tr>
+          <tr><td>Q</td><td>Haymaker</td><td>Wind up and lunge: 14 damage, huge knockback, smashes terrain. 30 CE. <b>In the air:</b> Meteor Haymaker, a fist-first dive that spikes the target (16) and craters the landing, knocking back anyone nearby.</td></tr>
+          <tr><td>E</td><td>Boogie Woogie</td><td>Clap to swap places with the opponent (about two-thirds of a screen of range). Any of their attacks still in the air now fly at <b>them</b>. Online, click an item or fighter first to swap with it instead. 56 CE.</td></tr>
           <tr><td>R</td><td>Imaginary Brother <em>(super, 40)</em></td><td>Todo's "best friend" — a glowing imaginary Yuji — appears and glides straight through walls at the opponent, then lands a tag-team combo: 4 + 4 + a 9-damage launcher, which also resets Boogie Woogie. Lasts up to 6s. Hold <b>S</b> while pressing <b>E</b> to Boogie Woogie with your brother instead of the opponent.</td></tr>
-          <tr><td>Click + F <em>(online)</em></td><td>Simple Domain</td><td>8 seconds of protection from domain sure-hits: no shrine damage, no Infinite Void stun, no katana throws or Jacob's Ladder, and Higuruma's execution is blocked. Can be cast while a domain has you stunned. 45 CE.</td></tr>
+          <tr><td>Click + F <em>(online)</em></td><td>Simple Domain</td><td>8 seconds of protection from domain sure-hits: no shrine damage, no Infinite Void stun, no katana throws or Jacob's Ladder, and Higuruma's execution is blocked. Can be cast while a domain has you stunned. 80 CE.</td></tr>
           <tr><td>F</td><td>Unlimited Boogie <em>(ultimate, 150)</em></td><td>For 20 seconds Boogie Woogie has <b>no cooldown</b> — clap as fast as you like to juggle positions, dodge everything and turn their projectiles back on them.</td></tr>
           <tr><td>Movement</td><td>Heavyweight Landing</td><td>A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).</td></tr>
         </table>
@@ -492,8 +494,8 @@ canvas {
         <p class="lead">Blood manipulation. Every wound he takes becomes ammunition.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Piercing Blood</td><td>Hold up to 4s and aim with up / down: 10 to 40 damage, longer beam with more charge, cuts through terrain. 20 CE.</td></tr>
-          <tr><td>E</td><td>Convergence</td><td>Create a blood orb that follows you; press again to detonate it for 12 damage and a knockback. 24 CE.</td></tr>
+          <tr><td>Q</td><td>Piercing Blood</td><td>Hold up to 4s and aim with up / down: 10 to 40 damage, longer beam with more charge, cuts through terrain. 40 CE.</td></tr>
+          <tr><td>E</td><td>Convergence</td><td>Create a blood orb that follows you; press again to detonate it for 12 damage and a knockback. 48 CE.</td></tr>
           <tr><td>R</td><td>Slicing Exorcism <em>(super, 40)</em></td><td>A spinning blood ring that bounces off walls up to 4 times, 16 damage per hit.</td></tr>
           <tr><td>Passive</td><td>Bleeding</td><td>Whenever Choso takes damage he leaves a blood pool. Pools stay for the whole match, across rounds, with no limit.</td></tr>
           <tr><td>F</td><td>Supernova <em>(domain, 150)</em></td><td>Every blood pool on the map explodes in a chain, cratering the terrain and hitting anyone nearby. The more he's bled — and the closer the opponent is to the pools — the bigger it gets.</td></tr>
@@ -505,13 +507,13 @@ canvas {
         <p class="lead">A defense attorney turned sorcerer. His cursed tool is a gavel that grows on command, and his domain puts the opponent on trial.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Long Gavel</td><td>The handle stretches about 300px and sweeps forward: 12 damage and a knockback from far away. Cuts a line through terrain. 18 CE. <b>In the air:</b> he hangs in place and sweeps diagonally downward.</td></tr>
-          <tr><td>E</td><td>Heavy Gavel</td><td>The head swells to giant size and slams down in front of him: 24 damage, huge knockback, leaves a crater. Slow wind-up. 28 CE. <b>In the air:</b> Plunging Gavel, which drives him straight down, spikes anyone underneath (18) and blasts a huge crater (14 to anyone nearby).</td></tr>
+          <tr><td>Q</td><td>Long Gavel</td><td>The handle stretches about 300px and sweeps forward: 12 damage and a knockback from far away. Cuts a line through terrain. 36 CE. <b>In the air:</b> he hangs in place and sweeps diagonally downward.</td></tr>
+          <tr><td>E</td><td>Heavy Gavel</td><td>The head swells to giant size and slams down in front of him: 24 damage, huge knockback, leaves a crater. Slow wind-up. 56 CE. <b>In the air:</b> Plunging Gavel, which drives him straight down, spikes anyone underneath (18) and blasts a huge crater (14 to anyone nearby).</td></tr>
           <tr><td>R</td><td>Gavel Throw <em>(super, 40)</em></td><td>Throws the gavel (hold up or down to angle it). If it hits, the target is stunned and Higuruma rushes them at full speed, smashing through terrain, for a 16-damage finisher.</td></tr>
           <tr><td>F</td><td>Deadly Sentencing <em>(domain, 150)</em></td><td>Both fighters are put on the stands for a trial. Each gets a row of key prompts; press them in order. A wrong key locks you out for half a second. If Higuruma finishes first, the verdict is <b>GUILTY</b>. If the defense finishes first, or the clock runs out with a tie, it's <b>NOT GUILTY</b>.</td></tr>
           <tr><td>Verdict</td><td>Executioner's Sword</td><td>On a guilty verdict Higuruma holds the Executioner's Sword for 20 seconds: longer reach, and <b>any</b> melee hit kills instantly. An anti-domain technique (Simple Domain, Hollow Wicker Basket, Falling Blossom Emotion) blocks the execution.</td></tr>
           <tr><td>Movement</td><td>Objection Step</td><td>Double-tap left or right to quick-step a short distance (free, 1.1s apart).</td></tr>
-          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like he used against Sukuna: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 45 CE.</td></tr>
+          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like he used against Sukuna: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 80 CE.</td></tr>
         </table>
       </section>
       <section data-p="hakari">
@@ -519,8 +521,8 @@ canvas {
         <p class="lead">A gambler whose rough cursed energy hits like a truck. His domain turns the whole map into a pachinko parlour and bets everything on a jackpot.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Pachinko Balls</td><td>Fires a spread of 6 steel balls that arc and bounce off walls and floors. 4 damage each with a tiny flinch. 17 CE.</td></tr>
-          <tr><td>E</td><td>Shutter Doors</td><td>Metal shutters slam shut on the opponent if they're within reach in front of him, otherwise just ahead of him. 15 damage, and the target is trapped for 1s. 26 CE.</td></tr>
+          <tr><td>Q</td><td>Pachinko Balls</td><td>Fires a spread of 6 steel balls that arc and bounce off walls and floors. 4 damage each with a tiny flinch. 34 CE.</td></tr>
+          <tr><td>E</td><td>Shutter Doors</td><td>Metal shutters slam shut on the opponent if they're within reach in front of him, otherwise just ahead of him. 15 damage, and the target is trapped for 1s. 52 CE.</td></tr>
           <tr><td>R</td><td>Rough Energy Punch <em>(special, 40)</em></td><td>A charged cursed-energy punch: 35 damage and sends the target flying across the map.</td></tr>
           <tr><td>F</td><td>Idle Death Gamble <em>(domain, 150)</em></td><td>The entire map becomes his domain for 25s, with no frame lock. Every 5s the reels roll, with a 10% chance of 7-7-7 each time.</td></tr>
           <tr><td>Jackpot</td><td>Fever</td><td>Instant full heal, and he <b>can't die for 30 seconds</b> (health stops at 1). R becomes <b>Jackpot Leap</b> (2 uses): rocket into the air, then crash down on the opponent for 45 damage in a huge radius. The domain closes once the jackpot hits.</td></tr>
@@ -532,12 +534,12 @@ canvas {
         <p class="lead">A mercenary with a huge battle axe, a little brother who can swap places with her, and a flock of crows.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Axe Chop</td><td>An overhead chop straight down in front of her: 16 damage and the target is floored. Hits on airborne targets spike them into the ground. 18 CE.</td></tr>
-          <tr><td>E</td><td>Axe Spin</td><td>She spins with the axe while drifting forward: three hits all around her (6 each); the last one knocks them away. Slows her fall in the air. 24 CE.</td></tr>
+          <tr><td>Q</td><td>Axe Chop</td><td>An overhead chop straight down in front of her: 16 damage and the target is floored. Hits on airborne targets spike them into the ground. 36 CE.</td></tr>
+          <tr><td>E</td><td>Axe Spin</td><td>She spins with the axe while drifting forward: three hits all around her (6 each); the last one knocks them away. Slows her fall in the air. 48 CE.</td></tr>
           <tr><td>R</td><td>Ui Ui</td><td>Press R to place Ui Ui where she's standing. He stays there for good: press R again to teleport to him as often as you like, with <b>no cooldown</b>. Hold <b>down</b> + R to move him to where you are now. He's only lost if Mei Mei dies (he carries over to the next round if she survives) or if the opponent damages him with a punch or projectile; then it takes 12s before she can call him again.</td></tr>
           <tr><td>F</td><td>Bird Strike <em>(super, 150)</em></td><td>Summons a crow you steer with the movement keys while Mei Mei stands still. Press F again and it dives in a straight line until it hits someone, then explodes: <b>90 damage</b> on a direct hit (less to anyone caught nearby). It dives on its own after 6s, or if Mei Mei is hit.</td></tr>
           <tr><td>Movement</td><td>Axe Momentum</td><td>Keeps full running speed while swinging her axe.</td></tr>
-          <tr><td>Click + F <em>(online)</em></td><td>Ui Ui: Simple Domain</td><td>Ui Ui raises a box-shaped Simple Domain around himself for 6s; while Mei Mei stands inside it she's immune to domain sure-hits. Needs Ui Ui placed. 45 CE.</td></tr>
+          <tr><td>Click + F <em>(online)</em></td><td>Ui Ui: Simple Domain</td><td>Ui Ui raises a box-shaped Simple Domain around himself for 6s; while Mei Mei stands inside it she's immune to domain sure-hits. Needs Ui Ui placed. 80 CE.</td></tr>
         </table>
       </section>
       <section data-p="jogo">
@@ -545,12 +547,12 @@ canvas {
         <p class="lead">A disaster curse of volcanoes: he slows you down, sets you on fire and lays traps.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Ember Insects</td><td>Sends out one fire insect that homes in and clings on (4 damage). For 10 seconds, every cooldown the target starts takes 1 second longer. 24 CE.</td></tr>
-          <tr><td>E</td><td>Flame Dash</td><td>Dashes forward through the opponent: 8 damage and they catch fire (3 damage every 0.5s for 3s). 28 CE.</td></tr>
+          <tr><td>Q</td><td>Ember Insects</td><td>Sends out one fire insect that homes in and clings on (4 damage). For 10 seconds, every cooldown the target starts takes 1 second longer. 48 CE.</td></tr>
+          <tr><td>E</td><td>Flame Dash</td><td>Dashes forward through the opponent: 8 damage and they catch fire (3 damage every 0.5s for 3s). 56 CE.</td></tr>
           <tr><td>R</td><td>Lava Mound <em>(super, 40)</em></td><td>Places a small mound in front of him (up to 2 at once, they last 20s). When the opponent steps on one it erupts into a tower of fire: 26 damage, launches them and sets them on fire.</td></tr>
           <tr><td>F</td><td>Coffin of the Iron Mountain <em>(domain, 150)</em></td><td>The inside of a volcano for 10 seconds: the opponent takes constant burning damage, and lava geysers keep erupting under them (10 each, launches).</td></tr>
           <tr><td>Movement</td><td>Volcanic Body</td><td>Immune to burning and 5% faster.</td></tr>
-          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like he used against Gojo in Shibuya: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 45 CE.</td></tr>
+          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like he used against Gojo in Shibuya: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 80 CE.</td></tr>
         </table>
       </section>
       <section data-p="dagon">
@@ -558,8 +560,8 @@ canvas {
         <p class="lead">A disaster curse of the sea: he floods the ground, hoses you down and drowns you in fish.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Flood</td><td>Floods a small area in front of him for 5.5s. Opponents standing in it are slowed to 55% speed and take 2 damage every 0.6s; Dagon moves 40% faster in it. 28 CE.</td></tr>
-          <tr><td>E</td><td>Water Jet</td><td>A short charge (aim with up / down), then a high-pressure jet of water: 12 damage and a knockback. Cuts a line through terrain. 24 CE.</td></tr>
+          <tr><td>Q</td><td>Flood</td><td>Floods a small area in front of him for 5.5s. Opponents standing in it are slowed to 55% speed and take 2 damage every 0.6s; Dagon moves 40% faster in it. 56 CE.</td></tr>
+          <tr><td>E</td><td>Water Jet</td><td>A short charge (aim with up / down), then a high-pressure jet of water: 12 damage and a knockback. Cuts a line through terrain. 48 CE.</td></tr>
           <tr><td>R</td><td>Death Swarm <em>(super, 40)</em></td><td>A stream of 8 fish shikigami (aim with up / down) that home in on the opponent: 5 damage each with a flinch.</td></tr>
           <tr><td>F</td><td>Horizon of the Captivating Skandha <em>(domain, 150)</em></td><td>A beach under a bright sky for 10 seconds. Giant fish shikigami keep leaping out from every side at the opponent: 8 damage and a knockback each.</td></tr>
           <tr><td>Movement</td><td>Tidal Body</td><td>A little slower on land, but 40% faster in his own flood water.</td></tr>
@@ -570,12 +572,12 @@ canvas {
         <p class="lead">A disaster curse of the forest. She chokes off your cursed energy, roots you in place and turns the whole arena into a tangle of roots.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Cursed Buds</td><td>Throws 3 arcing seeds (hold down or up to throw them low or high). Each one that lands deals 5 damage and drains about 17% of the opponent's ultimate / domain bar. 28 CE.</td></tr>
-          <tr><td>E</td><td>Flower Field</td><td>A field of flowers blooms on the ground in front of her for 4 seconds. Anyone standing in it is stunned briefly and takes 7 damage (once every 1.5s). 36 CE.</td></tr>
+          <tr><td>Q</td><td>Cursed Buds</td><td>Throws 3 arcing seeds (hold down or up to throw them low or high). Each one that lands deals 5 damage and drains about 17% of the opponent's ultimate / domain bar. 56 CE.</td></tr>
+          <tr><td>E</td><td>Flower Field</td><td>A field of flowers blooms on the ground in front of her for 4 seconds. Anyone standing in it is stunned briefly and takes 7 damage (once every 1.5s). 72 CE.</td></tr>
           <tr><td>R</td><td>Root Grab <em>(super, 35)</em></td><td>Aim with up / down, then a root lashes out up to 440px. If it catches the opponent it drags them right up to Hanami: 10 damage and a short stun.</td></tr>
           <tr><td>F</td><td>Root Rampage <em>(ultimate, 150)</em></td><td>For 15 seconds a giant root bursts out and follows your <b>mouse</b> (online, your own mouse). The tip hits for 8 and knocks people around. Everything it grows through becomes a root platform anyone can stand on. The roots wither shortly after it ends. Without a mouse over the game, the root hunts the opponent on its own.</td></tr>
           <tr><td>Movement</td><td>Nature's Spring</td><td>Jumps 10% higher.</td></tr>
-          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like she used against Gojo in Shibuya: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 45 CE.</td></tr>
+          <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like she used against Gojo in Shibuya: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 80 CE.</td></tr>
         </table>
       </section>
       <section data-p="mahito">
@@ -583,8 +585,8 @@ canvas {
         <p class="lead">A special-grade curse who can touch the soul itself. He reshapes his own body and his opponent's, and is very hard to pin down.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Idle Transfiguration</td><td>A short-range palm strike: 12 damage and a brief stun. The target is <b>reshaped</b> for 5 seconds: 30% slower and takes 20% more damage from everything. 24 CE.</td></tr>
-          <tr><td>E</td><td>Polymorphic Soul Isomer</td><td>Releases a transfigured human that runs along the ground toward the opponent and explodes on contact (or after ~4s, or at a wall): 16 damage and a knockback in a wide blast. 32 CE.</td></tr>
+          <tr><td>Q</td><td>Idle Transfiguration</td><td>A short-range palm strike: 12 damage and a brief stun. The target is <b>reshaped</b> for 5 seconds: 30% slower and takes 20% more damage from everything. 48 CE.</td></tr>
+          <tr><td>E</td><td>Polymorphic Soul Isomer</td><td>Releases a transfigured human that runs along the ground toward the opponent and explodes on contact (or after ~4s, or at a wall): 16 damage and a knockback in a wide blast. 64 CE.</td></tr>
           <tr><td>R</td><td>Instant Spirit Body of Distorted Killing <em>(super, 45)</em></td><td>8 seconds in his killing form: blade arm and spines, 25% faster, deals 40% more damage and takes 30% less.</td></tr>
           <tr><td>F</td><td>Self-Embodiment of Perfection <em>(domain, 150)</em></td><td>Giant stitched hands close in from every side. The sure-hit touch deals 6 damage every 1.1s and keeps the opponent reshaped. Can clash with other domains.</td></tr>
           <tr><td>Movement</td><td>Soul Malleability</td><td>Walks straight through thin walls (up to ~6 cells thick). After 4 seconds without being hit, regenerates 1 HP every 0.7s.</td></tr>
@@ -595,8 +597,8 @@ canvas {
         <p class="lead">A comedian whose technique, Comedian, makes whatever he finds funny come true. As long as he thinks it's funny, it works.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and , . /). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 45 CE.</td></tr>
-          <tr><td>E</td><td>1000 Years of Death</td><td>Teleports behind the opponent (within 460px) and delivers the infamous poke: 14 damage and a big launch forward. 36 CE.</td></tr>
+          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and , . /). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 80 CE.</td></tr>
+          <tr><td>E</td><td>1000 Years of Death</td><td>Teleports behind the opponent (within 460px) and delivers the infamous poke: 14 damage and a big launch forward. 72 CE.</td></tr>
           <tr><td>R</td><td>Counter <em>(super, 25)</em></td><td>A 0.45s stance. If <b>anything</b> hits him during it, he takes <b>no damage at all</b>, gets brief invincibility, and a nearby attacker is stunned. Time it right as their attack lands.</td></tr>
           <tr><td>F</td><td>The Truck <em>(ultimate, 150)</em></td><td>HONK HONK. After a short warning a giant truck drives across the whole map in the opponent's lane, through everything — terrain, puppets, people: 45 damage and a massive launch. Jump to dodge it.</td></tr>
           <tr><td>Movement</td><td>Comedian</td><td>12% of hits on him turn into a gag: no damage, just a slide whistle.</td></tr>
@@ -1321,14 +1323,14 @@ const vlUI = {
 };
 
 const QUIET_DROP = /^(STUNNED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|BODY SWAP)$/;
-const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
+const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|CE REGEN \+250%|-\d+ HP \(BLOOD\)|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
 const hudFeed = {p1:[], p2:[]};      // small notices under each fighter's HUD (not synced; replayed fx fill it on both sides)
 function feedText(t){
   if(/^\d+s$/.test(t)) return 'Cooldown ' + t;
   const m = t.match(/^(.*) (\d+s)$/); if(m) return m[1].charAt(0) + m[1].slice(1).toLowerCase() + ' — cooldown ' + m[2];
   if(t==='TOO EARLY') return 'Too early — combo dropped';
   if(/^-\d+% ULT$/.test(t)) return t.replace(' ULT', ' ultimate bar');
-  return (t.charAt(0) + t.slice(1).toLowerCase()).replace(/\bce\b/g, 'CE');
+  return (t.charAt(0) + t.slice(1).toLowerCase()).replace(/\bce\b/g, 'CE').replace(/\bhp\b/g, 'HP');
 }
 function pushFeed(x, y, text, col){
   if(typeof p1==='undefined' || !p1) return;
@@ -8447,7 +8449,7 @@ class Player {
     if(def && (def.hittable || def.state===S.STUN)){
       def.hp=Math.max(0,def.hp-kickDmg); def.flash=400;
       if(this.bbGotBF){
-        addBlackFlash(def.x+PW/2, def.y+PH/2);
+        addBlackFlash(def.x+PW/2, def.y+PH/2); ceBlackFlash(this);
         carveCircle(def.x+PW/2, def.y+PH/2, 30);
         addDmg(def.x+PW/2, def.y-20, kickDmg, '#111'); doShake(18);
         def._initRd(this.facing*12,-8,.15*this.facing); def.ss(def.hp<=0?S.DEAD:S.RAGD,RAGD_MS*1.6);
@@ -8935,9 +8937,9 @@ class Player {
       def.hp = Math.max(0, def.hp-extra); addDmg(mx, def.y-30, extra, '#9cc3dc');
       // Nullify technique: push every cooldown the opponent has back
       for(const k of Object.keys(def)) if(/Cooldown$|Cd$/.test(k) && typeof def[k]==='number') def[k] = Math.max(def[k], 0) + ITEM_ISOH_CD_ADD;
-      if(def.ceMax && !ceInfinite(def)) def.ce = Math.max(0, (def.ce||0) - 15);
+      if(def.ceMax && !ceInfinite(def)) def.ce = Math.max(0, (def.ce||0) - 30);
       if(def.pbChargeTime) def.pbChargeTime = 0;
-      addSpeech(mx, def.y-8, '-15 CE', '#4d7c96', 700);
+      addSpeech(mx, def.y-8, '-30 CE', '#4d7c96', 700);
       if(activeDomain && activeDomain.owner===def){
         domainCancelled(def); activeDomain = null; domainClash = null; domainFlash = 0; showTxt('DOMAIN SHATTERED', 1000);
         addRing(mx, def.y+PH/2, '#9cc3dc', 120); doShake(12);
@@ -9773,7 +9775,7 @@ class Player {
     def.hp = Math.max(0, def.hp - BF_DMG);
     def.flash = 500;
     // Black Flash visual effects
-    addBlackFlash(mx, my);
+    addBlackFlash(mx, my); ceBlackFlash(this);
     carveCircle(mx, my, 34);
     addDmg(mx, def.y-24, BF_DMG, '#111');
     doShake(18);
@@ -12261,20 +12263,21 @@ const OL_VARS = {
 //  · Domains need a FULL bar, other ultimates 75%; both empty it.
 //  · Online: the variant toggle swaps Q / E for their variants (twice the CE); everything else is locked while it's on.
 // ═══════════════════════════════════════════════════════════════════
-const CE_SLIGHT = 600, CE_VAR_SLIGHT = 800, CE_AD_COST = 20, CE_SPECIAL = 0.5, CE_ULT = 0.75;
+const CE_SLIGHT = 600, CE_VAR_SLIGHT = 800, CE_AD_COST = 40, CE_SPECIAL = 0.5, CE_ULT = 0.75;
 // [max CE, refill per second] — lore: Yuta and Mechamaru have enormous reserves, Gojo and Sukuna refill fastest
 const CE_PROFILE = {
-  gojo:[120,13], sukuna:[140,12], yuta:[220,9], mechamaru:[210,8], jogo:[150,9], dagon:[140,8], hanami:[140,8], mahito:[130,9],
-  kenjaku:[160,10], yuji:[100,7], choso:[110,7], higuruma:[100,8], hakari:[110,7], meimei:[100,7], todo:[90,7], takaba:[85,6]
+  // special grades (sorcerers and curses) get bigger pools; Gojo + Sukuna refill far faster; Yuta + Mechamaru dwarf everyone
+  gojo:[220,26], sukuna:[230,24], yuta:[480,14], mechamaru:[420,12], kenjaku:[220,9], jogo:[200,8], dagon:[190,7], hanami:[190,7], mahito:[180,8],
+  yuji:[110,5], choso:[110,5], higuruma:[110,5], hakari:[120,5], meimei:[110,5], todo:[100,5], takaba:[90,4]
 };
 const CE_LORE = {
-  gojo:'Six Eyes: almost no cursed energy is wasted, so his bar refills the fastest.',
-  sukuna:'The King of Curses: huge output and the second-fastest refill.',
-  yuta:'The biggest reserves in the game (more than Gojo), but an average refill.',
-  mechamaru:'His Heavenly Restriction traded his body for an enormous pool of cursed energy.',
+  gojo:'Special grade. Six Eyes: almost no cursed energy is wasted, so his bar refills by far the fastest.',
+  sukuna:'The King of Curses: a special-grade pool and a refill almost as fast as Gojo\'s.',
+  yuta:'Special grade with the biggest reserves in the game — more than double Gojo\'s.',
+  mechamaru:'His Heavenly Restriction traded his body for a pool second only to Yuta\'s.',
   jogo:'A disaster curse: a big pool and a quick refill.', dagon:'A disaster curse with a big pool.', hanami:'A disaster curse with a big pool.',
   mahito:'A disaster curse with a big pool and a quick refill.', kenjaku:'A thousand years of sorcery: large and efficient.',
-  yuji:'Average reserves; he fights mostly with his fists.', choso:'Average reserves, fuelled by his blood.', higuruma:'A natural talent: slightly quicker refill.',
+  yuji:'Average reserves; he fights mostly with his fists.', choso:'Average reserves — but when he runs dry he pays with his own blood (1 HP = 3 CE), leaving a pool behind.', higuruma:'A natural talent: slightly quicker refill.',
   hakari:'Average reserves — but during a JACKPOT his cursed energy is infinite.', meimei:'Average reserves.', todo:'Small reserves; he relies on his body.',
   takaba:'The smallest pool in the game. He\'s a comedian, not a sorcerer.'
 };
@@ -12311,7 +12314,7 @@ const CE_FOLLOW = {
   todo:{ult:p => p.todoNoCdT>0},
 };
 const _ceCostCache = {};
-function ceCdCost(ms){ return Math.max(12, Math.min(45, Math.round(ms/1000*4))); }
+function ceCdCost(ms){ return Math.max(30, Math.min(80, Math.round(ms/1000*8))); }
 function ceBaseCost(type, slot){
   const k = type+'.'+slot; if(k in _ceCostCache) return _ceCostCache[k];
   const t = CE_SLOTS[type] && CE_SLOTS[type][slot]; let v = 20;
@@ -12324,7 +12327,26 @@ function ceInit(p){
   p.ceMax = pr[0]; p.ceRegen = pr[1]; p.ce = p.ceMax; p.varMode = false; p._ceKD = {}; p._cePaid = {};
 }
 function ceInfinite(p){ return p.jackpotT>0 || (isTraining() && trainOpt.nocd && p===p1); }
-function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1); }
+function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1) * (p.bfCeT>0 ? 3.5 : 1); }
+// Black Flash: for a while afterwards your cursed energy refills 250% faster
+const CE_BF_MS = 10000;
+function ceBlackFlash(p){ if(!p || p.isPuppet) return; p.bfCeT = CE_BF_MS; addSpeech(p.x+PW/2, p.y-34, 'CE REGEN +250%', '#ff4a4a', 900); }
+// Choso: when out of cursed energy he pays with blood (1 HP = 3 CE) and leaves a pool
+const CE_BLOOD = 3;
+function ceCanPay(p, need){
+  if(ceInfinite(p) || p.ce + 1e-6 >= need) return true;
+  return p.type==='choso' && p.hp - Math.ceil((need - p.ce)/CE_BLOOD) >= 1;
+}
+function cePay(p, need, wipe){
+  if(ceInfinite(p)) return;
+  if(p.ce + 1e-6 < need && p.type==='choso'){
+    const hp = Math.ceil((need - p.ce)/CE_BLOOD);
+    p._rawDmg = true; p.hp = Math.max(1, p.hp - hp); p._rawDmg = false; p.flash = 200; p.lastHurt = terClock;
+    for(let k=0;k<Math.max(1, Math.round(hp/6));k++) chosoBleed(p, hp*2);
+    addParts(p.x+PW/2, p.y+PH*0.4, '#a01020', 10, 3); addSpeech(p.x+PW/2, p.y-34, `-${hp} HP (BLOOD)`, '#c0182a', 800);
+    p.ce = 0;
+  } else p.ce = wipe ? 0 : Math.max(0, p.ce - need);
+}
 function ceRegenPaused(p){
   return p.state===S.DOMAIN || p.state===S.DEAD || !!(activeDomain && activeDomain.owner===p) || !!(domainClash && (domainClash.att===p || domainClash.def===p))
     || p.rampT>0 || p.todoNoCdT>0 || !!p.mechUltPhase || p.state===S.YUJIULT;
@@ -12339,10 +12361,8 @@ function ceNeed(p, slot){
   return CE_DOMAIN.has(p.type) ? p.ceMax : p.ceMax*CE_ULT;
 }
 function ceSpend(p, slot){
-  if(ceInfinite(p)) return;
-  if(slot==='ult') p.ce = 0;
-  else p.ce = Math.max(0, p.ce - ceNeed(p, slot));
   p._cePaid[slot] = terClock;
+  cePay(p, ceNeed(p, slot), slot==='ult');
 }
 function ceDeny(p, slot, need){
   if(terClock - (p._ceDenyT||-1e9) < 450) return; p._ceDenyT = terClock;
@@ -12357,6 +12377,7 @@ Player.prototype._cePre = function(dt){
   if(this.isPuppet) return;
   if(this.ce===undefined || this.ceMax===undefined) ceInit(this);
   if(this.ceFlash>0) this.ceFlash = Math.max(0, this.ceFlash-dt);
+  if(this.bfCeT>0) this.bfCeT = Math.max(0, this.bfCeT-dt);
   if(ceInfinite(this)) this.ce = this.ceMax;
   else if(!ceRegenPaused(this)) this.ce = Math.min(this.ceMax, this.ce + this.ceRegen*ceRegenMult(this)*dt/1000);
   const ol = olOn(), dead = [S.STUN,S.RAGD,S.SLAM,S.DEAD].includes(this.state);
@@ -12382,7 +12403,7 @@ Player.prototype._cePre = function(dt){
       if(!basic || ceFollow(this, s)) continue;                                   // follow-up inputs are free
       if(s==='ult' && atkHeld && ol && OL_AD[this.type]) continue;                // anti-domain technique (paid in _olPre)
       const need = ceNeed(this, s);
-      if(this.ce + 1e-6 < need){ if(keys[k]) mask(k); if(press[s]) ceDeny(this, s, need); }
+      if(!ceCanPay(this, need)){ if(keys[k]) mask(k); if(press[s]) ceDeny(this, s, need); }
       else pay[s] = true;
     }
   }
@@ -12433,24 +12454,25 @@ function drawCeHud(pl, x, flip){
   const V = OL_VARS[pl.type] || {};
   for(let i=0;i<3;i++){
     const s = 'ab'+(i+1), ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
-    let label = null, need = 0, purple = false, locked = false;
+    let label = null, need = 0, purple = false, locked = false, blood = false;
     if(pl.varMode){
       if(V[i+1]){ label = `${V[i+1].name.replace(/^[^:]*: */, '').replace(/^"|"$/g, '').toUpperCase()} [${keyLbl(pl, s)}]`; need = ceVarCost(pl, i+1); purple = true; }
       else locked = true;
     } else {
       need = ceNeed(pl, s);
       if(pl.ce + 1e-6 >= need || ceFollow(pl, s)) continue;
+      if(ceCanPay(pl, need)) blood = true;
       label = `${nm(s)} [${keyLbl(pl, s)}]`;
     }
     ctx.fillStyle = purple ? '#26143e' : '#0a0f1c'; ctx.fillRect(ax-1, abY-1, aw+2, 24);
     ctx.strokeStyle = purple ? 'rgba(176,124,255,0.6)' : 'rgba(111,184,255,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(ax, abY, aw, 22);
     ctx.textAlign = 'center'; ctx.font = `700 8px 'Rajdhani',sans-serif`;
     if(locked){ ctx.fillStyle = '#6b5a85'; ctx.fillText('LOCKED (VARIANTS)', ax+aw/2, abY+13); continue; }
-    const ok = pl.ce + 1e-6 >= need;
+    const ok = pl.ce + 1e-6 >= need, bl = !ok && ceCanPay(pl, need);
     ctx.fillStyle = purple ? (ok ? '#d9c2ff' : '#7d6a99') : '#5f7ea8';
     let t = label; while(ctx.measureText(t).width > aw-6 && t.length > 4) t = t.slice(0, -2) + '…';
     ctx.fillText(t, ax+aw/2, abY+10);
-    ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.fillStyle = ok ? '#9fd0ff' : '#ff8a8a'; ctx.fillText(`${Math.ceil(need)} CE`, ax+aw/2, abY+17.5);
+    ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.fillStyle = ok ? '#9fd0ff' : bl ? '#ff4a5a' : '#ff8a8a'; ctx.fillText(bl ? `${Math.ceil(need)} CE · ${Math.ceil((need-pl.ce)/CE_BLOOD)} HP` : `${Math.ceil(need)} CE`, ax+aw/2, abY+17.5);
     ctx.fillStyle = purple ? '#a77cf0' : '#4f9cf0'; const f = Math.min(1, pl.ce/Math.max(1, need));
     ctx.fillRect(flip ? ax+aw-aw*f : ax, abY+20, aw*f, 2);
   }
@@ -12505,8 +12527,8 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
       else if(AD.uiui && !uiuis.some(q => q.owner===this)){ olTag(this, 'NEEDS UI UI', '#888', 600); }
       else if(AD.charges && !(this.sdCharges>0)){ olTag(this, 'NO SEALED CHARGES LEFT', '#888', 600); }
       else if(this.varCd[4]>0){ olTag(this, `${AD.name.toUpperCase()} ${Math.ceil(this.varCd[4]/1000)}s`, '#888', 500); }
-      else if(!ceInfinite(this) && this.ce < CE_AD_COST){ ceDeny(this, 'ab1', CE_AD_COST); }
-      else { if(!ceInfinite(this)) this.ce -= CE_AD_COST;
+      else if(!ceCanPay(this, CE_AD_COST)){ ceDeny(this, 'ab1', CE_AD_COST); }
+      else { cePay(this, CE_AD_COST);
         const ms = AD.ms || OL.AD_MS; if(AD.charges){ this.sdCharges--; addSpeech(this.x+PW/2, this.y-38, `CHARGE ${AD.charges-this.sdCharges}/${AD.charges}`, AD.col, 900); } this.varCd[4] = AD.cd || OL.AD_CD; this.sdT = ms; this.adT = ms; this.adName = AD.name; this.adCol = AD.col;
         if(domStunned) this.ss(S.IDLE);
         if(AD.amp){ this.adAmp = true; this.confiscT = ms; }
@@ -12523,8 +12545,8 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
       const v = V[n]; if(!v) continue;
       if(this.varCd[n]>0) continue;
       const cost = ceVarCost(this, n);
-      if(!ceInfinite(this) && this.ce < cost){ ceDeny(this, 'ab'+n, cost); continue; }
-      if(!ceInfinite(this)) this.ce -= cost;
+      if(!ceCanPay(this, cost)){ ceDeny(this, 'ab'+n, cost); continue; }
+      cePay(this, cost);
       this.varCd[n] = CE_VAR_SLIGHT; this.oaKind = null; this._ceHandled = true;
       this.ss(S.OVAR, v.lock||300); this.vx = 0; this.varName = v.name;
       try{ v.run(this, other); }catch(err){ console.error('variant', this.type, n, err); }
@@ -12618,7 +12640,7 @@ Player.prototype._olLandHit = function(def){
   const K = OL_KINDS[this.oaKind], f = this.facing, mx = def.x+PW/2, my = def.y+PH/2;
   let dmg = K.dmg, tag = null;
   if(this.oaPerfect){
-    if(K.fin && BF_TYPES.includes(this.type)){ dmg = Math.round(dmg*2.5); tag = 'BLACK FLASH'; }
+    if(K.fin && BF_TYPES.includes(this.type)){ dmg = Math.round(dmg*2.5); tag = 'BLACK FLASH'; ceBlackFlash(this); }
     else { dmg = Math.round(dmg*1.5 + 0.4); tag = 'CRITICAL'; }
   }
   this.oaHitAt = terClock;
@@ -13037,7 +13059,7 @@ function olFillWiki(){
   <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> with invincibility frames — dodge through attacks. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
   <tr><td>Long combos</td><td>Damage scales down from the 3rd hit (to ×0.5) and stun gets shorter, so no infinite combos.</td></tr>
   <tr><td>V (toggle) then Q / E</td><td><b>Variant mode</b>: press V and Q / E fire their <b>variants</b> instead (about twice the cursed energy of the normal move). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
-  <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (20 CE, then a 25s cooldown).</td></tr></table>
+  <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (40 CE, then a 25s cooldown).</td></tr></table>
   <h2>Variants & clan techniques</h2><table><tr><th>Fighter</th><th>Input</th><th>Move</th><th>Details</th></tr>`;
   const keyN = {1:'V → Q', 2:'V → E'};
   for(const t in OL_VARS) for(const n in OL_VARS[t]){ const v = OL_VARS[t][n]; h += `<tr><td>${nm(t)}</td><td>${keyN[n]}</td><td>${v.name}</td><td>${v.desc} <b>${ceVarCost({type:t}, n)} CE.</b></td></tr>`; }
@@ -13613,6 +13635,7 @@ function playerEffects(pl){
   if(pl.higuSwordT>0) add('Executioner\'s Sword', pl.higuSwordT, true);
   if(pl.counterT>0) add('Counter stance', pl.counterT, true);
   if(pl.varMode) add('Variant mode', null, true);
+  if(pl.bfCeT>0) add('Black Flash: CE regen +250%', pl.bfCeT, true);
   if(pl.jackpotT>0) add('Infinite CE', pl.jackpotT, true);
   if(pl.iframes>250 && !(pl.respawnT>0)) add('Invincible', pl.iframes, true);
   return E;

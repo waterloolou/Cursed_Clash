@@ -42,7 +42,10 @@ Moves don't have long cooldowns. Every fighter has a **cursed energy (CE)** bar 
 - **Super (R)** still needs its hit charge, plus **50%** of the bar.
 - **Domains** need a **full** bar; **ultimates** (fighters without a domain) need **75%**. Both empty it.
 - **Variant mode** (online, **V**): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.
-- Pools follow the lore: Yuta (220) and Mechamaru (210) have the biggest, Gojo and Sukuna refill fastest, Takaba has the smallest. Hakari's jackpot gives infinite CE.
+- Moves are expensive: most fighters can only chain two or three before waiting.
+- Pools follow the lore: special grades get much bigger pools, Yuta (480) and Mechamaru (420) have by far the most, Gojo and Sukuna refill several times faster than anyone, Takaba has the smallest. Hakari's jackpot gives infinite CE.
+- **Black Flash** makes your CE refill 250% faster for 10s.
+- **Choso** can pay with his blood when he's out of CE (1 HP = 3 CE, never below 1 HP), leaving a blood pool.
 - The shop's **Six Eyes** and **Cursed Energy Flow** make it refill faster.
 
 ## Notes
