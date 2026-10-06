@@ -21,6 +21,10 @@ That's it. Everything is in that one file.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
 
+## Newest fighter: Naoya Zen'in
+
+The fastest fighter in the game, with **4 lives of 75 HP**. Projection Dash, a hands-free Frame Barrage, and **24 FPS**: he draws a motion (12 keys on one keyboard, 24 online) and if you miss one key copying it, you're frozen in a frame for 8 seconds. Every 3rd hit of a quick string freezes you for a moment too. On his last life he returns as a **vengeful cursed spirit** with Rocket, Frame Field and the domain **Time Cell Moon Palace**. In training, key **6** switches his form.
+
 ## Controls
 
 Press **ESC** in a fight to pause — the pause menu lists every key (and lights up whatever you press), explains the combat system, and shows your fighter's moves and tips. Hold **TAB** in a fight for the move list. The in-game **Wiki** (home screen) covers every character.

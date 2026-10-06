@@ -187,6 +187,7 @@ canvas {
       <a data-p="hanami"><i style="background:#9bc46a"></i>Hanami</a>
       <a data-p="mahito"><i style="background:#8fa3b8"></i>Mahito</a>
       <a data-p="takaba"><i style="background:#e8c547"></i>Takaba</a>
+      <a data-p="naoya"><i style="background:#e6d3a3"></i>Naoya</a>
       <a data-p="online"><i style="background:#ffe066"></i>Online Combat</a>
     </nav>
     <main class="wk-main">
@@ -219,6 +220,7 @@ canvas {
           <a data-p="hanami" style="--c:#9bc46a"><b>Hanami</b><span>Cursed Buds · Flower Field · Root Grab · Root Rampage</span></a>
           <a data-p="mahito" style="--c:#8fa3b8"><b>Mahito</b><span>Idle Transfiguration · Soul Isomer · Distorted Killing · Perfection</span></a>
           <a data-p="takaba" style="--c:#e8c547"><b>Takaba</b><span>Rock Paper Scissors · 1000 Years of Death · Counter · The Truck</span></a>
+          <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives, the last as a curse</span></a>
         </div>
       </section>
 
@@ -367,6 +369,8 @@ canvas {
           <tr><td>Hanami ★</td><td>190</td><td>7/s</td></tr>
           <tr><td>Mahito ★</td><td>180</td><td>8/s</td></tr>
           <tr><td>Takaba</td><td>90</td><td>4/s</td></tr>
+          <tr><td>Naoya</td><td>130</td><td>6/s</td></tr>
+          <tr><td>Naoya (curse) ★</td><td>220</td><td>8/s</td></tr>
           <tr><td>Kenjaku (feat) ★</td><td>220</td><td>9/s</td></tr></table>
         <p>★ = special grade (sorcerer or curse): much bigger pools. Yuta and Mechamaru have by far the biggest reserves; Gojo (Six Eyes) and Sukuna refill several times faster than anyone else; Takaba has the smallest pool. Moves are expensive — a normal fighter can only fire two or three in a row.</p>
         <h2>Charge meters</h2>
@@ -604,6 +608,27 @@ canvas {
           <tr><td>Movement</td><td>Comedian</td><td>12% of hits on him turn into a gag: no damage, just a slide whistle.</td></tr>
         </table>
       </section>
+      <section data-p="naoya">
+        <h1 style="--c:#e6d3a3">Naoya Zen'in</h1>
+        <p class="lead">Heir of the Zen'in clan. <b>Projection Sorcery</b> splits a second into 24 frames: he moves along a motion he's already drawn, faster than anyone — and anyone who can't follow 24 fps gets frozen in a frame. He has <b>4 lives with 75 HP each</b>; the last one he spends as a <b>vengeful cursed spirit</b> with new moves and a domain.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>Q</td><td>Projection Dash</td><td>Runs forward at full speed and punches the first fighter in his way: 14 damage and a knockback. 40 CE, 3.8s cooldown.</td></tr>
+          <tr><td>E</td><td>Frame Barrage</td><td>Hand on his head, eyes closed, not even looking: four backhands a frame apart (3 each), then a launching kick (9). 48 CE, 4.5s cooldown.</td></tr>
+          <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Both fighters freeze. Naoya draws a motion with his movement keys and attack — <b>12 keys</b> on one keyboard, <b>24 online</b>. Then the opponent has to press the same keys in order. One wrong key (or running out of time) and they're <b>frozen in a frame for 8 seconds</b>: they can't move and take <b>14% more damage</b>. If they keep up, Naoya is stunned for a moment instead. Needs 50% CE.</td></tr>
+          <tr><td>F</td><td>—</td><td>No domain while human. His 4th (last) life is spent as a cursed spirit.</td></tr>
+          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> — a free link into the next hit.</td></tr>
+        </table>
+        <h2>Vengeful Cursed Spirit (4th life)</h2>
+        <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). Endless mode: after he's been killed three times.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>Q</td><td>Rocket</td><td>Turns into a rocket for 2.4s that you steer with the movement keys. Smashes straight through terrain; 20 damage per hit; press Q again to blow up early (8 more around you). 64 CE, 6s cooldown.</td></tr>
+          <tr><td>E</td><td>Frame Field</td><td>Five frames in a row in front of him for 6s. Anyone who walks into one is caught in it. Press E again to detonate them all: 10 each, and <b>22 to anyone caught</b>. 56 CE, 5.3s cooldown.</td></tr>
+          <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Same frame prompt as before.</td></tr>
+          <tr><td>F</td><td>Time Cell Moon Palace <em>(domain, 150)</em></td><td>A moonlit palace. Projection Sorcery is applied to the target's cells: <b>every motion that breaks 24 fps tears them apart</b> — 2 damage every 0.25s while they move, attack or fall. Standing still is safe. Naoya is 20% faster inside. Needs a full CE bar.</td></tr>
+        </table>
+      </section>
       <section data-p="online">
         <h1 style="--c:#ffe066">Online Combat</h1>
         <div id="olWiki"></div>
@@ -717,7 +742,7 @@ const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult',
             YUTASLICE:'yutaslice', YUTAFIST:'yutafist',
             MECHADRILL:'mechadrill', MECHULT:'mechult', TODOPUNCH:'todopunch', CHOSOPB:'chosopb',
-            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr' };
+            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', FRAMED:'framed' };
 
 const YUTAFIST_SHEATHE_DUR = 400;   // ms sword disappears
 const YUTAFIST_AIM_DUR     = 1200;  // ms to aim arc
@@ -997,7 +1022,7 @@ function snd(name, x){ sfxLocal(name, x); }
 const VOICE = {
   sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
   mechamaru:{pitch:0.2, rate:0.9}, todo:{pitch:0.55, rate:0.95}, choso:{pitch:0.7, rate:0.9}, higuruma:{pitch:0.75, rate:0.9},
-  hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
+  hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, naoya:{pitch:1.0, rate:1.2}, naoyac:{pitch:0.45, rate:0.95}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
 };
 function voiceLine(ref, text){
   if(!AUD.on.voice || !text) return;
@@ -1016,7 +1041,7 @@ function voiceLine(ref, text){
   }catch(e){}
 }
 function sayFor(pl, text){ if(pl && !pl.isPuppet) voiceLine(pl===p1 ? 'p1' : pl===p2 ? 'p2' : 'pup', text); }
-const DOMAIN_LINES = { shrine:'Domain Expansion. Malevolent Shrine.', void:'Domain Expansion. Infinite Void.',
+const DOMAIN_LINES = { moon:'Domain Expansion. Time Cell Moon Palace.', shrine:'Domain Expansion. Malevolent Shrine.', void:'Domain Expansion. Infinite Void.',
   love:'Domain Expansion. Authentic Mutual Love.', court:'Domain Expansion. Deadly Sentencing.', gamble:'Domain Expansion. Idle Death Gamble.', womb:'Domain Expansion. Womb Profusion.', volcano:'Domain Expansion. Coffin of the Iron Mountain.', ocean:'Domain Expansion. Horizon of the Captivating Skandha.', soul:'Domain Expansion. Self-Embodiment of Perfection.' };
 // Speech bubbles → spoken lines + sounds
 const BUBBLE_FX = {
@@ -1162,9 +1187,10 @@ const VL_LINES = [
   ['dagon','Death Swarm!'], ['dagon','Domain Expansion. Horizon of the Captivating Skandha.'],
   ['jogo','Ember Insects.'], ['jogo','Domain Expansion. Coffin of the Iron Mountain.'],
   ['meimei','Ui Ui!'], ['meimei','Bird Strike!'],
+  ['naoya','Keep up!'], ['naoya','Can you keep up? Twenty-four frames a second.'], ['naoya','Too slow.'], ['naoyac','I came back to kill you myself.'], ['naoyac','Faster. Faster!'], ['naoyac','Domain Expansion. Time Cell Moon Palace.'],
   ['kenjaku','Maximum. Uzumaki.'], ['kenjaku','Anti-Gravity System.'], ['kenjaku','Domain Expansion. Womb Profusion.']
 ];
-const VL_NAMES = {sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', kenjaku:'Kenjaku (feat)'};
+const VL_NAMES = {sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', kenjaku:'Kenjaku (feat)'};
 const vlId = (who, text) => who+'|'+text;
 const VL = { blobs:{}, bufs:{}, db:null, rec:null, recId:'', stream:null, playing:null };
 
@@ -1585,6 +1611,8 @@ const MOVE_PASSIVES = {
   mechamaru:{spd:1.00, jmp:1.00, name:'Jet Flight',            desc:'Hold jump on the ground to charge the jets, then fly freely for a few seconds.'},
   todo:     {spd:0.94, jmp:1.06, name:'Heavyweight Landing',   desc:'A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).'},
   choso:    {spd:1.00, jmp:1.00, name:'Blood Rush',            desc:'Below half health his blood boils: 20% faster.'},
+  naoya:    {spd:1.28, jmp:0.90, name:'Projection Sorcery',    desc:'The fastest fighter (28% faster, up to 50% after a second of running) but jumps 10% lower. Every 3rd hit of a quick string freezes the foe in a frame for 0.6s.'},
+  naoyac:   {spd:1.32, jmp:0.95, name:'Cursed Projection',     desc:'Even faster as a cursed spirit, and still freezes every 3rd quick hit in a frame.'},
   takaba:   {spd:1.00, jmp:1.00, name:'Comedian',              desc:'12% of hits on him turn into a gag: no damage, just a slide whistle.'},
   mahito:   {spd:1.02, jmp:1.00, name:'Soul Malleability',     desc:'Squeezes straight through thin walls, and regenerates 1 HP every 0.7s after 4s without getting hit.'},
   hanami:   {spd:1.00, jmp:1.10, name:'Nature\'s Spring',      desc:'Jumps 10% higher, and walking on her own roots is easy: they are one-way platforms she can hop through.'},
@@ -5572,7 +5600,7 @@ function startDomain(owner){
   if(activeDomain.type==='court') courtInit(activeDomain);
 }
 function _startDomainLocal(owner){
-  const type = owner.type === 'sukuna' ? 'shrine' : owner.type === 'yuta' ? 'love' : owner.type === 'higuruma' ? 'court' : owner.type === 'kenjaku' ? 'womb' : owner.type === 'jogo' ? 'volcano' : owner.type === 'dagon' ? 'ocean' : owner.type === 'mahito' ? 'soul' : 'void';
+  const type = owner.type === 'sukuna' ? 'shrine' : owner.type === 'yuta' ? 'love' : owner.type === 'higuruma' ? 'court' : owner.type === 'kenjaku' ? 'womb' : owner.type === 'jogo' ? 'volcano' : owner.type === 'dagon' ? 'ocean' : owner.type === 'mahito' ? 'soul' : owner.type === 'naoyac' ? 'moon' : 'void';
   const duration = type === 'love' ? YUTA_DOMAIN_DUR : DOMAIN_DURATION;
   activeDomain = {
     owner, type,
@@ -5620,6 +5648,7 @@ function tickDomain(dt, p1, p2){
   if(d.type === 'volcano'){ tickVolcano(d, dt); if(d.timer <= 0) activeDomain = null; return; }
   if(d.type === 'ocean'){ tickOcean(d, dt); if(d.timer <= 0) activeDomain = null; return; }
   if(d.type === 'soul'){ tickSoul(d, dt); if(d.timer <= 0) activeDomain = null; return; }
+  if(d.type === 'moon'){ tickMoon(d, dt); if(d.timer <= 0) activeDomain = null; return; }
   if(d.type === 'shrine'){
     d.shrineRise = Math.min(1, d.shrineRise + dt/DOMAIN_SHRINE_RISE);
     d.slashTimer -= dt;
@@ -5688,6 +5717,7 @@ function drawDomain(){
     else if(activeDomain.type === 'volcano') drawVolcanoDomain();
     else if(activeDomain.type === 'ocean') drawOceanDomain();
     else if(activeDomain.type === 'soul') drawSoulDomain();
+    else if(activeDomain.type === 'moon') drawMoonDomain();
     else drawVoidDomain();
   });
   ctx.restore();
@@ -6874,6 +6904,8 @@ class Player {
     this.vx=0; this.vy=0;
     this.facing = this.startF;
     this.hp=100; this.maxHp=100; this.iframes = 900;
+    if(isNaoya(this)){ this._hp = NAO_HP; this.maxHp = NAO_HP; }
+    this.naoDashCd=0; this.naoComboCd=0; this.naoRocketCd=0; this.naoFieldCd=0; this.naoCharge=0; this.naoTrail=[]; this.framedT=0; this.frameMax=0; this.naoRunT=0; this.naoAng=0; this.naoHitN=0;
     this.takRpsCd=0; this.takKanCd=0; this.takCharge=0; this.counterT=0; this.kanHit=false; this.lastCombatT=0; this.swapCd=0;
     this.guard=undefined; this.oaKind=null; this.oaChain=0; this.oaHitAt=null; this.hitsTaken=0; this.cmbHits=0; this.frsT=0; this.adT=0; this.adName=null; this.confiscT=0;
     this.mahiPalmCd=0; this.mahiIsoCd=0; this.mahiCharge=0; this.mahiFormT=0; this.reshapeT=0; this.palmHit=false; this.lastHurt=0;
@@ -7018,6 +7050,14 @@ class Player {
           opp.mahiCharge = Math.min(MAHI_FORM_REQ, (opp.mahiCharge||0) + d);
         if(opp && opp.type==='hanami')
           opp.hanaCharge = Math.min(HANA_GRAB_REQ, (opp.hanaCharge||0) + d);
+        if(opp && isNaoya(opp)){
+          opp.naoCharge = Math.min(NAO_SPECIAL_REQ, (opp.naoCharge||0) + d);
+          if(!this._rawDmg && !this.isPuppet && this._hp>0 && !(this.framedT>0) && Math.hypot(opp.x-this.x, opp.y-this.y) < 260){
+            if(terClock - (opp.naoLastHitT||-1e9) > 1100) opp.naoHitN = 0;
+            if(terClock !== opp.naoLastHitT){ opp.naoHitN = (opp.naoHitN||0) + 1; opp.naoLastHitT = terClock; }
+            if(opp.naoHitN >= 3){ opp.naoHitN = 0; framePlayer(this, NAO_PASSIVE_MS, opp); addSpeech(this.x+PW/2, this.y-26, 'FRAME!', '#f4f1e6', 500); }
+          }
+        }
         if(opp && opp.type==='dagon')
           opp.dagonCharge = Math.min(DAGON_SWARM_REQ, (opp.dagonCharge||0) + d);
         if(opp && opp.type==='jogo')
@@ -7051,6 +7091,7 @@ class Player {
     return{x:this.x,y:this.y,w:PW,h:PH};
   }
   ss(s,dur=0){
+    if(this.framedT>0 && s!==S.DEAD && s!==S.FRAMED) return;     // frozen in one of Naoya's frames
     if(this._guardStamp===terClock && (s===S.STUN || s===S.RAGD || s===S.SLAM)) return;
     if(s!==S.ATCK) this.oaKind = null;
     if(this.state===S.DOMAIN && s!==S.DOMAIN && this.castSpent){
@@ -7073,6 +7114,7 @@ class Player {
     const dk = this.isPuppet ? null : this.ctrl.down;
     if(dk && keys[dk] && this.onGround && [S.IDLE,S.WALK].includes(this.state) && !(this.pbChargeTime>0)) this.dropT=220;
     if(this.iframes > 0) this.iframes = Math.max(0, this.iframes - dt);
+    if(this.framedT>0 && tickFramed(this, dt)){ tickStatus(this, dt); return; }
     this._loadoutPre(dt);
     this._cePre(dt);
     this._updateCore(dt,other);
@@ -7169,6 +7211,7 @@ class Player {
     // Deadly Sentencing: both sides stand trial — nobody moves
     if(courtFreeze(this, dt)) return;
     if(rpsFreeze(this, dt)) return;
+    if(naoGameFreeze(this, dt)) return;
     if(olOn() && !this.isPuppet){ const r = this._olPre(dt, other, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked); ab1Edge = r[0]; ab2Edge = r[1]; ab3Edge = r[2]; domEdge = r[3]; }
 
     // ── YUJI: 1=Piercing Blood(hold), 2=Black Blur, Q=Dismantle Ult ──
@@ -7335,6 +7378,11 @@ class Player {
       if(domEdge && this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain && free && !(this.jackpotT>0)) this._startDomain();
     }
 
+    // ── NAOYA: 1 = Projection Dash / Rocket, 2 = Frame Barrage / Frame Field, 3 = 24 FPS, F = Time Cell Moon Palace (curse) ──
+    if(isNaoya(this) && !this.isPuppet){
+      if(this.state===S.WALK && Math.abs(this.vx) > 1) this.naoRunT = (this.naoRunT||0) + dt; else if(this.state!==S.AIR) this.naoRunT = 0;
+      this._naoyaAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
+    }
     // ── TAKABA: 1 = Rock Paper Scissors, 2 = 1000 Years of Death, 3 = Counter, F = The Truck ──
     if(this.type==='takaba'){
       for(const k of ['takRpsCd','takKanCd','counterT']) if(this[k]>0) this[k]=Math.max(0,this[k]-dt);
@@ -7754,6 +7802,10 @@ class Player {
       case S.MAHIPALM:   this._tickMahiPalm(dt); break;
       case S.BLOCK: case S.DASH: case S.OVAR: this._olTickCustom(dt); break;
       case S.TAKAKAN:    this._tickTakaKan(dt); break;
+      case S.NAODASH:    this._tickNaoDash(dt); break;
+      case S.NAOCOMBO:   this._tickNaoCombo(dt); break;
+      case S.NAOROCKET:  this._tickNaoRocket(dt); break;
+      case S.FRAMED:     this.vx = 0; this.vy = 0; if(!(this.framedT>0)) this.ss(this.onGround ? S.IDLE : S.AIR); break;
       case S.TAKACTR:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.counterT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.DAGONSWARM: this._tickDagonSwarm(dt); break;
       case S.MEISPIN:    this._tickMeiSpin(dt); break;
@@ -9201,8 +9253,8 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(this.mahiFormT>0) m *= 1.4; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.4; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgIn(){ let m = 1; if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -9461,6 +9513,7 @@ class Player {
     const M = MOVE_PASSIVES[this.type] || {spd:1, jmp:1};
     let spd = M.spd, jmp = M.jmp;
     if(this.type==='choso' && this.hp < this.maxHp*0.5) spd *= 1.2;   // Blood Rush
+    if(isNaoya(this)){ spd *= 1 + 0.17*Math.min(1, (this.naoRunT||0)/1000); if(activeDomain && activeDomain.type==='moon' && activeDomain.owner===this) spd *= 1.2; }
     if(this.jackpotT>0){ spd = 1.3; jmp = 1.15; }                       // Hakari's fever
     if(this._vow('iron')) spd *= 0.85;
     if(this.reshapeT>0) spd *= 0.7;
@@ -10112,6 +10165,14 @@ class Player {
     else if(this.flash>0) ctx.globalAlpha=.45+.55*Math.abs(Math.sin(this.flash*.055));
     else if(this.iframes>0) ctx.globalAlpha=.35+.45*Math.abs(Math.sin(this.iframes*.03));
     if(this.state===S.MECHULT){ this._drawMechUlt(); ctx.restore(); return; }
+    if(this.state===S.NAOROCKET){ drawNaoRocket(this); ctx.restore(); return; }
+    if(this.type==='naoyac' && this.state!==S.DEAD){
+      const ph = [S.RAGD,S.SLAM].includes(this.state), px = (ph ? this.rdX : this.x)+PW/2, py = (ph ? this.rdY : this.y)+PH/2;
+      const bob = ph ? 0 : Math.sin(Date.now()*0.004)*2, lean = ph ? this.rdRot : (this.vx||0)*0.025;
+      this._shadow && this._shadow();
+      drawNaoPod(px, py - 4 + bob, lean, 0.86, this.iframes>0 || this.state===S.DOMAIN);
+      drawFramedOverlay(this); ctx.restore(); return;
+    }
     this._shadow();
 
     // ── Sprite-based rendering (if character has a sprite sheet) ──
@@ -10241,7 +10302,9 @@ class Player {
     }
     if(this.type==='hanami') drawHanamiBody(this);
     if(this.type==='takaba') drawTakabaBody(this);
+    if(isNaoya(this)) drawNaoyaBody(this);
     drawOlBody(this);
+    drawFramedOverlay(this);
     if(this.type==='mahito' || this.reshapeT>0) drawMahitoBody(this);
     // Mei Mei: the battle axe
     if(this.type==='meimei' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state)){
@@ -11136,6 +11199,37 @@ class Player {
       ctx.fillStyle = ready ? '#ffd0d4' : '#a05058'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
       ctx.fillText(ready ? `SUPERNOVA [${keyLbl(this,'ult')}] · ${n} BLOOD POOLS` : `DOMAIN ${Math.floor(pct*100)}% · ${n} BLOOD POOLS`, bx+bw/2, domY+10);
     }
+    // Naoya HUD
+    if(isNaoya(this)){
+      const cur = this.type==='naoyac', sp = Math.min(1, (this.naoCharge||0)/NAO_SPECIAL_REQ);
+      const names = cur ? [`ROCKET [${keyLbl(this,'ab1')}]`, naoFrames.some(f => f.owner===this) ? `DETONATE [${keyLbl(this,'ab2')}]` : `FRAME FIELD [${keyLbl(this,'ab2')}]`, `24 FPS [${keyLbl(this,'ab3')}]`]
+                        : [`PROJECTION [${keyLbl(this,'ab1')}]`, `BARRAGE [${keyLbl(this,'ab2')}]`, `24 FPS [${keyLbl(this,'ab3')}]`];
+      const fills = cur ? [Math.max(0,1-this.naoRocketCd/NAO_ROCKET_CD), Math.max(0,1-this.naoFieldCd/NAO_FIELD_CD), sp] : [Math.max(0,1-this.naoDashCd/NAO_DASH_CD), Math.max(0,1-this.naoComboCd/NAO_COMBO_CD), sp];
+      const abY = y+bh+38, col = cur ? '#b07cff' : '#e6d3a3';
+      for(let i=0;i<3;i++){
+        const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
+        const ready = fills[i]>=1, isUlt = i===2;
+        ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(ax,abY,aw,22);
+        ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?col:'#3a3428');
+        ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
+        ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#f4f1e6'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+      }
+      const domY = abY+30;
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
+      if(cur){
+        const on = activeDomain && activeDomain.owner===this, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
+        ctx.fillStyle = on ? '#6a4aa0' : ready ? `rgba(176,124,255,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.005))})` : '#2a1d44';
+        ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, domY, Math.floor(bw*pct), 14);
+        ctx.strokeStyle='rgba(176,124,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+        ctx.fillStyle = ready||on ? '#f4eaff' : '#9a88b8'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
+        ctx.fillText(on ? 'TIME CELL MOON PALACE' : ready ? `MOON PALACE [${keyLbl(this,'ult')}]` : `DOMAIN ${Math.floor(pct*100)}%`, bx+bw/2, domY+10);
+      } else {
+        ctx.strokeStyle='rgba(230,211,163,0.35)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+        ctx.fillStyle = '#9a8c6a'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
+        ctx.fillText('LAST LIFE: VENGEFUL CURSE', bx+bw/2, domY+10);
+      }
+    }
     // Takaba HUD
     if(this.type==='takaba'){
       const names = [`ROCK PAPER SCI. [${keyLbl(this,'ab1')}]`, `1000 YEARS [${keyLbl(this,'ab2')}]`, this.state===S.TAKACTR ? 'COUNTERING!' : `COUNTER [${keyLbl(this,'ab3')}]`];
@@ -11936,6 +12030,13 @@ const CHARACTERS = [
     color: '#e8c547',
     dimColor: '#5a4a14',
     description: 'Comedian · Rock Paper Scissors · The Truck'
+  },
+  {
+    name: 'NAOYA',
+    type: 'naoya',
+    color: '#e6d3a3',
+    dimColor: '#6a5a34',
+    description: 'Projection Sorcery · 24 FPS · 4 lives, last one as a curse'
   }
   // ── ADD YOUR CHARACTER HERE ──────────────────────────────
   // {
@@ -12009,6 +12110,7 @@ function drawHUDOverlay(){
   drawCeHud(p1, 22, false); if(!isTraining()) drawCeHud(p2, W-22, true);
   drawEffects(p1, 22, false); if(!isTraining()) drawEffects(p2, W-22, true);
   drawRps();
+  drawNaoGame();
   drawTrainPanel();
   for(const [pl, x, al] of [[p1, 22, 'left'], [p2, W-22, 'right']]) if(pl.respawnT>0 && !(isTraining() && pl===p2)){
     ctx.save(); ctx.textAlign = al; ctx.font = `700 16px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ffd27a';
@@ -12028,16 +12130,16 @@ function drawHUDOverlay(){
   } else if(!isTraining()){
     // Lives indicators
     const livesY = 130;
-    for(let i=0;i<3;i++){
+    for(let i=0;i<startLivesFor(p1);i++){
       const px = 22 + i*16;
-      ctx.fillStyle = i<p1lives ? '#cc2222' : 'rgba(180,50,50,0.15)';
+      ctx.fillStyle = i<p1lives ? (i===0 && isNaoya(p1) ? '#8a5ad0' : '#cc2222') : 'rgba(180,50,50,0.15)';
       ctx.strokeStyle = i<p1lives ? '#ff4444' : 'rgba(180,50,50,0.3)';
       ctx.lineWidth=1;
       ctx.beginPath(); ctx.arc(px, livesY, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     }
-    for(let i=0;i<3;i++){
+    for(let i=0;i<startLivesFor(p2);i++){
       const px = W-22 - i*16;
-      ctx.fillStyle = i<p2lives ? '#cc2222' : 'rgba(180,50,50,0.15)';
+      ctx.fillStyle = i<p2lives ? (i===0 && isNaoya(p2) ? '#8a5ad0' : '#cc2222') : 'rgba(180,50,50,0.15)';
       ctx.strokeStyle = i<p2lives ? '#ff4444' : 'rgba(180,50,50,0.3)';
       ctx.lineWidth=1;
       ctx.beginPath(); ctx.arc(px, livesY, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
@@ -12272,6 +12374,27 @@ const OL_VARS = {
         isomers.push({owner:p, x:ix, y:terGroundTop(ix-6, 12, p.y+PH-1, true), dir:p.facing, t:-Math.abs(off)*6, vy:0, step:0}); }
       snd('swing', p.x); }},
   },
+  naoya: {
+    1:{name:'Frame Skip', desc:'Skips the frames in between: blinks 220px forward, and anyone he passes takes 6 and is frozen in a frame for 0.6s.', lock:260, run(p){
+      const x0 = p.x; safeTeleport(p, p.x + p.facing*220, p.y);
+      olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:240, dmg:0, col:'#e6d3a3'});
+      for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, 600, p);
+      snd('dash', p.x); }},
+    2:{name:'Freeze-Frame Jab', desc:'A jab timed between two frames: 5 damage, and the target is frozen in a frame for 1.2s — a free follow-up.', lock:300, run(p){
+      const [x,y,w,h] = olFront(p, 74); snd('swing', p.x);
+      for(const d of olArea(p, x, y, w, h)) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, 1200, p); }},
+  },
+  naoyac: {
+    1:{name:'Rocket Ram', desc:'A short rocket burst: rams 260px forward through terrain, 12 damage and a big knockback.', lock:300, run(p){
+      const x0 = p.x; if(!IS_GUEST) carveRect(Math.min(x0, x0+p.facing*260)-6, p.y-8, 260+PW+12, PH+16);
+      safeTeleport(p, p.x + p.facing*260, p.y);
+      olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#b07cff'});
+      for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 12, {rag:[14,-8,RAGD_MS], col:'#ffb347'});
+      snd('cannon', p.x); doShake(8); }},
+    2:{name:'Frame Snap', desc:'Snaps the nearest foe within 320px into a frame for 1.5s; then it bursts for 8.', lock:300, run(p){
+      const d = olNearest(p, 320); snd('tick', p.x);
+      if(d){ framePlayer(d, 1500, p); olAfter(1520, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#d8c8ff', 70); olHit(p, d, 8, {any:true, rag:[8,-6,RAGD_MS], col:'#d8c8ff'}); }); } }},
+  },
   takaba: {
     1:{name:'Spotlight', desc:'Points a stage spotlight at the nearest foe within 500px: stage fright — no abilities for 2.5s.', lock:300, run(p){
       const d = olNearest(p, 500); snd('ui', p.x);
@@ -12300,6 +12423,7 @@ const CE_CD_MULT = 0.75, CE_VAR_CD = 6000, CE_AD_COST = 40, CE_SPECIAL = 0.5, CE
 const CE_PROFILE = {
   // special grades (sorcerers and curses) get bigger pools; Gojo + Sukuna refill far faster; Yuta + Mechamaru dwarf everyone
   gojo:[220,26], sukuna:[230,24], yuta:[480,14], mechamaru:[420,12], kenjaku:[220,9], jogo:[200,8], dagon:[190,7], hanami:[190,7], mahito:[180,8],
+  naoya:[130,6], naoyac:[220,8],
   yuji:[110,5], choso:[110,5], higuruma:[110,5], hakari:[120,5], meimei:[110,5], todo:[100,5], takaba:[90,4]
 };
 const CE_LORE = {
@@ -12311,7 +12435,8 @@ const CE_LORE = {
   mahito:'A disaster curse with a big pool and a quick refill.', kenjaku:'A thousand years of sorcery: large and efficient.',
   yuji:'Average reserves; he fights mostly with his fists.', choso:'Average reserves — but when he runs dry he pays with his own blood (1 HP = 3 CE), leaving a pool behind.', higuruma:'A natural talent: slightly quicker refill.',
   hakari:'Average reserves — but during a JACKPOT his cursed energy is infinite.', meimei:'Average reserves.', todo:'Small reserves; he relies on his body.',
-  takaba:'The smallest pool in the game. He\'s a comedian, not a sorcerer.'
+  takaba:'The smallest pool in the game. He\'s a comedian, not a sorcerer.',
+  naoya:'Special grade 1 of the Zen\'in clan: a solid pool, average refill.', naoyac:'As a vengeful cursed spirit his pool swells to special-grade size.'
 };
 // slot → [cooldown field, old cooldown constant] (the old cooldown sets the CE cost)
 const CE_SLOTS = {
@@ -12330,9 +12455,11 @@ const CE_SLOTS = {
   hanami:{ab1:['hanaBudCd','HANA_BUD_CD'], ab2:['hanaFieldCd','HANA_FIELD_CD']},
   mahito:{ab1:['mahiPalmCd','MAHI_PALM_CD'], ab2:['mahiIsoCd','MAHI_ISO_CD']},
   takaba:{ab1:['takRpsCd','TAKA_RPS_CD'], ab2:['takKanCd','TAKA_KAN_CD']},
+  naoya:{ab1:['naoDashCd','NAO_DASH_CD'], ab2:['naoComboCd','NAO_COMBO_CD']},
+  naoyac:{ab1:['naoRocketCd','NAO_ROCKET_CD'], ab2:['naoFieldCd','NAO_FIELD_CD']},
   kenjaku:{ab1:['kenUzuCd','KEN_UZU_CD'], ab2:['kenSpiritCd','KEN_SPIRIT_CD']},
 };
-const CE_DOMAIN = new Set(['sukuna','gojo','yuta','higuruma','hakari','mahito','dagon','jogo','kenjaku']);
+const CE_DOMAIN = new Set(['sukuna','gojo','yuta','higuruma','hakari','mahito','dagon','jogo','kenjaku','naoyac']);
 const CE_BASIC = new Set([S.IDLE, S.WALK, S.AIR, S.ATCK, S.DIVE, S.BLOCK, S.DASH]);
 const CE_KEYS = [['ab1','ab1Key'], ['ab2','ab2Key'], ['ab3','ab3Key'], ['ult','domainKey']];
 // a second press that steers / detonates / swaps with something already out is free
@@ -12343,6 +12470,7 @@ const CE_FOLLOW = {
   mechamaru:{ab3:p => !!(puppet && puppet.owner===p && puppet.state!==S.DEAD)},
   meimei:{ab3:p => uiuis.some(q => q.owner===p), ult:p => crows.some(c => c.owner===p)},
   hanami:{ult:p => p.rampT>0},
+  naoyac:{ab2:p => naoFrames.some(f => f.owner===p)},
   todo:{ult:p => p.todoNoCdT>0},
 };
 const _ceCostCache = {};
@@ -12354,8 +12482,9 @@ function ceBaseCost(type, slot){
   return (_ceCostCache[k] = v);
 }
 function ceCostMult(p){ return (p._vow && p._vow('sacrifice') ? 0.75 : 1) * (p._feat && p._feat('sixeyes') ? 0.85 : 1); }
+function ceProfKey(p){ return p.type==='naoyac' ? 'naoyac' : (p.baseType || p.type); }
 function ceInit(p){
-  const pr = CE_PROFILE[p.baseType || p.type] || [100, 7];
+  const pr = CE_PROFILE[ceProfKey(p)] || [100, 7];
   p.ceMax = pr[0]; p.ceRegen = pr[1]; p.ce = p.ceMax; p.varMode = false; p._ceKD = {}; p._cePaid = {};
 }
 function ceInfinite(p){ return p.jackpotT>0 || (isTraining() && trainOpt.nocd && p===p1); }
@@ -12509,7 +12638,7 @@ function drawCeHud(pl, x, flip){
     ctx.fillRect(flip ? ax+aw-aw*f : ax, abY+20, aw*f, 2);
   }
   // domain / ultimate bar: say when it's the CE (not the hit charge) that's missing
-  if(!pl.varMode && !ceInfinite(pl) && !(pl._vow && (pl._vow('sacrifice') || pl._vow('heavenly'))) && pl.ce + 1e-6 < ceNeed(pl, 'ult') && !ceFollow(pl, 'ult')){
+  if(!pl.varMode && pl.type!=='naoya' && !(activeDomain && activeDomain.owner===pl) && !ceInfinite(pl) && !(pl._vow && (pl._vow('sacrifice') || pl._vow('heavenly'))) && pl.ce + 1e-6 < ceNeed(pl, 'ult') && !ceFollow(pl, 'ult')){
     const domY = abY+30, need = CE_DOMAIN.has(pl.type) ? 'FULL' : '75%';
     ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillStyle = '#8fc4ff';
     ctx.fillText(`NEEDS ${need} CE`, flip ? bx+5 : bx+bw-5, domY+10);
@@ -13281,6 +13410,461 @@ function drawTruck(tr){
   }
   ctx.restore();
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// NAOYA ZEN'IN — Projection Sorcery (24 frames per second)
+//  Human: Projection Dash · Frame Barrage · 24 FPS (frame prompt) · no domain
+//  4th life → Vengeful Cursed Spirit: Rocket · Frame Field · Time Cell Moon Palace
+//  Passive: speed builds while he runs; every 3rd hit of a quick string freezes the foe in a frame.
+// ═══════════════════════════════════════════════════════════════════
+const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9;
+const NAO_DASH_CD = 5000, NAO_DASH_SPD = 21, NAO_DASH_MS = 420, NAO_DASH_DMG = 14;
+const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 420], NAO_COMBO_FIN = 600, NAO_COMBO_JAB = 3, NAO_COMBO_KICK = 9;
+const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 8000, NAO_FRAME_DMG_IN = 1.14;
+const NAO_ROCKET_CD = 8000, NAO_ROCKET_MS = 2400, NAO_ROCKET_SPD = 19, NAO_ROCKET_DMG = 20, NAO_ROCKET_TURN = 0.0055;
+const NAO_FIELD_CD = 7000, NAO_FIELD_N = 5, NAO_FIELD_LIFE = 6000, NAO_FIELD_HOLD = 3000, NAO_FIELD_DMG = 10, NAO_FIELD_TRAP_DMG = 22;
+const NAO_PASSIVE_MS = 600, NAO_MOON_TICK = 250, NAO_MOON_DMG = 2;
+const NAO_SYMS = ['left','right','jump','down','atk'], NAO_GLYPH = {left:'←', right:'→', jump:'↑', down:'↓', atk:'●'};
+const naoFrames = [];          // synced: {owner, x, y, t, caught}
+let naoGame = null;            // synced: {o, d, n, ph, t, seq, pos, lim, res}
+
+function isNaoya(pl){ return !!pl && (pl.type==='naoya' || pl.type==='naoyac'); }
+function startLivesFor(pl){ return pl && ((pl.baseType||pl.type)==='naoya' || pl.type==='naoyac') ? NAO_LIVES : 3; }
+function livesOf(pl){ return pl===p1 ? p1lives : pl===p2 ? p2lives : 3; }
+
+// ── Frozen in a frame: can't move, takes 14% more damage ──
+function framePlayer(pl, ms, by){
+  if(!pl || pl.state===S.DEAD) return;
+  const ph = [S.RAGD,S.SLAM].includes(pl.state);
+  if(ph){ pl.x = pl.rdX; pl.y = pl.rdY; }
+  pl.framedT = Math.max(pl.framedT||0, ms); pl.frameMax = Math.max(pl.frameMax||0, pl.framedT); pl.frameX = pl.x; pl.frameY = pl.y; pl.frameBy = by ? netRef(by) : null;
+  pl.vx = 0; pl.vy = 0; pl.state = S.FRAMED; pl.sTimer = 0; pl.sDur = 0;
+  addRing(pl.x+PW/2, pl.y+PH/2, '#f4f1e6', 54); snd('tick', pl.x);
+}
+function tickFramed(pl, dt){
+  pl.framedT = Math.max(0, pl.framedT - dt);
+  if(pl.state===S.DEAD){ pl.framedT = 0; return true; }
+  pl.x = pl.frameX; pl.y = pl.frameY; pl.vx = 0; pl.vy = 0;
+  if(pl.framedT <= 0){ pl.frameMax = 0; pl.ss(pl.onGround ? S.IDLE : S.AIR); return false; }
+  if(pl.state!==S.FRAMED){ pl.state = S.FRAMED; }
+  return true;
+}
+
+// ── 24 FPS: Naoya draws a motion, the opponent has to follow it frame for frame ──
+function naoGameLen(){ return (typeof NET!=='undefined' && (NET.role==='host' || NET.role==='guest')) ? 24 : 12; }
+function startNaoGame(o, d){
+  const n = naoGameLen();
+  naoGame = {o:netRef(o), d:netRef(d), n, ph:0, t:0, seq:[], pos:0, lim: n*330 + 1500, res:''};
+  for(const pl of [o, d]) for(const a of NAO_SYMS) pl['_ng'+a] = !!keys[`A${pl.playerNum}_${a}`];
+  addSpeech(o.x+PW/2, o.y-20, '24 FPS', '#f4f1e6', 900); sayFor(o, 'Can you keep up? Twenty-four frames a second.'); snd('charge', o.x);
+}
+function naoGameFreeze(pl, dt){
+  if(!naoGame) return false;
+  const o = netRes(naoGame.o), d = netRes(naoGame.d);
+  if(pl!==o && pl!==d) return false;
+  return freezeFighter(pl, dt);
+}
+function naoGamePress(pl){
+  for(const a of NAO_SYMS){ const k = !!keys[`A${pl.playerNum}_${a}`], e = k && !pl['_ng'+a]; pl['_ng'+a] = k; if(e) return a; }
+  return null;
+}
+function tickNaoGame(dt){
+  const g = naoGame; if(!g) return;
+  const o = netRes(g.o), d = netRes(g.d);
+  if(!o || !d || o.state===S.DEAD || d.state===S.DEAD){ naoGame = null; return; }
+  g.t += dt;
+  if(g.ph===0){                          // Naoya records the motion
+    const a = naoGamePress(o); naoGamePress(d);
+    if(a){ g.seq.push(a); snd('tick', o.x); }
+    if(g.seq.length >= g.n || g.t >= g.lim){
+      while(g.seq.length < g.n) g.seq.push(NAO_SYMS[Math.floor(Math.random()*NAO_SYMS.length)]);
+      g.ph = 1; g.t = 0; g.pos = 0; g.lim = g.n*400 + 1400; snd('charge', d.x);
+    }
+  } else if(g.ph===1){                   // the opponent has to follow it
+    naoGamePress(o);
+    const a = naoGamePress(d);
+    if(a){
+      if(a===g.seq[g.pos]){ g.pos++; snd('tick', d.x); if(g.pos >= g.n){ g.res = 'kept'; g.ph = 2; g.t = 0; } }
+      else { g.res = 'miss'; g.miss = a; g.ph = 2; g.t = 0; snd('bwomp', d.x); }
+    } else if(g.t >= g.lim || (isTraining() && d===p2 && g.t >= 1200)){ g.res = 'miss'; g.ph = 2; g.t = 0; snd('bwomp', d.x); }
+  } else if(g.t >= 900){
+    naoGame = null;
+    if(g.res==='miss'){
+      framePlayer(d, NAO_FRAME_MS, o); showTxt('FROZEN IN A FRAME', 1100); sayFor(o, 'Too slow.');
+      addSpeech(d.x+PW/2, d.y-30, 'FROZEN!', '#f4f1e6', 900);
+    } else {
+      showTxt(`${d.name} KEPT UP!`, 1000); o.vx = 0; o.ss(S.STUN, 800); addSpeech(o.x+PW/2, o.y-20, 'TCH.', '#ddd', 700);
+    }
+  }
+}
+function drawNaoGame(){
+  const g = naoGame; if(!g) return;
+  const o = netRes(g.o), d = netRes(g.d); if(!o || !d) return;
+  const cx = W/2, cy = 250, bw = 700, bh = 220;
+  ctx.save();
+  ctx.fillStyle = 'rgba(10,10,14,0.88)'; ctx.fillRect(cx-bw/2, cy-bh/2, bw, bh);
+  // film-strip border
+  ctx.fillStyle = '#e8e2d0'; for(let x=cx-bw/2+8; x<cx+bw/2-10; x+=22){ ctx.fillRect(x, cy-bh/2+5, 12, 7); ctx.fillRect(x, cy+bh/2-12, 12, 7); }
+  ctx.strokeStyle = '#e8e2d0'; ctx.lineWidth = 2; ctx.strokeRect(cx-bw/2, cy-bh/2, bw, bh);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#f4f1e6'; ctx.font = `700 24px 'Rajdhani',sans-serif`;
+  const title = g.ph===0 ? `${o.name}: DRAW YOUR MOTION` : g.ph===1 ? `${d.name}: FOLLOW IT — 24 FPS` : g.res==='miss' ? 'MISSED A FRAME' : 'KEPT UP!';
+  ctx.fillText(title, cx, cy-70);
+  ctx.font = `700 12px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(240,235,220,0.75)';
+  const who = g.ph===0 ? o : d;
+  ctx.fillText(g.ph===0 ? `Press ${g.n} keys: ${keyLbl(who,'left')} ${keyLbl(who,'right')} ${keyLbl(who,'jump')} ${keyLbl(who,'down')} ${keyLbl(who,'atk')}` :
+    g.ph===1 ? `Press the same ${g.n} keys in order with ${keyLbl(who,'left')} ${keyLbl(who,'right')} ${keyLbl(who,'jump')} ${keyLbl(who,'down')} ${keyLbl(who,'atk')} — one miss and you're frozen for 8s` : '', cx, cy-48);
+  // the sequence
+  const per = g.n > 12 ? 2 : 1, cols = Math.ceil(g.n/per), cw = Math.min(46, (bw-60)/cols);
+  for(let i=0;i<g.n;i++){
+    const r = Math.floor(i/cols), c = i%cols, x = cx - cols*cw/2 + c*cw + cw/2, y = cy - 6 + r*44;
+    const sym = g.seq[i], done = g.ph>=1 && i < g.pos, cur = g.ph===1 && i===g.pos;
+    ctx.fillStyle = cur ? 'rgba(255,224,102,0.25)' : done ? 'rgba(120,220,140,0.2)' : 'rgba(255,255,255,0.06)';
+    ctx.fillRect(x-cw/2+2, y-18, cw-4, 36); ctx.strokeStyle = cur ? '#ffe066' : 'rgba(232,226,208,0.35)'; ctx.lineWidth = 1; ctx.strokeRect(x-cw/2+2, y-18, cw-4, 36);
+    if(sym){ ctx.font = `700 20px 'Rajdhani',sans-serif`; ctx.fillStyle = done ? '#8fe0a0' : g.ph===2 && g.res==='miss' && i===g.pos ? '#ff6a6a' : '#f4f1e6'; ctx.fillText(NAO_GLYPH[sym], x, y+7); }
+  }
+  if(g.ph<2){ const pct = Math.max(0, 1 - g.t/g.lim); ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.fillRect(cx-200, cy+bh/2-28, 400, 5); ctx.fillStyle = '#f4f1e6'; ctx.fillRect(cx-200, cy+bh/2-28, 400*pct, 5); }
+  ctx.restore();
+}
+
+// ── Vengeful Cursed Spirit: Naoya's last life ──
+function naoyaCurse(pl){
+  if(!pl || pl.type==='naoyac') return;
+  pl.baseType = 'naoya'; pl.type = 'naoyac'; pl.name = 'NAOYA (CURSE)'; pl.charColor = '#9a6fd6'; pl.charDimColor = '#3a2560';
+  pl.ce = undefined; pl.ceMax = undefined;
+  addRing(pl.x+PW/2, pl.y+PH/2, '#9a6fd6', 120); addParts(pl.x+PW/2, pl.y+PH/2, '#5a3a8a', 30, 7); doShake(12);
+  showTxt('NAOYA RETURNS AS A CURSE', 1600); sayFor(pl, 'I came back to kill you myself.');
+}
+function naoyaHuman(pl){
+  if(!pl || pl.type!=='naoyac') return;
+  const c = CHARACTERS.find(q => q.type==='naoya');
+  pl.type = 'naoya'; pl.baseType = null; pl.name = c.name; pl.charColor = c.color; pl.charDimColor = c.dimColor; pl.ce = undefined; pl.ceMax = undefined;
+}
+// called whenever a fighter (re)spawns: Naoya's 4th life is the curse
+function naoLifeCheck(pl){
+  if(!pl || (pl.baseType||pl.type)!=='naoya' && pl.type!=='naoyac') return;
+  if(isTraining()) return;
+  if(gameMode==='endless'){ const k = pl===p1 ? p2kills : p1kills; if(k >= NAO_LIVES-1) naoyaCurse(pl); return; }
+  if(livesOf(pl)===1) naoyaCurse(pl);
+}
+
+// ── per-fighter ability block (called from _updateCore) ──
+Player.prototype._naoyaAbilities = function(dt, e1, e2, e3, eD, blocked){
+  for(const k of ['naoDashCd','naoComboCd','naoRocketCd','naoFieldCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+  const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), opp = this===p1 ? p2 : p1;
+  if(this.type==='naoya'){
+    if(e1 && free && this.naoDashCd<=0){ this.naoDashCd = NAO_DASH_CD; this.naoHit = false; this.naoTrail = []; this.ss(S.NAODASH, NAO_DASH_MS); snd('dash', this.x); addSpeech(this.x+PW/2, this.y-14, 'PROJECTION', '#e6d3a3', 600); }
+    if(e2 && free && this.naoComboCd<=0){ this.naoComboCd = NAO_COMBO_CD; this.naoStep = 0; this.naoTrail = []; this.vx = 0; this.ss(S.NAOCOMBO, NAO_COMBO_MS); snd('swing', this.x); sayFor(this, 'Keep up!'); }
+    if(eD && free){ addSpeech(this.x+PW/2, this.y-14, 'NO DOMAIN… YET', '#999', 700); }
+  } else {
+    if(e1 && free && this.naoRocketCd<=0){
+      this.naoRocketCd = NAO_ROCKET_CD; this.naoAng = this.facing>0 ? 0 : Math.PI; this.naoHitT = -1e9; this.naoTrail = [];
+      this.ss(S.NAOROCKET, NAO_ROCKET_MS); snd('cannon', this.x); doShake(8); sayFor(this, 'Faster. Faster!');
+    }
+    if(e2 && free){
+      const mine = naoFrames.filter(f => f.owner===this);
+      if(mine.length) naoDetonate(this);
+      else if(this.naoFieldCd<=0){
+        this.naoFieldCd = NAO_FIELD_CD;
+        const cy = this.y + PH/2;
+        for(let i=0;i<NAO_FIELD_N;i++){ const fx = this.x+PW/2 + this.facing*(70 + i*78); if(fx < 10 || fx > W-10) break; naoFrames.push({owner:this, x:fx, y:cy, t:0, caught:null, ct:0}); }
+        snd('tick', this.x); addSpeech(this.x+PW/2, this.y-14, 'FRAMES', '#d8c8ff', 600);
+      }
+    }
+    if(eD && free && this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain) this._startDomain();
+  }
+  // special (both forms): 24 FPS frame prompt
+  if(e3 && free && (this.naoCharge||0) >= NAO_SPECIAL_REQ && !this.isPuppet){
+    if(naoGame || rpsGame || domainClash){ /* busy */ }
+    else if(!opp || opp.state===S.DEAD || Math.hypot(opp.x-this.x, opp.y-this.y) > NAO_GAME_RANGE) addSpeech(this.x+PW/2, this.y-14, 'TOO FAR', '#888', 500);
+    else { this.naoCharge = 0; this.vx = 0; startNaoGame(this, opp); }
+  }
+};
+Player.prototype._tickNaoDash = function(dt){
+  const f = this.facing;
+  this.vx = f*NAO_DASH_SPD*(this.naoHit ? 0.15 : 1);
+  this._phys(dt);
+  this.naoTrail = this.naoTrail || []; this.naoTrail.push({x:this.x, y:this.y, t:terClock}); if(this.naoTrail.length > 8) this.naoTrail.shift();
+  if(Math.random()<0.6) addParts(this.x+PW/2-f*16, this.y+PH*0.7, 'rgba(230,211,163,0.8)', 1, 2);
+  if(!this.naoHit){
+    const [x,y,w,h] = olFront(this, 46);
+    const hit = olArea(this, x, y, w, h)[0];
+    if(hit){
+      this.naoHit = true; this.vx = 0; this.sTimer = Math.max(this.sTimer, this.sDur-160);
+      addRing(hit.x+PW/2, hit.y+PH/2, '#e6d3a3', 60); addParts(hit.x+PW/2, hit.y+PH/2, '#fff3cf', 16, 6); doShake(9); snd('heavy', hit.x);
+      olHit(this, hit, NAO_DASH_DMG, {rag:[13,-6,RAGD_MS], dir:f, col:'#e6d3a3'});
+    }
+  }
+  if(this.sTimer >= this.sDur){ this.vx *= 0.3; this.ss(this.onGround ? S.IDLE : S.AIR); }
+};
+Player.prototype._tickNaoCombo = function(dt){
+  const f = this.facing;
+  const [fx,fy,fw,fh] = olFront(this, 34), close = olArea(this, fx, fy, fw, fh).length > 0;   // stop at arm's length instead of running through them
+  this.vx = close ? 0 : this.sTimer < 120 ? f*6 : this.sTimer < NAO_COMBO_FIN ? f*1.2 : 0;
+  this._phys(dt);
+  const t = this.sTimer;
+  while(this.naoStep < NAO_COMBO_HITS.length && t >= NAO_COMBO_HITS[this.naoStep]){
+    this.naoStep++; snd('swing', this.x);
+    const [x,y,w,h] = olFront(this, 70);
+    for(const d of olArea(this, x, y, w, h)){ olHit(this, d, NAO_COMBO_JAB, {stun:340, push:1.4, dir:f, col:'#f4f1e6'}); addParts(d.x+PW/2-f*8, d.y+PH*0.4, '#f4f1e6', 5, 3); }
+    this.naoTrail = this.naoTrail || []; this.naoTrail.push({x:this.x + f*(6*this.naoStep), y:this.y, t:terClock});
+  }
+  if(this.naoStep === NAO_COMBO_HITS.length && t >= NAO_COMBO_FIN){
+    this.naoStep++; snd('heavy', this.x);
+    const [x,y,w,h] = olFront(this, 84, -6, PH+8);
+    for(const d of olArea(this, x, y, w, h)){ olHit(this, d, NAO_COMBO_KICK, {rag:[11,-9,RAGD_MS], dir:f, col:'#ffe9a8'}); addRing(d.x+PW/2, d.y+PH/2, '#f4f1e6', 56); doShake(8); }
+  }
+  if(t >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+Player.prototype._tickNaoRocket = function(dt){
+  const c = this.ctrl, k = dt/16.67;
+  // steer toward the held direction
+  const ix = (keys[c.right]?1:0) - (keys[c.left]?1:0), iy = (keys[c.down]?1:0) - (keys[c.jmp]?1:0);
+  if(ix || iy){ const want = Math.atan2(iy, ix); let da = want - this.naoAng; while(da > Math.PI) da -= Math.PI*2; while(da < -Math.PI) da += Math.PI*2;
+    this.naoAng += Math.max(-NAO_ROCKET_TURN*dt, Math.min(NAO_ROCKET_TURN*dt, da)); }
+  const vx = Math.cos(this.naoAng)*NAO_ROCKET_SPD, vy = Math.sin(this.naoAng)*NAO_ROCKET_SPD;
+  this.facing = vx >= 0 ? 1 : -1; this.vx = 0; this.vy = 0;
+  let nx = this.x + vx*k, ny = this.y + vy*k;
+  const fr = tpFrame(), x0 = fr ? fr.x+10 : 10, x1 = fr ? fr.x+VW-PW-10 : W-PW-10, y0 = fr ? fr.y-30 : -300;
+  const edge = nx < x0 || nx > x1 || ny > GND-PH || ny < y0;
+  nx = Math.max(x0, Math.min(x1, nx)); ny = Math.max(y0, Math.min(GND-PH, ny));
+  if(!IS_GUEST) carveRect(nx-8, ny-8, PW+16, PH+16);          // it goes through everything
+  this.x = nx; this.y = ny; this.onGround = false; this._tpN = (this._tpN||0)+1;
+  this.naoTrail = this.naoTrail || []; this.naoTrail.push({x:this.x, y:this.y, t:terClock}); if(this.naoTrail.length > 10) this.naoTrail.shift();
+  addParts(this.x+PW/2 - Math.cos(this.naoAng)*30, this.y+PH/2 - Math.sin(this.naoAng)*30, Math.random()<0.5 ? '#ffb347' : '#b07cff', 2, 4);
+  if(terClock - this.naoHitT > 450){
+    for(const d of olArea(this, this.x-16, this.y-10, PW+32, PH+20)){
+      this.naoHitT = terClock; doShake(14); snd('boom', d.x); addRing(d.x+PW/2, d.y+PH/2, '#ffb347', 80); addParts(d.x+PW/2, d.y+PH/2, '#ffb347', 20, 8);
+      olHit(this, d, NAO_ROCKET_DMG, {rag:[Math.cos(this.naoAng)*16*this.facing, -8 + Math.sin(this.naoAng)*6, RAGD_MS*1.2], dir:this.facing, col:'#ffb347'});
+    }
+  }
+  const again = keys[this.ab1Key] && !this._naoRk; this._naoRk = !!keys[this.ab1Key];
+  if(this.sTimer >= this.sDur || edge && this.sTimer > 300 || (again && this.sTimer > 200)){
+    addRing(this.x+PW/2, this.y+PH/2, '#ffb347', 90); addParts(this.x+PW/2, this.y+PH/2, '#ffb347', 18, 7); snd('boom', this.x); doShake(10);
+    for(const d of olArea(this, this.x-60, this.y-50, PW+120, PH+100)) olHit(this, d, 8, {rag:[9,-7,RAGD_MS], col:'#ffb347'});
+    if(!IS_GUEST) carveCircle(this.x+PW/2, this.y+PH/2, 60);
+    this.ss(S.AIR);
+  }
+};
+function naoDetonate(owner){
+  let any = false;
+  for(let i=naoFrames.length-1;i>=0;i--){
+    const f = naoFrames[i]; if(f.owner!==owner) continue; any = true;
+    addRing(f.x, f.y, '#d8c8ff', 70); addParts(f.x, f.y, '#b07cff', 16, 6); if(!IS_GUEST) carveCircle(f.x, f.y, 34);
+    const caught = f.caught ? netRes(f.caught) : null;
+    if(caught && caught.state!==S.DEAD){
+      caught.framedT = 0; caught.frameMax = 0; caught.ss(caught.onGround ? S.IDLE : S.AIR);
+      addRing(f.x, f.y, '#fff', 110); addParts(f.x, f.y, '#f4f1e6', 30, 9); doShake(16);
+      olHit(owner, caught, NAO_FIELD_TRAP_DMG, {any:true, rag:[14,-10,RAGD_MS*1.3], dir:Math.sign(caught.x-owner.x)||owner.facing, col:'#d8c8ff'});
+    } else for(const d of olArea(owner, f.x-60, f.y-60, 120, 120)) olHit(owner, d, NAO_FIELD_DMG, {rag:[8,-6,RAGD_MS], dir:Math.sign(d.x-f.x)||1, col:'#d8c8ff'});
+    naoFrames.splice(i, 1);
+  }
+  if(any){ snd('boom', owner.x); doShake(10); }
+}
+function tickNaoya(dt){
+  tickNaoGame(dt);
+  // Frame Field: anyone who walks into a frame is caught in it, then it all goes off
+  const owners = new Set();
+  for(const f of naoFrames){
+    f.t += dt; owners.add(f.owner);
+    if(!f.caught){
+      for(const d of olFoes(f.owner)){
+        if(!d.hittable || naoFrames.some(q => q.caught && netRes(q.caught)===d)) continue;
+        const b = d.bodyBox(); if(b.x < f.x+28 && b.x+b.w > f.x-28 && b.y < f.y+42 && b.y+b.h > f.y-42){
+          f.caught = netRef(d); f.ct = 0; framePlayer(d, NAO_FIELD_HOLD+400, f.owner); addSpeech(d.x+PW/2, d.y-24, 'CAUGHT!', '#d8c8ff', 700); break; }
+      }
+    } else f.ct += dt;
+  }
+  for(const o of owners){ const mine = naoFrames.filter(f => f.owner===o);
+    if(!o || o.state===S.DEAD || (o!==p1 && o!==p2) || mine.some(f => f.t >= NAO_FIELD_LIFE || (f.caught && f.ct >= NAO_FIELD_HOLD))) naoDetonate(o); }
+}
+
+// ── Time Cell Moon Palace: every motion that breaks 24 fps tears the target's cells apart ──
+function tickMoon(d, dt){
+  d.moonRise = Math.min(1, (d.moonRise||0) + dt/1300);
+  const def = d.owner===p1 ? p2 : p1; if(!def) return;
+  d.mt = (d.mt||0) + dt;
+  if(d.mt >= NAO_MOON_TICK){
+    d.mt = 0;
+    const lx = d.lx===undefined ? def.x : d.lx, ly = d.ly===undefined ? def.y : d.ly; d.lx = def.x; d.ly = def.y;
+    const moved = Math.abs(def.x-lx) + Math.abs(def.y-ly) > 3 || ![S.IDLE,S.STUN,S.FRAMED,S.BLOCK].includes(def.state);
+    if(d.moonRise >= 0.6 && moved && def.hittable && !(def.sdT>0)){
+      def._rawDmg = true; def.hp = Math.max(0, def.hp - NAO_MOON_DMG); def._rawDmg = false; def.flash = 120;
+      addDmg(def.x+PW/2, def.y-14, NAO_MOON_DMG, '#d8c8ff'); addParts(def.x+PW/2, def.y+PH*0.5, '#d8c8ff', 4, 3);
+      if(def.hp<=0){ def._initRd(0,-3,.05); def.ss(S.DEAD); }
+    }
+  }
+}
+function drawMoonDomain(){
+  const d = activeDomain, rise = d.moonRise||0, t = Date.now();
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#05060f'); g.addColorStop(0.6, '#141532'); g.addColorStop(1, '#2a2240');
+  ctx.globalAlpha = Math.min(1, rise*1.4); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // stars
+  for(let i=0;i<60;i++){ const sx = (i*137.5) % W, sy = (i*71.3) % (H*0.55); ctx.fillStyle = `rgba(255,255,240,${0.3+0.3*Math.sin(t*0.002+i)})`; ctx.fillRect(sx, sy, 1.6, 1.6); }
+  // the moon
+  const mx = W*0.5, my = 150 - (1-rise)*60, mr = 92;
+  const mg = ctx.createRadialGradient(mx, my, mr*0.2, mx, my, mr*1.8); mg.addColorStop(0, 'rgba(255,250,225,0.55)'); mg.addColorStop(1, 'rgba(255,250,225,0)');
+  ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, mr*1.8, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#f6f0d6'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(190,180,150,0.45)'; for(const [ox,oy,r] of [[-30,-20,16],[22,10,22],[-10,34,10],[38,-34,9]]){ ctx.beginPath(); ctx.arc(mx+ox, my+oy, r, 0, Math.PI*2); ctx.fill(); }
+  // palace silhouette: stacked curved roofs
+  ctx.fillStyle = '#0b0a16';
+  const base = 430;
+  for(const [px, w, levels] of [[W*0.2, 170, 3], [W*0.5, 240, 4], [W*0.8, 170, 3]]){
+    let y = base, ww = w;
+    for(let l=0;l<levels;l++){
+      const h = 44;
+      ctx.fillRect(px - ww*0.32, y - h, ww*0.64, h);
+      ctx.beginPath(); ctx.moveTo(px - ww/2 - 14, y - h); ctx.quadraticCurveTo(px - ww*0.25, y - h - 4, px, y - h - 22); ctx.quadraticCurveTo(px + ww*0.25, y - h - 4, px + ww/2 + 14, y - h); ctx.closePath(); ctx.fill();
+      y -= h + 18; ww *= 0.72;
+    }
+    ctx.fillRect(px-2, y-10, 4, 26);
+  }
+  ctx.fillRect(0, base, W, H-base);
+  // floor: a reflecting pool
+  ctx.fillStyle = 'rgba(246,240,214,0.12)'; ctx.beginPath(); ctx.ellipse(mx, base+30, 80, 10, 0, 0, Math.PI*2); ctx.fill();
+  // drifting film frames
+  ctx.strokeStyle = 'rgba(232,226,208,0.35)'; ctx.lineWidth = 2;
+  for(let i=0;i<8;i++){
+    const fx = ((t*0.03*(i%2?1:-1) + i*150) % (W+120) + W+120) % (W+120) - 60, fy = 60 + (i*53) % 260;
+    ctx.strokeRect(fx-24, fy-32, 48, 64);
+    ctx.fillStyle = 'rgba(232,226,208,0.25)'; for(let s=0;s<4;s++){ ctx.fillRect(fx-30, fy-28+s*16, 4, 8); ctx.fillRect(fx+26, fy-28+s*16, 4, 8); }
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ── drawing ──
+function drawFrameBox(x, y, w, h, a){
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.fillStyle = 'rgba(230,225,210,0.16)'; ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = '#efe9d6'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h);
+  ctx.fillStyle = '#efe9d6';
+  for(let s=0; s<Math.floor(h/16); s++){ ctx.fillRect(x-9, y+4+s*16, 5, 8); ctx.fillRect(x+w+4, y+4+s*16, 5, 8); }
+  ctx.restore();
+}
+function drawFramedOverlay(pl){
+  if(pl.framedT>0 && pl.state!==S.DEAD){
+    const a = pl.framedT < 600 ? 0.4 + 0.6*Math.abs(Math.sin(pl.framedT*0.02)) : 1;
+    drawFrameBox(pl.x-10, pl.y-10, PW+20, PH+16, a);
+    if(pl.frameMax > 2000){
+      ctx.save(); ctx.fillStyle = 'rgba(239,233,214,0.85)'; ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
+      ctx.fillText(`${Math.ceil(pl.framedT/1000)}`, pl.x+PW/2, pl.y-16); ctx.restore();
+    }
+  }
+  // inside the Moon Palace the target's body is a grid of time cells
+  if(activeDomain && activeDomain.type==='moon' && activeDomain.owner!==pl && pl!==puppet && pl.state!==S.DEAD && (activeDomain.moonRise||0) >= 0.6){
+    const phys = [S.RAGD,S.SLAM].includes(pl.state), x = phys ? pl.rdX : pl.x, y = phys ? pl.rdY : pl.y;
+    ctx.save(); ctx.strokeStyle = 'rgba(216,200,255,0.45)'; ctx.lineWidth = 1;
+    for(let gx=0; gx<=PW; gx+=7){ ctx.beginPath(); ctx.moveTo(x+gx, y); ctx.lineTo(x+gx, y+PH); ctx.stroke(); }
+    for(let gy=0; gy<=PH; gy+=7){ ctx.beginPath(); ctx.moveTo(x, y+gy); ctx.lineTo(x+PW, y+gy); ctx.stroke(); }
+    ctx.restore();
+  }
+}
+function drawNaoTrail(pl){
+  const tr = pl.naoTrail; if(!tr || !tr.length) return;
+  if(![S.NAODASH,S.NAOCOMBO,S.NAOROCKET].includes(pl.state) && terClock - tr[tr.length-1].t > 250) return;
+  ctx.save();
+  tr.forEach((p, i) => { const a = 0.1 + 0.3*(i/tr.length); drawFrameBox(p.x-4, p.y-4, PW+8, PH+6, a*0.6);
+    ctx.globalAlpha = a; ctx.strokeStyle = pl.charColor || '#e6d3a3'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(p.x+PW/2, p.y+HEAD_R+2, HEAD_R, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x+PW/2, p.y+HEAD_R*2+2); ctx.lineTo(p.x+PW/2, p.y+PH-LEG_H-4); ctx.stroke(); ctx.globalAlpha = 1; });
+  ctx.restore();
+}
+
+// The vengeful cursed spirit: a tall white shell with a skull at the top and a dark slit down its middle
+function drawNaoPod(cx, cy, ang, s, glow){
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang); ctx.scale(s, s);
+  const H = 50, Wd = 21;                         // half-height / half-width
+  if(glow){ ctx.shadowColor = '#9a6fd6'; ctx.shadowBlur = 14; }
+  ctx.fillStyle = '#f1ede2'; ctx.strokeStyle = '#151515'; ctx.lineWidth = 1.6; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, -H);                                        // hood tip
+  ctx.quadraticCurveTo(Wd*0.55, -H*0.9, Wd*0.75, -H*0.55);
+  ctx.quadraticCurveTo(Wd*1.15, -H*0.42, Wd, -H*0.12);       // right shoulder bulge
+  ctx.quadraticCurveTo(Wd*0.82, H*0.12, Wd*0.72, H*0.32);    // waist
+  ctx.quadraticCurveTo(Wd*0.95, H*0.6, Wd*0.5, H*0.86);
+  ctx.quadraticCurveTo(Wd*0.2, H*1.0, 0, H);                 // bottom tip
+  ctx.quadraticCurveTo(-Wd*0.2, H*1.0, -Wd*0.5, H*0.86);
+  ctx.quadraticCurveTo(-Wd*0.95, H*0.6, -Wd*0.72, H*0.32);
+  ctx.quadraticCurveTo(-Wd*0.82, H*0.12, -Wd, -H*0.12);
+  ctx.quadraticCurveTo(-Wd*1.15, -H*0.42, -Wd*0.75, -H*0.55);
+  ctx.quadraticCurveTo(-Wd*0.55, -H*0.9, 0, -H);
+  ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+  // shell plates
+  ctx.lineWidth = 0.9;
+  for(const sx of [-1, 1]){
+    ctx.beginPath(); ctx.ellipse(sx*Wd*0.55, -H*0.2, Wd*0.38, H*0.17, 0, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx*Wd*0.9, -H*0.48); ctx.quadraticCurveTo(sx*Wd*0.4, -H*0.45, sx*Wd*0.22, -H*0.36); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx*Wd*0.72, H*0.32); ctx.quadraticCurveTo(sx*Wd*0.35, H*0.28, sx*Wd*0.2, H*0.4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(sx*Wd*0.6, H*0.55); ctx.quadraticCurveTo(sx*Wd*0.3, H*0.6, sx*Wd*0.12, H*0.72); ctx.stroke();
+  }
+  // the dark slit (and the hood opening above the skull)
+  ctx.fillStyle = '#141018';
+  ctx.beginPath(); ctx.moveTo(0, -H*0.97); ctx.quadraticCurveTo(Wd*0.22, -H*0.82, Wd*0.16, -H*0.66); ctx.lineTo(-Wd*0.16, -H*0.66); ctx.quadraticCurveTo(-Wd*0.22, -H*0.82, 0, -H*0.97); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-Wd*0.2, -H*0.3); ctx.quadraticCurveTo(-Wd*0.26, H*0.3, -Wd*0.08, H*0.88); ctx.lineTo(Wd*0.08, H*0.88); ctx.quadraticCurveTo(Wd*0.26, H*0.3, Wd*0.2, -H*0.3); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(120,100,140,0.6)'; ctx.lineWidth = 0.6;
+  for(const k of [-0.08, 0, 0.08]){ ctx.beginPath(); ctx.moveTo(Wd*k, -H*0.25); ctx.lineTo(Wd*k*0.6, H*0.8); ctx.stroke(); }
+  // skull
+  ctx.fillStyle = '#e9e3d4'; ctx.strokeStyle = '#151515'; ctx.lineWidth = 1.1;
+  ctx.beginPath(); ctx.ellipse(0, -H*0.5, Wd*0.38, H*0.15, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#0d0b10';
+  for(const sx of [-1, 1]){ ctx.beginPath(); ctx.ellipse(sx*Wd*0.16, -H*0.53, Wd*0.11, H*0.055, sx*0.3, 0, Math.PI*2); ctx.fill(); }
+  ctx.beginPath(); ctx.moveTo(0, -H*0.47); ctx.lineTo(-Wd*0.05, -H*0.41); ctx.lineTo(Wd*0.05, -H*0.41); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#151515'; ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(-Wd*0.18, -H*0.38); ctx.lineTo(Wd*0.18, -H*0.38); ctx.stroke();
+  for(let k=-3;k<=3;k++){ ctx.beginPath(); ctx.moveTo(k*Wd*0.05, -H*0.39); ctx.lineTo(k*Wd*0.05, -H*0.35); ctx.stroke(); }
+  ctx.restore();
+}
+function drawNaoRocket(pl){
+  const cx = pl.x+PW/2, cy = pl.y+PH/2, a = pl.naoAng||0, t = Date.now();
+  drawNaoTrail(pl);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(a);
+  ctx.globalCompositeOperation = 'lighter';
+  for(let k=0;k<3;k++){ const L = 44 + k*16 + Math.sin(t*0.05+k)*8; const gg = ctx.createLinearGradient(-44, 0, -44-L, 0); gg.addColorStop(0, k? 'rgba(176,124,255,0.7)':'rgba(255,220,140,0.9)'); gg.addColorStop(1, 'rgba(255,90,40,0)');
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.moveTo(-42, -9+k*2); ctx.lineTo(-42-L, 0); ctx.lineTo(-42, 9-k*2); ctx.fill(); }
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
+  drawNaoPod(cx, cy, a + Math.PI/2, 0.92, true);
+}
+function drawNaoyaBody(pl){
+  if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
+  const cx = pl.x+PW/2, hy = pl.y+HEAD_R+2, f = pl.facing;
+  drawNaoTrail(pl);
+  ctx.save();
+  if(pl.type==='naoya'){
+    // bleached hair with dark roots, and the earrings
+    ctx.fillStyle = '#efe0a8'; ctx.beginPath(); ctx.ellipse(cx-f*2, hy-HEAD_R*0.55, HEAD_R*1.05, HEAD_R*0.55, 0, Math.PI, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#2a2418'; ctx.beginPath(); ctx.ellipse(cx-f*2, hy-HEAD_R*0.92, HEAD_R*0.6, HEAD_R*0.18, 0, Math.PI, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#c0c0c8'; ctx.beginPath(); ctx.arc(cx-f*HEAD_R*0.9, hy+3, 1.6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(cx-f*HEAD_R*0.9, hy+6, 1.2, 0, Math.PI*2); ctx.fill();
+    if(pl.state===S.NAOCOMBO){
+      ctx.strokeStyle = pl.charColor || '#e6d3a3'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+      const sx = cx - f*3, sy = pl.y + HEAD_R*2 + 8;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(cx - f*HEAD_R*1.3, hy - HEAD_R*0.6); ctx.lineTo(cx - f*2, hy - HEAD_R*1.1); ctx.stroke();   // hand on his head
+      ctx.strokeStyle = '#2a2418'; ctx.lineWidth = 1.2;
+      for(const ex of [2, 6]){ ctx.beginPath(); ctx.arc(cx + f*ex, hy + 1, 1.8, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke(); }                     // eyes closed
+    }
+    if(pl.state===S.NAOCOMBO){ const k = (pl.sTimer % 110)/110; ctx.strokeStyle = 'rgba(244,241,230,0.8)'; ctx.lineWidth = 2;
+      for(let i=0;i<3;i++){ const yy = pl.y+PH*0.32+i*7; ctx.beginPath(); ctx.moveTo(cx+f*10, yy); ctx.lineTo(cx+f*(26+k*22), yy); ctx.stroke(); }
+      ctx.fillStyle = '#f4f1e6'; ctx.beginPath(); ctx.arc(cx+f*(28+k*20), pl.y+PH*0.36, 4.5, 0, Math.PI*2); ctx.fill(); }
+  } else {
+    // vengeful cursed spirit: swollen head, many eyes, a ring of film around it
+    const t = Date.now();
+    ctx.fillStyle = 'rgba(58,37,96,0.85)'; ctx.strokeStyle = '#d8c8ff'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(cx, hy-2, HEAD_R*1.5, HEAD_R*1.35, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff6d0'; for(const [ex,ey] of [[-5,-5],[4,-6],[-1,0],[6,1],[-6,3]]){ ctx.beginPath(); ctx.arc(cx+ex*f, hy+ey-2, 1.8, 0, Math.PI*2); ctx.fill(); }
+    ctx.strokeStyle = '#1a1028'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(cx-7, hy+6); for(let k=0;k<6;k++) ctx.lineTo(cx-7+k*2.8, hy+6+(k%2?3:0)); ctx.stroke();
+    ctx.globalAlpha = 0.45; ctx.strokeStyle = '#e8e2d0'; ctx.lineWidth = 1.5;
+    for(let k=0;k<5;k++){ const a = t*0.0015 + k*Math.PI*2/5, rx = cx + Math.cos(a)*30, ry = pl.y+PH/2 + Math.sin(a)*40; ctx.strokeRect(rx-6, ry-8, 12, 16); }
+  }
+  ctx.restore();
+}
+function drawNaoya(){
+  for(const f of naoFrames){
+    const pulse = f.caught ? 0.8 + 0.2*Math.sin(Date.now()*0.03) : 0.75;
+    drawFrameBox(f.x-28, f.y-42, 56, 84, pulse);
+    if(f.t > NAO_FIELD_LIFE-1000 || (f.caught && f.ct > NAO_FIELD_HOLD-800)){ ctx.save(); ctx.globalAlpha = 0.5+0.5*Math.sin(Date.now()*0.04); ctx.strokeStyle = '#b07cff'; ctx.lineWidth = 2; ctx.strokeRect(f.x-31, f.y-45, 62, 90); ctx.restore(); }
+  }
+}
+
 function drawTakaba(){ for(const tr of trucks) drawTruck(tr); }
 function drawTakabaBody(pl){
   if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
@@ -13391,6 +13975,7 @@ function respawnFromSky(pl){
   pl.iframes = RESPAWN_IFRAMES; pl.lastCombatT = terClock;
   addRing(pl.x+PW/2, top, pl.charColor||'#fff', 70);
   if(!(isTraining() && pl===p2)) showTxt(pl.name + ' IS BACK', 1000); snd('charge', pl.x);
+  naoLifeCheck(pl);
 }
 
 
@@ -13471,6 +14056,8 @@ const CHAR_TIPS = {
   choso:    ['Hold {ab1} to charge Piercing Blood, aim with {jump} / {down}.', 'The Convergence orb follows you — press {ab2} again to detonate it.', 'You leave blood pools when hurt; Supernova ({ult}) detonates all of them, so fight near your blood.'],
   higuruma: ['Double-tap a direction to dash (Objection Step).', 'Heavy Gavel in the air becomes a plunge.', 'Deadly Sentencing is a key-press race — follow the prompts faster than the defendant. Guilty = a 20s instakill sword.'],
   hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Idle Death Gamble rolls a 10% jackpot every 5s; a jackpot makes you unkillable.'],
+  naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.'],
+  naoyac:   ['Rocket steers with {left} {right} {jump} {down}; press {ab1} again to blow up early.', 'Lay a Frame Field where they\'ll walk, then press {ab2} to set it off — caught fighters take 22.', 'In Time Cell Moon Palace they only get hurt while moving: freeze them in frames and let the domain work.'],
   takaba:   ['Rock Paper Scissors: each player picks with their own {ab1} / {ab2} / {ab3} (rock / paper / scissors). Read your opponent!', '1000 Years of Death needs them within about 460px.', 'Counter lasts only 0.45s — press it right as their attack is about to land.', 'The Truck flashes a warning arrow first; it can be jumped over.'],
   mahito:   ['Walk into a thin wall to slip straight through it.', 'Reshape them with Idle Transfiguration first — they\'re slower and take more damage from everything after.', 'Stay unhurt for 4s and you start regenerating.'],
   hanami:   ['Root Grab aims with {jump} / {down} before it lashes out.', 'Root Rampage follows your mouse; the roots it leaves are platforms anyone can stand on.', 'Cursed Buds drain their ultimate bar — use them before they can cast a domain.'],
@@ -13496,7 +14083,7 @@ function drawCombatGuide(pl, x, y, w){
     yl = guideBlock('BASIC COMBO', kfill(pl, '{atk} three times: each punch deals 2 and fills a combo pip. The 4th attack is a FINISHER — on the ground it deals 5 and knocks them away; in the air it\'s a dive slam for 15. You can move while you swing.'), x, yl, colW);
     yl = guideBlock('ONLINE HAS MORE', 'Online (separate computers) melee is deeper: combo strings with directional finishers, perfect timing, blocking, perfect blocks, dashes and move variants.', x, yl, colW);
   }
-  const _ceP = CE_PROFILE[pl.baseType||pl.type] || [100,7], _ceT = `Moves spend CE (the blue bar under your health) and have 3/4 of their old cooldown. Super: its hit charge + 50% CE. Domain: a full bar · ultimate: 75%; both empty it. You: ${_ceP[0]} CE, refills ${_ceP[1]}/s.`;
+  const _ceP = CE_PROFILE[ceProfKey(pl)] || [100,7], _ceT = `Moves spend CE (the blue bar under your health) and have 3/4 of their old cooldown. Super: its hit charge + 50% CE. Domain: a full bar · ultimate: 75%; both empty it. You: ${_ceP[0]} CE, refills ${_ceP[1]}/s.`;
   if(online) yr = guideBlock('CURSED ENERGY', _ceT, xr, yr, colW, '#6fb8ff'); else yl = guideBlock('CURSED ENERGY', _ceT, x, yl, colW, '#6fb8ff');
   const yb = Math.max(yl, yr) + 2;
   ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.moveTo(x, yb-8); ctx.lineTo(x+w, yb-8); ctx.stroke();
@@ -13515,7 +14102,7 @@ function drawFighterGuide(pl, x, y, w, twoCol){
   const P = MOVE_PASSIVES[pl.type];
   if(P && !(MOVE_INFO[pl.type]||[]).some(r => r[0]==='move')) yl = guideBlock(`PASSIVE  ${P.name}`, P.desc, x, yl, colW, pl.charColor);
   else if(P && P.desc) yl = guideBlock('PASSIVE (details)', P.desc, x, yl, colW, 'rgba(220,215,205,0.8)');
-  { const pr = CE_PROFILE[pl.baseType||pl.type] || [100,7]; yl = guideBlock(`CURSED ENERGY  ${pr[0]} · refills ${pr[1]}/s`, CE_LORE[pl.baseType||pl.type] || '', x, yl, colW, '#6fb8ff'); }
+  { const pr = CE_PROFILE[ceProfKey(pl)] || [100,7]; yl = guideBlock(`CURSED ENERGY  ${pr[0]} · refills ${pr[1]}/s`, CE_LORE[ceProfKey(pl)] || '', x, yl, colW, '#6fb8ff'); }
   if(!twoCol) yr = yl;
   if(online){
     const V = OL_VARS[pl.type] || {}, AD = OL_AD[pl.type];
@@ -13575,7 +14162,7 @@ const TRAIN_DUMMY = ['STAND', 'JUMP', 'BLOCK', 'WALK', 'CROUCH'];
 const TRAIN_METERS = [['domainCharge','DOMAIN_CHARGE_REQ'], ['fugaCharge','FUGA_CHARGE_REQ'], ['hollowCharge','HOLLOW_CHARGE_REQ'], ['yujiUltCharge','YUJI_ULT_COST'],
   ['yujiBfCharge','YUJI_BF_REQ'], ['yutaCopyUltCharge','YUTA_COPY_ULT_REQ'], ['chosoCharge','CHOSO_RING_REQ'], ['dagonCharge','DAGON_SWARM_REQ'], ['hakCharge','HAK_PUNCH_REQ'],
   ['hanaCharge','HANA_GRAB_REQ'], ['higuCharge','HIGU_THROW_REQ'], ['jogoCharge','JOGO_MOUND_REQ'], ['kenCharge','KEN_AG_REQ'], ['mahiCharge','MAHI_FORM_REQ'],
-  ['puppetCharge','PUPPET_REQ'], ['takCharge','TAKA_CTR_REQ'], ['todoCharge','TODO_SUPER_REQ']];
+  ['puppetCharge','PUPPET_REQ'], ['takCharge','TAKA_CTR_REQ'], ['todoCharge','TODO_SUPER_REQ'], ['naoCharge','NAO_SPECIAL_REQ']];
 const trainStat = {prevHp:100, combo:0, hits:0, last:0, lastT:-1e9, best:0};
 function isTraining(){ return typeof gameMode!=='undefined' && gameMode==='training'; }
 function isLocalPair(){ return NET.role==='local' && !isTraining(); }
@@ -13604,6 +14191,7 @@ function trainKeys(){
   if(k('Digit3')) trainReset();
   if(k('Digit4')){ trainSwap(1, 1); p2CharIdx = p1CharIdx; }
   if(k('Digit5')){ trainOpt.ol = !trainOpt.ol; }
+  if(k('Digit6') && isNaoya(p1)){ if(p1.type==='naoya') naoyaCurse(p1); else naoyaHuman(p1); }
   if(k('Digit0')) trainOpt.hide = !trainOpt.hide;
 }
 function trainTick(){
@@ -13631,7 +14219,7 @@ function drawTrainPanel(){
   ctx.fillText(`COMBO ${Math.round(trainStat.combo*10)/10} dmg · ${trainStat.hits} hit${trainStat.hits===1?'':'s'} · last ${Math.round(trainStat.last*10)/10} · best ${Math.round(trainStat.best*10)/10}`, W/2, 46);
   if(!trainOpt.hide){
     const rows = [['1', 'Meters', trainOpt.meters ? 'INFINITE' : 'NORMAL', trainOpt.meters], ['2', 'CE + cooldowns', trainOpt.nocd ? 'NONE' : 'NORMAL', trainOpt.nocd],
-                  ['3', 'Reset', '↺'], ['4', 'Fighter', p1.name], ['5', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC'], ['0', 'Hide', '']];
+                  ['3', 'Reset', '↺'], ['4', 'Fighter', p1.name], ['5', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC']].concat(isNaoya(p1) ? [['6', 'Naoya', p1.type==='naoyac' ? 'CURSE' : 'HUMAN']] : []).concat([['0', 'Hide', '']]);
     ctx.font = `700 10px 'Rajdhani',sans-serif`;
     const widths = rows.map(([k, l, v]) => { ctx.font = `700 10px 'Rajdhani',sans-serif`; const a = ctx.measureText(`[${k}] ${l.toUpperCase()}`).width; ctx.font = `700 11px 'Rajdhani',sans-serif`; return Math.max(a, ctx.measureText(v).width) + 18; });
     const total = widths.reduce((a, b) => a+b, 0), y = H - 46; let cx = W/2 - total/2;
@@ -13694,6 +14282,7 @@ function drawEffects(pl, x, flip){
 }
 
 function clearProjectiles(){
+  naoFrames.length=0; naoGame=null;
   parts.length=0; rings.length=0; dmgNums.length=0; cleaves.length=0;
   dismantleEvents.length=0; slashMarks.length=0;
   fugaShots.length=0; explosions.length=0; flameTrails.length=0;
@@ -13845,6 +14434,10 @@ const MOVE_INFO = {
              ['ab3','Gavel Throw · super','Hit = stun + rush them down (8 + 16).'], ['ult','Deadly Sentencing','Key-press trial: win = 20s instakill sword.'], ['move','Objection Step','Double-tap a direction to dash.']],
   hakari:   [['ab1','Pachinko Balls','Spread of bouncing steel balls (4 each).'], ['ab2','Shutter Doors','Doors slam on the foe: 15 + trapped 1s.'],
              ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25s; 10% jackpot every 5s → unkillable.'], ['move','Fever','Faster during a jackpot.']],
+  naoya:    [['ab1','Projection Dash','Runs forward at 24 fps and punches whoever is in the way (14).'], ['ab2','Frame Barrage','Four jabs a frame apart (3 each), then a launching kick (9).'],
+             ['ab3','24 FPS · super','You draw a motion (12 keys; 24 online). If they miss one key, they\'re frozen in a frame for 8s: no moving, +14% damage taken.'], ['ult','Vengeful Curse','No domain while human. His 4th and last life is spent as a cursed spirit with new moves and a domain.'], ['move','Projection Sorcery','Fastest fighter; speed builds as he runs. Every 3rd quick hit freezes the foe in a frame. 4 lives, 75 HP each.']],
+  naoyac:   [['ab1','Rocket','Becomes a rocket for 2.4s: steer with the movement keys, smash through terrain (20 per hit). Press again to blow up early.'], ['ab2','Frame Field','Five frames in a row. Walk into one = caught. Press again to detonate: 10 each, 22 to anyone caught.'],
+             ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: every motion that breaks 24 fps tears their cells apart (2 every 0.25s while they move). Standing still is safe.'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
   takaba:   [['ab1','Rock Paper Scissors','Both pick within 1.8s. Loser takes 30. Draw = half the CE back.'], ['ab2','1000 Years of Death','Teleports behind them (460px) and pokes: 14 + big launch.'],
              ['ab3','Counter · super','0.45s stance: any hit in it does NO damage and stuns them.'], ['ult','The Truck','HONK. A truck drives through everything in their lane: 45.'], ['move','Comedian','12% of hits on him are just a gag (no damage).']],
   mahito:   [['ab1','Idle Transfiguration','Short palm (12). Reshapes the foe for 5s: 30% slower, takes 20% more damage.'], ['ab2','Soul Isomer','A transfigured human runs at the foe and explodes (16).'],
@@ -14413,7 +15006,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -14426,7 +15019,7 @@ const NET_G = {
   p1lives:[()=>p1lives, v=>p1lives=v], p2lives:[()=>p2lives, v=>p2lives=v],
   p1kills:[()=>p1kills, v=>p1kills=v], p2kills:[()=>p2kills, v=>p2kills=v], terClock:[()=>Math.round(terClock), v=>terClock=v],
   specN:[()=>Math.max(0, NET.conns.length-1), v=>NET.specN=v],
-  clash:[()=>domainClash, v=>domainClash=v], rps:[()=>rpsGame, v=>rpsGame=v], paused:[()=>paused, v=>paused=v], pausedBy:[()=>pausedBy, v=>pausedBy=v]
+  clash:[()=>domainClash, v=>domainClash=v], rps:[()=>rpsGame, v=>rpsGame=v], nao:[()=>naoGame, v=>naoGame=v], paused:[()=>paused, v=>paused=v], pausedBy:[()=>pausedBy, v=>pausedBy=v]
 };
 const NET_GREF = { winner:[()=>winner, v=>winner=v], roundWinner:[()=>roundWinner, v=>roundWinner=v] };
 
@@ -14699,7 +15292,7 @@ function logicCharSelect(dt){
       window._bothConfirmedTimer = 0;
       p1 = buildPlayer(p1CharIdx, 170,  1, ctrlFor(1), 1);
       p2 = buildPlayer(p2CharIdx, 690, -1, ctrlFor(2), 2);
-      p1lives=3; p2lives=3; p1kills=0; p2kills=0; clearProjectiles(); bloodPools.length=0;
+      p1lives=startLivesFor(p1); p2lives=startLivesFor(p2); p1kills=0; p2kills=0; clearProjectiles(); bloodPools.length=0;
       buildTerrain(mapIdx); terrainReset();
       activeDomain=null; domainClash=null; domainFlash=0; timeScale=1;
       winner=null; roundWinner=null;
@@ -14722,7 +15315,7 @@ function logicRoundEnd(dt){
 function logicMatchEnd(){
   if(MI1.confirm || MI2.confirm){
     p1.reset(); p2.reset(); clearProjectiles();
-    p1lives=3; p2lives=3; p1kills=0; p2kills=0;
+    p1lives=startLivesFor(p1); p2lives=startLivesFor(p2); p1kills=0; p2kills=0;
     winner=null; roundWinner=null; activeDomain=null; domainClash=null; domainFlash=0;
     p1Confirmed=false; p2Confirmed=false;
     phase='modeSelect'; homeT=0;
@@ -14891,7 +15484,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -14910,8 +15503,8 @@ function simFight(dt){
           if(roundWinner===p1) p1kills++;
           else if(roundWinner===p2) p2kills++;
           const scorer = roundWinner.name;
-          if(p1.hp<=0){ p1.reset(); }
-          if(p2.hp<=0){ p2.reset(); }
+          if(p1.hp<=0){ p1.reset(); naoLifeCheck(p1); }
+          if(p2.hp<=0){ p2.reset(); naoLifeCheck(p2); }
           clearProjectiles(); activeDomain=null; domainClash=null; domainFlash=0;
           roundWinner=null;
           showTxt(scorer+' SCORES!', 800);
@@ -14929,7 +15522,7 @@ function simFight(dt){
 function drawFight(dt){
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawDomain();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();
