@@ -626,7 +626,7 @@ canvas {
           <tr><td>Q</td><td>Rocket</td><td>Turns into a rocket for 2.4s that you steer with the movement keys. Smashes straight through terrain; 20 damage per hit; press Q again to blow up early (8 more around you). 64 CE, 6s cooldown.</td></tr>
           <tr><td>E</td><td>Frame Field</td><td>Five frames in a row in front of him for 6s. Anyone who walks into one is caught in it. Press E again to detonate them all: 10 each, and <b>22 to anyone caught</b>. 56 CE, 5.3s cooldown.</td></tr>
           <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Same frame prompt as before.</td></tr>
-          <tr><td>F</td><td>Time Cell Moon Palace <em>(domain, 150)</em></td><td>A moonlit palace. Projection Sorcery is applied to the target's cells: <b>every motion that breaks 24 fps tears them apart</b> — 2 damage every 0.25s while they move, attack or fall. Standing still is safe. Naoya is 20% faster inside. Needs a full CE bar.</td></tr>
+          <tr><td>F</td><td>Time Cell Moon Palace <em>(domain, 150)</em></td><td>A black void with a white road winding up to a towering cluster of cells crowned by a giant eye. Projection Sorcery is applied to the target's cells: <b>every motion that breaks 24 fps tears them apart</b> — 2 damage every 0.25s while they move, attack or fall. Standing still is safe. Naoya is 20% faster inside. Needs a full CE bar.</td></tr>
         </table>
       </section>
       <section data-p="online">
@@ -13695,43 +13695,65 @@ function tickMoon(d, dt){
   }
 }
 function drawMoonDomain(){
-  const d = activeDomain, rise = d.moonRise||0, t = Date.now();
-  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#05060f'); g.addColorStop(0.6, '#141532'); g.addColorStop(1, '#2a2240');
-  ctx.globalAlpha = Math.min(1, rise*1.4); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  // stars
-  for(let i=0;i<60;i++){ const sx = (i*137.5) % W, sy = (i*71.3) % (H*0.55); ctx.fillStyle = `rgba(255,255,240,${0.3+0.3*Math.sin(t*0.002+i)})`; ctx.fillRect(sx, sy, 1.6, 1.6); }
-  // the moon
-  const mx = W*0.5, my = 150 - (1-rise)*60, mr = 92;
-  const mg = ctx.createRadialGradient(mx, my, mr*0.2, mx, my, mr*1.8); mg.addColorStop(0, 'rgba(255,250,225,0.55)'); mg.addColorStop(1, 'rgba(255,250,225,0)');
-  ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, mr*1.8, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#f6f0d6'; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = 'rgba(190,180,150,0.45)'; for(const [ox,oy,r] of [[-30,-20,16],[22,10,22],[-10,34,10],[38,-34,9]]){ ctx.beginPath(); ctx.arc(mx+ox, my+oy, r, 0, Math.PI*2); ctx.fill(); }
-  // palace silhouette: stacked curved roofs
-  ctx.fillStyle = '#0b0a16';
-  const base = 430;
-  for(const [px, w, levels] of [[W*0.2, 170, 3], [W*0.5, 240, 4], [W*0.8, 170, 3]]){
-    let y = base, ww = w;
-    for(let l=0;l<levels;l++){
-      const h = 44;
-      ctx.fillRect(px - ww*0.32, y - h, ww*0.64, h);
-      ctx.beginPath(); ctx.moveTo(px - ww/2 - 14, y - h); ctx.quadraticCurveTo(px - ww*0.25, y - h - 4, px, y - h - 22); ctx.quadraticCurveTo(px + ww*0.25, y - h - 4, px + ww/2 + 14, y - h); ctx.closePath(); ctx.fill();
-      y -= h + 18; ww *= 0.72;
-    }
-    ctx.fillRect(px-2, y-10, 4, 26);
-  }
-  ctx.fillRect(0, base, W, H-base);
-  // floor: a reflecting pool
-  ctx.fillStyle = 'rgba(246,240,214,0.12)'; ctx.beginPath(); ctx.ellipse(mx, base+30, 80, 10, 0, 0, Math.PI*2); ctx.fill();
-  // drifting film frames
-  ctx.strokeStyle = 'rgba(232,226,208,0.35)'; ctx.lineWidth = 2;
-  for(let i=0;i<8;i++){
-    const fx = ((t*0.03*(i%2?1:-1) + i*150) % (W+120) + W+120) % (W+120) - 60, fy = 60 + (i*53) % 260;
-    ctx.strokeRect(fx-24, fy-32, 48, 64);
-    ctx.fillStyle = 'rgba(232,226,208,0.25)'; for(let s=0;s<4;s++){ ctx.fillRect(fx-30, fy-28+s*16, 4, 8); ctx.fillRect(fx+26, fy-28+s*16, 4, 8); }
-  }
-  ctx.globalAlpha = 1;
+  // Time Cell Moon Palace, manga-style: black space, a white road winding up to a towering cluster of cell-like
+  // clouds crowned by a giant eye, a black spiked sun on the road and a twisted column dropping into the void
+  const d = activeDomain, rise = d.moonRise||0, t = Date.now(), A = Math.min(1, rise*1.4);
+  const R = (k, n) => _hh(k, n);
+  ctx.save(); ctx.globalAlpha = A;
+  ctx.fillStyle = '#060607'; ctx.fillRect(0, 0, W, H);
+  // speckled stars
+  for(let i=0;i<140;i++){ const sx = R(i,1)*W, sy = R(i,2)*H*0.9, r = R(i,3)<0.85 ? 0.9 : 1.8;
+    ctx.fillStyle = `rgba(255,255,255,${0.45+0.4*Math.sin(t*0.002+i)})`; ctx.fillRect(sx, sy, r, r); }
+  const ink = '#0b0b0c', paper = '#f3f1ea', lw = 1.6;
+  const blob = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill(); ctx.stroke(); };
+  const cloud = (cx, cy, s, seed) => {           // bulbous cell cluster
+    ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = lw;
+    for(let k=0;k<7;k++){ const a = R(seed,k)*Math.PI*2, rr = s*(0.25+0.35*R(seed,k+9)); blob(cx + Math.cos(a)*s*0.45, cy + Math.sin(a)*s*0.35, rr); }
+    blob(cx, cy, s*0.42);
+    ctx.lineWidth = 0.8; for(let k=0;k<4;k++){ const a = R(seed,k+20)*Math.PI*2; ctx.beginPath(); ctx.arc(cx+Math.cos(a)*s*0.2, cy+Math.sin(a)*s*0.18, s*0.12, a, a+2); ctx.stroke(); }
+  };
+  const towerX = W*0.72, eyeY = 252 - (1-rise)*50;
+  // the road: a white ribbon from the bottom left up to the tower
+  ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.moveTo(-20, H); ctx.bezierCurveTo(W*0.22, H*0.8, W*0.42, H*0.7, towerX-60, H*0.6);
+  ctx.lineTo(towerX+30, H*0.58); ctx.bezierCurveTo(W*0.55, H*0.72, W*0.45, H*0.86, W*0.4, H); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.lineWidth = 0.7; ctx.strokeStyle = 'rgba(11,11,12,0.5)';
+  for(let k=1;k<6;k++){ const u = k/6; ctx.beginPath(); ctx.moveTo(-20 + u*(W*0.4+20), H); ctx.bezierCurveTo(W*0.22+u*80, H*0.8+u*6, W*0.42+u*40, H*0.7+u*6, towerX-60+u*90, H*0.6); ctx.stroke(); }
+  // the tower of cells
+  for(let k=0;k<4;k++){ const yy = 412 - k*34, xx = towerX + Math.sin(k*1.3)*14; cloud(xx, yy, 44 + (k%3)*8, 40+k); }
+  cloud(towerX-78, eyeY+6, 40, 70); cloud(towerX+80, eyeY+24, 38, 71); cloud(towerX, eyeY-46, 40, 72);
+  // the giant eye
+  ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.ellipse(towerX, eyeY, 54, 46, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  const look = Math.sin(t*0.0012)*8;
+  ctx.fillStyle = '#1a1a1c'; ctx.beginPath(); ctx.arc(towerX + look, eyeY+2, 30, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 0.8; for(let k=0;k<18;k++){ const a = k/18*Math.PI*2; ctx.beginPath(); ctx.moveTo(towerX+look+Math.cos(a)*12, eyeY+2+Math.sin(a)*12); ctx.lineTo(towerX+look+Math.cos(a)*28, eyeY+2+Math.sin(a)*28); ctx.stroke(); }
+  ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(towerX + look, eyeY+2, 11, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(towerX + look - 9, eyeY - 8, 5, 0, Math.PI*2); ctx.fill();
+  // floating cell clusters
+  for(let k=0;k<5;k++){ const fx = W*(0.08 + 0.18*k) + Math.sin(t*0.0007+k)*10, fy = 180 + R(k,90)*110 + Math.cos(t*0.0009+k)*6; if(Math.abs(fx-towerX) < 110) continue; cloud(fx, fy, 16 + R(k,91)*12, 100+k); }
+  // the black spiked sun on the road, and the twisted column below it
+  const sx = W*0.44, sy = 318;
+  ctx.fillStyle = paper; ctx.strokeStyle = ink; ctx.lineWidth = lw; ctx.beginPath(); ctx.arc(sx, sy, 56, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = ink; ctx.beginPath();
+  for(let k=0;k<32;k++){ const a = k/32*Math.PI*2 + t*0.0003, r = k%2 ? 30 : 46; ctx.lineTo(sx+Math.cos(a)*r, sy+Math.sin(a)*r); }
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = paper; ctx.beginPath(); ctx.arc(sx, sy, 22, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = ink; ctx.lineWidth = 0.8; for(let k=0;k<5;k++){ ctx.beginPath(); ctx.arc(sx, sy, 4+k*3.6, 0, Math.PI*2); ctx.stroke(); }
+  ctx.fillStyle = '#d9d6cc'; ctx.strokeStyle = ink; ctx.lineWidth = 1.2;
+  for(let k=0;k<4;k++){ const yy = sy + 50 + k*17, w2 = 18 - k*1.2, tw = Math.sin(k*0.9 + t*0.002)*6;
+    ctx.beginPath(); ctx.ellipse(sx + tw, yy, w2, 8, Math.sin(k)*0.3, 0, Math.PI*2); ctx.fill(); ctx.stroke(); }
+  // floor the fighters stand on: the road's white plane, ink-hatched
+  const fl = 430;
+  ctx.globalAlpha = A*0.88; ctx.fillStyle = paper; ctx.fillRect(0, fl, W, H-fl); ctx.globalAlpha = A;
+  ctx.strokeStyle = ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, fl); ctx.lineTo(W, fl); ctx.stroke();
+  ctx.lineWidth = 0.7; ctx.strokeStyle = 'rgba(11,11,12,0.45)';
+  for(let x=-40; x<W; x+=22){ ctx.beginPath(); ctx.moveTo(x, fl+6); ctx.lineTo(x+30, H); ctx.stroke(); }
+  // drifting film frames, a reminder whose domain it is
+  ctx.strokeStyle = 'rgba(243,241,234,0.35)'; ctx.lineWidth = 1.5;
+  for(let i=0;i<5;i++){ const fx = ((t*0.025*(i%2?1:-1) + i*210) % (W+120) + W+120) % (W+120) - 60, fy = 40 + (i*67) % 200; ctx.strokeRect(fx-18, fy-24, 36, 48); }
+  ctx.restore();
 }
-
 // ── drawing ──
 function drawFrameBox(x, y, w, h, a){
   ctx.save(); ctx.globalAlpha = a;
