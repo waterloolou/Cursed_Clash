@@ -617,7 +617,7 @@ canvas {
           <tr><td>E</td><td>Frame Barrage</td><td>Hand on his head, eyes closed, not even looking: four backhands a frame apart (3 each), then a launching kick (9). 48 CE, 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Both fighters freeze. Naoya draws a motion with his movement keys and attack — <b>12 keys</b> on one keyboard, <b>24 online</b>. Then the opponent has to press the same keys in order. One wrong key (or running out of time) and they're <b>frozen in a frame for 8 seconds</b>: they can't move and take <b>14% more damage</b>. If they keep up, Naoya is the one frozen, for 1.5s. Needs 50% CE.</td></tr>
           <tr><td>F</td><td>—</td><td>No domain while human. His 4th (last) life is spent as a cursed spirit.</td></tr>
-          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> — a free link into the next hit. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his variants, he breaks his own 24 fps motion and is frozen in a frame for 1s</b> (taking 14% more damage).</td></tr>
+          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> (at most once every 3s) — a free link into the next hit. To stop wall loops, his damage falls off within one string: half after 25 damage, a fifth after 40. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his variants, he breaks his own 24 fps motion and is frozen in a frame for 1s</b> (taking 14% more damage).</td></tr>
         </table>
         <h2>Vengeful Cursed Spirit (4th life)</h2>
         <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). Endless mode: after he's been killed three times.</p>
@@ -7033,6 +7033,12 @@ class Player {
     else if(this.mechUltPhase===3 && !this._mechSelfKill) d *= MECH_ULT_ARMOR;
     { const oppM = this===p1 ? p2 : this===p2 ? p1 : null;
       if(v > 0 && !this._mechSelfKill){ d *= this._dmgIn(); if(oppM) d *= oppM._dmgOut(); }
+      // Naoya's combos fall off: past 25 damage in one string his hits do half, past 40 a fifth (stops wall loops)
+      if(d > 0 && oppM && isNaoya(oppM) && !this._rawDmg){
+        if(terClock - (this.naoCmbT||-1e9) > 1400) this.naoCmb = 0;
+        const c = this.naoCmb||0; d *= c >= NAO_CMB_HARD ? 0.2 : c >= NAO_CMB_SOFT ? 0.5 : 1;
+        this.naoCmb = c + d; this.naoCmbT = terClock;
+      }
       if(oppM && d > 0) oppM.dmgDealt = (oppM.dmgDealt||0) + Math.min(d, old); }
     d = guardFilter(this, d, this===p1 ? p2 : this===p2 ? p1 : null);
     this._hp = Math.max(0, old - d);
@@ -7052,10 +7058,10 @@ class Player {
           opp.hanaCharge = Math.min(HANA_GRAB_REQ, (opp.hanaCharge||0) + d);
         if(opp && isNaoya(opp)){
           opp.naoCharge = Math.min(NAO_SPECIAL_REQ, (opp.naoCharge||0) + d);
-          if(!this._rawDmg && !this.isPuppet && this._hp>0 && !(this.framedT>0) && Math.hypot(opp.x-this.x, opp.y-this.y) < 260){
+          if(!this._rawDmg && !this.isPuppet && this._hp>0 && !(this.framedT>0) && terClock - (this.naoPFT||-1e9) > NAO_PASSIVE_CD && Math.hypot(opp.x-this.x, opp.y-this.y) < 260){
             if(terClock - (opp.naoLastHitT||-1e9) > 1100) opp.naoHitN = 0;
             if(terClock !== opp.naoLastHitT){ opp.naoHitN = (opp.naoHitN||0) + 1; opp.naoLastHitT = terClock; }
-            if(opp.naoHitN >= 3){ opp.naoHitN = 0; framePlayer(this, NAO_PASSIVE_MS, opp); addSpeech(this.x+PW/2, this.y-26, 'FRAME!', '#f4f1e6', 500); }
+            if(opp.naoHitN >= 3){ opp.naoHitN = 0; this.naoPFT = terClock; framePlayer(this, NAO_PASSIVE_MS, opp); addSpeech(this.x+PW/2, this.y-26, 'FRAME!', '#f4f1e6', 500); }
           }
         }
         if(opp && opp.type==='dagon')
@@ -12930,7 +12936,7 @@ function guardFilter(pl, d, oppM){
     return d*OL.CHIP;
   }
   if(oppM){
-    const inCombo = [S.STUN,S.RAGD,S.SLAM].includes(pl.state) || now - (pl.lastHitT||-1e9) < 120;
+    const inCombo = [S.STUN,S.RAGD,S.SLAM,S.FRAMED].includes(pl.state) || now - (pl.lastHitT||-1e9) < 120;
     pl.hitsTaken = inCombo ? (pl.hitsTaken||0)+1 : 1;
     oppM.cmbHits = pl.hitsTaken; oppM.cmbT = now; pl.lastHitT = now;
     return d * Math.max(0.5, 1 - 0.1*Math.max(0, pl.hitsTaken-2));
@@ -13522,7 +13528,7 @@ const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 4
 const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 8000, NAO_FRAME_DMG_IN = 1.14;
 const NAO_ROCKET_CD = 8000, NAO_ROCKET_MS = 2400, NAO_ROCKET_SPD = 19, NAO_ROCKET_DMG = 20, NAO_ROCKET_TURN = 0.0055;
 const NAO_FIELD_CD = 7000, NAO_FIELD_N = 5, NAO_FIELD_LIFE = 6000, NAO_FIELD_HOLD = 3000, NAO_FIELD_DMG = 10, NAO_FIELD_TRAP_DMG = 22;
-const NAO_MISS_MS = 1000;   // whiffing a move breaks his own 24 fps rule: he's frozen in a frame
+const NAO_MISS_MS = 1000, NAO_CMB_SOFT = 25, NAO_CMB_HARD = 40, NAO_PASSIVE_CD = 3000;   // whiffing a move breaks his own 24 fps rule: he's frozen in a frame
 const NAO_PASSIVE_MS = 600, NAO_MOON_TICK = 250, NAO_MOON_DMG = 2;
 const NAO_SYMS = ['left','right','jump','down','atk'], NAO_GLYPH = {left:'←', right:'→', jump:'↑', down:'↓', atk:'●'};
 const naoFrames = [];          // synced: {owner, x, y, t, caught}
@@ -14564,7 +14570,7 @@ const MOVE_INFO = {
   hakari:   [['ab1','Pachinko Balls','Spread of bouncing steel balls (4 each).'], ['ab2','Shutter Doors','Doors slam on the foe: 15 + trapped 1s.'],
              ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25s; 10% jackpot every 5s → unkillable.'], ['move','Fever','Faster during a jackpot.']],
   naoya:    [['ab1','Projection Dash','Runs forward at 24 fps and punches whoever is in the way (14). Miss = frozen in a frame for 1s.'], ['ab2','Frame Barrage','Four jabs a frame apart (3 each), then a launching kick (9). Whiff it all = frozen for 1s.'],
-             ['ab3','24 FPS · super','You draw a motion (12 keys; 24 online). If they miss one key, they\'re frozen in a frame for 8s: no moving, +14% damage taken.'], ['ult','Vengeful Curse','No domain while human. His 4th and last life is spent as a cursed spirit with new moves and a domain.'], ['move','Projection Sorcery','Fastest fighter; speed builds as he runs. Every 3rd quick hit freezes the foe in a frame. 4 lives, 75 HP each.']],
+             ['ab3','24 FPS · super','You draw a motion (12 keys; 24 online). If they miss one key, they\'re frozen in a frame for 8s: no moving, +14% damage taken.'], ['ult','Vengeful Curse','No domain while human. His 4th and last life is spent as a cursed spirit with new moves and a domain.'], ['move','Projection Sorcery','Fastest fighter; speed builds as he runs. Every 3rd quick hit freezes the foe in a frame (once per 3s). His long strings fall off: half damage past 25, a fifth past 40. 4 lives, 75 HP each.']],
   naoyac:   [['ab1','Rocket','Becomes a rocket for 2.4s: steer with the movement keys, smash through terrain (20 per hit). Press again to blow up early.'], ['ab2','Frame Field','Five frames in a row. Walk into one = caught. Press again to detonate: 10 each, 22 to anyone caught.'],
              ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: every motion that breaks 24 fps tears their cells apart (2 every 0.25s while they move). Standing still is safe.'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
   takaba:   [['ab1','Rock Paper Scissors','Both pick within 1.8s. Loser takes 30. Draw = half the CE back.'], ['ab2','1000 Years of Death','Teleports behind them (460px) and pokes: 14 + big launch.'],
