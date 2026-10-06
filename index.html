@@ -1349,7 +1349,7 @@ const vlUI = {
 };
 
 const QUIET_DROP = /^(STUNNED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|BODY SWAP)$/;
-const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|CE REGEN \+250%|-\d+ HP \(BLOOD\)|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
+const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|FOCUS BROKEN|NO LUCK|CE REGEN \+250%|-\d+ HP \(BLOOD\)|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
 const hudFeed = {p1:[], p2:[]};      // small notices under each fighter's HUD (not synced; replayed fx fill it on both sides)
 function feedText(t){
   if(/^\d+s$/.test(t)) return 'Cooldown ' + t;
@@ -9253,8 +9253,8 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.4; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.4; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -9517,6 +9517,7 @@ class Player {
     if(this.jackpotT>0){ spd = 1.3; jmp = 1.15; }                       // Hakari's fever
     if(this._vow('iron')) spd *= 0.85;
     if(this.reshapeT>0) spd *= 0.7;
+    if(this.bmT>0) spd *= 0.8;
     if(this.mahiFormT>0) spd *= 1.25;
     if(this.frsT>0) spd *= 1.25;
     if(this.adT>0 && this.type==='sukuna') spd *= 0.6;
@@ -12256,34 +12257,31 @@ const OL_VARS = {
       for(let k=0;k<6;k++){ const a = -0.15 - k*0.12; carveCapsule(x0+f*30, gy+4, x0+f*(70+k*34), gy+4+Math.sin(a)*-18, 2); }
       for(const d of olArea(p, f>0 ? x0 : x0-260, p.y-40, 260, PH+50)) olHit(p, d, 10, {stun:480, push:2, col:'#ff6a6a'});
       snd('slash', p.x); doShake(5); }},
-    2:{name:'Cleave: Point Blank', desc:'Point-blank Cleave that adapts to the target: 8 + 10% of their current HP, launches them.', lock:360, run(p){
-      const [x,y,w,h] = olFront(p, 80);
-      addParts(p.x+PW/2+p.facing*40, p.y+PH/2, '#ff4444', 14, 6); snd('slash', p.x);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 8 + Math.floor(d.hp*0.1), {rag:[11,-6,RAGD_MS], col:'#ff4444'}); }},
+    2:{name:'Reverse Cursed Technique', desc:'Sukuna turns cursed energy positive and regenerates: heals 12 HP over 2s. Any hit in that time breaks his focus and stops it.', lock:260, run(p){
+      p.rctT = 2000; p.rctHp = 0; p.rctHurt = p.lastHurt||0; addRing(p.x+PW/2, p.y+PH/2, '#ffe6e6', 50); snd('charge', p.x); }},
   },
   gojo: {
     1:{name:'Lapse Blue: Pull', desc:'A pinpoint Blue that yanks the nearest foe within 400px toward Gojo (4, sets up a combo).', lock:300, run(p){
       const d = olNearest(p, 400); addRing(p.x+PW/2+p.facing*30, p.y+PH/2, '#4aa8ff', 50); snd('orb', p.x);
       if(d){ const dir = Math.sign(p.x-d.x)||1; olShot(p, {kind:'orbfx', x:d.x+PW/2, y:d.y+PH/2, life:300, col:'#4aa8ff', dmg:0});
         olHit(p, d, 4, {rag:[Math.min(13, Math.abs(p.x-d.x)/22), -5, 520], dir, col:'#4aa8ff'}); } }},
-    2:{name:'Reversal Red: Point Blank', desc:'Red detonated at arm\'s length: 12 damage and a huge knockback.', lock:380, run(p){
-      const [x,y,w,h] = olFront(p, 90); addRing(p.x+PW/2+p.facing*45, p.y+PH/2, '#ff3b3b', 70); addParts(p.x+PW/2+p.facing*45, p.y+PH/2, '#ff5555', 18, 7); snd('orbred', p.x); doShake(8);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 12, {rag:[16,-6,RAGD_MS*1.2], col:'#ff5555'}); }},
+    2:{name:'Infinity', desc:'Gojo stands still and lets Infinity do the work for 1.5s: everything that reaches him slows to a crawl — he takes only 25% damage, and anyone touching him is pushed away.', lock:1500, run(p){
+      p.infT = 1500; addRing(p.x+PW/2, p.y+PH/2, '#bfefff', 60); snd('orb', p.x); }},
   },
   yuji: {
     1:{name:'Divergent Fist', desc:'A punch whose cursed energy lands a beat late: 5, then a second impact of 7.', lock:340, run(p){
       const [x,y,w,h] = olFront(p, 84); snd('swing', p.x);
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 5, {stun:420, push:1.5, col:'#ff9a3a'});
         olAfter(240, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#ff9a3a', 46); snd('hit2', d.x); olHit(p, d, 7, {any:true, rag:[9,-5,RAGD_MS*0.9], col:'#ffb070'}); }); } }},
-    2:{name:'Manji Kick', desc:'A spinning rising kick that launches: 7 damage, then chase them into an air combo.', lock:340, run(p){
-      const [x,y,w,h] = olFront(p, 82, -14, PH+10); snd('swing', p.x); addRing(p.x+PW/2+p.facing*30, p.y+PH*0.3, '#ffcf6a', 40);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 7, {launch:-14.5, lvx:1, stun:860, col:'#ffcf6a'}); }},
+    2:{name:'Soul Punch', desc:'After fighting Mahito, Yuji can hit the soul itself: 6 damage that goes through blocks, rips out 25 cursed energy and stops their CE from refilling for 3s.', lock:320, run(p){
+      const [x,y,w,h] = olFront(p, 78); snd('heavy', p.x);
+      for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 6, {ubk:true, stun:420, push:2, col:'#bfe3ff'});
+        if(d.ceMax && !ceInfinite(d)) d.ce = Math.max(0, d.ce - 25); d.soulT = 3000;
+        olShot(p, {kind:'soul', x:d.x+PW/2, y:d.y+PH*0.4, life:500, dmg:0}); addSpeech(d.x+PW/2, d.y-30, '-25 CE', '#bfe3ff', 700); } }},
   },
   yuta: {
-    1:{name:'Rika: Grasp', desc:'Rika\'s giant arm sweeps the ground ahead (220px): 11 damage, knockdown.', lock:380, run(p){
-      olShot(p, {kind:'arm', x:p.x+PW/2, y:p.y+PH*0.55, dir:p.facing, life:380, dmg:0});
-      for(const d of olArea(p, p.facing>0 ? p.x+PW : p.x-220, p.y-10, 220, PH+16)) olHit(p, d, 11, {rag:[9,-6,RAGD_MS], col:'#cc88ff'});
-      snd('heavy', p.x); doShake(6); }},
+    1:{name:'Rika: Guardian', desc:'Rika looms over Yuta for 2.5s. The first attack that would hit him is caught in her hand instead (no damage), and she swats the attacker for 8.', lock:240, run(p){
+      p.rikaT = 2500; addRing(p.x+PW/2, p.y+PH/2, '#cc88ff', 70); snd('domain', p.x); sayFor(p, 'Rika.'); }},
     2:{name:'Copied Cursed Speech: "Don\'t Move."', desc:'Yuta copies Cursed Speech: the nearest foe within 450px freezes for 0.9s (can\'t be blocked). Hurts Yuta\'s throat: 3 self-damage.', lock:420, run(p){
       const d = olNearest(p, 450); addSpeech(p.x+PW/2, p.y-20, 'DON\'T MOVE.', '#e8e0ff', 900); snd('domain', p.x);
       p._rawDmg = true; p.hp = Math.max(1, p.hp-3); p._rawDmg = false;
@@ -12295,24 +12293,32 @@ const OL_VARS = {
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#9fc4ff'});
       for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 9, {rag:[7,-5,RAGD_MS*0.8], col:'#9fc4ff'});
       snd('slash', p.x); }},
-    2:{name:'Rocket Punch', desc:'Fires his fist as a rocket (10, knockback). Aims with up / down held.', lock:280, run(p){
-      const a = keys[p.ctrl.jmp] ? -0.45 : keys[p.ctrl.down] ? 0.45 : 0;
-      olShot(p, {kind:'fist', x:p.x+PW/2+p.facing*18, y:p.y+PH*0.35, vx:p.facing*Math.cos(a)*12, vy:Math.sin(a)*12, r:12, life:1400, dmg:10, col:'#9fc4ff', o:{rag:[10,-5,RAGD_MS]}});
-      snd('cannon', p.x); }},
+    2:{name:'Puppet Decoy', desc:'Leaves a puppet of himself where he stands and jets 180px back. 1.2s later the decoy self-destructs: 9 damage around it.', lock:240, run(p){
+      const dx = p.x, dy = p.y, df = p.facing;
+      olShot(p, {kind:'decoy', x:dx+PW/2, y:dy+PH, dir:df, life:1250, dmg:0});
+      safeTeleport(p, p.x - p.facing*180, p.y); addParts(p.x+PW/2, p.y+PH*0.7, '#9fc4ff', 10, 4); snd('dash', p.x);
+      olAfter(1200, () => { addRing(dx+PW/2, dy+PH/2, '#ffb347', 90); addParts(dx+PW/2, dy+PH/2, '#ffb347', 24, 8); snd('boom', dx); doShake(9);
+        if(!IS_GUEST) carveCircle(dx+PW/2, dy+PH/2, 36);
+        for(const d of olArea(p, dx-60, dy-40, PW+120, PH+60)) olHit(p, d, 9, {rag:[10,-7,RAGD_MS], dir:Math.sign(d.x-dx)||1, col:'#ffb347'}); }); }},
   },
   todo: {
     1:{name:'Feint Clap', desc:'Claps without swapping. The opponent (within 600px) flinches for the swap that never comes: turned around and frozen for 0.4s.', lock:200, run(p){
       const d = olNearest(p, 600); snd('clap', p.x); addSpeech(p.x+PW/2, p.y-8, 'CLAP!', '#b07a1e', 700); addRing(p.x+PW/2, p.y+PH/2, '#d9a441', 36);
       if(d){ d.facing = -d.facing; olHit(p, d, 0.01, {ubk:true, stun:400, col:'#ffcf6a'}); addSpeech(d.x+PW/2, d.y-20, '?!', '#ddd', 600); } }},
-    2:{name:'Vibraslap Crusher', desc:'An overhead hammer-fist that shatters a block instantly (guard break) — 9 damage.', lock:420, run(p){
-      const [x,y,w,h] = olFront(p, 82); snd('heavy', p.x); doShake(7);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 9, {crush:true, stun:520, push:3, col:'#ffcf6a'}); }},
+    2:{name:'Stone Swap', desc:'Tosses a pebble in an arc, then claps: Todo swaps places with the stone. Anyone right next to where he lands is dazed (4, stunned 0.6s).', lock:260, run(p){
+      const st = olShot(p, {kind:'stone', x:p.x+PW/2+p.facing*16, y:p.y+PH*0.35, vx:p.facing*9, vy:-7.5, grav:0.45, r:6, life:2000, dmg:0, col:'#9a8c7a'});
+      snd('swing', p.x);
+      olAfter(560, () => { if(p.state===S.DEAD) return;
+        const ox = p.x+PW/2, oy = p.y+PH/2;
+        snd('clap', p.x); addSpeech(ox, p.y-8, 'CLAP!', '#b07a1e', 600); addRing(ox, oy, '#d9a441', 36);
+        if(!tpInArena(st.x-PW/2, st.y-PH)) return;
+        safeTeleport(p, st.x-PW/2, st.y-PH+8, true); st.life = 0;
+        addRing(p.x+PW/2, p.y+PH/2, '#ffe08a', 46); addParts(p.x+PW/2, p.y+PH/2, '#ffe08a', 10, 3);
+        for(const d of olArea(p, p.x-50, p.y-10, PW+100, PH+20)) olHit(p, d, 4, {stun:600, col:'#ffe08a'}); }); }},
   },
   choso: {
-    1:{name:'Blood Edge', desc:'Blood Manipulation: blood hardened into a spinning blade — two quick slashes (4 + 5).', lock:330, run(p){
-      const [x,y,w,h] = olFront(p, 96); snd('slash', p.x);
-      for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 4, {stun:380, col:'#ff3030'});
-        olAfter(150, () => { if(d.state===S.DEAD) return; addParts(d.x+PW/2, d.y+PH/2, '#c01818', 10, 5); olHit(p, d, 5, {any:true, rag:[7,-4,RAGD_MS*0.8], col:'#ff3030'}); }); } }},
+    1:{name:'Blood Meteorite', desc:'Clots blood in his fists until they\'re hard as rock: for 6s he hits 35% harder and his hits smash straight through blocks — but the clotting slows him by 20%.', lock:300, run(p){
+      p.bmT = 6000; addRing(p.x+PW/2, p.y+PH*0.4, '#7a0010', 50); addParts(p.x+PW/2, p.y+PH*0.4, '#a01020', 14, 4); snd('charge', p.x); }},
     2:{name:'Flowing Red Scale', desc:'Blood Manipulation: blood pumped hard through the body — 6s of +25% speed and +20% damage.', lock:300, run(p){
       p.frsT = 6000; addRing(p.x+PW/2, p.y+PH/2, '#ff3030', 70); addSpeech(p.x+PW/2, p.y-20, 'FLOWING RED SCALE', '#ff6a6a', 900); snd('charge', p.x); }},
   },
@@ -12320,21 +12326,28 @@ const OL_VARS = {
     1:{name:'Confiscation', desc:'A gavel tap that confiscates the target\'s technique: 4 damage and no abilities for 3.5s.', lock:340, run(p){
       const [x,y,w,h] = olFront(p, 90); snd('gavel', p.x);
       for(const d of olArea(p, x, y, w, h)) olHit(p, d, 4, {stun:350, confisc:3500, confiscTxt:'CONFISCATED', col:'#f1d27a'}); }},
-    2:{name:'Objection!', desc:'A booming shockwave around him: 6 damage and pushes everyone away.', lock:360, run(p){
-      addRing(p.x+PW/2, p.y+PH/2, '#f1d27a', 140); addSpeech(p.x+PW/2, p.y-24, 'OBJECTION!', '#f1d27a', 800); snd('gavel', p.x); doShake(6);
-      for(const d of olArea(p, p.x-120, p.y-60, PW+240, PH+80)) olHit(p, d, 6, {rag:[10,-6,RAGD_MS*0.8], col:'#f1d27a'}); }},
+    2:{name:'Plea Bargain', desc:'Judgeman offers a deal for 2.5s: anyone who strikes Higuruma within 320px is charged with assault and takes the same damage back, while he takes only half.', lock:280, run(p){
+      p.pleaT = 2500; addRing(p.x+PW/2, p.y+PH/2, '#f1d27a', 60); snd('gavel', p.x); addSpeech(p.x+PW/2, p.y-22, 'ORDER!', '#f1d27a', 700); }},
   },
   hakari: {
-    1:{name:'Rough Energy', desc:'His abrasive cursed energy bursts out at point-blank range: 8 damage, knockback.', lock:320, run(p){
-      const [x,y,w,h] = olFront(p, 76); addParts(p.x+PW/2+p.facing*30, p.y+PH/2, '#7dffb0', 18, 6); snd('heavy', p.x);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 8, {rag:[11,-5,RAGD_MS], col:'#7dffb0'}); }},
-    2:{name:'Fever Volley', desc:'Six pachinko balls lobbed in an arc (3 each).', lock:280, run(p){
-      for(let k=0;k<6;k++){ const a = -0.9 + k*0.12; olShot(p, {kind:'ball', x:p.x+PW/2, y:p.y+PH*0.3, vx:p.facing*Math.cos(a)*(8+k*0.4), vy:Math.sin(a)*9, r:6, grav:0.32, life:2200, dmg:3, col:'#d8dde6', o:{stun:260, push:2}}); }
-      snd('pachinko', p.x); }},
+    1:{name:'Pachinko Gamble', desc:'Pulls the lever on a tiny slot right in front of him. 1 in 3: JACKPOT punch (14, launches). 1 in 3: REACH (6). 1 in 3: the balls drain away — nothing happens.', lock:380, run(p){
+      const r = Math.random(), [x,y,w,h] = olFront(p, 82);
+      olShot(p, {kind:'slot', x:p.x+PW/2+p.facing*30, y:p.y-18, life:700, dmg:0, res: r<1/3 ? 2 : r<2/3 ? 1 : 0});
+      if(r < 1/3){ snd('jackpot', p.x); for(const d of olArea(p, x, y, w, h)) olHit(p, d, 14, {rag:[13,-9,RAGD_MS*1.1], col:'#7bff9c'}); addSpeech(p.x+PW/2, p.y-34, 'JACKPOT!', '#7bff9c', 800); }
+      else if(r < 2/3){ snd('tick', p.x); for(const d of olArea(p, x, y, w, h)) olHit(p, d, 6, {stun:380, push:2, col:'#d8ffe0'}); addSpeech(p.x+PW/2, p.y-34, 'REACH!', '#d8ffe0', 700); }
+      else { snd('bwomp', p.x); addSpeech(p.x+PW/2, p.y-34, 'NO LUCK', '#888', 700); } }},
+    2:{name:'Love Train', desc:'A carriage from his domain\'s Private Pure Love Train comes roaring along the ground from behind him: 8 damage and a knockback to anyone on the track.', lock:300, run(p){
+      olShot(p, {kind:'train', x:p.x+PW/2 - p.facing*120, y:p.y+PH-14, vx:p.facing*15, vy:0, ground:true, pierce:true, r:30, life:1500, dmg:8, col:'#7bff9c', dir:p.facing, o:{rag:[12,-7,RAGD_MS]}});
+      snd('honk', p.x); }},
   },
   meimei: {
-    1:{name:'Axe Boomerang', desc:'Throws her axe: it spins out ~300px and comes back (7 each way).', lock:260, run(p){
-      olShot(p, {kind:'axe', x:p.x+PW/2, y:p.y+PH*0.4, vx:p.facing*11, vy:0, r:18, life:1500, dmg:7, back:true, pierce:true, col:'#e8e3ff', o:{stun:380, push:3}}); snd('swing', p.x); }},
+    1:{name:'Ui Ui: Exchange', desc:'Ui Ui\'s teleportation works on other people too: the opponent is swapped to wherever Ui Ui is standing and stunned for 0.5s. Needs Ui Ui placed.', lock:260, run(p){
+      const u = uiuis.find(q => q.owner===p), d = olNearest(p, 2000);
+      if(!u){ olTag(p, 'NEEDS UI UI', '#888', 600); if(p.ceMax) p.ce = Math.min(p.ceMax, p.ce + ceVarCost(p, 1)); p.varCd[1] = 0; return; }
+      if(!d || !tpInArena(u.x-PW/2, u.y-PH)) return;
+      addRing(d.x+PW/2, d.y+PH/2, '#c9c2e6', 46); addParts(d.x+PW/2, d.y+PH/2, '#c9c2e6', 12, 4);
+      safeTeleport(d, u.x-PW/2, u.y-PH); d.ss(S.STUN, 500);
+      addRing(d.x+PW/2, d.y+PH/2, '#ffffff', 50); snd('orb', d.x); }},
     2:{name:'Crow Murder', desc:'Five crows dive at the opponent (3 each, they home in).', lock:300, run(p){
       for(let k=0;k<5;k++) olShot(p, {kind:'crow', x:p.x+PW/2, y:p.y+PH*0.2-k*8, vx:p.facing*(6+k), vy:-3+k*0.8, r:9, life:2200, dmg:3, home:0.35, col:'#222', o:{stun:240, push:2}});
       snd('swing', p.x); }},
@@ -12344,13 +12357,15 @@ const OL_VARS = {
       const d = olNearest(p, 900); const tx = d ? d.x+PW/2 : p.x+PW/2+p.facing*200;
       olShot(p, {kind:'meteor', x:tx, y:(d ? d.y : p.y) - 420, vx:0, vy:0, r:30, delay:550, life:4000, dmg:14, col:'#ff7a3a', o:{rag:[6,-8,RAGD_MS], burn:3000}});
       addSpeech(p.x+PW/2, p.y-20, 'MAXIMUM: METEOR', '#ff9a4a', 900); snd('charge', p.x); }},
-    2:{name:'Eruption Palm', desc:'A palm of erupting flame: 7 damage, knockback and sets them burning.', lock:330, run(p){
-      const [x,y,w,h] = olFront(p, 88); addParts(p.x+PW/2+p.facing*40, p.y+PH/2, '#ff7a2a', 22, 7); snd('fuga', p.x);
-      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 7, {rag:[10,-6,RAGD_MS], burn:3500, col:'#ff7a2a'}); }},
+    2:{name:'Head Eruption', desc:'The volcano on his head blows: three lava bombs arc out in front of him (5 each) and set anyone they hit on fire.', lock:320, run(p){
+      for(const [vx, vy] of [[3,-5.5],[6,-8],[9,-9]]) olShot(p, {kind:'lava', x:p.x+PW/2, y:p.y+4, vx:p.facing*vx, vy, grav:0.42, r:9, life:1800, dmg:5, col:'#ff7a2a', o:{burn:2500, stun:240}});
+      addParts(p.x+PW/2, p.y, '#ff7a2a', 16, 6); snd('boom', p.x); doShake(4); }},
   },
   dagon: {
-    1:{name:'Tidal Wave', desc:'A wave rolls along the ground (passes through everyone, 6 + push).', lock:300, run(p){
-      olShot(p, {kind:'wave', x:p.x+PW/2+p.facing*20, y:p.y+PH-14, vx:p.facing*8, vy:0, r:26, life:1400, dmg:6, pierce:true, ground:true, col:'#7fc8ff', o:{rag:[8,-6,RAGD_MS*0.7]}}); snd('fuga', p.x); }},
+    1:{name:'Shark Shikigami', desc:'Ripples spread under the nearest foe within 450px — 0.5s later a giant shark shikigami bursts out of the ground and bites: 9 damage and they\'re dragged down (stunned 0.8s).', lock:280, run(p){
+      const d = olNearest(p, 450); snd('charge', p.x);
+      if(d){ const gx = d.x+PW/2, gy = terGroundTop(d.x, PW, d.y+PH-1, true);
+        olShot(p, {kind:'shark', x:gx, y:gy, r:44, delay:520, life:950, dmg:9, col:'#5ec8e6', o:{stun:800}}); } }},
     2:{name:'Water Prison', desc:'A bubble traps the nearest foe within 380px for 1.2s (4 damage).', lock:320, run(p){
       const d = olNearest(p, 380); snd('orb', p.x);
       if(d){ olShot(p, {kind:'bubble', x:d.x+PW/2, y:d.y+PH/2, life:1200, dmg:0, tgt:netRef(d)}); olHit(p, d, 4, {stun:1200, col:'#7fc8ff'}); } }},
@@ -12414,6 +12429,11 @@ const OL_VARS = {
     1:{name:'Anti-Gravity Lift', desc:'Kenjaku\'s own technique flips gravity on the nearest foe within 350px: they float up helplessly (5).', lock:300, run(p){
       const d = olNearest(p, 350); snd('orb', p.x);
       if(d){ addRing(d.x+PW/2, d.y+PH, '#b07cff', 60); olHit(p, d, 5, {launch:-12, stun:1100, col:'#b07cff'}); } }},
+    2:{name:'Thin Ice Breaker', desc:'A technique Kenjaku absorbed from Uro: the air in front of him cracks like a pane of glass and shatters outward — 8 damage and a shove to anyone within 200px ahead.', lock:320, run(p){
+      const f = p.facing, [x,y,w,h] = olFront(p, 200, -20, PH+30);
+      olShot(p, {kind:'shards', x:p.x+PW/2+f*100, y:p.y+PH/2, dir:f, life:420, dmg:0});
+      for(const d of olArea(p, x, y, w, h)) olHit(p, d, 8, {rag:[11,-5,RAGD_MS], dir:f, col:'#cfe7ff'});
+      snd('slash', p.x); doShake(5); }},
   },
 };
 
@@ -12517,7 +12537,7 @@ function cePay(p, need, wipe){
 }
 function ceRegenPaused(p){
   return p.state===S.DOMAIN || p.state===S.DEAD || !!(activeDomain && activeDomain.owner===p) || !!(domainClash && (domainClash.att===p || domainClash.def===p))
-    || p.rampT>0 || p.todoNoCdT>0 || !!p.mechUltPhase || p.state===S.YUJIULT;
+    || p.soulT>0 || p.rampT>0 || p.todoNoCdT>0 || !!p.mechUltPhase || p.state===S.YUJIULT;
 }
 function ceFollow(p, slot){ const f = CE_FOLLOW[p.type] && CE_FOLLOW[p.type][slot]; try{ return !!(f && f(p)); }catch(e){ return false; } }
 function ceVarCost(p, n){ const mx = p.ceMax || (CE_PROFILE[p.type]||[100])[0]; return Math.min(Math.round(mx*0.7), Math.max(30, Math.round(2*ceBaseCost(p.type, 'ab'+n)*(p._feat ? ceCostMult(p) : 1)))); }
@@ -12653,6 +12673,24 @@ function drawCeHud(pl, x, flip){
   ctx.restore();
 }
 
+
+// ── timed effects from variants ──
+function rikaCatch(pl, att){
+  addSpeech(pl.x+PW/2, pl.y-26, 'RIKA!', '#cc88ff', 700); addRing(pl.x+PW/2, pl.y+PH/2, '#cc88ff', 80); snd('parry', pl.x); doShake(7);
+  if(att && att!==pl && Math.abs(att.x-pl.x) < 260 && att.state!==S.DEAD) olAfter(60, () => olHit(pl, att, 8, {any:true, rag:[12,-7,RAGD_MS], dir:Math.sign(att.x-pl.x)||1, col:'#cc88ff'}));
+}
+function tickVarStatus(pl, dt){
+  for(const k of ['infT','rikaT','bmT','pleaT','soulT']) if(pl[k]>0) pl[k] = Math.max(0, pl[k]-dt);
+  if(pl.rctT>0){
+    if((pl.lastHurt||0) > (pl.rctHurt||0)){ pl.rctT = 0; addSpeech(pl.x+PW/2, pl.y-24, 'FOCUS BROKEN', '#999', 600); }
+    else { pl.rctT = Math.max(0, pl.rctT-dt); pl.rctHp = (pl.rctHp||0) + 12*dt/2000;
+      while(pl.rctHp >= 1){ pl.rctHp -= 1; pl._rawDmg = true; pl.hp = Math.min(pl.maxHp||100, pl.hp+1); pl._rawDmg = false; if(Math.random()<0.6) addParts(pl.x+PW/2, pl.y+PH*0.4, '#ffe6e6', 2, 1); }
+      pl.rctHurt = pl.lastHurt||0; }
+  }
+  if(pl.infT>0) for(const d of olFoes(pl)){ if(d.state===S.DEAD) continue; const dx = (d.x+PW/2)-(pl.x+PW/2);
+    if(Math.abs(dx) < 62 && Math.abs(d.y-pl.y) < PH){ d.vx = Math.sign(dx||1)*4; if([S.RAGD,S.SLAM].includes(d.state)) d.rdVx = Math.sign(dx||1)*5; } }
+}
+
 // ── per-frame hook (called from _updateCore, online only) ──
 Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
   const c = this.ctrl, now = terClock;
@@ -12660,6 +12698,7 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
   if(this._supAb1 && !keys[this.ab1Key]) this._supAb1 = false;
   for(const k of ['parryT','parryLock','oaLock','dashCd','confiscT','guardRegenT','frsT','adT']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
   for(const k in this.varCd) if(this.varCd[k]>0) this.varCd[k] = Math.max(0, this.varCd[k]-dt);
+  tickVarStatus(this, dt);
   if(this.adT<=0 && this.adName){ this.adName = null; }
   if(this.type!=='todo' && this.sdT>0){ this.sdT = Math.max(0, this.sdT-dt); }   // (Todo's own block ticks his)
   if(this.state!==S.BLOCK && this.guardRegenT<=0) this.guard = Math.min(OL.GUARD_MAX, this.guard + OL.GUARD_REGEN*dt);
@@ -12861,9 +12900,16 @@ function guardFilter(pl, d, oppM){
       addSpeech(pl.x+PW/2, pl.y-22, ['BONK!','*SLIDE WHISTLE*','JUST KIDDING!','NOT FUNNY.'][Math.floor(Math.random()*4)], '#ffe066', 700); snd('bwomp', pl.x); return 0; }
   }
   if(!olOn()) return d;
+  if(pl.rikaT>0){ pl.rikaT = 0; rikaCatch(pl, oppM); pl._guardStamp = now; return 0; }
+  if(pl.pleaT>0 && oppM && oppM!==pl && oppM.state!==S.DEAD && Math.hypot(oppM.x-pl.x, oppM.y-pl.y) < 320){
+    const back = Math.round(d*10)/10; oppM._rawDmg = true; oppM.hp = Math.max(0, oppM.hp - back); oppM._rawDmg = false; oppM.flash = 300;
+    addDmg(oppM.x+PW/2, oppM.y-16, back, '#f1d27a'); addSpeech(pl.x+PW/2, pl.y-26, 'SUSTAINED!', '#f1d27a', 700); snd('gavel', pl.x);
+    if(oppM.hp<=0 && oppM.state!==S.DEAD){ oppM._initRd(0,-3,.05); oppM.ss(S.DEAD); }
+    d *= 0.5;
+  }
   if(pl.adT>0 && OL_AD[pl.type] && OL_AD[pl.type].dr) d *= OL_AD[pl.type].dr;
   const enemyDom = activeDomain && activeDomain.owner && activeDomain.owner!==pl && !domainClash;
-  if(!enemyDom && !pl._ubk && pl.state===S.BLOCK){
+  if(!enemyDom && !pl._ubk && !(oppM && oppM.bmT>0) && pl.state===S.BLOCK){
     if(pl.parryT>0){
       pl.parryT = 0; pl.parryLock = 0; pl.guard = Math.min(OL.GUARD_MAX, pl.guard+25); pl._guardStamp = now; pl.iframes = Math.max(pl.iframes, 140);
       addSpeech(pl.x+PW/2, pl.y-24, 'PERFECT BLOCK', '#ffffff', 700); addRing(pl.x+PW/2+pl.facing*14, pl.y+PH/2, '#ffffff', 70); addParts(pl.x+PW/2+pl.facing*14, pl.y+PH/2, '#e8f4ff', 14, 6);
@@ -12909,8 +12955,8 @@ function tickOlShots(dt){
       if(gone || s.boom && s.t > s.life) olShots.splice(i,1);
       continue;
     }
-    if(s.kind==='thorn'){
-      if(!s.fired){ s.fired = true; addParts(s.x, s.y-20, '#6b4a2a', 18, 6); snd('heavy', s.x); doShake(5);
+    if(s.kind==='thorn' || s.kind==='shark'){
+      if(!s.fired){ s.fired = true; addParts(s.x, s.y-20, s.kind==='shark' ? '#5ec8e6' : '#6b4a2a', 18, 6); snd('heavy', s.x); doShake(5);
         for(const d of olArea(s.owner, s.x-s.r, s.y-PH-30, s.r*2, PH+34)) olHit(s.owner, d, s.dmg, Object.assign({col:s.col}, s.o||{})); }
       if(gone) olShots.splice(i,1);
       continue;
@@ -12945,6 +12991,7 @@ function drawOlShots(){
       // telegraph
       ctx.save(); ctx.globalAlpha = 0.5 + 0.4*Math.sin(t*0.03);
       if(s.kind==='meteor'){ ctx.strokeStyle = '#ff7a3a'; ctx.lineWidth = 2; const gy = terGroundTop(s.x-10, 20, T_TOP, false); ctx.beginPath(); ctx.ellipse(s.x, gy, 60, 10, 0, 0, Math.PI*2); ctx.stroke(); }
+      if(s.kind==='shark'){ ctx.strokeStyle = 'rgba(94,200,230,0.8)'; ctx.lineWidth = 2; for(let k=0;k<3;k++){ const rr = ((t*0.08 + k*14) % 46); ctx.beginPath(); ctx.ellipse(s.x, s.y, rr, rr*0.2, 0, 0, Math.PI*2); ctx.stroke(); } }
       if(s.kind==='thorn'){ ctx.fillStyle = 'rgba(107,74,42,0.6)'; ctx.beginPath(); ctx.ellipse(s.x, s.y, s.r, 6, 0, 0, Math.PI*2); ctx.fill(); }
       ctx.restore(); continue;
     }
@@ -12981,6 +13028,38 @@ function drawOlShots(){
         for(let j=-3;j<=3;j++){ const h = (46 - Math.abs(j)*9)*k; ctx.beginPath(); ctx.moveTo(s.x+j*10-6, s.y); ctx.lineTo(s.x+j*10+Math.sin(j)*3, s.y-h); ctx.lineTo(s.x+j*10+6, s.y); ctx.closePath(); ctx.fill(); ctx.stroke(); } break; }
       case 'spear': { ctx.globalAlpha = a; ctx.translate(s.x, s.y); ctx.scale(s.dir, 1); const k = Math.min(1, s.t/90);
         ctx.fillStyle = '#9aa8b8'; ctx.strokeStyle = '#3a2a4a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(8, -4); ctx.lineTo(8+170*k, 0); ctx.lineTo(8, 4); ctx.closePath(); ctx.fill(); ctx.stroke(); break; }
+      case 'soul': { const k = s.t/s.life; ctx.globalAlpha = 1-k; ctx.strokeStyle = '#bfe3ff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(s.x, s.y - k*30, 10+k*6, 14+k*8, 0, 0, Math.PI*2); ctx.stroke(); ctx.fillStyle = 'rgba(191,227,255,0.25)'; ctx.fill(); break; }
+      case 'decoy': { ctx.globalAlpha = 0.85; ctx.translate(s.x, s.y); const blink = s.t > 800 && Math.sin(s.t*0.05) > 0;
+        ctx.strokeStyle = blink ? '#ff6a3a' : '#9fc4ff'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(0, -PH+HEAD_R+2, HEAD_R, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -PH+HEAD_R*2+2); ctx.lineTo(0, -LEG_H-4); ctx.moveTo(0, -LEG_H-4); ctx.lineTo(-7, 0); ctx.moveTo(0, -LEG_H-4); ctx.lineTo(7, 0);
+        ctx.moveTo(0, -PH+HEAD_R*2+8); ctx.lineTo(10*s.dir, -PH*0.5); ctx.moveTo(0, -PH+HEAD_R*2+8); ctx.lineTo(-8*s.dir, -PH*0.45); ctx.stroke();
+        ctx.fillStyle = blink ? '#ff6a3a' : '#9fc4ff'; ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!', 0, -PH-6); break; }
+      case 'stone': { ctx.fillStyle = '#9a8c7a'; ctx.strokeStyle = '#3a3428'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(s.x, s.y, 6, 5, s.t*0.02, 0, Math.PI*2); ctx.fill(); ctx.stroke(); break; }
+      case 'slot': { const k = Math.min(1, s.t/180); ctx.globalAlpha = a; ctx.translate(s.x, s.y); ctx.scale(k, k);
+        ctx.fillStyle = '#1a3a22'; ctx.strokeStyle = '#7bff9c'; ctx.lineWidth = 2; ctx.fillRect(-30, -14, 60, 28); ctx.strokeRect(-30, -14, 60, 28);
+        const sym = ['✕','7','7'], spin = s.t < 380; ctx.fillStyle = '#eaffee'; ctx.font = `900 14px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
+        for(let i=0;i<3;i++){ const c = spin ? '0123456789'[Math.floor((s.t*0.05 + i*3) % 10)] : (s.res===2 ? '7' : s.res===1 ? (i<2 ? '7' : '3') : ['7','3','✕'][i]); ctx.fillText(c, -18+i*18, 5); }
+        break; }
+      case 'train': { ctx.globalAlpha = a; ctx.translate(s.x, s.y+14); ctx.scale(s.dir||1, 1);
+        ctx.fillStyle = '#e8f4ea'; ctx.strokeStyle = '#1d3a26'; ctx.lineWidth = 2.5; ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(-70, -64, 140, 56, 10); else ctx.rect(-70, -64, 140, 56); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#7bff9c'; ctx.fillRect(-70, -26, 140, 8);
+        ctx.fillStyle = '#bfe8ff'; for(let k=0;k<4;k++) ctx.fillRect(-60+k*32, -54, 24, 18);
+        ctx.fillStyle = '#1a1a1a'; for(const wx of [-46, 46]){ ctx.beginPath(); ctx.arc(wx, -6, 9, 0, Math.PI*2); ctx.fill(); }
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; for(let k=0;k<4;k++){ ctx.beginPath(); ctx.moveTo(-80-k*8, -50+k*12); ctx.lineTo(-130-k*16, -50+k*12); ctx.stroke(); }
+        break; }
+      case 'lava': { ctx.fillStyle = '#ff7a2a'; ctx.shadowColor = '#ff5a10'; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(s.x, s.y, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#3a1a0a'; ctx.beginPath(); ctx.arc(s.x-2, s.y-2, 3, 0, Math.PI*2); ctx.fill(); break; }
+      case 'shark': { const k = Math.min(1, (s.t - (s.delay||0))/180), rise = Math.sin(Math.min(1, k)*Math.PI*0.5); ctx.globalAlpha = a; ctx.translate(s.x, s.y);
+        ctx.fillStyle = '#4a7c8e'; ctx.strokeStyle = '#0d2a36'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-34, 0); ctx.quadraticCurveTo(-30, -90*rise, 0, -110*rise); ctx.quadraticCurveTo(30, -90*rise, 34, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#fff'; for(let k2=-3;k2<=3;k2++){ ctx.beginPath(); ctx.moveTo(k2*7-3, -60*rise); ctx.lineTo(k2*7, -50*rise); ctx.lineTo(k2*7+3, -60*rise); ctx.fill(); }
+        ctx.fillStyle = '#0d2a36'; ctx.beginPath(); ctx.arc(-12, -84*rise, 3, 0, Math.PI*2); ctx.arc(12, -84*rise, 3, 0, Math.PI*2); ctx.fill(); break; }
+      case 'shards': { const k = s.t/s.life; ctx.globalAlpha = 1-k; ctx.translate(s.x, s.y); ctx.strokeStyle = '#e6f3ff'; ctx.lineWidth = 1.5;
+        for(let i=0;i<14;i++){ const ang = i*0.45, r = 20 + k*120 + (i%3)*14; ctx.save(); ctx.translate(Math.cos(ang)*r*0.9*s.dir, Math.sin(ang)*r*0.5); ctx.rotate(ang + k*4);
+          ctx.beginPath(); ctx.moveTo(-6, -4); ctx.lineTo(7, -2); ctx.lineTo(-2, 6); ctx.closePath(); ctx.fillStyle = 'rgba(200,230,255,0.4)'; ctx.fill(); ctx.stroke(); ctx.restore(); }
+        break; }
       case 'spot': { ctx.globalAlpha = 0.35*a + 0.1; const g = ctx.createLinearGradient(s.x, s.y-260, s.x, s.y); g.addColorStop(0, 'rgba(255,250,210,0)'); g.addColorStop(1, 'rgba(255,250,210,0.85)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(s.x-14, s.y-260); ctx.lineTo(s.x+14, s.y-260); ctx.lineTo(s.x+46, s.y); ctx.lineTo(s.x-46, s.y); ctx.fill();
         ctx.fillStyle = 'rgba(255,250,210,0.5)'; ctx.beginPath(); ctx.ellipse(s.x, s.y, 46, 8, 0, 0, Math.PI*2); ctx.fill(); break; }
@@ -12993,6 +13072,19 @@ function drawOlShots(){
 function drawOlBody(pl){
   if(!olOn() || pl.state===S.DEAD) return;
   const cx = pl.x+PW/2, cy = pl.y+PH/2, t = Date.now();
+  if(pl.rikaT>0){ ctx.save(); ctx.globalAlpha = 0.55 + 0.15*Math.sin(t*0.01); const bx = cx - pl.facing*26, by = pl.y - 18;
+    ctx.fillStyle = '#1a1024'; ctx.strokeStyle = '#cc88ff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(bx, by, 26, 22, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(bx-8, by-3, 3, 0, Math.PI*2); ctx.arc(bx+8, by-3, 3, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(bx-12, by+9); for(let k=0;k<8;k++) ctx.lineTo(bx-12+k*3.4, by+9+(k%2?4:0)); ctx.stroke();
+    ctx.strokeStyle = '#cc88ff'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(bx+pl.facing*18, by+14); ctx.quadraticCurveTo(cx+pl.facing*10, by+30, cx+pl.facing*28, cy); ctx.stroke(); ctx.restore(); }
+  if(pl.infT>0){ ctx.save(); ctx.globalAlpha = 0.35 + 0.2*Math.sin(t*0.02); ctx.strokeStyle = '#bfefff'; ctx.lineWidth = 1.5;
+    for(let k=0;k<3;k++){ ctx.beginPath(); ctx.ellipse(cx, cy, 34+k*7, PH*0.62+k*7, 0, 0, Math.PI*2); ctx.stroke(); } ctx.restore(); }
+  if(pl.pleaT>0){ ctx.save(); ctx.globalAlpha = 0.6; ctx.strokeStyle = '#f1d27a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, pl.y-20, 9, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-12, pl.y-8); ctx.lineTo(cx+12, pl.y-8); ctx.stroke(); ctx.restore(); }
+  if(pl.bmT>0){ ctx.save(); ctx.fillStyle = '#5a0010'; ctx.strokeStyle = '#a01020'; ctx.lineWidth = 1.5;
+    for(const sx of [-1, 1]){ ctx.beginPath(); ctx.arc(cx + sx*14, pl.y+PH*0.5, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.restore(); }
+  if(pl.rctT>0){ ctx.save(); ctx.globalAlpha = 0.25 + 0.15*Math.sin(t*0.015); ctx.fillStyle = '#fff0f0'; ctx.beginPath(); ctx.ellipse(cx, cy, 24, PH*0.6, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
   if(pl.state===S.BLOCK){
     const g = Math.max(0, (pl.guard||0)/OL.GUARD_MAX);
     ctx.save(); ctx.strokeStyle = pl.parryT>0 ? '#ffffff' : `rgba(${Math.round(255-120*g)},${Math.round(150+80*g)},255,0.85)`; ctx.lineWidth = pl.parryT>0 ? 4 : 2.5;
@@ -14286,6 +14378,12 @@ function playerEffects(pl){
   if(pl.higuSwordT>0) add('Executioner\'s Sword', pl.higuSwordT, true);
   if(pl.counterT>0) add('Counter stance', pl.counterT, true);
   if(pl.varMode) add('Variant mode', null, true);
+  if(pl.rctT>0) add('Reverse Cursed Technique', pl.rctT, true);
+  if(pl.infT>0) add('Infinity', pl.infT, true);
+  if(pl.rikaT>0) add('Rika guarding', pl.rikaT, true);
+  if(pl.bmT>0) add('Blood Meteorite', pl.bmT, true);
+  if(pl.pleaT>0) add('Plea Bargain', pl.pleaT, true);
+  if(pl.soulT>0) add('Soul struck: no CE refill', pl.soulT, false);
   if(pl.bfCeT>0) add('Black Flash: CE regen +250%', pl.bfCeT, true);
   if(pl.jackpotT>0) add('Infinite CE', pl.jackpotT, true);
   if(pl.iframes>250 && !(pl.respawnT>0)) add('Invincible', pl.iframes, true);
