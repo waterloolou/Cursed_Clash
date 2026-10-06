@@ -28,17 +28,17 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 | | Online (your own keyboard) | Local P1 | Local P2 |
 |---|---|---|---|
 | Move / jump / down | A D / W / S | A D / W / S | ← → / ↑ / ↓ |
-| Attack | Left click or J | F | ; |
-| Abilities | Q · E · R | 1 · 2 · 3 | , · . · / |
-| Domain / ultimate | F | Q | ' |
+| Attack | Left click or J | F | / |
+| Abilities | Q · E · R | 1 · 2 · 3 | J · K · L |
+| Domain / ultimate | F | Q | ; |
 | Block · Dash *(online only)* | Right click / C · Shift | — | — |
 | Variant mode on/off *(online only)* | V | — | — |
 
 ## Cursed energy
 
-Moves don't have long cooldowns. Every fighter has a **cursed energy (CE)** bar under their health that refills on its own:
+Every fighter has a **cursed energy (CE)** bar under their health that refills on its own:
 
-- **Q / E** cost CE (stronger moves cost more) and have only a tiny cooldown. If you can't afford one, its box goes dark and shows the cost.
+- **Q / E** cost CE (stronger moves cost more) and have a cooldown of 3/4 of the original. If you can't afford one, its box goes dark and shows the cost.
 - **Super (R)** still needs its hit charge, plus **50%** of the bar.
 - **Domains** need a **full** bar; **ultimates** (fighters without a domain) need **75%**. Both empty it.
 - **Variant mode** (online, **V**): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.
