@@ -188,6 +188,7 @@ canvas {
       <a data-p="mahito"><i style="background:#8fa3b8"></i>Mahito</a>
       <a data-p="takaba"><i style="background:#e8c547"></i>Takaba</a>
       <a data-p="naoya"><i style="background:#e6d3a3"></i>Naoya</a>
+      <a data-p="megumi"><i style="background:#6f8fd6"></i>Megumi</a>
       <a data-p="online"><i style="background:#ffe066"></i>Online Combat</a>
     </nav>
     <main class="wk-main">
@@ -221,6 +222,7 @@ canvas {
           <a data-p="mahito" style="--c:#8fa3b8"><b>Mahito</b><span>Idle Transfiguration · Soul Isomer · Distorted Killing · Perfection</span></a>
           <a data-p="takaba" style="--c:#e8c547"><b>Takaba</b><span>Rock Paper Scissors · 1000 Years of Death · Counter · The Truck</span></a>
           <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives</span></a>
+          <a data-p="megumi" style="--c:#6f8fd6"><b>Megumi</b><span>Ten Shadows · Divine Dogs · Shadow Garden</span></a>
         </div>
         <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
       </section>
@@ -236,7 +238,8 @@ canvas {
         <table><tr><th>Feat</th><th>Price</th><th>Effect</th></tr>
           <tr><td>Six Eyes</td><td>¥600</td><td>Cursed energy refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.</td></tr>
           <tr><td>Cursed Energy Flow</td><td>¥300</td><td>Your cursed energy bar refills 35% faster.</td></tr>
-          <tr><td>Kenjaku</td><td>¥1000</td><td>Press the feat key (<b>T</b>; Right Shift for local Player 2) to swap into Kenjaku's moveset mid-fight, and again to swap back. Resets each round.</td></tr></table>
+          <tr><td>Kenjaku</td><td>¥1000</td><td>Press the feat key (<b>T</b>; Right Shift for local Player 2) to swap into Kenjaku's moveset mid-fight, and again to swap back. Resets each round.</td></tr>
+          <tr><td>Meguna</td><td>¥3000</td><td>Megumi only. With Maximum Output on, his ultimate lets Sukuna take the body until that life ends: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga as a Maximum Output move.</td></tr></table>
         <h2>Kenjaku's moveset</h2>
         <table><tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Maximum: Uzumaki</td><td>Charge (aim with up / down), then release a crushing spiral of cursed spirits that pierces through everything: 22 damage, bores a tunnel. 64 CE, 6s cooldown.</td></tr>
@@ -379,6 +382,8 @@ canvas {
           <tr><td>Takaba</td><td>90</td><td>4/s</td></tr>
           <tr><td>Naoya</td><td>130</td><td>6/s</td></tr>
           <tr><td>Naoya (curse) ★</td><td>220</td><td>8/s</td></tr>
+          <tr><td>Megumi</td><td>150</td><td>7/s</td></tr>
+          <tr><td>Meguna (Sukuna) ★</td><td>240</td><td>22/s</td></tr>
           <tr><td>Kenjaku (feat) ★</td><td>220</td><td>9/s</td></tr></table>
         <p>★ = special grade (sorcerer or curse): much bigger pools. Yuta and Mechamaru have by far the biggest reserves; Gojo (Six Eyes) and Sukuna refill several times faster than anyone else; Takaba has the smallest pool. Moves are expensive — a normal fighter can only fire two or three in a row.</p>
         <h2>Charge meters</h2>
@@ -637,6 +642,29 @@ canvas {
           <tr><td>F</td><td>Time Cell Moon Palace <em>(domain, 150)</em></td><td>A black void with a white road winding up to a towering cluster of cells crowned by a giant eye. Projection Sorcery is applied to the target's cells: <b>every motion that breaks 24 fps tears them apart</b> — 2 damage every 0.25s while they move, attack or fall. Standing still is safe. Naoya is 20% faster inside. Needs a full CE bar.</td></tr>
         </table>
       </section>
+      <section data-p="megumi">
+        <h1 style="--c:#6f8fd6">Megumi Fushiguro</h1>
+        <p class="lead">Zen'in blood, <b>Ten Shadows Technique</b>: he summons shikigami out of his own shadow. Fragile up close, but the shikigami do the fighting for him. Owners of the <b>Meguna</b> feat can let Sukuna take the body.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>Q</td><td>Rabbit Escape</td><td>A swarm of shadow rabbits bursts out where he stands while he blinks 210px back (0.7s invincible). Anyone in the swarm is slowed by 30% and nibbled for 1 every 0.4s. 48 CE, 4.5s cooldown.</td></tr>
+          <tr><td>E</td><td>Bottomless Well</td><td>A pool of shadow opens under the nearest foe within 420px (or ahead of him) for 2.6s. Anyone standing in it sinks: <b>rooted</b> and 2 damage every 0.4s. 56 CE, 5.3s cooldown.</td></tr>
+          <tr><td>R</td><td>Divine Dog: Totality <em>(super, 40)</em></td><td>The fused white wolf runs them down anywhere on the map and bites three times: 6 + 6 + 6, the last one a launch. Needs 50% CE.</td></tr>
+          <tr><td>F</td><td>Chimera Shadow Garden <em>(ultimate, 150)</em></td><td>His incomplete domain: shadow floods the floor for 12s. <b>No CE cost and almost no cooldowns</b> (0.8s) on every shikigami, super always ready (up to 2 dogs at once), and he moves 15% faster. Needs 75% CE.</td></tr>
+          <tr><td>Movement</td><td>Ten Shadows</td><td>6% faster than average.</td></tr>
+        </table>
+        <h2>Meguna (feat, ¥3000)</h2>
+        <p>Turn <b>Maximum Output</b> on and use the ultimate with a full bar: Sukuna takes over Megumi's body until that life ends. He loses all of Megumi's moves. Pool: 240 CE, 22/s.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>Q</td><td>Nue Totality</td><td>A giant Nue flies over the nearest foe and calls down three lightning strikes: 6 each with a short stun. 48 CE, 4.5s cooldown.</td></tr>
+          <tr><td>E</td><td>Agito</td><td>The merged shikigami charges forward through terrain, hitting up to three times (5 each), and heals Sukuna 6. 64 CE, 6s cooldown.</td></tr>
+          <tr><td>R</td><td>World Cutting Slash <em>(super, 40)</em></td><td>A cut through space itself, 620px long: 30 damage. Can't be blocked, goes through Infinity and Rika. Needs 50% CE.</td></tr>
+          <tr><td>F</td><td>Malevolent Shrine <em>(domain, 150)</em></td><td>Sukuna's domain. Needs a full CE bar.</td></tr>
+          <tr><td>Max Output</td><td>Mahoraga</td><td>Summons the Divine General for 7s. It walks at them and swings the Sword of Extermination (14). While it's out Sukuna adapts: 30% less damage taken, and each hit turns the wheel (up to 60%).</td></tr>
+          <tr><td>Movement</td><td>King of Curses</td><td>10% faster, jumps 10% higher.</td></tr>
+        </table>
+      </section>
       <section data-p="online">
         <h1 style="--c:#ffe066">Online Combat</h1>
         <div id="olWiki"></div>
@@ -750,7 +778,7 @@ const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult',
             YUTASLICE:'yutaslice', YUTAFIST:'yutafist',
             MECHADRILL:'mechadrill', MECHULT:'mechult', TODOPUNCH:'todopunch', CHOSOPB:'chosopb',
-            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', FRAMED:'framed' };
+            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs' };
 
 const YUTAFIST_SHEATHE_DUR = 400;   // ms sword disappears
 const YUTAFIST_AIM_DUR     = 1200;  // ms to aim arc
@@ -1030,7 +1058,7 @@ function snd(name, x){ sfxLocal(name, x); }
 const VOICE = {
   sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
   mechamaru:{pitch:0.2, rate:0.9}, todo:{pitch:0.55, rate:0.95}, choso:{pitch:0.7, rate:0.9}, higuruma:{pitch:0.75, rate:0.9},
-  hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, naoya:{pitch:1.0, rate:1.2}, naoyac:{pitch:0.45, rate:0.95}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
+  hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, naoya:{pitch:1.0, rate:1.2}, naoyac:{pitch:0.45, rate:0.95}, megumi:{pitch:0.95, rate:1.0}, meguna:{pitch:0.6, rate:0.95}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
 };
 function voiceLine(ref, text){
   if(!AUD.on.voice || !text) return;
@@ -1196,9 +1224,11 @@ const VL_LINES = [
   ['jogo','Ember Insects.'], ['jogo','Domain Expansion. Coffin of the Iron Mountain.'],
   ['meimei','Ui Ui!'], ['meimei','Bird Strike!'],
   ['naoya','Keep up!'], ['naoya','Can you keep up? Twenty-four frames a second.'], ['naoya','Too slow.'], ['naoyac','I came back to kill you myself.'], ['naoyac','Faster. Faster!'], ['naoyac','Domain Expansion. Time Cell Moon Palace.'],
+  ['megumi','Rabbit Escape.'], ['megumi','Bottomless Well.'], ['megumi','Divine Dog: Totality.'], ['megumi','Domain Expansion. Chimera Shadow Garden.'], ['megumi','Max Elephant.'], ['megumi','Nue.'],
+  ['meguna','This body is mine now.'], ['meguna','Nue.'], ['meguna','Agito.'], ['meguna','Dismantle.'], ['meguna','With this treasure I summon. Eight-Handled Sword Divergent Sila Divine General Mahoraga.'],
   ['kenjaku','Maximum. Uzumaki.'], ['kenjaku','Anti-Gravity System.'], ['kenjaku','Domain Expansion. Womb Profusion.']
 ];
-const VL_NAMES = {sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', kenjaku:'Kenjaku (feat)'};
+const VL_NAMES = {sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', megumi:'Megumi', meguna:'Meguna (feat)', kenjaku:'Kenjaku (feat)'};
 const vlId = (who, text) => who+'|'+text;
 const VL = { blobs:{}, bufs:{}, db:null, rec:null, recId:'', stream:null, playing:null };
 
@@ -1621,6 +1651,8 @@ const MOVE_PASSIVES = {
   todo:     {spd:0.94, jmp:1.06, name:'Heavyweight Landing',   desc:'A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).'},
   choso:    {spd:1.00, jmp:1.00, name:'Blood Rush',            desc:'Below half health his blood boils: 20% faster.'},
   naoya:    {spd:1.28, jmp:0.90, name:'Projection Sorcery',    desc:'The fastest fighter (28% faster, up to 50% after a second of running) but jumps 10% lower. Every 3rd hit of a quick string freezes the foe in a frame for 0.6s.'},
+  megumi:   {spd:1.06, jmp:1.04, name:'Ten Shadows',           desc:'Light on his feet (6% faster). Inside Chimera Shadow Garden he moves 15% faster.'},
+  meguna:   {spd:1.10, jmp:1.10, name:'King of Curses',        desc:'Sukuna wearing Megumi\'s body: 10% faster, jumps 10% higher.'},
   naoyac:   {spd:1.32, jmp:0.95, name:'Cursed Projection',     desc:'Even faster as a cursed spirit, and still freezes every 3rd quick hit in a frame.'},
   takaba:   {spd:1.00, jmp:1.00, name:'Comedian',              desc:'12% of hits on him turn into a gag: no damage, just a slide whistle.'},
   mahito:   {spd:1.02, jmp:1.00, name:'Soul Malleability',     desc:'Squeezes straight through thin walls, and regenerates 1 HP every 0.7s after 4s without getting hit.'},
@@ -3449,7 +3481,8 @@ const SHOP = {
   feats: {
     sixeyes: {name:'Six Eyes', price:600, desc:'Perfect cursed-energy control: CE refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.'},
     ceflow: {name:'Cursed Energy Flow', price:300, desc:'Training pays off: your cursed energy bar refills 35% faster.'},
-    kenjaku: {name:'Kenjaku', price:1000, desc:'Press the feat key mid-fight to swap into Kenjaku\'s moveset (Uzumaki, Cursed Spirit, Anti-Gravity, Womb Profusion), and again to swap back.'}
+    kenjaku: {name:'Kenjaku', price:1000, desc:'Press the feat key mid-fight to swap into Kenjaku\'s moveset (Uzumaki, Cursed Spirit, Anti-Gravity, Womb Profusion), and again to swap back.'},
+    meguna: {name:'Meguna', price:3000, desc:'Megumi only: unlocks his Maximum Output ultimate. Sukuna takes the body for the rest of that life, with a new moveset: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga.'}
   },
   vows: {
     glass:     {name:'Glass Cannon',          price:200, desc:'Deal 35% more damage, take 35% more.'},
@@ -5609,7 +5642,7 @@ function startDomain(owner){
   if(activeDomain.type==='court') courtInit(activeDomain);
 }
 function _startDomainLocal(owner){
-  const type = owner.type === 'sukuna' ? 'shrine' : owner.type === 'yuta' ? 'love' : owner.type === 'higuruma' ? 'court' : owner.type === 'kenjaku' ? 'womb' : owner.type === 'jogo' ? 'volcano' : owner.type === 'dagon' ? 'ocean' : owner.type === 'mahito' ? 'soul' : owner.type === 'naoyac' ? 'moon' : 'void';
+  const type = owner.type === 'sukuna' ? 'shrine' : owner.type === 'yuta' ? 'love' : owner.type === 'higuruma' ? 'court' : owner.type === 'kenjaku' ? 'womb' : owner.type === 'jogo' ? 'volcano' : owner.type === 'dagon' ? 'ocean' : owner.type === 'mahito' ? 'soul' : owner.type === 'naoyac' ? 'moon' : owner.type === 'meguna' ? 'shrine' : 'void';
   const duration = type === 'love' ? YUTA_DOMAIN_DUR : DOMAIN_DURATION;
   activeDomain = {
     owner, type,
@@ -6862,7 +6895,7 @@ const AURA_SRC = {
 };
 const AURA_OF = { sukuna:'red', choso:'red', gojo:'cyan', hakari:'green', yuta:'magenta',
   mahito:'purple', jogo:'purple', dagon:'purple', hanami:'purple', naoyac:'purple',          // curses
-  yuji:'teal', mechamaru:'teal', todo:'teal', higuruma:'teal', meimei:'teal', takaba:'teal', naoya:'teal', kenjaku:'magenta' };
+  yuji:'teal', mechamaru:'teal', todo:'teal', higuruma:'teal', meimei:'teal', takaba:'teal', naoya:'teal', kenjaku:'magenta', megumi:'teal', meguna:'red' };
 const AURA_FW = 256, AURA_FH = 320, AURA_N = 6, AURA_FPS = 10;
 const _auraImg = {};
 function auraImg(k){ if(!_auraImg[k]){ const im = new Image(); im.src = AURA_SRC[k]; _auraImg[k] = im; } return _auraImg[k]; }
@@ -6949,6 +6982,7 @@ class Player {
     this.hp=100; this.maxHp=100; this.iframes = 900;
     if(isNaoya(this)){ this._hp = NAO_HP; this.maxHp = NAO_HP; }
     this.naoDashCd=0; this.naoComboCd=0; this.naoRocketCd=0; this.naoFieldCd=0; this.naoCharge=0; this.naoTrail=[]; this.framedT=0; this.frameMax=0; this.naoRunT=0; this.naoAng=0; this.naoHitN=0;
+    this.megRabCd=0; this.megWellCd=0; this.megNueCd=0; this.megAgiCd=0; this.megCharge=0; this.gardenT=0; this.rabbitT=0; this.wellT=0; this.mahoTurns=0; this.wcsDone=false;
     this.takRpsCd=0; this.takKanCd=0; this.takCharge=0; this.counterT=0; this.kanHit=false; this.lastCombatT=0; this.swapCd=0;
     this.guard=undefined; this.oaKind=null; this.oaChain=0; this.oaHitAt=null; this.hitsTaken=0; this.cmbHits=0; this.frsT=0; this.adT=0; this.adName=null; this.confiscT=0;
     this.mahiPalmCd=0; this.mahiIsoCd=0; this.mahiCharge=0; this.mahiFormT=0; this.reshapeT=0; this.palmHit=false; this.lastHurt=0;
@@ -7059,7 +7093,7 @@ class Player {
     this.pbChargeTime=0; this.pbCooldown=0; this.pbDown=false;
   }
 
-  reset(){ const pr = this.pendingRefund||0; this._init(); this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = false; }
+  reset(){ const pr = this.pendingRefund||0; if(this.type==='meguna') megunaRevert(this); this._init(); this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = false; }
 
   get hittable(){
     if(this.mechUltPhase===1 || this.mechUltPhase===2) return false; // underground
@@ -7107,6 +7141,8 @@ class Player {
             if(opp.naoHitN >= 3){ opp.naoHitN = 0; this.naoPFT = terClock; framePlayer(this, NAO_PASSIVE_MS, opp); addSpeech(this.x+PW/2, this.y-26, 'FRAME!', '#f4f1e6', 500); }
           }
         }
+        if(opp && isMeg(opp)) opp.megCharge = Math.min(opp.type==='meguna' ? MEG_WCS_REQ : MEG_DOG_REQ, (opp.megCharge||0) + d);
+        if(this.type==='meguna' && megMaho(this) && terClock - (this.mahoTurnT||-1e9) > 400){ this.mahoTurnT = terClock; this.mahoTurns = Math.min(6, (this.mahoTurns||0) + 1); if(this.mahoTurns < 6) addSpeech(this.x+PW/2, this.y-30, 'ADAPTING', '#b89a3a', 500); }
         if(opp && opp.type==='dagon')
           opp.dagonCharge = Math.min(DAGON_SWARM_REQ, (opp.dagonCharge||0) + d);
         if(opp && opp.type==='jogo')
@@ -7433,6 +7469,8 @@ class Player {
       if(this.state===S.WALK && Math.abs(this.vx) > 1) this.naoRunT = (this.naoRunT||0) + dt; else if(this.state!==S.AIR) this.naoRunT = 0;
       this._naoyaAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     }
+    // ── MEGUMI / MEGUNA ──
+    if(isMeg(this) && !this.isPuppet) this._megAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── TAKABA: 1 = Rock Paper Scissors, 2 = 1000 Years of Death, 3 = Counter, F = The Truck ──
     if(this.type==='takaba'){
       for(const k of ['takRpsCd','takKanCd','counterT']) if(this[k]>0) this[k]=Math.max(0,this[k]-dt);
@@ -7855,6 +7893,8 @@ class Player {
       case S.NAODASH:    this._tickNaoDash(dt); break;
       case S.NAOCOMBO:   this._tickNaoCombo(dt); break;
       case S.NAOROCKET:  this._tickNaoRocket(dt); break;
+      case S.MEGCAST:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR); break;
+      case S.MEGWCS:     this._tickMegWcs(dt); break;
       case S.FRAMED:     this.vx = 0; this.vy = 0; if(!(this.framedT>0)) this.ss(this.onGround ? S.IDLE : S.AIR); break;
       case S.TAKACTR:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.counterT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.DAGONSWARM: this._tickDagonSwarm(dt); break;
@@ -9304,14 +9344,14 @@ class Player {
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
   _dmgOut(){ let m = this._overtimeMult(); if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.4; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.7; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
     if(this._vow('sacrifice')) keys[this.domainKey] = false;
     if(this.kenToggleCd > 0) this.kenToggleCd -= dt;
     const fk = !!keys[`A${this.playerNum}_feat`], edge = fk && !this.featDown; this.featDown = fk;
-    if(edge && this._feat('kenjaku') && !this._vow('heavenly') && this.kenToggleCd<=0 && [S.IDLE,S.WALK,S.AIR].includes(this.state) && !this.mechUltPhase) this._kenToggle();
+    if(edge && this._feat('kenjaku') && !this._vow('heavenly') && this.kenToggleCd<=0 && this.type!=='meguna' && [S.IDLE,S.WALK,S.AIR].includes(this.state) && !this.mechUltPhase) this._kenToggle();
   }
   _kenToggle(){
     if(this.type!=='kenjaku'){
@@ -9573,6 +9613,9 @@ class Player {
     if(this.adT>0 && this.type==='sukuna') spd *= 0.6;
     if(floods.length){ if(inFlood(this, false)) spd *= 0.55; if(this.type==='dagon' && inFlood(this, true)) spd *= 1.4; }
     if(this._vow('heavenly')) spd *= 1.3;
+    if(this.gardenT>0) spd *= MEG_GARDEN_SPD;
+    if(this.rabbitT>0) spd *= 0.7;
+    if(this.wellT>0){ spd *= 0.15; jmp *= 0.4; }
     if(activeDomain && activeDomain.type==='womb' && activeDomain.owner!==this && !(this.sdT>0)){ spd *= 0.4; jmp *= 0.55; }   // Womb Profusion's gravity
     return {spd, jmp};
   }
@@ -10355,6 +10398,7 @@ class Player {
     if(this.type==='hanami') drawHanamiBody(this);
     if(this.type==='takaba') drawTakabaBody(this);
     if(isNaoya(this)) drawNaoyaBody(this);
+    if(isMeg(this)) drawMegumiBody(this);
     drawOlBody(this);
     drawFramedOverlay(this);
     if(this.type==='mahito' || this.reshapeT>0) drawMahitoBody(this);
@@ -11282,6 +11326,35 @@ class Player {
         ctx.fillText('LAST LIFE: VENGEFUL CURSE', bx+bw/2, domY+10);
       }
     }
+    // Megumi / Meguna HUD
+    if(isMeg(this)){
+      const mg = this.type==='meguna', req = mg ? MEG_WCS_REQ : MEG_DOG_REQ, sp = Math.min(1, (this.megCharge||0)/req);
+      const names = mg ? [`NUE TOTALITY [${keyLbl(this,'ab1')}]`, `AGITO [${keyLbl(this,'ab2')}]`, `WORLD SLASH [${keyLbl(this,'ab3')}]`]
+                       : [`RABBITS [${keyLbl(this,'ab1')}]`, `WELL [${keyLbl(this,'ab2')}]`, `DIVINE DOG [${keyLbl(this,'ab3')}]`];
+      const fills = mg ? [Math.max(0,1-this.megNueCd/MEG_NUE_CD), Math.max(0,1-this.megAgiCd/MEG_AGI_CD), sp] : [Math.max(0,1-this.megRabCd/MEG_RAB_CD), Math.max(0,1-this.megWellCd/MEG_WELL_CD), sp];
+      const abY = y+bh+38, col = mg ? '#d94a5a' : '#6f8fd6';
+      for(let i=0;i<3;i++){
+        const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
+        const ready = fills[i]>=1, isUlt = i===2;
+        ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(ax,abY,aw,22);
+        ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?col:'#26304a');
+        ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
+        ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#eef2ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+      }
+      const domY = abY+30, on = mg ? !!(activeDomain && activeDomain.owner===this) : this.gardenT>0, pct = on ? (mg ? 1 : this.gardenT/MEG_GARDEN_MS) : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
+      ctx.fillStyle = on ? (mg ? '#7a1a24' : '#2a3a6a') : ready ? (mg ? `rgba(217,74,90,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.005))})` : `rgba(111,143,214,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.005))})`) : (mg ? '#3a0f16' : '#141c33');
+      ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, domY, Math.floor(bw*pct), 14);
+      ctx.strokeStyle = mg ? 'rgba(217,74,90,0.5)' : 'rgba(111,143,214,0.5)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+      let txt;
+      if(mg) txt = on ? 'MALEVOLENT SHRINE' : ready ? `MALEVOLENT SHRINE [${keyLbl(this,'ult')}]` : `DOMAIN ${Math.floor(pct*100)}%`;
+      else if(on) txt = `CHIMERA SHADOW GARDEN ${Math.ceil(this.gardenT/1000)}s`;
+      else if(this.varMode) txt = !this._feat('meguna') ? 'MEGUNA: LOCKED (SHOP)' : ready ? `MEGUNA [${keyLbl(this,'ult')}]` : `MEGUNA ${Math.floor(pct*100)}%`;
+      else txt = ready ? `SHADOW GARDEN [${keyLbl(this,'ult')}]` : `ULTIMATE ${Math.floor(pct*100)}%`;
+      ctx.fillStyle = ready||on ? '#f4f6ff' : '#8a94b0'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
+      ctx.fillText(txt, bx+bw/2, domY+10);
+    }
     // Takaba HUD
     if(this.type==='takaba'){
       const names = [`ROCK PAPER SCI. [${keyLbl(this,'ab1')}]`, `1000 YEARS [${keyLbl(this,'ab2')}]`, this.state===S.TAKACTR ? 'COUNTERING!' : `COUNTER [${keyLbl(this,'ab3')}]`];
@@ -12089,6 +12162,13 @@ const CHARACTERS = [
     color: '#e6d3a3',
     dimColor: '#6a5a34',
     description: 'Projection Sorcery · 24 FPS · 4 lives'
+  },
+  {
+    name: 'MEGUMI',
+    type: 'megumi',
+    color: '#6f8fd6',
+    dimColor: '#1c2a52',
+    description: 'Ten Shadows · Divine Dogs · Shadow Garden'
   }
   // ── ADD YOUR CHARACTER HERE ──────────────────────────────
   // {
@@ -12468,6 +12548,25 @@ const OL_VARS = {
       if(!d) olAfter(280, () => naoMissed(p));
       if(d){ framePlayer(d, 1500, p); olAfter(1520, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#d8c8ff', 70); olHit(p, d, 8, {any:true, rag:[8,-6,RAGD_MS], col:'#d8c8ff'}); }); } }},
   },
+  megumi: {
+    1:{name:'Max Elephant', desc:'Drops Max Elephant on the nearest foe within 400px (or 160px ahead): 12 damage and a big launch, then a water wave shoves anyone nearby away.', lock:360, run(p){
+      const d = olNearest(p, 400), x = d ? d.x+PW/2 : Math.max(40, Math.min(W-40, p.x+PW/2 + p.facing*160));
+      megShiki(p, {kind:'elephant', x, y:terGroundTop(x-10, 20, (d ? d.y : p.y)+PH-1, true), dir:p.facing, life:1500, landed:false});
+      snd('charge', p.x); sayFor(p, 'Max Elephant.'); }},
+    2:{block:true, name:'Nue', desc:'Nue swoops forward from his shadow: 8 damage and a 0.6s electric stun.', lock:280, run(p){
+      megShiki(p, {kind:'nue', x:p.x+PW/2, y:p.y+PH*0.3, dir:p.facing, life:900});
+      snd('swing', p.x); sayFor(p, 'Nue.'); }},
+  },
+  meguna: {
+    1:{name:'Mahoraga', desc:'Summons the Eight-Handled Sword Divergent Sila Divine General for 7s: it walks at them swinging the Sword of Extermination (14), and while it\'s out Sukuna adapts — 30% less damage taken, up to 60% as the wheel turns.', lock:600, run(p){
+      const old = megMaho(p); if(old) old.life = 0;
+      p.mahoTurns = 0; const x = Math.max(30, Math.min(W-30, p.x+PW/2 - p.facing*40));
+      megShiki(p, {kind:'mahoraga', x, y:terGroundTop(x-30, 60, p.y+PH-1, true), dir:p.facing, life:MEG_MAHO_MS, atk:700, swing:0});
+      addRing(x, p.y+PH, '#b89a3a', 110); doShake(10); snd('domain', p.x); sayFor(p, 'With this treasure I summon. Eight-Handled Sword Divergent Sila Divine General Mahoraga.'); }},
+    2:{block:true, name:'Cleave', desc:'Sukuna\'s close-range Cleave adjusted to the target: 11 damage and a knockback.', lock:300, run(p){
+      const [x,y,w,h] = olFront(p, 80); snd('slash', p.x);
+      for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 11, {rag:[11,-6,RAGD_MS], col:'#ff4a5a'}); addParts(d.x+PW/2, d.y+PH/2, '#a00010', 14, 6); } }},
+  },
   takaba: {
     1:{name:'Spotlight', desc:'Points a stage spotlight at the nearest foe within 500px: stage fright — no abilities for 2.5s.', lock:300, run(p){
       const d = olNearest(p, 500); snd('ui', p.x);
@@ -12501,7 +12600,7 @@ const CE_CD_MULT = 0.75, CE_VAR_CD = 6000, CE_AD_COST = 40, CE_SPECIAL = 0.5, CE
 const CE_PROFILE = {
   // special grades (sorcerers and curses) get bigger pools; Gojo + Sukuna refill far faster; Yuta + Mechamaru dwarf everyone
   gojo:[220,26], sukuna:[230,24], yuta:[480,14], mechamaru:[420,12], kenjaku:[220,9], jogo:[200,8], dagon:[190,7], hanami:[190,7], mahito:[180,8],
-  naoya:[130,6], naoyac:[220,8],
+  naoya:[130,6], naoyac:[220,8], megumi:[150,7], meguna:[240,22],
   yuji:[110,5], choso:[110,5], higuruma:[110,5], hakari:[120,5], meimei:[110,5], todo:[100,5], takaba:[90,4]
 };
 const CE_LORE = {
@@ -12514,7 +12613,8 @@ const CE_LORE = {
   yuji:'Average reserves; he fights mostly with his fists.', choso:'Average reserves — but when he runs dry he pays with his own blood (1 HP = 3 CE), leaving a pool behind.', higuruma:'A natural talent: slightly quicker refill.',
   hakari:'Average reserves — but during a JACKPOT his cursed energy is infinite.', meimei:'Average reserves.', todo:'Small reserves; he relies on his body.',
   takaba:'The smallest pool in the game. He\'s a comedian, not a sorcerer.',
-  naoya:'Special grade 1 of the Zen\'in clan: a solid pool, average refill.', naoyac:'As a vengeful cursed spirit his pool swells to special-grade size.'
+  naoya:'Special grade 1 of the Zen\'in clan: a solid pool, average refill.', naoyac:'As a vengeful cursed spirit his pool swells to special-grade size.',
+  megumi:'Grade 2 with special-grade potential: an above-average pool.', meguna:'Sukuna in Megumi\'s body: a special-grade pool and the King of Curses\' fast refill.'
 };
 // slot → [cooldown field, old cooldown constant] (the old cooldown sets the CE cost)
 const CE_SLOTS = {
@@ -12535,9 +12635,11 @@ const CE_SLOTS = {
   takaba:{ab1:['takRpsCd','TAKA_RPS_CD'], ab2:['takKanCd','TAKA_KAN_CD']},
   naoya:{ab1:['naoDashCd','NAO_DASH_CD'], ab2:['naoComboCd','NAO_COMBO_CD']},
   naoyac:{ab1:['naoRocketCd','NAO_ROCKET_CD'], ab2:['naoFieldCd','NAO_FIELD_CD']},
+  megumi:{ab1:['megRabCd','MEG_RAB_CD'], ab2:['megWellCd','MEG_WELL_CD']},
+  meguna:{ab1:['megNueCd','MEG_NUE_CD'], ab2:['megAgiCd','MEG_AGI_CD']},
   kenjaku:{ab1:['kenUzuCd','KEN_UZU_CD'], ab2:['kenSpiritCd','KEN_SPIRIT_CD']},
 };
-const CE_DOMAIN = new Set(['sukuna','gojo','yuta','higuruma','hakari','mahito','dagon','jogo','kenjaku','naoyac']);
+const CE_DOMAIN = new Set(['sukuna','gojo','yuta','higuruma','hakari','mahito','dagon','jogo','kenjaku','naoyac','meguna']);
 const CE_BASIC = new Set([S.IDLE, S.WALK, S.AIR, S.ATCK, S.DIVE, S.BLOCK, S.DASH]);
 const CE_KEYS = [['ab1','ab1Key'], ['ab2','ab2Key'], ['ab3','ab3Key'], ['ult','domainKey']];
 // a second press that steers / detonates / swaps with something already out is free
@@ -12560,12 +12662,12 @@ function ceBaseCost(type, slot){
   return (_ceCostCache[k] = v);
 }
 function ceCostMult(p){ return (p._vow && p._vow('sacrifice') ? 0.75 : 1) * (p._feat && p._feat('sixeyes') ? 0.85 : 1); }
-function ceProfKey(p){ return p.type==='naoyac' ? 'naoyac' : (p.baseType || p.type); }
+function ceProfKey(p){ return p.type==='naoyac' || p.type==='meguna' ? p.type : (p.baseType || p.type); }
 function ceInit(p){
   const pr = CE_PROFILE[ceProfKey(p)] || [100, 7];
   p.ceMax = pr[0]; p.ceRegen = pr[1]; p.ce = p.ceMax; p.varMode = false; p._ceKD = {}; p._cePaid = {};
 }
-function ceInfinite(p){ return p.jackpotT>0 || (isTraining() && trainOpt.nocd && p===p1); }
+function ceInfinite(p){ return p.jackpotT>0 || p.gardenT>0 || (isTraining() && trainOpt.nocd && p===p1); }
 function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1) * (p.bfCeT>0 ? 3.5 : 1); }
 // Black Flash: for a while afterwards your cursed energy refills 250% faster
 const CE_BF_MS = 10000;
@@ -12588,7 +12690,7 @@ function cePay(p, need, wipe){
 }
 function ceRegenPaused(p){
   return p.state===S.DOMAIN || p.state===S.DEAD || !!(activeDomain && activeDomain.owner===p) || !!(domainClash && (domainClash.att===p || domainClash.def===p))
-    || p.soulT>0 || p.rampT>0 || p.todoNoCdT>0 || !!p.mechUltPhase || p.state===S.YUJIULT;
+    || p.soulT>0 || p.rampT>0 || p.gardenT>0 || p.todoNoCdT>0 || !!p.mechUltPhase || p.state===S.YUJIULT;
 }
 function ceFollow(p, slot){ const f = CE_FOLLOW[p.type] && CE_FOLLOW[p.type][slot]; try{ return !!(f && f(p)); }catch(e){ return false; } }
 function ceVarCost(p, n){ const mx = p.ceMax || (CE_PROFILE[p.type]||[100])[0]; return Math.min(Math.round(mx*0.7), Math.max(30, Math.round(2*ceBaseCost(p.type, 'ab'+n)*(p._feat ? ceCostMult(p) : 1)))); }
@@ -14065,6 +14167,344 @@ function drawNaoya(){
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// MEGUMI FUSHIGURO — Ten Shadows
+//  Rabbit Escape · Bottomless Well · Divine Dog: Totality · Chimera Shadow Garden (incomplete domain)
+//  Maximum Output: Max Elephant · Nue — and, with the Meguna feat, his Maximum Output ultimate hands the body to Sukuna:
+// MEGUNA — Nue Totality · Agito · World Cutting Slash · Malevolent Shrine · Maximum Output: Mahoraga · Cleave
+// ═══════════════════════════════════════════════════════════════════
+const MEG_RAB_CD = 6000, MEG_RAB_LIFE = 1700, MEG_RAB_BACK = 210;
+const MEG_WELL_CD = 7000, MEG_WELL_LIFE = 2600, MEG_WELL_R = 54, MEG_WELL_DMG = 2;
+const MEG_DOG_REQ = 40, MEG_DOG_BITE = 6;
+const MEG_GARDEN_MS = 12000;
+const MEG_GARDEN_SPD = 1.15;
+const MEG_NUE_CD = 6000, MEG_AGI_CD = 8000, MEG_WCS_REQ = 40, MEG_WCS_DMG = 30, MEG_WCS_LEN = 620, MEG_MAHO_MS = 7000, MEG_MAHO_DR = 0.7;
+const shikis = [];     // synced: every summoned shikigami / shadow effect {owner, kind, x, y, dir, t, life, ...}
+
+function isMeg(pl){ return !!pl && (pl.type==='megumi' || pl.type==='meguna'); }
+function megShiki(owner, o){ o.owner = owner; o.t = 0; o.hits = {}; shikis.push(o); return o; }
+function megMaho(pl){ return shikis.find(s => s.owner===pl && s.kind==='mahoraga'); }
+
+// ── Meguna: Sukuna takes the body (needs the feat, Maximum Output on, and a full ultimate) ──
+function megunaTransform(pl){
+  pl.baseType = 'megumi'; pl.type = 'meguna'; pl.name = 'MEGUNA'; pl.charColor = '#d94a5a'; pl.charDimColor = '#5a1820';
+  pl.gardenT = 0; pl.varMode = false; pl.domainCharge = 0;
+  ceInit(pl); pl.ce = 0;
+  addRing(pl.x+PW/2, pl.y+PH/2, '#d94a5a', 130); addParts(pl.x+PW/2, pl.y+PH/2, '#3a0a10', 30, 8); doShake(14);
+  showTxt('SUKUNA TAKES THE BODY', 1600); sayFor(pl, 'This body is mine now.');
+}
+function megunaRevert(pl){
+  const c = CHARACTERS.find(q => q.type==='megumi'); if(!c) return;
+  pl.type = 'megumi'; pl.baseType = null; pl.name = c.name; pl.charColor = c.color; pl.charDimColor = c.dimColor; pl.ce = undefined; pl.ceMax = undefined;
+}
+
+Player.prototype._megAbilities = function(dt, e1, e2, e3, eD, blocked){
+  for(const k of ['megRabCd','megWellCd','megNueCd','megAgiCd','rabbitT','wellT']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+  if(this.gardenT>0){
+    this.gardenT = Math.max(0, this.gardenT-dt);
+    // Chimera Shadow Garden: no cooldowns and no limits on shikigami
+    this.megRabCd = Math.min(this.megRabCd, 800); this.megWellCd = Math.min(this.megWellCd, 800); this.megCharge = MEG_DOG_REQ; if(this.varCd){ this.varCd[1] = Math.min(this.varCd[1], 800); this.varCd[2] = Math.min(this.varCd[2], 800); }
+  }
+  const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), opp = this===p1 ? p2 : p1;
+  if(this.type==='megumi'){
+    if(e1 && free && this.megRabCd<=0){
+      this.megRabCd = MEG_RAB_CD;
+      megShiki(this, {kind:'rabbits', x:this.x+PW/2, y:this.y+PH, dir:this.facing, life:MEG_RAB_LIFE, tick:0});
+      this.iframes = Math.max(this.iframes, 700);
+      safeTeleport(this, this.x - this.facing*MEG_RAB_BACK, this.y);
+      snd('dash', this.x); sayFor(this, 'Rabbit Escape.');
+    }
+    if(e2 && free && this.megWellCd<=0){
+      this.megWellCd = MEG_WELL_CD;
+      const d = olNearest(this, 420), gx = d ? d.x+PW/2 : this.x+PW/2 + this.facing*170;
+      const gy = terGroundTop(gx-10, 20, (d ? d.y : this.y)+PH-1, true);
+      megShiki(this, {kind:'well', x:gx, y:gy, dir:this.facing, life:MEG_WELL_LIFE, tick:0});
+      snd('orb', gx); sayFor(this, 'Bottomless Well.');
+    }
+    if(e3 && free && (this.megCharge||0) >= MEG_DOG_REQ && shikis.filter(s => s.owner===this && s.kind==='dog').length < 2){
+      this.megCharge = 0;
+      megShiki(this, {kind:'dog', x:this.x+PW/2 - this.facing*40, y:this.y+PH, dir:this.facing, life:2600, bites:0, bt:0, ph:0});
+      this.vx = 0; this.ss(S.MEGCAST, 300); snd('charge', this.x); sayFor(this, 'Divine Dog: Totality.');
+    }
+    if(eD && free){
+      if(this.varMode){
+        if(this._feat && this._feat('meguna')){
+          if(this.domainCharge >= DOMAIN_CHARGE_REQ) megunaTransform(this);
+        } else addSpeech(this.x+PW/2, this.y-14, 'LOCKED — BUY MEGUNA', '#999', 900);
+      } else if(this.domainCharge >= DOMAIN_CHARGE_REQ && !(this.gardenT>0)){
+        this.domainCharge = 0; this.gardenT = MEG_GARDEN_MS; this.vx = 0; this.ss(S.MEGCAST, 450);
+        addRing(this.x+PW/2, this.y+PH, '#1a1f33', 160); addRing(this.x+PW/2, this.y+PH, '#6f8fd6', 120); doShake(8); snd('domain', this.x);
+        showTxt('CHIMERA SHADOW GARDEN', 1300); sayFor(this, 'Domain Expansion. Chimera Shadow Garden.');
+      }
+    }
+  } else {
+    if(e1 && free && this.megNueCd<=0){
+      this.megNueCd = MEG_NUE_CD;
+      const d = olNearest(this, 900);
+      megShiki(this, {kind:'nuetot', x:this.x+PW/2 - this.facing*200, y:this.y-150, dir:this.facing, life:1500, tx:d ? d.x+PW/2 : this.x+PW/2+this.facing*260, strikes:0});
+      snd('laser', this.x); sayFor(this, 'Nue.');
+    }
+    if(e2 && free && this.megAgiCd<=0){
+      this.megAgiCd = MEG_AGI_CD;
+      megShiki(this, {kind:'agito', x:this.x+PW/2 - this.facing*30, y:this.y+PH, dir:this.facing, life:1500, n:0});
+      this._rawDmg = true; this.hp = Math.min(this.maxHp||100, this.hp + 6); this._rawDmg = false;
+      addSpeech(this.x+PW/2, this.y-20, '+6', '#9fe0a0', 600); snd('heavy', this.x); sayFor(this, 'Agito.');
+    }
+    if(e3 && free && (this.megCharge||0) >= MEG_WCS_REQ){
+      this.megCharge = 0; this.vx = 0; this.ss(S.MEGWCS, 520); this.wcsDone = false; snd('charge', this.x); sayFor(this, 'Dismantle.');
+    }
+    if(eD && free && this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain) this._startDomain();
+  }
+};
+Player.prototype._tickMegWcs = function(dt){
+  this.vx = 0; this._phys(dt);
+  if(!this.wcsDone && this.sTimer >= 340){
+    this.wcsDone = true;
+    const f = this.facing, x0 = this.x+PW/2, y0 = this.y+PH*0.42;
+    megShiki(this, {kind:'wcs', x:x0, y:y0, dir:f, life:650});
+    if(!IS_GUEST) for(let k=0;k<MEG_WCS_LEN;k+=24) carveRect(x0 + f*k - 12, y0-4, 24, 8);
+    doShake(16); snd('slash', this.x);
+    const x = f>0 ? x0 : x0 - MEG_WCS_LEN;
+    for(const d of olArea(this, x, y0-PH*0.6, MEG_WCS_LEN, PH*1.1)){
+      d.infT = 0; d.rikaT = 0;                    // it cuts space itself: Infinity and Rika don't stop it
+      olHit(this, d, MEG_WCS_DMG, {rag:[15,-8,RAGD_MS*1.3], dir:f, col:'#ffffff'});
+      addParts(d.x+PW/2, d.y+PH/2, '#a00010', 26, 8);
+    }
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+
+function tickMegumi(dt){
+  const k = dt/16.67;
+  for(let i=shikis.length-1;i>=0;i--){
+    const s = shikis[i], o = s.owner; s.t += dt;
+    if(!o || (o!==p1 && o!==p2) || o.state===S.DEAD){ shikis.splice(i,1); continue; }
+    const foes = olFoes(o);
+    if(s.kind==='rabbits'){
+      s.tick += dt;
+      if(s.tick >= 400){ s.tick = 0;
+        for(const d of foes){ if(!d.hittable || Math.abs(d.x+PW/2 - s.x) > 110 || Math.abs(d.y+PH - s.y) > 90) continue;
+          d.rabbitT = 1500; d._rawDmg = true; d.hp = Math.max(0, d.hp-1); d._rawDmg = false; addDmg(d.x+PW/2, d.y-10, 1, '#f4f4f4'); if(d.hp<=0){ d._initRd(0,-3,.05); d.ss(S.DEAD); } } }
+    } else if(s.kind==='well'){
+      s.tick += dt;
+      for(const d of foes){ if(d.state===S.DEAD || Math.abs(d.x+PW/2 - s.x) > MEG_WELL_R || Math.abs(d.y+PH - s.y) > 14) continue;
+        d.wellT = 160; d.vx *= 0.2;
+        if(s.tick >= 400){ d._rawDmg = true; d.hp = Math.max(0, d.hp-MEG_WELL_DMG); d._rawDmg = false; addDmg(d.x+PW/2, d.y-10, MEG_WELL_DMG, '#6f8fd6'); if(d.hp<=0){ d._initRd(0,-3,.05); d.ss(S.DEAD); } } }
+      if(s.tick >= 400) s.tick = 0;
+    } else if(s.kind==='dog'){
+      const d = olNearest(o, 1200);
+      if(s.ph===0){
+        if(d){ const tx = d.x+PW/2; s.dir = Math.sign(tx - s.x) || s.dir; s.x += s.dir*13*k; s.y = terGroundTop(s.x-20, 40, s.y-30, true);
+          if(Math.abs(tx - s.x) < 46 && Math.abs(d.y+PH - s.y) < 70){ s.ph = 1; s.bt = 0; s.tgt = netRef(d); } }
+        else s.x += s.dir*13*k;
+      } else {
+        s.bt += dt; const t = netRes(s.tgt);
+        if(t && s.bt >= 160*(s.bites+1) && s.bites < 3){ s.bites++; snd('slash', s.x); addParts(t.x+PW/2, t.y+PH*0.4, '#f0f0f0', 10, 5);
+          olHit(o, t, MEG_DOG_BITE, s.bites<3 ? {stun:320, push:1, dir:s.dir, col:'#f0f0f0'} : {rag:[12,-8,RAGD_MS], dir:s.dir, col:'#f0f0f0'}); }
+        if(s.bites >= 3 && s.bt > 700) s.life = 0;
+      }
+    } else if(s.kind==='elephant'){
+      if(!s.landed && s.t >= 520){ s.landed = true; doShake(16); snd('boom', s.x); addRing(s.x, s.y, '#8fd0ff', 160); addParts(s.x, s.y-20, '#bfe6ff', 30, 9);
+        if(!IS_GUEST) carveCircle(s.x, s.y, 34);
+        for(const d of olArea(o, s.x-70, s.y-PH-30, 140, PH+40)) olHit(o, d, 12, {rag:[10,-9,RAGD_MS*1.1], dir:Math.sign(d.x+PW/2-s.x)||1, col:'#ffb3d1'});
+        for(const d of foes){ const dx = d.x+PW/2 - s.x; if(Math.abs(dx) < 200 && Math.abs(dx) > 50 && Math.abs(d.y+PH-s.y) < 80 && d.hittable){ d.vx = Math.sign(dx)*9; addParts(d.x+PW/2, d.y+PH-6, '#8fd0ff', 6, 3); } } }
+    } else if(s.kind==='nue'){
+      s.x += s.dir*15*k; s.y += 2.2*k*(s.t < 260 ? 1 : -0.6);
+      if(!s.hit) for(const d of olArea(o, s.x-22, s.y-18, 44, 36)){ s.hit = true; olHit(o, d, 8, {stun:600, push:3, dir:s.dir, col:'#ffe066'}); addParts(d.x+PW/2, d.y+PH/2, '#ffe066', 14, 6); snd('laser', d.x); }
+    } else if(s.kind==='nuetot'){
+      s.x += s.dir*9*k;
+      if(s.strikes < 3 && s.t >= 350 + s.strikes*300){ s.strikes++;
+        const tg = olNearest(o, 1200); if(tg) s.tx = tg.x+PW/2; const lx = s.tx + (s.strikes-2)*18, gy = terGroundTop(lx-10, 20, tg ? tg.y+PH-1 : 0, true);
+        olShot(o, {kind:'orbfx', x:lx, y:gy-60, life:260, col:'#ffe066', dmg:0}); addParts(lx, gy-10, '#ffe066', 16, 7); snd('laser', lx); doShake(6);
+        for(const d of olArea(o, lx-36, gy-PH-200, 72, PH+200)) olHit(o, d, 6, {stun:320, col:'#ffe066'}); }
+    } else if(s.kind==='agito'){
+      if(terClock - (s.lastHit||-1e9) > 320) s.x += s.dir*12*k; s.y = terGroundTop(s.x-25, 50, s.y-30, true);
+      for(const d of olArea(o, s.x-34, s.y-PH-10, 68, PH+10)){ const kk = netRef(d); if((s.hits[kk]||0) >= 3 || terClock - (s.lastHit||-1e9) < 160) continue;
+        s.hits[kk] = (s.hits[kk]||0) + 1; s.lastHit = terClock; const last = s.hits[kk] >= 3;
+        olHit(o, d, 5, last ? {rag:[12,-7,RAGD_MS], dir:s.dir, col:'#c9a0ff'} : {stun:300, push:2, dir:s.dir, col:'#c9a0ff'}); addParts(d.x+PW/2, d.y+PH/2, '#c9a0ff', 8, 4); }
+      if(!IS_GUEST && Math.random()<0.4) carveCircle(s.x + s.dir*20, s.y-30, 14);
+    } else if(s.kind==='mahoraga'){
+      const d = olNearest(o, 1500);
+      s.atk = Math.max(0, (s.atk||0) - dt);
+      if(d){ const dx = d.x+PW/2 - s.x; s.dir = Math.sign(dx) || s.dir;
+        if(Math.abs(dx) > 70) s.x += s.dir*3.2*k;
+        else if(s.atk<=0 && Math.abs(d.y+PH - s.y) < 90){ s.atk = 1600; s.swing = 260; snd('heavy', s.x); doShake(8);
+          olHit(o, d, 14, {rag:[13,-8,RAGD_MS*1.2], dir:s.dir, col:'#f2efe6'}); } }
+      if(s.swing > 0) s.swing = Math.max(0, s.swing - dt);
+      s.y = terGroundTop(s.x-30, 60, s.y-30, true);
+    }
+    if(s.t >= s.life){ if(s.kind==='mahoraga'){ addParts(s.x, s.y-60, '#f2efe6', 20, 6); } shikis.splice(i,1); }
+  }
+}
+
+// ── drawing ──
+function drawRabbit(x, y, s, hop, f){
+  ctx.save(); ctx.translate(x, y - hop); ctx.scale(f*s, s);
+  ctx.fillStyle = '#f6f6f2'; ctx.strokeStyle = '#2a2a30'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.ellipse(0, -7, 9, 7, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(7, -13, 5, 4.5, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  for(const ex of [5, 9]){ ctx.beginPath(); ctx.ellipse(ex, -22, 1.8, 6, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke(); }
+  ctx.fillStyle = '#c0182a'; ctx.beginPath(); ctx.arc(9, -14, 1.1, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawDog(x, y, f, run){
+  ctx.save(); ctx.translate(x, y); ctx.scale(f, 1);
+  const leg = Math.sin(run)*8;
+  ctx.fillStyle = '#f2f2ee'; ctx.strokeStyle = '#1a1a20'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(-4, -40, 38, 18, -0.05, 0, Math.PI*2); ctx.fill(); ctx.stroke();          // body
+  for(const [lx, s] of [[-30, 1], [-18, -1], [16, -1], [26, 1]]){ ctx.beginPath(); ctx.moveTo(lx, -28); ctx.lineTo(lx + s*leg, 0); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(-40, -46); ctx.quadraticCurveTo(-62, -60, -66, -40); ctx.stroke();       // tail
+  ctx.beginPath(); ctx.ellipse(36, -56, 18, 13, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke();          // head
+  ctx.beginPath(); ctx.moveTo(44, -54); ctx.lineTo(62, -48); ctx.lineTo(46, -44); ctx.closePath(); ctx.fill(); ctx.stroke();   // snout
+  ctx.beginPath(); ctx.moveTo(28, -66); ctx.lineTo(30, -82); ctx.lineTo(38, -68); ctx.moveTo(38, -68); ctx.lineTo(44, -80); ctx.lineTo(46, -64); ctx.stroke(); // ears
+  ctx.fillStyle = '#1a1a20'; ctx.beginPath(); ctx.arc(42, -58, 2.2, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(20,20,30,0.55)'; ctx.lineWidth = 2; for(let k=0;k<4;k++){ ctx.beginPath(); ctx.moveTo(-20+k*12, -54); ctx.lineTo(-14+k*12, -44); ctx.stroke(); } // markings
+  ctx.restore();
+}
+function drawElephant(x, y, drop){
+  ctx.save(); ctx.translate(x, y - drop);
+  ctx.fillStyle = '#e9a3c0'; ctx.strokeStyle = '#3a1a28'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.ellipse(0, -70, 78, 56, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  for(const lx of [-50, -20, 20, 50]){ ctx.fillRect(lx-12, -30, 24, 30); ctx.strokeRect(lx-12, -30, 24, 30); }
+  ctx.beginPath(); ctx.ellipse(56, -100, 30, 26, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(78, -96); ctx.quadraticCurveTo(108, -80, 96, -40); ctx.lineTo(86, -42); ctx.quadraticCurveTo(94, -76, 72, -86); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#d68bab'; ctx.beginPath(); ctx.ellipse(40, -98, 16, 22, -0.3, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#2a1018'; ctx.beginPath(); ctx.arc(62, -108, 3, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawNue(x, y, f, s, flap){
+  ctx.save(); ctx.translate(x, y); ctx.scale(f*s, s);
+  ctx.fillStyle = '#2e2a38'; ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 1.5;
+  const w = Math.sin(flap)*14;
+  ctx.beginPath(); ctx.moveTo(-6, -2); ctx.quadraticCurveTo(-40, -30 - w, -70, -10 - w); ctx.lineTo(-36, 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(6, -2); ctx.quadraticCurveTo(40, -30 - w, 70, -10 - w); ctx.lineTo(36, 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#3a3448'; ctx.beginPath(); ctx.ellipse(0, 2, 13, 16, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#e8e4d8'; ctx.beginPath(); ctx.ellipse(0, -6, 9, 8, 0, 0, Math.PI*2); ctx.fill();   // mask face
+  ctx.fillStyle = '#1a1622'; ctx.beginPath(); ctx.arc(-3, -7, 1.8, 0, Math.PI*2); ctx.arc(3, -7, 1.8, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,224,102,0.8)'; ctx.lineWidth = 1.2;
+  for(let k=0;k<3;k++){ const a = Math.random()*Math.PI*2; ctx.beginPath(); ctx.moveTo(Math.cos(a)*16, Math.sin(a)*16); ctx.lineTo(Math.cos(a)*26 + (Math.random()-0.5)*8, Math.sin(a)*26 + (Math.random()-0.5)*8); ctx.stroke(); }
+  ctx.restore();
+}
+function drawAgito(x, y, f, run){
+  ctx.save(); ctx.translate(x, y); ctx.scale(f, 1);
+  const leg = Math.sin(run)*7;
+  ctx.fillStyle = '#4a3a5e'; ctx.strokeStyle = '#120c1a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-50, -40); ctx.quadraticCurveTo(-80, -20, -96, -46); ctx.quadraticCurveTo(-78, -36, -54, -52); ctx.closePath(); ctx.fill(); ctx.stroke();  // serpent tail
+  ctx.beginPath(); ctx.ellipse(-6, -50, 46, 26, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  for(const [lx, s] of [[-34, 1], [-14, -1], [14, 1], [32, -1]]){ ctx.beginPath(); ctx.moveTo(lx, -30); ctx.lineTo(lx + s*leg, 0); ctx.stroke(); }
+  ctx.fillStyle = '#e8e4d8'; ctx.beginPath(); ctx.ellipse(40, -66, 16, 14, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();      // mask
+  ctx.fillStyle = '#120c1a'; ctx.beginPath(); ctx.arc(36, -68, 2.5, 0, Math.PI*2); ctx.arc(46, -68, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#d8c9a0'; ctx.lineWidth = 3;                                                                     // round-deer antlers
+  for(const s of [-1, 1]){ ctx.beginPath(); ctx.moveTo(40 + s*6, -78); ctx.quadraticCurveTo(40 + s*22, -104, 40 + s*10, -116); ctx.moveTo(40 + s*16, -98); ctx.lineTo(40 + s*28, -104); ctx.stroke(); }
+  ctx.fillStyle = '#6a5a7e'; ctx.beginPath(); ctx.moveTo(-16, -74); ctx.quadraticCurveTo(-40, -104, -62, -86); ctx.quadraticCurveTo(-40, -82, -20, -70); ctx.fill();   // nue wing
+  ctx.restore();
+}
+function drawMahoraga(x, y, f, swing, adapt){
+  ctx.save(); ctx.translate(x, y); ctx.scale(f, 1);
+  const H = 150;
+  ctx.fillStyle = '#efebe0'; ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2.2;
+  // legs + torso
+  ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-14, -60); ctx.lineTo(14, -60); ctx.lineTo(18, 0); ctx.lineTo(6, 0); ctx.lineTo(0, -40); ctx.lineTo(-6, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-26, -62); ctx.quadraticCurveTo(-34, -110, -20, -120); ctx.lineTo(20, -120); ctx.quadraticCurveTo(34, -110, 26, -62); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = 'rgba(26,26,26,0.5)'; ctx.lineWidth = 1; for(let k=0;k<4;k++){ ctx.beginPath(); ctx.moveTo(-14, -72 - k*10); ctx.lineTo(14, -72 - k*10); ctx.stroke(); }
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2.2;
+  // head with its four-winged crest
+  ctx.beginPath(); ctx.ellipse(0, -132, 12, 14, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  for(const s of [-1, 1]){ ctx.beginPath(); ctx.moveTo(s*8, -140); ctx.quadraticCurveTo(s*26, -150, s*30, -128); ctx.stroke(); ctx.beginPath(); ctx.moveTo(s*9, -132); ctx.quadraticCurveTo(s*24, -128, s*26, -114); ctx.stroke(); }
+  // the dharma wheel above its head: it turns each time it adapts
+  ctx.save(); ctx.translate(0, -H-14); ctx.rotate(adapt); ctx.strokeStyle = '#b89a3a'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI*2); ctx.stroke();
+  for(let k=0;k<8;k++){ const a = k*Math.PI/4; ctx.beginPath(); ctx.moveTo(Math.cos(a)*5, Math.sin(a)*5); ctx.lineTo(Math.cos(a)*26, Math.sin(a)*26); ctx.stroke(); }
+  ctx.restore();
+  // arms + the Sword of Extermination on the right
+  const sw = swing > 0 ? -1.1 + (1 - swing/260)*2.2 : -0.3;
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(-24, -112); ctx.lineTo(-36, -70); ctx.stroke();
+  ctx.save(); ctx.translate(24, -112); ctx.rotate(sw);
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(18, 38); ctx.stroke();
+  ctx.fillStyle = '#d8dde4'; ctx.beginPath(); ctx.moveTo(14, 36); ctx.lineTo(26, 40); ctx.lineTo(70, 96); ctx.lineTo(60, 100); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+}
+function drawShikis(){
+  const t = Date.now();
+  for(const s of shikis){
+    const a = Math.max(0, Math.min(1, (s.life - s.t)/250, s.t/120));
+    ctx.save(); ctx.globalAlpha = a;
+    if(s.kind==='rabbits'){
+      for(let i=0;i<16;i++){ const ang = (i*2.399) % (Math.PI*2), r = Math.min(1, s.t/500)*(40 + (i%5)*20);
+        const rx = s.x + Math.cos(ang)*r*1.6, hop = Math.abs(Math.sin(t*0.012 + i))*12;
+        drawRabbit(rx, s.y, 0.9 + (i%3)*0.1, hop, Math.cos(ang) >= 0 ? 1 : -1); }
+    } else if(s.kind==='well'){
+      const g = ctx.createRadialGradient(s.x, s.y, 4, s.x, s.y, MEG_WELL_R+10); g.addColorStop(0, '#000004'); g.addColorStop(0.7, '#0c0f1e'); g.addColorStop(1, 'rgba(12,15,30,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(s.x, s.y, MEG_WELL_R+10, 13, 0, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(111,143,214,0.5)'; ctx.lineWidth = 1.5;
+      for(let k=0;k<3;k++){ const rr = ((t*0.04 + k*18) % 54); ctx.beginPath(); ctx.ellipse(s.x, s.y, rr, rr*0.22, 0, 0, Math.PI*2); ctx.stroke(); }
+      ctx.fillStyle = '#05060c'; for(let k=0;k<3;k++){ const hx = s.x - 30 + k*30, rise = 10 + Math.sin(t*0.006 + k)*6;
+        ctx.beginPath(); ctx.ellipse(hx, s.y - rise, 4, rise, 0, 0, Math.PI*2); ctx.fill(); }
+    } else if(s.kind==='dog'){
+      drawDog(s.x, s.y, s.dir, t*0.03);
+    } else if(s.kind==='elephant'){
+      const drop = s.landed ? 0 : Math.max(0, 1 - s.t/520)*420;
+      if(!s.landed){ ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(s.x, s.y, 70*(0.4 + 0.6*s.t/520), 10, 0, 0, Math.PI*2); ctx.fill(); }
+      drawElephant(s.x, s.y, drop);
+      if(s.landed && s.t < 1100){ ctx.strokeStyle = '#8fd0ff'; ctx.lineWidth = 3; const r = (s.t-520)*0.35; ctx.beginPath(); ctx.ellipse(s.x, s.y-4, r, r*0.15, 0, 0, Math.PI*2); ctx.stroke(); }
+    } else if(s.kind==='nue'){
+      drawNue(s.x, s.y, s.dir, 0.7, t*0.03);
+    } else if(s.kind==='nuetot'){
+      drawNue(s.x, s.y, s.dir, 2.2, t*0.02);
+    } else if(s.kind==='agito'){
+      drawAgito(s.x, s.y, s.dir, t*0.03);
+    } else if(s.kind==='mahoraga'){
+      drawMahoraga(s.x, s.y, s.dir, s.swing||0, s.owner.mahoTurns ? s.owner.mahoTurns*Math.PI/4 : 0);
+    } else if(s.kind==='wcs'){
+      const k = s.t/s.life, x1 = s.x + s.dir*MEG_WCS_LEN;
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 6*(1-k) + 1; ctx.shadowColor = '#ff2a3a'; ctx.shadowBlur = 18;
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(x1, s.y); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.strokeStyle = '#0a0a0a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(x1, s.y); ctx.stroke();
+      ctx.strokeStyle = `rgba(255,255,255,${0.6*(1-k)})`; ctx.lineWidth = 1;          // space cracking around the cut
+      for(let i=0;i<12;i++){ const px = s.x + s.dir*(i+0.5)*MEG_WCS_LEN/12; ctx.beginPath(); ctx.moveTo(px, s.y); ctx.lineTo(px + (i%2?14:-10), s.y - 18 - (i%3)*8); ctx.moveTo(px, s.y); ctx.lineTo(px + (i%2?-8:12), s.y + 16 + (i%4)*6); ctx.stroke(); }
+    }
+    ctx.restore();
+  }
+}
+// the shadow garden floor under Megumi while it lasts
+function drawGarden(pl){
+  if(!(pl.gardenT>0)) return;
+  const cx = pl.x+PW/2, gy = terGroundTop(pl.x, PW, pl.y+PH-1, true), t = Date.now(), a = Math.min(1, pl.gardenT/600, (MEG_GARDEN_MS - pl.gardenT)/400);
+  ctx.save(); ctx.globalAlpha = a*0.85;
+  const g = ctx.createRadialGradient(cx, gy, 10, cx, gy, 420); g.addColorStop(0, 'rgba(2,3,10,0.95)'); g.addColorStop(1, 'rgba(2,3,10,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(cx, gy, 420, 40, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#04050c';
+  for(let k=0;k<9;k++){ const sx = cx - 340 + k*85, h = 18 + Math.abs(Math.sin(t*0.003 + k))*26;
+    ctx.beginPath(); ctx.moveTo(sx-6, gy); ctx.quadraticCurveTo(sx + Math.sin(t*0.004+k)*8, gy - h, sx+6, gy); ctx.fill(); }
+  ctx.restore();
+}
+function drawMegumiBody(pl){
+  if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
+  const cx = pl.x+PW/2, hy = pl.y+HEAD_R+2, f = pl.facing;
+  ctx.save();
+  // spiky black hair
+  ctx.fillStyle = '#14161e';
+  ctx.beginPath(); ctx.moveTo(cx - HEAD_R*1.05, hy - 1);
+  const spikes = [[-1.2,-0.9],[-0.7,-1.7],[-0.3,-1.1],[0.1,-2.0],[0.45,-1.15],[0.85,-1.75],[1.25,-0.8]];
+  for(const [sx, sy] of spikes) ctx.lineTo(cx + sx*HEAD_R*f, hy + sy*HEAD_R);
+  ctx.lineTo(cx + HEAD_R*1.05*f, hy - 1); ctx.quadraticCurveTo(cx, hy - HEAD_R*0.6, cx - HEAD_R*1.05*f, hy - 1); ctx.fill();
+  if(pl.type==='meguna'){
+    // Sukuna's markings and his eyes
+    ctx.strokeStyle = '#1a0a0e'; ctx.lineWidth = 1.4;
+    for(const s of [-1, 1]){ ctx.beginPath(); ctx.moveTo(cx + s*3, hy + 3); ctx.lineTo(cx + s*8, hy + 3); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx + s*3, hy + 6); ctx.lineTo(cx + s*7, hy + 6); ctx.stroke(); }
+    ctx.fillStyle = '#e02030'; for(const s of [-1, 1]){ ctx.beginPath(); ctx.arc(cx + s*4 + f*1, hy - 1, 1.5, 0, Math.PI*2); ctx.fill(); }
+  } else {
+    // uniform collar
+    ctx.fillStyle = '#1c2236'; ctx.beginPath(); ctx.moveTo(cx-7, pl.y+HEAD_R*2+3); ctx.lineTo(cx+7, pl.y+HEAD_R*2+3); ctx.lineTo(cx, pl.y+HEAD_R*2+10); ctx.closePath(); ctx.fill();
+    if(pl.state===S.MEGCAST){ ctx.strokeStyle = '#6f8fd6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx + f*10, pl.y+PH*0.34, 6, 0, Math.PI*2); ctx.stroke(); }   // hand sign
+  }
+  if(pl.state===S.MEGWCS){ ctx.globalAlpha = 0.6 + 0.4*Math.sin(Date.now()*0.04); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx + f*6, pl.y+PH*0.3); ctx.lineTo(cx + f*30, pl.y+PH*0.1); ctx.stroke(); }
+  ctx.restore();
+}
+
 function drawTakaba(){ for(const tr of trucks) drawTruck(tr); }
 function drawTakabaBody(pl){
   if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
@@ -14258,6 +14698,8 @@ const CHAR_TIPS = {
   hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Idle Death Gamble rolls a 10% jackpot every 5s; a jackpot makes you unkillable.'],
   naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.', 'Don\'t whiff: a missed Projection Dash or Barrage freezes YOU in a frame for 1s.'],
   naoyac:   ['Rocket steers with {left} {right} {jump} {down}; press {ab1} again to blow up early.', 'Lay a Frame Field where they\'ll walk, then press {ab2} to set it off — caught fighters take 22.', 'In Time Cell Moon Palace they only get hurt while moving: freeze them in frames and let the domain work.'],
+  megumi:   ['Rabbit Escape blinks you back and leaves rabbits that slow anyone chasing you — use it to get out of a combo.', 'Bottomless Well roots them: drop Divine Dog or Max Elephant on top.', 'Chimera Shadow Garden is an incomplete domain: for 12s your moves cost no CE and barely cool down. Spam the shikigami.', 'Own the Meguna feat? Turn Maximum Output on ({vtog}) with a full ultimate bar and press {ult}: Sukuna takes over.'],
+  meguna:   ['World Cutting Slash ignores Infinity and Rika — and blocking.', 'Summon Mahoraga before you trade hits: every hit you take while it\'s out turns the wheel and you take less.', 'Agito heals you a little each time; use it to stay in fights.', 'Meguna lasts until you lose the life. Make it count.'],
   takaba:   ['Rock Paper Scissors: each player picks with their own {ab1} / {ab2} / {ab3} (rock / paper / scissors). Read your opponent!', '1000 Years of Death needs them within about 460px.', 'Counter lasts only 0.45s — press it right as their attack is about to land.', 'The Truck flashes a warning arrow first; it can be jumped over.'],
   mahito:   ['Walk into a thin wall to slip straight through it.', 'Reshape them with Idle Transfiguration first — they\'re slower and take more damage from everything after.', 'Stay unhurt for 4s and you start regenerating.'],
   hanami:   ['Root Grab aims with {jump} / {down} before it lashes out.', 'Root Rampage follows your mouse; the roots it leaves are platforms anyone can stand on.', 'Cursed Buds drain their ultimate bar — use them before they can cast a domain.'],
@@ -14363,7 +14805,7 @@ const TRAIN_DUMMY = ['STAND', 'JUMP', 'BLOCK', 'WALK', 'CROUCH'];
 const TRAIN_METERS = [['domainCharge','DOMAIN_CHARGE_REQ'], ['fugaCharge','FUGA_CHARGE_REQ'], ['hollowCharge','HOLLOW_CHARGE_REQ'], ['yujiUltCharge','YUJI_ULT_COST'],
   ['yujiBfCharge','YUJI_BF_REQ'], ['yutaCopyUltCharge','YUTA_COPY_ULT_REQ'], ['chosoCharge','CHOSO_RING_REQ'], ['dagonCharge','DAGON_SWARM_REQ'], ['hakCharge','HAK_PUNCH_REQ'],
   ['hanaCharge','HANA_GRAB_REQ'], ['higuCharge','HIGU_THROW_REQ'], ['jogoCharge','JOGO_MOUND_REQ'], ['kenCharge','KEN_AG_REQ'], ['mahiCharge','MAHI_FORM_REQ'],
-  ['puppetCharge','PUPPET_REQ'], ['takCharge','TAKA_CTR_REQ'], ['todoCharge','TODO_SUPER_REQ'], ['naoCharge','NAO_SPECIAL_REQ']];
+  ['puppetCharge','PUPPET_REQ'], ['takCharge','TAKA_CTR_REQ'], ['todoCharge','TODO_SUPER_REQ'], ['naoCharge','NAO_SPECIAL_REQ'], ['megCharge','MEG_DOG_REQ']];
 const trainStat = {prevHp:100, combo:0, hits:0, last:0, lastT:-1e9, best:0};
 function isTraining(){ return typeof gameMode!=='undefined' && gameMode==='training'; }
 function isLocalPair(){ return NET.role==='local' && !isTraining(); }
@@ -14393,6 +14835,7 @@ function trainKeys(){
   if(k('Digit4')){ trainSwap(1, 1); p2CharIdx = p1CharIdx; }
   if(k('Digit5')){ trainOpt.ol = !trainOpt.ol; }
   if(k('Digit6') && isNaoya(p1)){ if(p1.type==='naoya') naoyaCurse(p1); else naoyaHuman(p1); }
+  if(k('Digit6') && isMeg(p1) && p1._feat('meguna')){ if(p1.type==='megumi') megunaTransform(p1); else megunaRevert(p1); }
   if(k('Digit0')) trainOpt.hide = !trainOpt.hide;
 }
 function trainTick(){
@@ -14420,7 +14863,7 @@ function drawTrainPanel(){
   ctx.fillText(`COMBO ${Math.round(trainStat.combo*10)/10} dmg · ${trainStat.hits} hit${trainStat.hits===1?'':'s'} · last ${Math.round(trainStat.last*10)/10} · best ${Math.round(trainStat.best*10)/10}`, W/2, 46);
   if(!trainOpt.hide){
     const rows = [['1', 'Meters', trainOpt.meters ? 'INFINITE' : 'NORMAL', trainOpt.meters], ['2', 'CE + cooldowns', trainOpt.nocd ? 'NONE' : 'NORMAL', trainOpt.nocd],
-                  ['3', 'Reset', '↺'], ['4', 'Fighter', p1.name], ['5', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC']].concat(isNaoya(p1) ? [['6', 'Naoya', p1.type==='naoyac' ? 'CURSE' : 'HUMAN']] : []).concat([['0', 'Hide', '']]);
+                  ['3', 'Reset', '↺'], ['4', 'Fighter', p1.name], ['5', 'Combat', trainOpt.ol ? 'ONLINE' : 'CLASSIC']].concat(isNaoya(p1) ? [['6', 'Naoya', p1.type==='naoyac' ? 'CURSE' : 'HUMAN']] : []).concat(isMeg(p1) && p1._feat('meguna') ? [['6', 'Body', p1.type==='meguna' ? 'SUKUNA' : 'MEGUMI']] : []).concat([['0', 'Hide', '']]);
     ctx.font = `700 10px 'Rajdhani',sans-serif`;
     const widths = rows.map(([k, l, v]) => { ctx.font = `700 10px 'Rajdhani',sans-serif`; const a = ctx.measureText(`[${k}] ${l.toUpperCase()}`).width; ctx.font = `700 11px 'Rajdhani',sans-serif`; return Math.max(a, ctx.measureText(v).width) + 18; });
     const total = widths.reduce((a, b) => a+b, 0), y = H - 46; let cx = W/2 - total/2;
@@ -14489,7 +14932,7 @@ function drawEffects(pl, x, flip){
 }
 
 function clearProjectiles(){
-  naoFrames.length=0; naoGame=null;
+  naoFrames.length=0; naoGame=null; shikis.length=0;
   parts.length=0; rings.length=0; dmgNums.length=0; cleaves.length=0;
   dismantleEvents.length=0; slashMarks.length=0;
   fugaShots.length=0; explosions.length=0; flameTrails.length=0;
@@ -14645,6 +15088,10 @@ const MOVE_INFO = {
              ['ab3','24 FPS · super','Copy his motion (12 keys, 24 online) or be frozen for 8s.'], ['ult','Vengeful Curse','No domain yet: his last life returns him as a curse.'], ['move','Projection Sorcery','Fastest; every 3rd quick hit freezes them. 4 lives of 75 HP.']],
   naoyac:   [['ab1','Rocket','Steerable rocket (20 per hit). Press again to detonate.'], ['ab2','Frame Field','Five frames ahead; press again to detonate (22 if caught).'],
              ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: moving tears their cells (2 every 0.25s).'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
+  megumi:   [['ab1','Rabbit Escape','A swarm of rabbits covers his retreat: he blinks back, they slow and nibble.'], ['ab2','Bottomless Well','A shadow pool opens under the foe: rooted, 2 every 0.4s.'],
+             ['ab3','Divine Dog: Totality · super','The white wolf hunts them down: three bites (6 each).'], ['ult','Chimera Shadow Garden','Incomplete domain 12s: no cooldowns, free CE, faster.'], ['move','Ten Shadows','6% faster. Maximum Output ult + Meguna feat: Sukuna.']],
+  meguna:   [['ab1','Nue Totality','A giant Nue calls down three lightning strikes (6 each).'], ['ab2','Agito','A merged shikigami charges through (5 x3); heals him 6.'],
+             ['ab3','World Cutting Slash · super','Cuts space itself: 30, unblockable, through Infinity.'], ['ult','Malevolent Shrine','Sukuna\'s domain.'], ['move','King of Curses','10% faster; Maximum Output: Mahoraga, Cleave.']],
   takaba:   [['ab1','Rock Paper Scissors','Both pick in 1.8s. Loser takes 30. Draw = half CE back.'], ['ab2','1000 Years of Death','Teleports behind them (460px) and pokes: 14 + big launch.'],
              ['ab3','Counter · super','0.45s stance: any hit in it does NO damage and stuns them.'], ['ult','The Truck','HONK. A truck drives through everything in their lane: 45.'], ['move','Comedian','12% of hits on him are just a gag (no damage).']],
   mahito:   [['ab1','Idle Transfiguration','Short palm (12). Reshapes them 5s: slower, +20% damage taken.'], ['ab2','Soul Isomer','A transfigured human runs at the foe and explodes (16).'],
@@ -15224,7 +15671,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames, shikis };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -15702,7 +16149,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -15740,7 +16187,7 @@ function simFight(dt){
 function drawFight(dt){
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawDomain();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawShikis(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();

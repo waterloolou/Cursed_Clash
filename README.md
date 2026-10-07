@@ -21,9 +21,13 @@ That's it. Everything is in that one file.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
 
-## Newest fighter: Naoya Zen'in
+## Newest fighter: Megumi Fushiguro
 
-The fastest fighter in the game, with **4 lives of 75 HP**. Projection Dash, a hands-free Frame Barrage, and **24 FPS**: he draws a motion (12 keys on one keyboard, 24 online) and if you miss one key copying it, you're frozen in a frame for 8 seconds. Every 3rd hit of a quick string freezes you for a moment too. On his last life he returns as a **vengeful cursed spirit** with Rocket, Frame Field and the domain **Time Cell Moon Palace**. In training, key **6** switches his form.
+Ten Shadows: **Rabbit Escape** (blink back behind a swarm that slows your chaser), **Bottomless Well** (a shadow pool that roots them), the super **Divine Dog: Totality**, and the ultimate **Chimera Shadow Garden**, an incomplete domain that removes CE costs and cooldowns for 12s. Maximum Output: **Max Elephant** and **Nue**.
+
+**Meguna** (shop feat, ¥3000): with Maximum Output on, Megumi's ultimate lets Sukuna take the body for the rest of that life — Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga as a Maximum Output move.
+
+Also new: **Naoya Zen'in** — the fastest fighter, 4 lives of 75 HP, the 24 FPS frame prompt, and a vengeful cursed-spirit last life with Time Cell Moon Palace. In training, key **6** switches Naoya's form (or Megumi ↔ Meguna if you own the feat).
 
 ## Controls
 
