@@ -648,7 +648,7 @@ canvas {
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Rabbit Escape</td><td>A swarm of shadow rabbits bursts out where he stands while he blinks 210px back (0.7s invincible). Anyone in the swarm is slowed by 30% and nibbled for 1 every 0.4s. 48 CE, 4.5s cooldown.</td></tr>
-          <tr><td>E</td><td>Bottomless Well</td><td>A pool of shadow opens under the nearest foe within 420px (or ahead of him) for 2.6s. Anyone standing in it sinks: <b>rooted</b> and 2 damage every 0.4s. 56 CE, 5.3s cooldown.</td></tr>
+          <tr><td>E</td><td>Bottomless Well</td><td>Two winged <b>Toads</b> climb out of a shadow pool at his feet and lash their tongues at the nearest foe within 380px (either side). If it connects: 5 damage, and they're <b>dragged in</b> right in front of Megumi and held for a moment — a free follow-up. 56 CE, 5.3s cooldown.</td></tr>
           <tr><td>R</td><td>Divine Dog: Totality <em>(super, 40)</em></td><td>The fused white wolf runs them down anywhere on the map and bites three times: 6 + 6 + 6, the last one a launch. Needs 50% CE.</td></tr>
           <tr><td>F</td><td>Chimera Shadow Garden <em>(ultimate, 150)</em></td><td>His incomplete domain: shadow floods the floor for 12s. <b>No CE cost and almost no cooldowns</b> (0.8s) on every shikigami, super always ready (up to 2 dogs at once), and he moves 15% faster. Needs 75% CE.</td></tr>
           <tr><td>Movement</td><td>Ten Shadows</td><td>6% faster than average. <b>Shadow storage:</b> dash (Shift) while holding an item and it sinks into his shadow, its timer paused (on one keyboard, Rabbit Escape does it). Press the pick-up key (<b>G</b>; Enter for local Player 2) to pull it back out. One item at a time.</td></tr>
@@ -14199,7 +14199,7 @@ function drawNaoya(){
 // MEGUNA — Nue Totality · Agito · World Cutting Slash · Malevolent Shrine · Maximum Output: Mahoraga · Cleave
 // ═══════════════════════════════════════════════════════════════════
 const MEG_RAB_CD = 6000, MEG_RAB_LIFE = 1700, MEG_RAB_BACK = 210;
-const MEG_WELL_CD = 7000, MEG_WELL_LIFE = 2600, MEG_WELL_R = 54, MEG_WELL_DMG = 2;
+const MEG_WELL_CD = 7000, MEG_TOAD_R = 380, MEG_TOAD_DMG = 5, MEG_TOAD_EXT = 240, MEG_TOAD_PULL = 380;   // Bottomless Well: the Toads
 const MEG_DOG_REQ = 40, MEG_DOG_BITE = 6;
 const MEG_GARDEN_MS = 12000;
 const MEG_GARDEN_SPD = 1.15;
@@ -14256,10 +14256,10 @@ Player.prototype._megAbilities = function(dt, e1, e2, e3, eD, blocked){
     }
     if(e2 && free && this.megWellCd<=0){
       this.megWellCd = MEG_WELL_CD;
-      const d = olNearest(this, 420), gx = d ? d.x+PW/2 : this.x+PW/2 + this.facing*170;
-      const gy = terGroundTop(gx-10, 20, (d ? d.y : this.y)+PH-1, true);
-      megShiki(this, {kind:'well', x:gx, y:gy, dir:this.facing, life:MEG_WELL_LIFE, tick:0});
-      snd('orb', gx); sayFor(this, 'Bottomless Well.');
+      // two winged toads rise out of the shadow at his feet and lash their tongues at the nearest foe
+      const d = olNearest(this, MEG_TOAD_R), gy = terGroundTop(this.x, PW, this.y+PH-1, true);
+      megShiki(this, {kind:'toad', x:this.x+PW/2, y:gy, dir:this.facing, life:1300, ph:0, tgt:d ? netRef(d) : null, side:d ? (Math.sign(d.x - this.x) || this.facing) : this.facing, tipX:this.x+PW/2, tipY:gy-22});
+      snd('orb', this.x); sayFor(this, 'Bottomless Well.');
     }
     if(e3 && free && (this.megCharge||0) >= MEG_DOG_REQ && shikis.filter(s => s.owner===this && s.kind==='dog').length < 2){
       this.megCharge = 0;
@@ -14325,12 +14325,29 @@ function tickMegumi(dt){
       if(s.tick >= 400){ s.tick = 0;
         for(const d of foes){ if(!d.hittable || Math.abs(d.x+PW/2 - s.x) > 110 || Math.abs(d.y+PH - s.y) > 90) continue;
           d.rabbitT = 1500; d._rawDmg = true; d.hp = Math.max(0, d.hp-1); d._rawDmg = false; addDmg(d.x+PW/2, d.y-10, 1, '#f4f4f4'); if(d.hp<=0){ d._initRd(0,-3,.05); d.ss(S.DEAD); } } }
-    } else if(s.kind==='well'){
-      s.tick += dt;
-      for(const d of foes){ if(d.state===S.DEAD || Math.abs(d.x+PW/2 - s.x) > MEG_WELL_R || Math.abs(d.y+PH - s.y) > 14) continue;
-        d.wellT = 160; d.vx *= 0.2;
-        if(s.tick >= 400){ d._rawDmg = true; d.hp = Math.max(0, d.hp-MEG_WELL_DMG); d._rawDmg = false; addDmg(d.x+PW/2, d.y-10, MEG_WELL_DMG, '#6f8fd6'); if(d.hp<=0){ d._initRd(0,-3,.05); d.ss(S.DEAD); } } }
-      if(s.tick >= 400) s.tick = 0;
+    } else if(s.kind==='toad'){
+      // tongue: lash out (ph 0) → grab and drag in (ph 1) → retract (ph 2)
+      const mx = s.x + s.side*50, my = s.y - 24, t = netRes(s.tgt);
+      if(s.ph===0){
+        const k0 = Math.min(1, s.t/MEG_TOAD_EXT), tx = t ? t.x+PW/2 : mx + s.side*MEG_TOAD_R, ty = t ? t.y+PH*0.45 : my;
+        s.tipX = mx + (tx - mx)*k0; s.tipY = my + (ty - my)*k0;
+        if(s.t >= MEG_TOAD_EXT){
+          if(t && t.state!==S.DEAD && Math.hypot(tx - mx, ty - my) < MEG_TOAD_R + 60 && olHit(o, t, MEG_TOAD_DMG, {stun:MEG_TOAD_PULL + 700, col:'#b46ae0'})){
+            s.ph = 1; s.pt = 0; addParts(tx, ty, '#b46ae0', 10, 4); snd('slash', tx); addSpeech(tx, t.y-14, 'GRABBED', '#c38ae8', 600);
+          } else { s.ph = 2; s.pt = 0; s.rx = s.tipX; s.ry = s.tipY; }
+        }
+      } else if(s.ph===1){
+        s.pt += dt;
+        if(t && t.state!==S.DEAD && ![S.RAGD,S.SLAM].includes(t.state)){
+          const dest = mx + s.side*12 - PW/2, a = Math.min(1, 0.22*k);
+          t.x += (dest - t.x)*a; t.y += ((s.y - PH) - t.y)*a*0.6; t.vx = 0; t.vy = 0;
+          s.tipX = t.x+PW/2; s.tipY = t.y+PH*0.45;
+        }
+        if(s.pt >= MEG_TOAD_PULL || !t){ if(t && t.state!==S.DEAD) safeTeleport(t, t.x, t.y); s.ph = 2; s.pt = 0; s.rx = s.tipX; s.ry = s.tipY; s.life = Math.max(s.life, s.t + 300); }
+      } else {
+        s.pt = (s.pt||0) + dt; const k2 = Math.min(1, s.pt/200);
+        s.tipX = s.rx + (mx - s.rx)*k2; s.tipY = s.ry + (my - s.ry)*k2;
+      }
     } else if(s.kind==='dog'){
       const d = olNearest(o, 1200);
       if(s.ph===0){
@@ -14385,6 +14402,25 @@ function drawRabbit(x, y, s, hop, f){
   ctx.beginPath(); ctx.ellipse(7, -13, 5, 4.5, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
   for(const ex of [5, 9]){ ctx.beginPath(); ctx.ellipse(ex, -22, 1.8, 6, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke(); }
   ctx.fillStyle = '#c0182a'; ctx.beginPath(); ctx.arc(9, -14, 1.1, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function drawToad(x, y, f, open, flap){
+  ctx.save(); ctx.translate(x, y); ctx.scale(f, 1);
+  ctx.strokeStyle = '#1e2a14'; ctx.lineWidth = 1.6;
+  // little white wings
+  const w = Math.sin(flap)*5; ctx.fillStyle = '#f2f2ee';
+  ctx.beginPath(); ctx.moveTo(-6, -24); ctx.quadraticCurveTo(-30, -40 - w, -40, -22 - w); ctx.quadraticCurveTo(-26, -24, -10, -16); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // squat green body, cream belly, back legs
+  ctx.fillStyle = '#5f8a3c'; ctx.beginPath(); ctx.ellipse(0, -14, 22, 15, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(-14, -4, 10, 6, 0.3, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#d9cf9a'; ctx.beginPath(); ctx.ellipse(8, -8, 11, 8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#4e7430'; for(const [sx, sy] of [[-8,-20],[2,-24],[-14,-12]]){ ctx.beginPath(); ctx.arc(sx, sy, 2.2, 0, Math.PI*2); ctx.fill(); }   // warts
+  // bulging eyes and the mouth
+  ctx.fillStyle = '#e8e4c8'; for(const ex of [8, 16]){ ctx.beginPath(); ctx.arc(ex, -28, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); }
+  ctx.fillStyle = '#141a0c'; for(const ex of [9, 17]){ ctx.beginPath(); ctx.arc(ex, -28, 2, 0, Math.PI*2); ctx.fill(); }
+  ctx.strokeStyle = '#1e2a14'; ctx.lineWidth = 1.4; ctx.beginPath();
+  if(open){ ctx.moveTo(6, -18); ctx.lineTo(22, -16); ctx.lineTo(8, -12); } else { ctx.moveTo(6, -16); ctx.quadraticCurveTo(14, -13, 21, -17); }
+  ctx.stroke();
   ctx.restore();
 }
 function drawDog(x, y, f, run){
@@ -14474,13 +14510,19 @@ function drawShikis(){
       for(let i=0;i<16;i++){ const ang = (i*2.399) % (Math.PI*2), r = Math.min(1, s.t/500)*(40 + (i%5)*20);
         const rx = s.x + Math.cos(ang)*r*1.6, hop = Math.abs(Math.sin(t*0.012 + i))*12;
         drawRabbit(rx, s.y, 0.9 + (i%3)*0.1, hop, Math.cos(ang) >= 0 ? 1 : -1); }
-    } else if(s.kind==='well'){
-      const g = ctx.createRadialGradient(s.x, s.y, 4, s.x, s.y, MEG_WELL_R+10); g.addColorStop(0, '#000004'); g.addColorStop(0.7, '#0c0f1e'); g.addColorStop(1, 'rgba(12,15,30,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(s.x, s.y, MEG_WELL_R+10, 13, 0, 0, Math.PI*2); ctx.fill();
-      ctx.strokeStyle = 'rgba(111,143,214,0.5)'; ctx.lineWidth = 1.5;
-      for(let k=0;k<3;k++){ const rr = ((t*0.04 + k*18) % 54); ctx.beginPath(); ctx.ellipse(s.x, s.y, rr, rr*0.22, 0, 0, Math.PI*2); ctx.stroke(); }
-      ctx.fillStyle = '#05060c'; for(let k=0;k<3;k++){ const hx = s.x - 30 + k*30, rise = 10 + Math.sin(t*0.006 + k)*6;
-        ctx.beginPath(); ctx.ellipse(hx, s.y - rise, 4, rise, 0, 0, Math.PI*2); ctx.fill(); }
+    } else if(s.kind==='toad'){
+      // the bottomless well: a shadow pool the toads climb out of
+      const rise = Math.min(1, s.t/180)*Math.min(1, (s.life - s.t)/200);
+      const g = ctx.createRadialGradient(s.x, s.y, 4, s.x, s.y, 90); g.addColorStop(0, '#000004'); g.addColorStop(0.7, '#0c0f1e'); g.addColorStop(1, 'rgba(12,15,30,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(s.x, s.y, 90, 12, 0, 0, Math.PI*2); ctx.fill();
+      const mx = s.x + s.side*50, my = s.y - 24;
+      // tongue (drawn behind the toad that throws it)
+      const ex = s.tipX - mx, ey = s.tipY - my, len = Math.hypot(ex, ey);
+      if(len > 6){ const cxp = mx + ex*0.5, cyp = my + ey*0.5 - Math.min(60, len*0.25) + Math.sin(t*0.02)*6;
+        ctx.strokeStyle = '#5a2a78'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(mx, my); ctx.quadraticCurveTo(cxp, cyp, s.tipX, s.tipY); ctx.stroke();
+        ctx.strokeStyle = '#a65ad6'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(mx, my); ctx.quadraticCurveTo(cxp, cyp, s.tipX, s.tipY); ctx.stroke();
+        ctx.fillStyle = '#b46ae0'; ctx.beginPath(); ctx.arc(s.tipX, s.tipY, 6, 0, Math.PI*2); ctx.fill(); }
+      for(const sd of [-1, 1]) drawToad(s.x + sd*36, s.y + (1-rise)*30, sd, sd===s.side, t*0.03 + sd);
     } else if(s.kind==='dog'){
       drawDog(s.x, s.y, s.dir, t*0.03);
     } else if(s.kind==='elephant'){
@@ -14737,7 +14779,7 @@ const CHAR_TIPS = {
   hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Idle Death Gamble rolls a 10% jackpot every 5s; a jackpot makes you unkillable.'],
   naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.', 'Don\'t whiff: a missed Projection Dash or Barrage freezes YOU in a frame for 1s.'],
   naoyac:   ['Rocket steers with {left} {right} {jump} {down}; press {ab1} again to blow up early.', 'Lay a Frame Field where they\'ll walk, then press {ab2} to set it off — caught fighters take 22.', 'In Time Cell Moon Palace they only get hurt while moving: freeze them in frames and let the domain work.'],
-  megumi:   ['Rabbit Escape blinks you back and leaves rabbits that slow anyone chasing you — use it to get out of a combo.', 'Bottomless Well roots them: drop Divine Dog or Max Elephant on top.', 'Chimera Shadow Garden is an incomplete domain: for 12s your moves cost no CE and barely cool down. Spam the shikigami.', 'Dash while holding an item to sink it into your shadow; {pick} pulls it back out.', 'Own the Meguna feat? Turn Maximum Output on ({vtog}) with a full ultimate bar and press {ult}: Sukuna takes over.'],
+  megumi:   ['Rabbit Escape blinks you back and leaves rabbits that slow anyone chasing you — use it to get out of a combo.', 'Bottomless Well\'s Toads drag them right in front of you: follow up with a punch string or Divine Dog.', 'Chimera Shadow Garden is an incomplete domain: for 12s your moves cost no CE and barely cool down. Spam the shikigami.', 'Dash while holding an item to sink it into your shadow; {pick} pulls it back out.', 'Own the Meguna feat? Turn Maximum Output on ({vtog}) with a full ultimate bar and press {ult}: Sukuna takes over.'],
   meguna:   ['World Cutting Slash ignores Infinity and Rika — and blocking.', 'Summon Mahoraga before you trade hits: every hit you take while it\'s out turns the wheel and you take less.', 'Agito heals you a little each time; use it to stay in fights.', 'Meguna lasts until you lose the life. Make it count.'],
   takaba:   ['Rock Paper Scissors: each player picks with their own {ab1} / {ab2} / {ab3} (rock / paper / scissors). Read your opponent!', '1000 Years of Death needs them within about 460px.', 'Counter lasts only 0.45s — press it right as their attack is about to land.', 'The Truck flashes a warning arrow first; it can be jumped over.'],
   mahito:   ['Walk into a thin wall to slip straight through it.', 'Reshape them with Idle Transfiguration first — they\'re slower and take more damage from everything after.', 'Stay unhurt for 4s and you start regenerating.'],
@@ -15127,7 +15169,7 @@ const MOVE_INFO = {
              ['ab3','24 FPS · super','Copy his motion (12 keys, 24 online) or be frozen for 8s.'], ['ult','Vengeful Curse','No domain yet: his last life returns him as a curse.'], ['move','Projection Sorcery','Fastest; every 3rd quick hit freezes them. 4 lives of 75 HP.']],
   naoyac:   [['ab1','Rocket','Steerable rocket (20 per hit). Press again to detonate.'], ['ab2','Frame Field','Five frames ahead; press again to detonate (22 if caught).'],
              ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: moving tears their cells (2 every 0.25s).'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
-  megumi:   [['ab1','Rabbit Escape','A swarm of rabbits covers his retreat: he blinks back, they slow and nibble.'], ['ab2','Bottomless Well','A shadow pool opens under the foe: rooted, 2 every 0.4s.'],
+  megumi:   [['ab1','Rabbit Escape','A swarm of rabbits covers his retreat: he blinks back, they slow and nibble.'], ['ab2','Bottomless Well','Two Toads lash their tongues: 5 and drag the foe in'],
              ['ab3','Divine Dog: Totality · super','The white wolf hunts them down: three bites (6 each).'], ['ult','Chimera Shadow Garden','Incomplete domain 12s: no cooldowns, free CE, faster.'], ['move','Ten Shadows','6% faster. Maximum Output ult + Meguna feat: Sukuna.']],
   meguna:   [['ab1','Nue Totality','A giant Nue calls down three lightning strikes (6 each).'], ['ab2','Agito','A merged shikigami charges through (5 x3); heals him 6.'],
              ['ab3','World Cutting Slash · super','Cuts space itself: 30, unblockable, through Infinity.'], ['ult','Malevolent Shrine','Sukuna\'s domain.'], ['move','King of Curses','10% faster; Maximum Output: Mahoraga, Cleave.']],
