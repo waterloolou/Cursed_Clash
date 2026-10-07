@@ -68,4 +68,4 @@ Every fighter has a **cursed energy (CE)** bar under their health that refills o
 
 ## Credits
 
-- **ThEndNite** — artwork: the cursed energy aura effects (all six colors) and the Inverted Spear of Heaven.
+- **ThEndNite** — artwork: the cursed energy aura effects (all six colors), the Inverted Spear of Heaven and Hakari's pachinko balls.
