@@ -279,6 +279,7 @@ canvas {
           <tr><td>Abilities 1 · 2 · super</td><td>1 · 2 · 3</td><td>J · K · L</td></tr>
           <tr><td>Domain / ultimate</td><td>Q</td><td>;</td></tr>
           <tr><td>Pick up item</td><td>G</td><td>Enter</td></tr>
+          <tr><td>Variant mode on / off</td><td>E</td><td>I</td></tr>
         </table>
         <h2>Gamepad</h2>
         <p>Stick or D-pad to move · A jump · X attack · LB / RB abilities · Y super · RT domain · B pick up.</p>
@@ -347,7 +348,7 @@ canvas {
           <li><b>Q / E moves</b> cost a set amount of CE (stronger moves cost more) <b>and</b> have a cooldown of 3/4 of what it used to be. If you can't afford one, its box goes dark and shows how much it needs.</li>
           <li><b>Super</b> (R): still needs its hit charge, and also <b>50%</b> of your CE bar.</li>
           <li><b>Domain</b>: needs its charge and a <b>full</b> CE bar. <b>Ultimates</b> (fighters without a domain) need <b>75%</b>. Both empty the bar, and it doesn't refill while your domain or ultimate is running. A cancelled domain gives back 50% of the domain bar and 50% of your CE.</li>
-          <li><b>Variant mode</b> (online, <b>V</b>): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.</li>
+          <li><b>Variant mode</b> (online <b>V</b>; one keyboard <b>E</b> / <b>I</b>; your aura lights up while it's on): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.</li>
           <li>Steering, detonating or swapping with something you already have out (Lapse Blue's orb, Convergence, the puppet, Ui Ui, the crow) is free.</li>
           <li><b>Black Flash</b> (Yuji, Todo, Mahito): your CE refills <b>250% faster</b> for 10 seconds afterwards.</li>
           <li><b>Choso</b> can keep going when he's out of CE: he pays with his own blood (1 HP = 3 CE, never below 1 HP) and leaves a blood pool, which feeds his Supernova.</li>
@@ -6612,12 +6613,12 @@ const BINDS = {
 const PAD = { jump:[0], atk:[2], ab1:[4], ab2:[5], ab3:[3], ult:[7], block:[6], dash:[10], vtog:[11], pick:[1], feat:[8], down:[13], left:[14], right:[15], up:[12], back:[1], start:[9] };
 // Local same-keyboard mode keeps the original two-player layout
 const BINDS_L1 = { left:['KeyA'], right:['KeyD'], jump:['KeyW'], down:['KeyS'], atk:['KeyF'],
-  ab1:['Digit1'], ab2:['Digit2'], ab3:['Digit3'], ult:['KeyQ'], pick:['KeyG'], feat:['KeyT'], block:[], dash:[], vtog:[] };
+  ab1:['Digit1'], ab2:['Digit2'], ab3:['Digit3'], ult:['KeyQ'], pick:['KeyG'], feat:['KeyT'], block:[], dash:[], vtog:['KeyE'] };
 const BINDS_L2 = { left:['ArrowLeft'], right:['ArrowRight'], jump:['ArrowUp'], down:['ArrowDown'], atk:['Slash'],
-  ab1:['KeyJ'], ab2:['KeyK'], ab3:['KeyL'], ult:['Semicolon'], pick:['Enter'], feat:['ShiftRight'], block:[], dash:[], vtog:[] };
+  ab1:['KeyJ'], ab2:['KeyK'], ab3:['KeyL'], ult:['Semicolon'], pick:['Enter'], feat:['ShiftRight'], block:[], dash:[], vtog:['KeyI'] };
 const LBL_ONLINE = { ab1:'Q', ab2:'E', ab3:'R', ult:'F', atk:'CLICK', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'R-CLICK', dash:'SHIFT', vtog:'V' };
-const LBL_L1 = { ab1:'1', ab2:'2', ab3:'3', ult:'Q', atk:'F', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'—', dash:'—', vtog:'—' };
-const LBL_L2 = { ab1:'J', ab2:'K', ab3:'L', ult:';', atk:'/', left:'←', right:'→', jump:'↑', down:'↓', pick:'ENTER', feat:'R-SHIFT', block:'—', dash:'—', vtog:'—' };
+const LBL_L1 = { ab1:'1', ab2:'2', ab3:'3', ult:'Q', atk:'F', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'—', dash:'—', vtog:'E' };
+const LBL_L2 = { ab1:'J', ab2:'K', ab3:'L', ult:';', atk:'/', left:'←', right:'→', jump:'↑', down:'↓', pick:'ENTER', feat:'R-SHIFT', block:'—', dash:'—', vtog:'I' };
 function keyLbl(pl, a){
   if(typeof NET!=='undefined' && NET.role==='local' && !(typeof gameMode!=='undefined' && gameMode==='training')) return ((pl && pl.playerNum===2) ? LBL_L2 : LBL_L1)[a];
   return LBL_ONLINE[a];
@@ -6859,11 +6860,9 @@ const _auraImg = {};
 function auraImg(k){ if(!_auraImg[k]){ const im = new Image(); im.src = AURA_SRC[k]; _auraImg[k] = im; } return _auraImg[k]; }
 // the aura flares while a fighter is using a technique, casting, powered up, or right after spending CE
 function auraTarget(pl){
-  if([S.DEAD,S.RAGD,S.SLAM,S.STUN,S.FRAMED].includes(pl.state)) return 0;
-  if(pl.state===S.DOMAIN || pl.bfCeT>0 || pl.jackpotT>0 || pl.mahiFormT>0 || pl.frsT>0 || pl.bmT>0 || pl.rctT>0 || pl.todoNoCdT>0 || pl.rampT>0 || pl.varMode) return 1;
-  if(pl.auraFlash>0 && terClock - pl.auraFlash < 700) return 1;
-  if(![S.IDLE,S.WALK,S.AIR,S.ATCK,S.DIVE,S.BLOCK,S.DASH].includes(pl.state)) return 0.85;
-  return 0;
+  // the aura is the tell for VARIANT MODE: it's up while variants are toggled on
+  if([S.DEAD,S.RAGD,S.SLAM].includes(pl.state)) return 0;
+  return pl.varMode ? 1 : 0;
 }
 function drawAura(pl, cx, feetY){
   const k = AURA_OF[pl.type]; if(!k || pl.isPuppet) return;
@@ -6871,10 +6870,10 @@ function drawAura(pl, cx, feetY){
   if(pl._auraA < 0.03) return;
   const im = auraImg(k); if(!im.complete || !im.naturalWidth) return;
   const fi = Math.floor((Date.now()/1000*AURA_FPS) + (pl.playerNum||0)*3) % AURA_N;
-  const h = PH*1.55, w = h*AURA_FW/AURA_FH;
+  const h = PH*1.18, w = h*AURA_FW/AURA_FH;
   ctx.save(); ctx.globalAlpha *= Math.min(1, pl._auraA)*0.62;
   if(pl.facing < 0){ ctx.translate(cx, 0); ctx.scale(-1, 1); ctx.translate(-cx, 0); }
-  ctx.drawImage(im, fi*AURA_FW, 0, AURA_FW, AURA_FH, cx - w/2, feetY - h + 10, w, h);
+  ctx.drawImage(im, fi*AURA_FW, 0, AURA_FW, AURA_FH, cx - w/2, feetY - h + 6, w, h);
   ctx.restore();
 }
 
@@ -7255,6 +7254,7 @@ class Player {
     if(rpsFreeze(this, dt)) return;
     if(naoGameFreeze(this, dt)) return;
     if(olOn() && !this.isPuppet){ const r = this._olPre(dt, other, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked); ab1Edge = r[0]; ab2Edge = r[1]; ab3Edge = r[2]; domEdge = r[3]; }
+    else if(!this.isPuppet) this._varLocal(dt, other, abilityBlocked);
 
     // ── YUJI: 1=Piercing Blood(hold), 2=Black Blur, Q=Dismantle Ult ──
     if(this.type==='yuji'){
@@ -12615,7 +12615,8 @@ Player.prototype._cePre = function(dt){
   const ol = olOn(), dead = [S.STUN,S.RAGD,S.SLAM,S.DEAD].includes(this.state);
   // variant toggle (online combat only)
   const vk = !!keys[`A${this.playerNum}_vtog`], vEdge = vk && !this._vtDown; this._vtDown = vk;
-  if(!ol || !OL_VARS[this.type] || (this._vow && this._vow('heavenly'))) this.varMode = false;
+  const varOk = ol || (typeof NET!=='undefined' && NET.role==='local');
+  if(!varOk || !OL_VARS[this.type] || (this._vow && this._vow('heavenly'))) this.varMode = false;
   else if(vEdge && !dead){
     this.varMode = !this.varMode; this.pbChargeTime = 0;
     addRing(this.x+PW/2, this.y+PH/2, this.varMode ? '#b07cff' : '#6fb8ff', 34); snd('swing', this.x);
@@ -12735,6 +12736,32 @@ function tickVarStatus(pl, dt){
     if(Math.abs(dx) < 62 && Math.abs(d.y-pl.y) < PH){ d.vx = Math.sign(dx||1)*4; if([S.RAGD,S.SLAM].includes(d.state)) d.rdVx = Math.sign(dx||1)*5; } }
 }
 
+
+// fire a variant if one of its keys was just pressed in variant mode (online and one-keyboard play)
+function varFire(p, other){
+  const V = OL_VARS[p.type] || {};
+  if(!p._vEdges) return;
+  for(let n=1;n<=2;n++){
+    if(!p._vEdges[n-1]) continue;
+    const v = V[n]; if(!v) continue;
+    if(p.varCd[n]>0){ olTag(p, `${Math.ceil(p.varCd[n]/1000)}s`, '#888', 400); continue; }
+    const cost = ceVarCost(p, n);
+    if(!ceCanPay(p, cost)){ ceDeny(p, 'ab'+n, cost); continue; }
+    cePay(p, cost);
+    p.varCd[n] = CE_VAR_CD; p.oaKind = null; p._ceHandled = true;
+    p.ss(S.OVAR, v.lock||300); p.vx = 0; p.varName = v.name;
+    try{ v.run(p, other); }catch(err){ console.error('variant', p.type, n, err); }
+    break;
+  }
+}
+// one keyboard: no block / dash / combo system, just the variants and their timed effects
+Player.prototype._varLocal = function(dt, other, blocked){
+  if(!this.varCd) this.varCd = {1:0,2:0,3:0,4:0};
+  for(const k in this.varCd) if(this.varCd[k]>0) this.varCd[k] = Math.max(0, this.varCd[k]-dt);
+  tickVarStatus(this, dt);
+  if(this.varMode && [S.IDLE,S.WALK,S.AIR].includes(this.state) && !blocked) varFire(this, other);
+};
+
 // ── per-frame hook (called from _updateCore, online only) ──
 Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
   const c = this.ctrl, now = terClock;
@@ -12789,21 +12816,8 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
     }
     eD = false;
   }
-  // variants: toggle variant mode (V), then Q / E fire the variants (twice the CE of the normal move)
-  if(this.varMode && this._vEdges && canVar && !blocked){
-    for(let n=1;n<=2;n++){
-      if(!this._vEdges[n-1]) continue;
-      const v = V[n]; if(!v) continue;
-      if(this.varCd[n]>0){ olTag(this, `${Math.ceil(this.varCd[n]/1000)}s`, '#888', 400); continue; }
-      const cost = ceVarCost(this, n);
-      if(!ceCanPay(this, cost)){ ceDeny(this, 'ab'+n, cost); continue; }
-      cePay(this, cost);
-      this.varCd[n] = CE_VAR_CD; this.oaKind = null; this._ceHandled = true;
-      this.ss(S.OVAR, v.lock||300); this.vx = 0; this.varName = v.name;
-      try{ v.run(this, other); }catch(err){ console.error('variant', this.type, n, err); }
-      break;
-    }
-  }
+  // variants: toggle variant mode, then ability 1 / 2 fire the variants (twice the CE of the normal move)
+  if(this.varMode && canVar && !blocked) varFire(this, other);
   if(this.varMode){ e1 = e2 = e3 = false; }
   // Dash / dodge (SHIFT or double-tap)
   const dashDir = tapDash || (dkEdge ? (keys[c.left] ? -1 : keys[c.right] ? 1 : this.facing) : 0);
@@ -12943,7 +12957,6 @@ function guardFilter(pl, d, oppM){
     if(pl._gagT!==now && Math.random() < TAKA_GAG){ pl._gagT = now; pl._guardStamp = now;
       addSpeech(pl.x+PW/2, pl.y-22, ['BONK!','*SLIDE WHISTLE*','JUST KIDDING!','NOT FUNNY.'][Math.floor(Math.random()*4)], '#ffe066', 700); snd('bwomp', pl.x); return 0; }
   }
-  if(!olOn()) return d;
   if(pl.rikaT>0){ pl.rikaT = 0; rikaCatch(pl, oppM); pl._guardStamp = now; return 0; }
   if(pl.pleaT>0 && oppM && oppM!==pl && oppM.state!==S.DEAD && Math.hypot(oppM.x-pl.x, oppM.y-pl.y) < 320){
     const back = Math.round(d*10)/10; oppM._rawDmg = true; oppM.hp = Math.max(0, oppM.hp - back); oppM._rawDmg = false; oppM.flash = 300;
@@ -12951,6 +12964,7 @@ function guardFilter(pl, d, oppM){
     if(oppM.hp<=0 && oppM.state!==S.DEAD){ oppM._initRd(0,-3,.05); oppM.ss(S.DEAD); }
     d *= 0.5;
   }
+  if(!olOn()) return d;
   if(pl.adT>0 && OL_AD[pl.type] && OL_AD[pl.type].dr) d *= OL_AD[pl.type].dr;
   const enemyDom = activeDomain && activeDomain.owner && activeDomain.owner!==pl && !domainClash;
   if(!enemyDom && !pl._ubk && !(oppM && oppM.bmT>0) && pl.state===S.BLOCK){
@@ -13114,7 +13128,7 @@ function drawOlShots(){
 
 // ── overlays: guard shield, perfect-link timing ring, anti-domain aura ──
 function drawOlBody(pl){
-  if(!olOn() || pl.state===S.DEAD) return;
+  if(pl.state===S.DEAD) return;
   const cx = pl.x+PW/2, cy = pl.y+PH/2, t = Date.now();
   if(pl.rikaT>0){ ctx.save(); ctx.globalAlpha = 0.55 + 0.15*Math.sin(t*0.01); const bx = cx - pl.facing*26, by = pl.y - 18;
     ctx.fillStyle = '#1a1024'; ctx.strokeStyle = '#cc88ff'; ctx.lineWidth = 2;
@@ -13129,6 +13143,7 @@ function drawOlBody(pl){
   if(pl.bmT>0){ ctx.save(); ctx.fillStyle = '#5a0010'; ctx.strokeStyle = '#a01020'; ctx.lineWidth = 1.5;
     for(const sx of [-1, 1]){ ctx.beginPath(); ctx.arc(cx + sx*14, pl.y+PH*0.5, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.restore(); }
   if(pl.rctT>0){ ctx.save(); ctx.globalAlpha = 0.25 + 0.15*Math.sin(t*0.015); ctx.fillStyle = '#fff0f0'; ctx.beginPath(); ctx.ellipse(cx, cy, 24, PH*0.6, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+  if(!olOn()) return;
   if(pl.state===S.BLOCK){
     const g = Math.max(0, (pl.guard||0)/OL.GUARD_MAX);
     ctx.save(); ctx.strokeStyle = pl.parryT>0 ? '#ffffff' : `rgba(${Math.round(255-120*g)},${Math.round(150+80*g)},255,0.85)`; ctx.lineWidth = pl.parryT>0 ? 4 : 2.5;
@@ -13362,7 +13377,7 @@ function olFillWiki(){
   <tr><td>Tap block as a hit lands</td><td><b>PERFECT BLOCK</b>: no damage, the attacker is staggered, +guard and domain charge. Mashing it doesn't work — there's a short lockout between attempts.</td></tr>
   <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> with invincibility frames — dodge through attacks. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
   <tr><td>Long combos</td><td>Damage scales down from the 3rd hit (to ×0.5) and stun gets shorter, so no infinite combos.</td></tr>
-  <tr><td>V (toggle) then Q / E</td><td><b>Variant mode</b>: press V and Q / E fire their <b>variants</b> instead (about twice the cursed energy of the normal move, 6s cooldown each). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
+  <tr><td>V (toggle) then Q / E</td><td><b>Variant mode</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>variants</b> instead (about twice the cursed energy of the normal move, 6s cooldown each). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
   <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (40 CE, then a 25s cooldown).</td></tr></table>
   <h2>Variants & clan techniques</h2><table><tr><th>Fighter</th><th>Input</th><th>Move</th><th>Details</th></tr>`;
   const keyN = {1:'V → Q', 2:'V → E'};
@@ -14248,7 +14263,8 @@ function drawCombatGuide(pl, x, y, w){
     yr = guideBlock('VARIANTS & TECHNIQUES', kfill(pl, '{vtog} toggles VARIANT MODE: {ab1} / {ab2} fire their variants (about twice the CE) and your other moves are locked. Hold {atk} + {ult} for your anti-domain technique, if your fighter has one. Your exact moves are on the next page.'), xr, yr, colW);
   } else {
     yl = guideBlock('BASIC COMBO', kfill(pl, '{atk} three times: each punch deals 2 and fills a combo pip. The 4th attack is a FINISHER — on the ground it deals 5 and knocks them away; in the air it\'s a dive slam for 15. You can move while you swing.'), x, yl, colW);
-    yl = guideBlock('ONLINE HAS MORE', 'Online (separate computers) melee is deeper: combo strings with directional finishers, perfect timing, blocking, perfect blocks, dashes and move variants.', x, yl, colW);
+    yl = guideBlock('VARIANTS', kfill(pl, 'Press {vtog} to switch into VARIANT MODE (your aura lights up): {ab1} and {ab2} fire their variants for about twice the CE, and your other moves are locked until you press {vtog} again.'), x, yl, colW);
+    yl = guideBlock('ONLINE HAS MORE', 'Online (separate computers) melee is deeper: combo strings with directional finishers, perfect timing, blocking, perfect blocks and dashes.', x, yl, colW);
   }
   const _ceP = CE_PROFILE[ceProfKey(pl)] || [100,7], _ceT = `Moves spend CE (the blue bar under your health) and have 3/4 of their old cooldown. Super: its hit charge + 50% CE. Domain: a full bar · ultimate: 75%; both empty it. You: ${_ceP[0]} CE, refills ${_ceP[1]}/s.`;
   if(online) yr = guideBlock('CURSED ENERGY', _ceT, xr, yr, colW, '#6fb8ff'); else yl = guideBlock('CURSED ENERGY', _ceT, x, yl, colW, '#6fb8ff');
