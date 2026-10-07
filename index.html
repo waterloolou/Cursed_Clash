@@ -284,7 +284,7 @@ canvas {
           <tr><td>Move</td><td>A / D</td><td>← / →</td></tr>
           <tr><td>Jump / down</td><td>W / S</td><td>↑ / ↓</td></tr>
           <tr><td>Attack</td><td>F</td><td>/</td></tr>
-          <tr><td>Abilities 1 · 2 · super</td><td>1 · 2 · 3</td><td>J · K · L</td></tr>
+          <tr><td>Abilities 1 · 2 · super</td><td>1 · 2 · 3</td><td>L · K · J</td></tr>
           <tr><td>Domain / ultimate</td><td>Q</td><td>;</td></tr>
           <tr><td>Pick up item</td><td>G</td><td>Enter</td></tr>
           <tr><td>Maximum Output on / off</td><td>E</td><td>I</td></tr>
@@ -614,7 +614,7 @@ canvas {
         <p class="lead">A comedian whose technique, Comedian, makes whatever he finds funny come true. As long as he thinks it's funny, it works.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and J K L). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 80 CE, 9s cooldown.</td></tr>
+          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and L K J). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 80 CE, 9s cooldown.</td></tr>
           <tr><td>E</td><td>1000 Years of Death</td><td>Teleports behind the opponent (within 460px) and delivers the infamous poke: 14 damage and a big launch forward. 72 CE, 6.8s cooldown.</td></tr>
           <tr><td>R</td><td>Counter <em>(super, 25)</em></td><td>A 0.45s stance. If <b>anything</b> hits him during it, he takes <b>no damage at all</b>, gets brief invincibility, and a nearby attacker is stunned. Time it right as their attack lands.</td></tr>
           <tr><td>F</td><td>The Truck <em>(ultimate, 150)</em></td><td>HONK HONK. After a short warning a giant truck drives across the whole map in the opponent's lane, through everything — terrain, puppets, people: 45 damage and a massive launch. Jump to dodge it.</td></tr>
@@ -6663,10 +6663,10 @@ const PAD = { jump:[0], atk:[2], ab1:[4], ab2:[5], ab3:[3], ult:[7], block:[6], 
 const BINDS_L1 = { left:['KeyA'], right:['KeyD'], jump:['KeyW'], down:['KeyS'], atk:['KeyF'],
   ab1:['Digit1'], ab2:['Digit2'], ab3:['Digit3'], ult:['KeyQ'], pick:['KeyG'], feat:['KeyT'], block:[], dash:[], vtog:['KeyE'] };
 const BINDS_L2 = { left:['ArrowLeft'], right:['ArrowRight'], jump:['ArrowUp'], down:['ArrowDown'], atk:['Slash'],
-  ab1:['KeyJ'], ab2:['KeyK'], ab3:['KeyL'], ult:['Semicolon'], pick:['Enter'], feat:['ShiftRight'], block:[], dash:[], vtog:['KeyI'] };
+  ab1:['KeyL'], ab2:['KeyK'], ab3:['KeyJ'], ult:['Semicolon'], pick:['Enter'], feat:['ShiftRight'], block:[], dash:[], vtog:['KeyI'] };
 const LBL_ONLINE = { ab1:'Q', ab2:'E', ab3:'R', ult:'F', atk:'CLICK', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'R-CLICK', dash:'SHIFT', vtog:'V' };
 const LBL_L1 = { ab1:'1', ab2:'2', ab3:'3', ult:'Q', atk:'F', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'—', dash:'—', vtog:'E' };
-const LBL_L2 = { ab1:'J', ab2:'K', ab3:'L', ult:';', atk:'/', left:'←', right:'→', jump:'↑', down:'↓', pick:'ENTER', feat:'R-SHIFT', block:'—', dash:'—', vtog:'I' };
+const LBL_L2 = { ab1:'L', ab2:'K', ab3:'J', ult:';', atk:'/', left:'←', right:'→', jump:'↑', down:'↓', pick:'ENTER', feat:'R-SHIFT', block:'—', dash:'—', vtog:'I' };
 function keyLbl(pl, a){
   if(typeof NET!=='undefined' && NET.role==='local' && !(typeof gameMode!=='undefined' && gameMode==='training')) return ((pl && pl.playerNum===2) ? LBL_L2 : LBL_L1)[a];
   return LBL_ONLINE[a];
@@ -7117,7 +7117,7 @@ class Player {
     this.pbChargeTime=0; this.pbCooldown=0; this.pbDown=false;
   }
 
-  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem; if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = false; }
+  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem, vm = this.varMode; if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = !!vm; }
 
   get hittable(){
     if(this.mechUltPhase===1 || this.mechUltPhase===2) return false; // underground
@@ -7223,7 +7223,7 @@ class Player {
     const dk = this.isPuppet ? null : this.ctrl.down;
     if(dk && keys[dk] && this.onGround && [S.IDLE,S.WALK].includes(this.state) && !(this.pbChargeTime>0)) this.dropT=220;
     if(this.iframes > 0) this.iframes = Math.max(0, this.iframes - dt);
-    if(this.framedT>0 && tickFramed(this, dt)){ tickStatus(this, dt); return; }
+    if(this.framedT>0 && tickFramed(this, dt)){ this._vToggle(); tickStatus(this, dt); return; }
     this._loadoutPre(dt);
     this._cePre(dt);
     this._updateCore(dt,other);
@@ -12695,7 +12695,7 @@ function ceCostMult(p){ return (p._vow && p._vow('sacrifice') ? 0.75 : 1) * (p._
 function ceProfKey(p){ return p.type==='naoyac' || p.type==='meguna' ? p.type : (p.baseType || p.type); }
 function ceInit(p){
   const pr = CE_PROFILE[ceProfKey(p)] || [100, 7];
-  p.ceMax = pr[0]; p.ceRegen = pr[1]; p.ce = p.ceMax; p.varMode = false; p._ceKD = {}; p._cePaid = {};
+  p.ceMax = pr[0]; p.ceRegen = pr[1]; p.ce = p.ceMax; p._ceKD = {}; p._cePaid = {};
 }
 function ceInfinite(p){ return p.jackpotT>0 || p.gardenT>0 || (isTraining() && trainOpt.nocd && p===p1); }
 function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1) * (p.bfCeT>0 ? 3.5 : 1); }
@@ -12746,6 +12746,17 @@ function ceDeny(p, slot, need){
 function ceSyncLen(){ let n = 0; for(const k in SYNC_ARR) if(k!=='speechFx' && k!=='worldItems' && k!=='slashMarks') n += SYNC_ARR[k].length; return n; }
 function ceFields(type){ const t = CE_SLOTS[type]; return t ? Object.values(t).map(a => a[0]) : []; }
 
+// Maximum Output on / off: works any time — stunned, knocked down, frozen in a frame, or waiting to respawn
+Player.prototype._vToggle = function(){
+  if(this.isPuppet) return;
+  const vk = !!keys[`A${this.playerNum}_vtog`], vEdge = vk && !this._vtDown; this._vtDown = vk;
+  const varOk = olOn() || (typeof NET!=='undefined' && NET.role==='local');
+  if(!varOk || !OL_VARS[this.type] || (this._vow && this._vow('heavenly'))){ this.varMode = false; return; }
+  if(!vEdge) return;
+  this.varMode = !this.varMode; this.pbChargeTime = 0;
+  if(this.state===S.DEAD) addSpeech(this.x+PW/2, this.y-20, this.varMode ? 'MAXIMUM OUTPUT ON' : 'MAXIMUM OUTPUT OFF', this.varMode ? '#b07cff' : '#6fb8ff', 700);
+  else { addRing(this.x+PW/2, this.y+PH/2, this.varMode ? '#b07cff' : '#6fb8ff', 34); snd('swing', this.x); }
+};
 Player.prototype._cePre = function(dt){
   this._ceSnap = null; this._ceMask = null; this._ceHandled = false;
   if(this.isPuppet) return;
@@ -12756,13 +12767,7 @@ Player.prototype._cePre = function(dt){
   else if(!ceRegenPaused(this)) this.ce = Math.min(this.ceMax, this.ce + this.ceRegen*ceRegenMult(this)*dt/1000);
   const ol = olOn(), dead = [S.STUN,S.RAGD,S.SLAM,S.DEAD].includes(this.state);
   // variant toggle (online combat only)
-  const vk = !!keys[`A${this.playerNum}_vtog`], vEdge = vk && !this._vtDown; this._vtDown = vk;
-  const varOk = ol || (typeof NET!=='undefined' && NET.role==='local');
-  if(!varOk || !OL_VARS[this.type] || (this._vow && this._vow('heavenly'))) this.varMode = false;
-  else if(vEdge && !dead){
-    this.varMode = !this.varMode; this.pbChargeTime = 0;
-    addRing(this.x+PW/2, this.y+PH/2, this.varMode ? '#b07cff' : '#6fb8ff', 34); snd('swing', this.x);
-  }
+  this._vToggle();
   const atkHeld = !!keys[this.ctrl.atk], basic = CE_BASIC.has(this.state);
   const press = {}, rel = {}, pay = {};
   for(const [s, kf] of CE_KEYS){ const on = !!keys[this[kf]]; press[s] = on && !this._ceKD[s]; rel[s] = !on && !!this._ceKD[s]; this._ceKD[s] = on; }

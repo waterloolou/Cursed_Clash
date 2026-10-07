@@ -37,7 +37,7 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 |---|---|---|---|
 | Move / jump / down | A D / W / S | A D / W / S | ← → / ↑ / ↓ |
 | Attack | Left click or J | F | / |
-| Abilities | Q · E · R | 1 · 2 · 3 | J · K · L |
+| Abilities 1 · 2 · super | Q · E · R | 1 · 2 · 3 | L · K · J |
 | Domain / ultimate | F | Q | ; |
 | Block · Dash *(online only)* | Right click / C · Shift | — | — |
 | Maximum Output on/off (aura lights up) | V | E | I |
