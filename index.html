@@ -220,7 +220,7 @@ canvas {
           <a data-p="hanami" style="--c:#9bc46a"><b>Hanami</b><span>Cursed Buds · Flower Field · Root Grab · Root Rampage</span></a>
           <a data-p="mahito" style="--c:#8fa3b8"><b>Mahito</b><span>Idle Transfiguration · Soul Isomer · Distorted Killing · Perfection</span></a>
           <a data-p="takaba" style="--c:#e8c547"><b>Takaba</b><span>Rock Paper Scissors · 1000 Years of Death · Counter · The Truck</span></a>
-          <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives, the last as a curse</span></a>
+          <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives</span></a>
         </div>
         <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
       </section>
@@ -268,7 +268,11 @@ canvas {
           <tr><td>Super</td><td>R (or U)</td></tr>
           <tr><td>Domain / ultimate</td><td>F (or I)</td></tr>
           <tr><td>Pick up item</td><td>G (or H)</td></tr>
+          <tr><td>Block (hold) · perfect block (tap as a hit lands)</td><td>Right click, C or O</td></tr>
+          <tr><td>Dash</td><td>Shift or P (or double-tap A / D)</td></tr>
           <tr><td>Maximum Output on / off</td><td>V (or N)</td></tr>
+          <tr><td>Feat (e.g. Kenjaku swap)</td><td>T (or Y)</td></tr>
+          <tr><td>Anti-domain technique</td><td>Click + F</td></tr>
           <tr><td>Todo: choose swap target</td><td>Click an item or fighter</td></tr>
         </table>
         <h2>Local 2 player (same keyboard)</h2>
@@ -281,6 +285,8 @@ canvas {
           <tr><td>Domain / ultimate</td><td>Q</td><td>;</td></tr>
           <tr><td>Pick up item</td><td>G</td><td>Enter</td></tr>
           <tr><td>Maximum Output on / off</td><td>E</td><td>I</td></tr>
+          <tr><td>Feat (e.g. Kenjaku swap)</td><td>T</td><td>Right Shift</td></tr>
+          <tr><td>Pause</td><td>Esc</td><td>Backspace</td></tr>
         </table>
         <h2>Gamepad</h2>
         <p>Stick or D-pad to move · A jump · X attack · LB / RB abilities · Y super · RT domain · B pick up.</p>
@@ -603,7 +609,7 @@ canvas {
         <p class="lead">A comedian whose technique, Comedian, makes whatever he finds funny come true. As long as he thinks it's funny, it works.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and , . /). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 80 CE, 9s cooldown.</td></tr>
+          <tr><td>Q</td><td>Rock Paper Scissors</td><td>Both fighters freeze and get 1.8s to throw <b>Rock / Paper / Scissors</b> with their own Q / E / R (local: 1 2 3 and J K L). No pick = random. The loser takes <b>30 damage</b> and gets launched — even if that's Takaba. A draw halves the cooldown. 80 CE, 9s cooldown.</td></tr>
           <tr><td>E</td><td>1000 Years of Death</td><td>Teleports behind the opponent (within 460px) and delivers the infamous poke: 14 damage and a big launch forward. 72 CE, 6.8s cooldown.</td></tr>
           <tr><td>R</td><td>Counter <em>(super, 25)</em></td><td>A 0.45s stance. If <b>anything</b> hits him during it, he takes <b>no damage at all</b>, gets brief invincibility, and a nearby attacker is stunned. Time it right as their attack lands.</td></tr>
           <tr><td>F</td><td>The Truck <em>(ultimate, 150)</em></td><td>HONK HONK. After a short warning a giant truck drives across the whole map in the opponent's lane, through everything — terrain, puppets, people: 45 damage and a massive launch. Jump to dodge it.</td></tr>
@@ -693,7 +699,7 @@ canvas {
       <button class="lb-btn ghost" id="btnCancel">CANCEL</button>
     </div>
     <div id="lbStatus"></div>
-    <div class="lb-tip">Move <b>WASD</b> · Attack <b>Click / J</b> · Abilities <b>Q E R F</b> · Pick up <b>G</b> — full controls in the wiki</div>
+    <div class="lb-tip">Move <b>WASD</b> · Attack <b>Click / J</b> · Abilities <b>Q E R F</b> · Block <b>Right-click</b> · Dash <b>Shift</b> · Maximum Output <b>V</b> · Pick up <b>G</b> — full controls in the wiki</div>
   </div>
 </div>
 <script>
@@ -12082,7 +12088,7 @@ const CHARACTERS = [
     type: 'naoya',
     color: '#e6d3a3',
     dimColor: '#6a5a34',
-    description: 'Projection Sorcery · 24 FPS · 4 lives, last one as a curse'
+    description: 'Projection Sorcery · 24 FPS · 4 lives'
   }
   // ── ADD YOUR CHARACTER HERE ──────────────────────────────
   // {
@@ -13389,7 +13395,7 @@ function olFillWiki(){
   <tr><td>Tap block as a hit lands</td><td><b>PERFECT BLOCK</b>: no damage, the attacker is staggered, +guard and domain charge. Mashing it doesn't work — there's a short lockout between attempts.</td></tr>
   <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> with invincibility frames — dodge through attacks. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
   <tr><td>Long combos</td><td>Damage scales down from the 3rd hit (to ×0.5) and stun gets shorter, so no infinite combos.</td></tr>
-  <tr><td>V (toggle) then Q / E</td><td><b>Maximum Output</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>Maximum Output</b> versions instead (about twice the cursed energy of the normal move, 6s cooldown each). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
+  <tr><td>V (toggle) then Q / E</td><td><b>Maximum Output</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>Maximum Output</b> versions instead (about twice the cursed energy of the normal move, 6s cooldown each). Your super and domain still work while it's on. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
   <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (40 CE, then a 25s cooldown).</td></tr></table>
   <h2>Maximum Output & clan techniques</h2><p>One Maximum Output move per fighter can be <b>blocked</b>; the other can only be <b>countered</b> (perfect block). Supers and ultimates can't be blocked either — only countered.</p><table><tr><th>Fighter</th><th>Input</th><th>Move</th><th>Details</th></tr>`;
   const keyN = {1:'V → Q', 2:'V → E'};
@@ -14183,8 +14189,8 @@ const KEY_NAMES = {Mouse0:'LEFT CLICK', Mouse2:'RIGHT CLICK', ShiftLeft:'L-SHIFT
   ArrowLeft:'←', ArrowRight:'→', ArrowUp:'↑', ArrowDown:'↓', Escape:'ESC', Backspace:'BACKSPACE'};
 const keyName = c => KEY_NAMES[c] || c.replace(/^Key|^Digit/, '');
 const PAUSE_ROWS = [['left','Move left'], ['right','Move right'], ['jump','Jump'], ['down','Crouch · drop through platforms · aim down'], ['atk','Attack'],
-  ['ab1','Ability 1'], ['ab2','Ability 2'], ['ab3','Special (charged)'], ['ult','Domain / ultimate'], ['pick','Pick up / use item'], ['feat','Feat (e.g. Kenjaku toggle)'],
-  ['block','Block (hold) · tap as a hit lands = perfect block'], ['dash','Dash / dodge (or double-tap a direction)'], ['vtog','Maximum Output on / off (abilities 1 / 2 become their Maximum Output versions)']];
+  ['ab1','Ability 1'], ['ab2','Ability 2'], ['ab3','Ability 3 / special'], ['ult','Domain / ultimate'], ['pick','Pick up / use item'], ['feat','Feat (e.g. Kenjaku toggle)'],
+  ['block','Block (hold) · tap as a hit lands = perfect block'], ['dash','Dash / dodge (or double-tap a direction)'], ['vtog','Maximum Output on / off']];
 function togglePause(by){
   if(phase!=='fight') return;
   paused = !paused; pausedBy = paused ? by : 0;
@@ -14205,11 +14211,11 @@ function drawPauseColumn(pl, slot, binds, x, y, w, title){
     ctx.font = `700 12px 'Rajdhani',sans-serif`; ctx.fillStyle = on ? '#ffe066' : '#f0ebe0'; ctx.fillText(keysFor, x, yy);
     const nm = info[a] ? `${label} — ${info[a]}` : label;
     ctx.font = `500 11px 'Rajdhani',sans-serif`; ctx.fillStyle = on ? '#fff6c8' : 'rgba(220,215,205,0.85)'; ctx.fillText(nm, x + w*0.36, yy);
-    yy += 21;
+    yy += 19;
   }
   ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.6)';
   const extra = online
-    ? ['V = Maximum Output (Q / E become their Maximum Output versions, other moves locked) · hold ATTACK + F = anti-domain technique (if your fighter has one)', 'Combos: attack ×3, press again as the ring closes for a PERFECT · hold TAB in a fight for the full move list']
+    ? ['V = Maximum Output (Q / E become stronger versions; super and domain still work) · hold ATTACK + F = anti-domain technique (if your fighter has one)', 'Combos: attack ×3, press again as the ring closes for a PERFECT · hold TAB in a fight for the full move list']
     : ['Hold TAB in a fight for the full move list'];
   for(const t of extra){ ctx.fillText(t, x, yy+4); yy += 14; }
   return yy;
@@ -14343,7 +14349,7 @@ function drawPauseMenu(){
     if(me) drawPauseColumn(pl, me, BINDS, W/2 - w/2, 146, w, 'YOUR CONTROLS');
     else { ctx.textAlign = 'center'; ctx.fillStyle = '#ddd'; ctx.fillText('You are spectating.', W/2, 160); }
     ctx.textAlign = 'center'; ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.55)';
-    ctx.fillText('Gamepad: A jump · X attack · LB / RB abilities · Y special · RT domain · LT block · B pick up', W/2, H-26);
+    ctx.fillText('Gamepad: A jump · X attack · LB / RB abilities · Y special · RT domain · LT block · R-stick click Maximum Output · B pick up', W/2, H-14);
   }
   ctx.restore();
 }
@@ -14628,29 +14634,29 @@ const MOVE_INFO = {
   mechamaru:[['ab1','Drill Drive','Dash through terrain, carry + stun (22).'], ['ab2','Mini Cannon','Short charge, aim, close-range blast (16).'],
              ['ab3','Summon Puppet · super','AI Mechamaru for 20s. Press again to swap bodies with it.'], ['ult','Ultimate Mechamaru','Giant mech for 20s… then you die.'], ['move','Jet Flight','Hold jump on the ground, then fly.']],
   todo:     [['ab1','Haymaker','Huge-knockback punch (14). In the air: meteor dive.'], ['ab2','Boogie Woogie','Clap to swap places (click to pick a target online).'],
-             ['ab3','Imaginary Brother · super','His "best friend" rushes in: 3-hit combo (17). Down + Boogie Woogie swaps with him.'], ['ult','Unlimited Boogie','Boogie Woogie has no cooldown for 20s.'], ['move','Heavyweight Landing','Big falls stun anyone close.']],
+             ['ab3','Imaginary Brother · super','His best friend rushes in for a 3-hit combo (17).'], ['ult','Unlimited Boogie','Boogie Woogie has no cooldown for 20s.'], ['move','Heavyweight Landing','Big falls stun anyone close.']],
   choso:    [['ab1','Piercing Blood','Hold to charge (10–40), aim with up / down.'], ['ab2','Convergence','Blood orb follows you; press again to detonate (12).'],
              ['ab3','Slicing Exorcism · super','Blood ring bouncing off walls (16 per hit).'], ['ult','Supernova','Every blood pool he has bled explodes.'], ['move','Bleeding','Taking damage leaves blood pools.']],
   higuruma: [['ab1','Long Gavel','Gavel stretches ~300px and sweeps (12).'], ['ab2','Heavy Gavel','Giant overhead smash (24). In the air: plunge.'],
              ['ab3','Gavel Throw · super','Hit = stun + rush them down (8 + 16).'], ['ult','Deadly Sentencing','Key-press trial: win = 20s instakill sword.'], ['move','Objection Step','Double-tap a direction to dash.']],
   hakari:   [['ab1','Pachinko Balls','Spread of bouncing steel balls (4 each).'], ['ab2','Shutter Doors','Doors slam on the foe: 15 + trapped 1s.'],
              ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25s; 10% jackpot every 5s → unkillable.'], ['move','Fever','Faster during a jackpot.']],
-  naoya:    [['ab1','Projection Dash','Runs forward at 24 fps and punches whoever is in the way (14). Miss = frozen in a frame for 1s.'], ['ab2','Frame Barrage','Four jabs a frame apart (3 each), then a launching kick (9). Whiff it all = frozen for 1s.'],
-             ['ab3','24 FPS · super','You draw a motion (12 keys; 24 online). If they miss one key, they\'re frozen in a frame for 8s: no moving, +14% damage taken.'], ['ult','Vengeful Curse','No domain while human. His 4th and last life is spent as a cursed spirit with new moves and a domain.'], ['move','Projection Sorcery','Fastest fighter; speed builds as he runs. Every 3rd quick hit freezes the foe in a frame (once per 3s). His long strings fall off: half damage past 25, a fifth past 40. 4 lives, 75 HP each.']],
-  naoyac:   [['ab1','Rocket','Becomes a rocket for 2.4s: steer with the movement keys, smash through terrain (20 per hit). Press again to blow up early.'], ['ab2','Frame Field','Five frames in a row. Walk into one = caught. Press again to detonate: 10 each, 22 to anyone caught.'],
-             ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: every motion that breaks 24 fps tears their cells apart (2 every 0.25s while they move). Standing still is safe.'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
-  takaba:   [['ab1','Rock Paper Scissors','Both pick within 1.8s. Loser takes 30. Draw = half the CE back.'], ['ab2','1000 Years of Death','Teleports behind them (460px) and pokes: 14 + big launch.'],
+  naoya:    [['ab1','Projection Dash','Sprints and punches the first foe in reach (14). Miss = frozen.'], ['ab2','Frame Barrage','Four frame-apart jabs (3 each) and a launching kick (9).'],
+             ['ab3','24 FPS · super','Copy his motion (12 keys, 24 online) or be frozen for 8s.'], ['ult','Vengeful Curse','No domain yet: his last life returns him as a curse.'], ['move','Projection Sorcery','Fastest; every 3rd quick hit freezes them. 4 lives of 75 HP.']],
+  naoyac:   [['ab1','Rocket','Steerable rocket (20 per hit). Press again to detonate.'], ['ab2','Frame Field','Five frames ahead; press again to detonate (22 if caught).'],
+             ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 8s.'], ['ult','Time Cell Moon Palace','Domain: moving tears their cells (2 every 0.25s).'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
+  takaba:   [['ab1','Rock Paper Scissors','Both pick in 1.8s. Loser takes 30. Draw = half CE back.'], ['ab2','1000 Years of Death','Teleports behind them (460px) and pokes: 14 + big launch.'],
              ['ab3','Counter · super','0.45s stance: any hit in it does NO damage and stuns them.'], ['ult','The Truck','HONK. A truck drives through everything in their lane: 45.'], ['move','Comedian','12% of hits on him are just a gag (no damage).']],
-  mahito:   [['ab1','Idle Transfiguration','Short palm (12). Reshapes the foe for 5s: 30% slower, takes 20% more damage.'], ['ab2','Soul Isomer','A transfigured human runs at the foe and explodes (16).'],
+  mahito:   [['ab1','Idle Transfiguration','Short palm (12). Reshapes them 5s: slower, +20% damage taken.'], ['ab2','Soul Isomer','A transfigured human runs at the foe and explodes (16).'],
              ['ab3','Distorted Killing · super','8s form: +25% speed, +40% damage dealt, -30% damage taken.'], ['ult','Self-Embodiment of Perfection','Domain: hands close in; every touch hits for 6 and reshapes.'], ['move','Soul Malleability','Slips through thin walls; regenerates when not hit for 4s.']],
-  hanami:   [['ab1','Cursed Buds','3 seeds (5 each). Each one that lands drains ~17% of the foe\'s ultimate bar.'], ['ab2','Flower Field','Flowers bloom ahead: standing in them stuns + 7 damage.'],
-             ['ab3','Root Grab · super','Aimable root lash: grabs the foe and drags them to you (10).'], ['ult','Root Rampage','15s: a root follows your mouse, hitting for 8 and leaving walkable roots.'], ['move','Nature\'s Spring','Jumps 10% higher.']],
+  hanami:   [['ab1','Cursed Buds','3 seeds (5 each); each hit drains ~17% of their ultimate bar.'], ['ab2','Flower Field','Flowers bloom ahead: standing in them stuns + 7 damage.'],
+             ['ab3','Root Grab · super','Aimable root lash: grabs the foe and drags them to you (10).'], ['ult','Root Rampage','15s: a root follows your mouse (8) and leaves walkable roots.'], ['move','Nature\'s Spring','Jumps 10% higher.']],
   dagon:    [['ab1','Flood','Water pool in front: foes slowed + small damage, Dagon faster.'], ['ab2','Water Jet','Aimable high-pressure jet (12) that knocks back.'],
              ['ab3','Death Swarm · super','Stream of 8 homing fish (5 each), aimable.'], ['ult','Captivating Skandha','Domain: giant fish leap at the foe from all sides.'], ['move','Tidal Body','40% faster in his own flood.']],
-  jogo:     [['ab1','Ember Insects','A fire bug homes in and clings on: +1s on their cooldowns for 10s.'], ['ab2','Flame Dash','Dash through them (8) and set them on fire (3 every 0.5s, 3s).'],
-             ['ab3','Lava Mound · super','Hidden mound; stepping on it erupts a fire tower (26 + launch).'], ['ult','Coffin of the Iron Mountain','Domain: constant burning + lava geysers.'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
+  jogo:     [['ab1','Ember Insects','Clinging fire bug: +1s on their cooldowns for 10s.'], ['ab2','Flame Dash','Dash through them (8) and set them on fire (3 every 0.5s, 3s).'],
+             ['ab3','Lava Mound · super','Hidden mound: stepping on it erupts a fire tower (26).'], ['ult','Coffin of the Iron Mountain','Domain: constant burning + lava geysers.'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
   meimei:   [['ab1','Axe Chop','Overhead chop (16) floors them; spikes them out of the air.'], ['ab2','Axe Spin','Spinning axe, 3 hits around you (18 total).'],
-             ['ab3','Ui Ui','Place him once, then teleport to him any time. Down + 3 moves him. Hit = gone for 12s.'], ['ult','Bird Strike · super','Steer a crow, press again: it dives and explodes (90).'], ['move','Axe Momentum','Full speed while swinging.']],
+             ['ab3','Ui Ui','Place him, then teleport to him. Down + this key moves him.'], ['ult','Bird Strike','Steer a crow, press again: it dives and explodes (90).'], ['move','Axe Momentum','Full speed while swinging.']],
   kenjaku:  [['ab1','Maximum: Uzumaki','Aimable piercing spiral (22).'], ['ab2','Cursed Spirit','Minion hunts the foe and bites (10).'],
              ['ab3','Anti-Gravity · super','Fling nearby foes up, slam them down (20).'], ['ult','Womb Profusion','Domain: crushing gravity + damage ticks.'], ['feat','Swap back','Press the feat key again.']]
 };
@@ -14664,21 +14670,32 @@ function moveKey(pl, k, slot){
 function drawMoveList(type, x, y, w, pl, slot, title){
   const L = MOVE_INFO[type]; if(!L) return 0;
   ctx.save(); ctx.textAlign = 'left';
-  const rowH = 30, h = 24 + L.length*rowH;
+  // descriptions wrap onto a second line instead of running past the panel
+  const tw = w-64, wrap = (txt, sz) => { ctx.font = `500 ${sz}px 'Rajdhani',sans-serif`; const out = []; let cur = '';
+    for(const word of txt.split(' ')){ const t2 = cur ? cur+' '+word : word; if(ctx.measureText(t2).width <= tw || !cur) cur = t2; else { out.push(cur); cur = word; } }
+    if(cur) out.push(cur); return out; };
+  const rows = L.map(([k, name, desc]) => { let sz = 10, lines = wrap(desc, sz);
+    while(lines.length > 2 && sz > 8){ sz -= 0.5; lines = wrap(desc, sz); }
+    if(lines.length > 2){ lines = lines.slice(0, 2); while(ctx.measureText(lines[1]+'…').width > tw && lines[1].length > 4) lines[1] = lines[1].slice(0, -1); lines[1] += '…'; }
+    return {k, name, lines, sz, h: 30 + (lines.length-1)*(sz+1)}; });
+  const h = 24 + rows.reduce((a, r) => a + r.h, 0);
   ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(x, y, w, h);
   ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
   ctx.fillStyle = 'rgba(200,195,185,0.6)'; ctx.font = `700 10px 'Rajdhani',sans-serif`;
   ctx.fillText(title || 'MOVES', x+8, y+15);
-  L.forEach(([k, name, desc], i) => {
-    const ry = y + 24 + i*rowH, kl = moveKey(pl, k, slot);
+  let ry = y + 24;
+  for(const r of rows){
+    const kl = moveKey(pl, r.k, slot);
     ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(x+8, ry+2, 40, 24);
     ctx.fillStyle = '#fff'; ctx.font = `700 ${kl.length>4 ? 9 : 12}px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
     ctx.fillText(kl, x+28, ry+18);
     ctx.textAlign = 'left';
-    const fit = (txt, wt, size, minSize) => { let sz = size; do { ctx.font = `${wt} ${sz}px 'Rajdhani',sans-serif`; if(ctx.measureText(txt).width <= w-64) break; sz -= 0.5; } while(sz > minSize); };
-    ctx.fillStyle = '#e8e3d8'; fit(name, 700, 12, 9); ctx.fillText(name, x+56, ry+12);
-    ctx.fillStyle = 'rgba(190,185,175,0.85)'; fit(desc, 500, 10, 7); ctx.fillText(desc, x+56, ry+25);
-  });
+    let sz = 12; do { ctx.font = `700 ${sz}px 'Rajdhani',sans-serif`; if(ctx.measureText(r.name).width <= tw) break; sz -= 0.5; } while(sz > 9);
+    ctx.fillStyle = '#e8e3d8'; ctx.fillText(r.name, x+56, ry+12);
+    ctx.fillStyle = 'rgba(190,185,175,0.85)'; ctx.font = `500 ${r.sz}px 'Rajdhani',sans-serif`;
+    r.lines.forEach((ln, li) => ctx.fillText(ln, x+56, ry+24 + li*(r.sz+1)));
+    ry += r.h;
+  }
   ctx.restore();
   return h;
 }
@@ -14715,7 +14732,7 @@ function drawCharSelect(){
   ctx.fillStyle='#d8d4cc';
   ctx.fillText('SELECT CHARACTER', W/2, 55);
   ctx.font=`500 12px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(180,175,165,0.6)';
-  ctx.fillText(isTraining() ? 'Pick your fighter · A / D · SPACE / F to lock in · ESC back' : NET.role==='local' ? 'P1: A / D pick · F lock in        P2: ← / → pick · ; lock in' : 'A / D or ← / → to pick  ·  SPACE / ENTER / CLICK to lock in  ·  ESC to change', W/2, 76);
+  ctx.fillText(isTraining() ? 'Pick your fighter · A / D · SPACE / F to lock in · ESC back' : NET.role==='local' ? 'P1: A / D pick · F lock in        P2: ← / → pick · / lock in' : 'A / D or ← / → to pick  ·  SPACE / ENTER / CLICK to lock in  ·  ESC to change', W/2, 76);
 
   const panelW=200, panelH=220, gap=40;
   const p1x=W/2-panelW-gap/2, p2x=W/2+gap/2;
@@ -14776,7 +14793,7 @@ function drawCharSelect(){
     } else {
       ctx.globalAlpha=0.6+0.4*Math.abs(Math.sin(Date.now()*0.005));
       ctx.fillStyle='#d8d4cc'; ctx.font=`700 11px 'Rajdhani',sans-serif`;
-      ctx.fillText(NET.role==='local' ? (p===0 ? 'PRESS F TO LOCK IN' : 'PRESS ; TO LOCK IN') : 'SPACE / CLICK TO LOCK IN', px+panelW/2, py+panelH-14);
+      ctx.fillText(NET.role==='local' ? (p===0 ? 'PRESS F TO LOCK IN' : 'PRESS / TO LOCK IN') : 'SPACE / CLICK TO LOCK IN', px+panelW/2, py+panelH-14);
       ctx.globalAlpha=1;
     }
   }

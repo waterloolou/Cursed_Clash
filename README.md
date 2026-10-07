@@ -37,6 +37,9 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 | Domain / ultimate | F | Q | ; |
 | Block · Dash *(online only)* | Right click / C · Shift | — | — |
 | Maximum Output on/off (aura lights up) | V | E | I |
+| Feat (e.g. Kenjaku swap) | T | T | Right Shift |
+| Pick up item | G | G | Enter |
+| Pause | Esc | Esc | Backspace |
 
 ## Cursed energy
 
