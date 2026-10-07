@@ -21,13 +21,15 @@ That's it. Everything is in that one file.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
 
-## Newest fighter: Megumi Fushiguro
+## Newest fighter: Yuki Tsukumo
 
-Ten Shadows: **Rabbit Escape** (blink back behind a swarm that slows your chaser), **Bottomless Well** (a shadow pool that roots them), the super **Divine Dog: Totality**, and the ultimate **Chimera Shadow Garden**, an incomplete domain that removes CE costs and cooldowns for 12s. Maximum Output: **Max Elephant** and **Nue**.
+Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (double damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and costs her 30 HP. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
 
-**Meguna** (shop feat, ¥3000): with Maximum Output on, Megumi's ultimate lets Sukuna take the body for the rest of that life — Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga as a Maximum Output move.
-
-Also new: **Naoya Zen'in** — the fastest fighter, 4 lives of 75 HP, the 24 FPS frame prompt, and a vengeful cursed-spirit last life with Time Cell Moon Palace. In training, key **6** switches Naoya's form (or Megumi ↔ Meguna if you own the feat).
+Also recent:
+- **Megumi Fushiguro** — Ten Shadows (Rabbit Escape, the Toads, Divine Dog, Chimera Shadow Garden), and the ¥3000 **Meguna** feat that lets Sukuna take the body.
+- **Mahito reworked** — Idle Transfiguration is now his special: the 3rd soul touch kills outright (Yuji and Sukuna are immune). Maximum Output is his true form, Instant Spirit Body of Distorted Killing, with Black Flash and Soul Multiplicity.
+- **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
+- **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
 ## Controls
 
