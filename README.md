@@ -23,7 +23,7 @@ That's it. Everything is in that one file.
 
 ## Newest fighter: Yuki Tsukumo
 
-Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (double damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and costs her 30 HP. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
+Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (double damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and then self-destructs, costing her that life. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
 
 Also recent:
 - **Megumi Fushiguro** — Ten Shadows (Rabbit Escape, the Toads, Divine Dog, Chimera Shadow Garden), and the ¥3000 **Meguna** feat that lets Sukuna take the body.
