@@ -222,6 +222,7 @@ canvas {
           <a data-p="takaba" style="--c:#e8c547"><b>Takaba</b><span>Rock Paper Scissors · 1000 Years of Death · Counter · The Truck</span></a>
           <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives, the last as a curse</span></a>
         </div>
+        <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
       </section>
 
       <section data-p="account">
@@ -1390,6 +1391,9 @@ function tickItems(dt){
 }
 function resetItems(){ worldItems.length = 0; speechFx.length = 0; itemSpawnT = 15000; }
 
+const ISOH_SRC = 'data:image/png;base64,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';
+let _isohIm = null;
+function isohImg(){ if(!_isohIm){ _isohIm = new Image(); _isohIm.src = ISOH_SRC; } return _isohIm; }
 function drawItemIcon(kind, x, y, s, ang){
   ctx.save(); ctx.translate(x, y); ctx.rotate(ang||0); ctx.scale(s, s);
   ctx.lineCap = 'round';
@@ -1402,11 +1406,9 @@ function drawItemIcon(kind, x, y, s, ang){
     ctx.strokeStyle = '#d8d0c0'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(-10,-2); ctx.lineTo(-6,-2); ctx.moveTo(8,-6); ctx.lineTo(12,-6); ctx.stroke();
   } else if(kind==='isoh'){
-    // short spear with a forked blade
-    ctx.strokeStyle = '#3b3f46'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(-24,6); ctx.lineTo(10,-4); ctx.stroke();
-    ctx.fillStyle = '#c9dbe6'; ctx.strokeStyle = '#4d6a7c'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(10,-4); ctx.lineTo(30,-16); ctx.lineTo(24,-6); ctx.lineTo(32,-4); ctx.lineTo(12,0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Inverted Spear of Heaven — art by ThEndNite (256×96), drawn at the old icon's size and tilt
+    const im = isohImg();
+    if(im.complete && im.naturalWidth){ ctx.save(); ctx.translate(4, -5); ctx.rotate(-0.38); const k = 56/252; ctx.drawImage(im, -128*k, -48*k, 256*k, 96*k); ctx.restore(); }
   } else {
     // pocket recorder
     ctx.fillStyle = '#2b3138'; ctx.fillRect(-12,-16,24,30);
