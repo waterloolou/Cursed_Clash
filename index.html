@@ -267,7 +267,7 @@ canvas {
           <tr><td>Super</td><td>R (or U)</td></tr>
           <tr><td>Domain / ultimate</td><td>F (or I)</td></tr>
           <tr><td>Pick up item</td><td>G (or H)</td></tr>
-          <tr><td>Variant mode on / off</td><td>V (or N)</td></tr>
+          <tr><td>Maximum Output on / off</td><td>V (or N)</td></tr>
           <tr><td>Todo: choose swap target</td><td>Click an item or fighter</td></tr>
         </table>
         <h2>Local 2 player (same keyboard)</h2>
@@ -279,7 +279,7 @@ canvas {
           <tr><td>Abilities 1 · 2 · super</td><td>1 · 2 · 3</td><td>J · K · L</td></tr>
           <tr><td>Domain / ultimate</td><td>Q</td><td>;</td></tr>
           <tr><td>Pick up item</td><td>G</td><td>Enter</td></tr>
-          <tr><td>Variant mode on / off</td><td>E</td><td>I</td></tr>
+          <tr><td>Maximum Output on / off</td><td>E</td><td>I</td></tr>
         </table>
         <h2>Gamepad</h2>
         <p>Stick or D-pad to move · A jump · X attack · LB / RB abilities · Y super · RT domain · B pick up.</p>
@@ -299,10 +299,10 @@ canvas {
           <li><b>Endless</b> — no lives. KOs add to a kill counter and the fighter respawns instantly.</li>
         </ul>
         <h2>Training (solo)</h2>
-        <p>Press <b>🧪 Training</b> on the home screen to test any fighter on your own. You use the full online layout (mouse + WASD + Q / E / R / F, block, dash, variants) and get a target that stands still, can't die, and heals back up 1.5s after you stop hitting it. Pick a map — including the <b>Training Room</b>, a flat floor with distance markers every 100px that only appears here — then your fighter. Training doesn't earn coins.</p>
+        <p>Press <b>🧪 Training</b> on the home screen to test any fighter on your own. You use the full online layout (mouse + WASD + Q / E / R / F, block, dash, Maximum Output) and get a target that stands still, can't die, and heals back up 1.5s after you stop hitting it. Pick a map — including the <b>Training Room</b>, a flat floor with distance markers every 100px that only appears here — then your fighter. Training doesn't earn coins.</p>
         <table><tr><th>Key</th><th>Option</th></tr>
           <tr><td>1</td><td><b>Infinite meters</b> — every super, special and domain / ultimate bar stays full.</td></tr>
-          <tr><td>2</td><td><b>Infinite cursed energy, no cooldowns</b> — every ability, variant, super and domain only needs its own charge.</td></tr>
+          <tr><td>2</td><td><b>Infinite cursed energy, no cooldowns</b> — every ability, Maximum Output move, super and domain only needs its own charge.</td></tr>
           <tr><td>3</td><td><b>Reset</b> — positions, health, terrain.</td></tr>
           <tr><td>4</td><td>Switch to the <b>next fighter</b> on the spot.</td></tr>
           <tr><td>5</td><td>Switch between the <b>online combat system</b> and the <b>classic</b> local one.</td></tr>
@@ -334,7 +334,7 @@ canvas {
           <li>Knocked-down fighters can't be hit until they get up, and they flicker with <b>i-frames</b> (can't be hit) for a moment after standing up and after respawning.</li>
           <li>You can keep moving while you swing (you just can't turn around mid-punch).</li>
           <li>Hold <b>TAB</b> during a fight to see both fighters' moves.</li>
-          <li>Playing <b>online</b> (separate computers)? Melee works differently: real combo strings, blocking, perfect blocks, dashes and variant mode (V). See <b>Online Combat</b> in the sidebar.</li>
+          <li>Playing <b>online</b> (separate computers)? Melee works differently: real combo strings, blocking, perfect blocks, dashes and Maximum Output (V). See <b>Online Combat</b> in the sidebar.</li>
         </ul>
         <h2>Health</h2>
         <ul>
@@ -348,7 +348,7 @@ canvas {
           <li><b>Q / E moves</b> cost a set amount of CE (stronger moves cost more) <b>and</b> have a cooldown of 3/4 of what it used to be. If you can't afford one, its box goes dark and shows how much it needs.</li>
           <li><b>Super</b> (R): still needs its hit charge, and also <b>50%</b> of your CE bar.</li>
           <li><b>Domain</b>: needs its charge and a <b>full</b> CE bar. <b>Ultimates</b> (fighters without a domain) need <b>75%</b>. Both empty the bar, and it doesn't refill while your domain or ultimate is running. A cancelled domain gives back 50% of the domain bar and 50% of your CE.</li>
-          <li><b>Variant mode</b> (online <b>V</b>; one keyboard <b>E</b> / <b>I</b>; your aura lights up while it's on): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.</li>
+          <li><b>Maximum Output</b> (online <b>V</b>; one keyboard <b>E</b> / <b>I</b>; your aura lights up while it's on): ability 1 / 2 fire their Maximum Output versions for about twice the CE. Your super and domain still work. Only one Maximum Output move per fighter can be blocked; the other — and every super and ultimate — can only be countered with a perfect block.</li>
           <li>Steering, detonating or swapping with something you already have out (Lapse Blue's orb, Convergence, the puppet, Ui Ui, the crow) is free.</li>
           <li><b>Black Flash</b> (Yuji, Todo, Mahito): your CE refills <b>250% faster</b> for 10 seconds afterwards.</li>
           <li><b>Choso</b> can keep going when he's out of CE: he pays with his own blood (1 HP = 3 CE, never below 1 HP) and leaves a blood pool, which feeds his Supernova.</li>
@@ -618,7 +618,7 @@ canvas {
           <tr><td>E</td><td>Frame Barrage</td><td>Hand on his head, eyes closed, not even looking: four backhands a frame apart (3 each), then a launching kick (9). 48 CE, 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>24 FPS <em>(super, 40)</em></td><td>Both fighters freeze. Naoya draws a motion with his movement keys and attack — <b>12 keys</b> on one keyboard, <b>24 online</b>. Then the opponent has to press the same keys in order. One wrong key (or running out of time) and they're <b>frozen in a frame for 8 seconds</b>: they can't move and take <b>14% more damage</b>. If they keep up, Naoya is the one frozen, for 1.5s. Needs 50% CE.</td></tr>
           <tr><td>F</td><td>—</td><td>No domain while human. His 4th (last) life is spent as a cursed spirit.</td></tr>
-          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> (at most once every 3s) — a free link into the next hit. To stop wall loops, his damage falls off within one string: half after 25 damage, a fifth after 40. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his variants, he breaks his own 24 fps motion and is frozen in a frame for 1s</b> (taking 14% more damage).</td></tr>
+          <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> (at most once every 3s) — a free link into the next hit. To stop wall loops, his damage falls off within one string: half after 25 damage, a fifth after 40. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his Maximum Output moves, he breaks his own 24 fps motion and is frozen in a frame for 1s</b> (taking 14% more damage).</td></tr>
         </table>
         <h2>Vengeful Cursed Spirit (4th life)</h2>
         <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). Endless mode: after he's been killed three times.</p>
@@ -1350,7 +1350,7 @@ const vlUI = {
 };
 
 const QUIET_DROP = /^(STUNNED|GRABBED|RESHAPED|HUH\?!|\?!|!!!!!|BONK!?|\*SLIDE WHISTLE\*|JUST KIDDING!|NOT FUNNY\.|ABILITIES SEALED|CONFISCATED|STAGE FRIGHT!|BODY SWAP)$/;
-const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|FOCUS BROKEN|NO LUCK|CE REGEN \+250%|-\d+ HP \(BLOOD\)|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
+const QUIET_FEED = /^(MISSED|MISS…|TOO FAR|OUT OF RANGE|NO EFFECT|NO BLOOD YET|STAGGERED|CAN'T SWAP|THE ROOTS WITHER|UI UI WAS HIT!|FEVER OVER|NEUTRALISED|SIMPLE DOMAIN BLOCKS IT|OWN ATTACK INCOMING!|AMPLIFICATION OFF|NEEDS UI UI|NO SEALED CHARGES LEFT|NOT ENOUGH CE.*|FOCUS BROKEN|NO LUCK|UNBLOCKABLE|CE REGEN \+250%|-\d+ HP \(BLOOD\)|NEED (FULL|50%|75%) CE|-\d+ CE|TOO EARLY|DOMAIN BROKEN.*|CAST INTERRUPTED.*|CHARGE \d+\/\d+|-\d+% ULT|\+[\d.]+s COOLDOWNS|\d+s|.* \d+s)$/;
 const hudFeed = {p1:[], p2:[]};      // small notices under each fighter's HUD (not synced; replayed fx fill it on both sides)
 function feedText(t){
   if(/^\d+s$/.test(t)) return 'Cooldown ' + t;
@@ -12294,7 +12294,7 @@ const OL_AD = {
 // ── Variants: hold ATTACK and press an ability ──
 const OL_VARS = {
   sukuna: {
-    1:{name:'Dismantle: Spiderweb', desc:'Dismantle runs through the ground ahead in a web: slashes erupt under anyone within 260px (10, stun).', lock:320, run(p){
+    1:{block:true, name:'Dismantle: Spiderweb', desc:'Dismantle runs through the ground ahead in a web: slashes erupt under anyone within 260px (10, stun).', lock:320, run(p){
       const f = p.facing, x0 = p.x+PW/2, gy = p.y+PH;
       olShot(p, {kind:'web', x:x0+f*130, y:gy-2, dir:f, life:420, dmg:0});
       for(let k=0;k<6;k++){ const a = -0.15 - k*0.12; carveCapsule(x0+f*30, gy+4, x0+f*(70+k*34), gy+4+Math.sin(a)*-18, 2); }
@@ -12304,7 +12304,7 @@ const OL_VARS = {
       p.rctT = 2000; p.rctHp = 0; p.rctHurt = p.lastHurt||0; addRing(p.x+PW/2, p.y+PH/2, '#ffe6e6', 50); snd('charge', p.x); }},
   },
   gojo: {
-    1:{name:'Lapse Blue: Pull', desc:'A pinpoint Blue that yanks the nearest foe within 400px toward Gojo (4, sets up a combo).', lock:300, run(p){
+    1:{block:true, name:'Lapse Blue: Pull', desc:'A pinpoint Blue that yanks the nearest foe within 400px toward Gojo (4, sets up a combo).', lock:300, run(p){
       const d = olNearest(p, 400); addRing(p.x+PW/2+p.facing*30, p.y+PH/2, '#4aa8ff', 50); snd('orb', p.x);
       if(d){ const dir = Math.sign(p.x-d.x)||1; olShot(p, {kind:'orbfx', x:d.x+PW/2, y:d.y+PH/2, life:300, col:'#4aa8ff', dmg:0});
         olHit(p, d, 4, {rag:[Math.min(13, Math.abs(p.x-d.x)/22), -5, 520], dir, col:'#4aa8ff'}); } }},
@@ -12312,7 +12312,7 @@ const OL_VARS = {
       p.infT = 1500; addRing(p.x+PW/2, p.y+PH/2, '#bfefff', 60); snd('orb', p.x); }},
   },
   yuji: {
-    1:{name:'Divergent Fist', desc:'A punch whose cursed energy lands a beat late: 5, then a second impact of 7.', lock:340, run(p){
+    1:{block:true, name:'Divergent Fist', desc:'A punch whose cursed energy lands a beat late: 5, then a second impact of 7.', lock:340, run(p){
       const [x,y,w,h] = olFront(p, 84); snd('swing', p.x);
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 5, {stun:420, push:1.5, col:'#ff9a3a'});
         olAfter(240, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#ff9a3a', 46); snd('hit2', d.x); olHit(p, d, 7, {any:true, rag:[9,-5,RAGD_MS*0.9], col:'#ffb070'}); }); } }},
@@ -12323,7 +12323,7 @@ const OL_VARS = {
         olShot(p, {kind:'soul', x:d.x+PW/2, y:d.y+PH*0.4, life:500, dmg:0}); addSpeech(d.x+PW/2, d.y-30, '-25 CE', '#bfe3ff', 700); } }},
   },
   yuta: {
-    1:{name:'Rika: Guardian', desc:'Rika looms over Yuta for 2.5s. The first attack that would hit him is caught in her hand instead (no damage), and she swats the attacker for 8.', lock:240, run(p){
+    1:{block:true, name:'Rika: Guardian', desc:'Rika looms over Yuta for 2.5s. The first attack that would hit him is caught in her hand instead (no damage), and she swats the attacker for 8.', lock:240, run(p){
       p.rikaT = 2500; addRing(p.x+PW/2, p.y+PH/2, '#cc88ff', 70); snd('domain', p.x); sayFor(p, 'Rika.'); }},
     2:{name:'Copied Cursed Speech: "Don\'t Move."', desc:'Yuta copies Cursed Speech: the nearest foe within 450px freezes for 0.9s (can\'t be blocked). Hurts Yuta\'s throat: 3 self-damage.', lock:420, run(p){
       const d = olNearest(p, 450); addSpeech(p.x+PW/2, p.y-20, 'DON\'T MOVE.', '#e8e0ff', 900); snd('domain', p.x);
@@ -12331,7 +12331,7 @@ const OL_VARS = {
       if(d){ addRing(d.x+PW/2, d.y+PH/2, '#e8e0ff', 50); olHit(p, d, 0.01, {ubk:true, stun:900, col:'#e8e0ff'}); } }},
   },
   mechamaru: {
-    1:{name:'Sword Formation', desc:'Arm becomes a blade and he dashes 160px through the foe: 9 damage.', lock:300, run(p){
+    1:{block:true, name:'Sword Formation', desc:'Arm becomes a blade and he dashes 160px through the foe: 9 damage.', lock:300, run(p){
       const f = p.facing, x0 = p.x; safeTeleport(p, p.x + f*160, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#9fc4ff'});
       for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 9, {rag:[7,-5,RAGD_MS*0.8], col:'#9fc4ff'});
@@ -12348,7 +12348,7 @@ const OL_VARS = {
     1:{name:'Feint Clap', desc:'Claps without swapping. The opponent (within 600px) flinches for the swap that never comes: turned around and frozen for 0.4s.', lock:200, run(p){
       const d = olNearest(p, 600); snd('clap', p.x); addSpeech(p.x+PW/2, p.y-8, 'CLAP!', '#b07a1e', 700); addRing(p.x+PW/2, p.y+PH/2, '#d9a441', 36);
       if(d){ d.facing = -d.facing; olHit(p, d, 0.01, {ubk:true, stun:400, col:'#ffcf6a'}); addSpeech(d.x+PW/2, d.y-20, '?!', '#ddd', 600); } }},
-    2:{name:'Stone Swap', desc:'Tosses a pebble in an arc, then claps: Todo swaps places with the stone. Anyone right next to where he lands is dazed (4, stunned 0.6s).', lock:260, run(p){
+    2:{block:true, name:'Stone Swap', desc:'Tosses a pebble in an arc, then claps: Todo swaps places with the stone. Anyone right next to where he lands is dazed (4, stunned 0.6s).', lock:260, run(p){
       const st = olShot(p, {kind:'stone', x:p.x+PW/2+p.facing*16, y:p.y+PH*0.35, vx:p.facing*9, vy:-7.5, grav:0.45, r:6, life:2000, dmg:0, col:'#9a8c7a'});
       snd('swing', p.x);
       olAfter(560, () => { if(p.state===S.DEAD) return;
@@ -12362,18 +12362,18 @@ const OL_VARS = {
   choso: {
     1:{name:'Blood Meteorite', desc:'Clots blood in his fists until they\'re hard as rock: for 6s he hits 35% harder and his hits smash straight through blocks — but the clotting slows him by 20%.', lock:300, run(p){
       p.bmT = 6000; addRing(p.x+PW/2, p.y+PH*0.4, '#7a0010', 50); addParts(p.x+PW/2, p.y+PH*0.4, '#a01020', 14, 4); snd('charge', p.x); }},
-    2:{name:'Flowing Red Scale', desc:'Blood Manipulation: blood pumped hard through the body — 6s of +25% speed and +20% damage.', lock:300, run(p){
+    2:{block:true, name:'Flowing Red Scale', desc:'Blood Manipulation: blood pumped hard through the body — 6s of +25% speed and +20% damage.', lock:300, run(p){
       p.frsT = 6000; addRing(p.x+PW/2, p.y+PH/2, '#ff3030', 70); addSpeech(p.x+PW/2, p.y-20, 'FLOWING RED SCALE', '#ff6a6a', 900); snd('charge', p.x); }},
   },
   higuruma: {
-    1:{name:'Confiscation', desc:'A gavel tap that confiscates the target\'s technique: 4 damage and no abilities for 3.5s.', lock:340, run(p){
+    1:{block:true, name:'Confiscation', desc:'A gavel tap that confiscates the target\'s technique: 4 damage and no abilities for 3.5s.', lock:340, run(p){
       const [x,y,w,h] = olFront(p, 90); snd('gavel', p.x);
       for(const d of olArea(p, x, y, w, h)) olHit(p, d, 4, {stun:350, confisc:3500, confiscTxt:'CONFISCATED', col:'#f1d27a'}); }},
     2:{name:'Plea Bargain', desc:'Judgeman offers a deal for 2.5s: anyone who strikes Higuruma within 320px is charged with assault and takes the same damage back, while he takes only half.', lock:280, run(p){
       p.pleaT = 2500; addRing(p.x+PW/2, p.y+PH/2, '#f1d27a', 60); snd('gavel', p.x); addSpeech(p.x+PW/2, p.y-22, 'ORDER!', '#f1d27a', 700); }},
   },
   hakari: {
-    1:{name:'Pachinko Gamble', desc:'Pulls the lever on a tiny slot right in front of him. 1 in 3: JACKPOT punch (14, launches). 1 in 3: REACH (6). 1 in 3: the balls drain away — nothing happens.', lock:380, run(p){
+    1:{block:true, name:'Pachinko Gamble', desc:'Pulls the lever on a tiny slot right in front of him. 1 in 3: JACKPOT punch (14, launches). 1 in 3: REACH (6). 1 in 3: the balls drain away — nothing happens.', lock:380, run(p){
       const r = Math.random(), [x,y,w,h] = olFront(p, 82);
       olShot(p, {kind:'slot', x:p.x+PW/2+p.facing*30, y:p.y-18, life:700, dmg:0, res: r<1/3 ? 2 : r<2/3 ? 1 : 0});
       if(r < 1/3){ snd('jackpot', p.x); for(const d of olArea(p, x, y, w, h)) olHit(p, d, 14, {rag:[13,-9,RAGD_MS*1.1], col:'#7bff9c'}); addSpeech(p.x+PW/2, p.y-34, 'JACKPOT!', '#7bff9c', 800); }
@@ -12391,7 +12391,7 @@ const OL_VARS = {
       addRing(d.x+PW/2, d.y+PH/2, '#c9c2e6', 46); addParts(d.x+PW/2, d.y+PH/2, '#c9c2e6', 12, 4);
       safeTeleport(d, u.x-PW/2, u.y-PH); d.ss(S.STUN, 500);
       addRing(d.x+PW/2, d.y+PH/2, '#ffffff', 50); snd('orb', d.x); }},
-    2:{name:'Crow Murder', desc:'Five crows dive at the opponent (3 each, they home in).', lock:300, run(p){
+    2:{block:true, name:'Crow Murder', desc:'Five crows dive at the opponent (3 each, they home in).', lock:300, run(p){
       for(let k=0;k<5;k++) olShot(p, {kind:'crow', x:p.x+PW/2, y:p.y+PH*0.2-k*8, vx:p.facing*(6+k), vy:-3+k*0.8, r:9, life:2200, dmg:3, home:0.35, col:'#222', o:{stun:240, push:2}});
       snd('swing', p.x); }},
   },
@@ -12400,7 +12400,7 @@ const OL_VARS = {
       const d = olNearest(p, 900); const tx = d ? d.x+PW/2 : p.x+PW/2+p.facing*200;
       olShot(p, {kind:'meteor', x:tx, y:(d ? d.y : p.y) - 420, vx:0, vy:0, r:30, delay:550, life:4000, dmg:14, col:'#ff7a3a', o:{rag:[6,-8,RAGD_MS], burn:3000}});
       addSpeech(p.x+PW/2, p.y-20, 'MAXIMUM: METEOR', '#ff9a4a', 900); snd('charge', p.x); }},
-    2:{name:'Head Eruption', desc:'The volcano on his head blows: three lava bombs arc out in front of him (5 each) and set anyone they hit on fire.', lock:320, run(p){
+    2:{block:true, name:'Head Eruption', desc:'The volcano on his head blows: three lava bombs arc out in front of him (5 each) and set anyone they hit on fire.', lock:320, run(p){
       for(const [vx, vy] of [[3,-5.5],[6,-8],[9,-9]]) olShot(p, {kind:'lava', x:p.x+PW/2, y:p.y+4, vx:p.facing*vx, vy, grav:0.42, r:9, life:1800, dmg:5, col:'#ff7a2a', o:{burn:2500, stun:240}});
       addParts(p.x+PW/2, p.y, '#ff7a2a', 16, 6); snd('boom', p.x); doShake(4); }},
   },
@@ -12409,7 +12409,7 @@ const OL_VARS = {
       const d = olNearest(p, 450); snd('charge', p.x);
       if(d){ const gx = d.x+PW/2, gy = terGroundTop(d.x, PW, d.y+PH-1, true);
         olShot(p, {kind:'shark', x:gx, y:gy, r:44, delay:520, life:950, dmg:9, col:'#5ec8e6', o:{stun:800}}); } }},
-    2:{name:'Water Prison', desc:'A bubble traps the nearest foe within 380px for 1.2s (4 damage).', lock:320, run(p){
+    2:{block:true, name:'Water Prison', desc:'A bubble traps the nearest foe within 380px for 1.2s (4 damage).', lock:320, run(p){
       const d = olNearest(p, 380); snd('orb', p.x);
       if(d){ olShot(p, {kind:'bubble', x:d.x+PW/2, y:d.y+PH/2, life:1200, dmg:0, tgt:netRef(d)}); olHit(p, d, 4, {stun:1200, col:'#7fc8ff'}); } }},
   },
@@ -12417,13 +12417,13 @@ const OL_VARS = {
     1:{name:'Thorn Eruption', desc:'Thorns burst out of the ground under the opponent after a short warning: 10 damage, launches.', lock:320, run(p){
       const d = olNearest(p, 700); const tx = d ? d.x+PW/2 : p.x+PW/2+p.facing*160, ty = d ? terGroundTop(tx-10, 20, d.y+PH-1, true) : p.y+PH;
       olShot(p, {kind:'thorn', x:tx, y:ty, life:900, delay:380, dmg:10, r:34, col:'#9bc46a', o:{launch:-13, stun:800}}); snd('charge', p.x); }},
-    2:{name:'Wooden Wall', desc:'Raises a wall of roots in front of her for 4s — blocks shots, and anyone can stand on it.', lock:300, run(p){
+    2:{block:true, name:'Wooden Wall', desc:'Raises a wall of roots in front of her for 4s — blocks shots, and anyone can stand on it.', lock:300, run(p){
       const x = p.x+PW/2+p.facing*48, gy = p.y+PH, cells = [];
       rootFill(x, gy, x, gy-96, 9, cells); olAfter(4000, () => rootUnfill(cells, 1e9));
       addParts(x, gy-40, '#6b4a2a', 16, 5); snd('heavy', x); }},
   },
   mahito: {
-    1:{name:'Body Repel: Spear', desc:'His arm stretches into a 170px spear: 10 damage and reshapes them for 2s.', lock:340, run(p){
+    1:{block:true, name:'Body Repel: Spear', desc:'His arm stretches into a 170px spear: 10 damage and reshapes them for 2s.', lock:340, run(p){
       olShot(p, {kind:'spear', x:p.x+PW/2, y:p.y+PH*0.42, dir:p.facing, life:260, dmg:0});
       for(const d of olArea(p, p.facing>0 ? p.x+PW : p.x-170, p.y+PH*0.25, 170, PH*0.4)) olHit(p, d, 10, {stun:420, push:4, reshape:2000, col:'#c9a0ff'});
       snd('slash', p.x); }},
@@ -12440,14 +12440,14 @@ const OL_VARS = {
       for(const d of hs) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, 600, p);
       if(!hs.length) olAfter(240, () => naoMissed(p));
       snd('dash', p.x); }},
-    2:{name:'Freeze-Frame Jab', desc:'A jab timed between two frames: 5 damage, and the target is frozen in a frame for 1.2s — a free follow-up.', lock:300, run(p){
+    2:{block:true, name:'Freeze-Frame Jab', desc:'A jab timed between two frames: 5 damage, and the target is frozen in a frame for 1.2s — a free follow-up.', lock:300, run(p){
       const [x,y,w,h] = olFront(p, 74); snd('swing', p.x);
       const hs = olArea(p, x, y, w, h);
       for(const d of hs) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, 1200, p);
       if(!hs.length) olAfter(280, () => naoMissed(p)); }},
   },
   naoyac: {
-    1:{name:'Rocket Ram', desc:'A short rocket burst: rams 260px forward through terrain, 12 damage and a big knockback.', lock:300, run(p){
+    1:{block:true, name:'Rocket Ram', desc:'A short rocket burst: rams 260px forward through terrain, 12 damage and a big knockback.', lock:300, run(p){
       const x0 = p.x; if(!IS_GUEST) carveRect(Math.min(x0, x0+p.facing*260)-6, p.y-8, 260+PW+12, PH+16);
       safeTeleport(p, p.x + p.facing*260, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#b07cff'});
@@ -12464,7 +12464,7 @@ const OL_VARS = {
     1:{name:'Spotlight', desc:'Points a stage spotlight at the nearest foe within 500px: stage fright — no abilities for 2.5s.', lock:300, run(p){
       const d = olNearest(p, 500); snd('ui', p.x);
       if(d){ olShot(p, {kind:'spot', x:d.x+PW/2, y:d.y+PH, life:2500, dmg:0, tgt:netRef(d)}); olHit(p, d, 0.01, {ubk:true, confisc:2500, confiscTxt:'STAGE FRIGHT!', col:'#fff6c0'}); } }},
-    2:{name:'Rimshot', desc:'Ba-dum-tss! A shockwave of comedic timing (130px): 5 damage, 0.6s stun.', lock:320, run(p){
+    2:{block:true, name:'Rimshot', desc:'Ba-dum-tss! A shockwave of comedic timing (130px): 5 damage, 0.6s stun.', lock:320, run(p){
       addRing(p.x+PW/2, p.y+PH/2, '#ffe066', 130); addSpeech(p.x+PW/2, p.y-24, 'BA-DUM TSS!', '#ffe066', 800); snd('rimshot', p.x);
       for(const d of olArea(p, p.x-110, p.y-50, PW+220, PH+70)) olHit(p, d, 5, {stun:600, push:3, col:'#ffe066'}); }},
   },
@@ -12472,7 +12472,7 @@ const OL_VARS = {
     1:{name:'Anti-Gravity Lift', desc:'Kenjaku\'s own technique flips gravity on the nearest foe within 350px: they float up helplessly (5).', lock:300, run(p){
       const d = olNearest(p, 350); snd('orb', p.x);
       if(d){ addRing(d.x+PW/2, d.y+PH, '#b07cff', 60); olHit(p, d, 5, {launch:-12, stun:1100, col:'#b07cff'}); } }},
-    2:{name:'Thin Ice Breaker', desc:'A technique Kenjaku absorbed from Uro: the air in front of him cracks like a pane of glass and shatters outward — 8 damage and a shove to anyone within 200px ahead.', lock:320, run(p){
+    2:{block:true, name:'Thin Ice Breaker', desc:'A technique Kenjaku absorbed from Uro: the air in front of him cracks like a pane of glass and shatters outward — 8 damage and a shove to anyone within 200px ahead.', lock:320, run(p){
       const f = p.facing, [x,y,w,h] = olFront(p, 200, -20, PH+30);
       olShot(p, {kind:'shards', x:p.x+PW/2+f*100, y:p.y+PH/2, dir:f, life:420, dmg:0});
       for(const d of olArea(p, x, y, w, h)) olHit(p, d, 8, {rag:[11,-5,RAGD_MS], dir:f, col:'#cfe7ff'});
@@ -12592,6 +12592,8 @@ function ceNeed(p, slot){
   return CE_DOMAIN.has(p.type) ? p.ceMax : p.ceMax*CE_ULT;
 }
 function ceSpend(p, slot){
+  if(slot==='ab3') p._ubUntil = Math.max(p._ubUntil||0, terClock + 3500);
+  if(slot==='ult') p._ubUntil = Math.max(p._ubUntil||0, terClock + 4500);
   p.auraFlash = terClock;
   p._cePaid[slot] = terClock;
   cePay(p, ceNeed(p, slot), slot==='ult');
@@ -12627,11 +12629,12 @@ Player.prototype._cePre = function(dt){
   const mask = k => { (this._ceMask || (this._ceMask = {}))[k] = keys[k]; keys[k] = false; };
   this._vEdges = [false, false, false];
   if(this.varMode){
-    this._vEdges = [press.ab1, press.ab2, press.ab3];
-    mask(this.ab1Key); mask(this.ab2Key); mask(this.ab3Key);
-    if(!(atkHeld && OL_AD[this.type])) mask(this.domainKey);
-  } else {
+    this._vEdges = [press.ab1, press.ab2, false];
+    mask(this.ab1Key); mask(this.ab2Key);
+  }
+  {
     for(const [s, kf] of CE_KEYS){
+      if(this.varMode && (s==='ab1' || s==='ab2')) continue;      // those are Maximum Output moves now
       const k = this[kf]; if(!keys[k] && !rel[s]) continue;
       if(!basic || ceFollow(this, s)) continue;                                   // follow-up inputs are free
       if(s==='ult' && atkHeld && ol && OL_AD[this.type]) continue;                // anti-domain technique (paid in _olPre)
@@ -12677,7 +12680,7 @@ function drawCeHud(pl, x, flip){
   for(const t of CE_DOMAIN.has(pl.type) ? [CE_SPECIAL] : [CE_SPECIAL, CE_ULT]){ const tx = flip ? bx+bw-bw*t : bx+bw*t; ctx.fillRect(tx-0.5, cy, 1, ch); }
   ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textBaseline = 'middle'; ctx.fillStyle = '#eaf3ff';
   ctx.textAlign = flip ? 'right' : 'left';
-  ctx.fillText(pl.varMode ? `VARIANTS [${keyLbl(pl,'vtog')}]` : 'CURSED ENERGY', flip ? bx+bw-4 : bx+4, cy+ch/2+0.5);
+  ctx.fillText(pl.varMode ? `MAXIMUM OUTPUT [${keyLbl(pl,'vtog')}]` : 'CURSED ENERGY', flip ? bx+bw-4 : bx+4, cy+ch/2+0.5);
   ctx.textAlign = flip ? 'left' : 'right';
   ctx.fillText(inf ? '∞' : `${Math.floor(pl.ce)} / ${pl.ceMax}`, flip ? bx+4 : bx+bw-4, cy+ch/2+0.5);
   ctx.textBaseline = 'alphabetic';
@@ -12689,7 +12692,8 @@ function drawCeHud(pl, x, flip){
     const s = 'ab'+(i+1), ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
     let label = null, need = 0, purple = false, locked = false, blood = false;
     if(pl.varMode){
-      if(V[i+1]){ label = `${V[i+1].name.replace(/^[^:]*: */, '').replace(/^"|"$/g, '').toUpperCase()} [${keyLbl(pl, s)}]`; need = ceVarCost(pl, i+1); purple = true; if(pl.varCd && pl.varCd[i+1]>0) label += ` ${Math.ceil(pl.varCd[i+1]/1000)}s`; }
+      if(i===2){ need = ceNeed(pl, s); if(pl.ce + 1e-6 >= need || ceFollow(pl, s)) continue; label = `${nm(s)} [${keyLbl(pl, s)}]`; }
+      else if(V[i+1]){ label = `${V[i+1].name.replace(/^[^:]*: */, '').replace(/^"|"$/g, '').toUpperCase()} [${keyLbl(pl, s)}]`; need = ceVarCost(pl, i+1); purple = true; if(pl.varCd && pl.varCd[i+1]>0) label += ` ${Math.ceil(pl.varCd[i+1]/1000)}s`; }
       else locked = true;
     } else {
       need = ceNeed(pl, s);
@@ -12700,7 +12704,7 @@ function drawCeHud(pl, x, flip){
     ctx.fillStyle = purple ? '#26143e' : '#0a0f1c'; ctx.fillRect(ax-1, abY-1, aw+2, 24);
     ctx.strokeStyle = purple ? 'rgba(176,124,255,0.6)' : 'rgba(111,184,255,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(ax, abY, aw, 22);
     ctx.textAlign = 'center'; ctx.font = `700 8px 'Rajdhani',sans-serif`;
-    if(locked){ ctx.fillStyle = '#6b5a85'; ctx.fillText('LOCKED (VARIANTS)', ax+aw/2, abY+13); continue; }
+    if(locked){ continue; }
     const ok = pl.ce + 1e-6 >= need, bl = !ok && ceCanPay(pl, need);
     ctx.fillStyle = purple ? (ok ? '#d9c2ff' : '#7d6a99') : '#5f7ea8';
     let t = label; while(ctx.measureText(t).width > aw-6 && t.length > 4) t = t.slice(0, -2) + '…';
@@ -12710,7 +12714,7 @@ function drawCeHud(pl, x, flip){
     ctx.fillRect(flip ? ax+aw-aw*f : ax, abY+20, aw*f, 2);
   }
   // domain / ultimate bar: say when it's the CE (not the hit charge) that's missing
-  if(!pl.varMode && pl.type!=='naoya' && !(activeDomain && activeDomain.owner===pl) && !ceInfinite(pl) && !(pl._vow && (pl._vow('sacrifice') || pl._vow('heavenly'))) && pl.ce + 1e-6 < ceNeed(pl, 'ult') && !ceFollow(pl, 'ult')){
+  if(pl.type!=='naoya' && !(activeDomain && activeDomain.owner===pl) && !ceInfinite(pl) && !(pl._vow && (pl._vow('sacrifice') || pl._vow('heavenly'))) && pl.ce + 1e-6 < ceNeed(pl, 'ult') && !ceFollow(pl, 'ult')){
     const domY = abY+30, need = CE_DOMAIN.has(pl.type) ? 'FULL' : '75%';
     ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillStyle = '#8fc4ff';
     ctx.fillText(`NEEDS ${need} CE`, flip ? bx+5 : bx+bw-5, domY+10);
@@ -12750,6 +12754,7 @@ function varFire(p, other){
     cePay(p, cost);
     p.varCd[n] = CE_VAR_CD; p.oaKind = null; p._ceHandled = true;
     p.ss(S.OVAR, v.lock||300); p.vx = 0; p.varName = v.name;
+    p._varBlockable = !!v.block; if(!v.block) p._ubUntil = Math.max(p._ubUntil||0, terClock + 1600);
     try{ v.run(p, other); }catch(err){ console.error('variant', p.type, n, err); }
     break;
   }
@@ -12818,7 +12823,7 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
   }
   // variants: toggle variant mode, then ability 1 / 2 fire the variants (twice the CE of the normal move)
   if(this.varMode && canVar && !blocked) varFire(this, other);
-  if(this.varMode){ e1 = e2 = e3 = false; }
+  if(this.varMode){ e1 = e2 = false; }
   // Dash / dodge (SHIFT or double-tap)
   const dashDir = tapDash || (dkEdge ? (keys[c.left] ? -1 : keys[c.right] ? 1 : this.facing) : 0);
   if(dashDir && this.dashCd<=0 && !blocked && (free || this.state===S.BLOCK || (this.state===S.ATCK && this.atkHit)) && !(this.airDashUsed && !this.onGround) && !this.mechaFlying){
@@ -12967,7 +12972,9 @@ function guardFilter(pl, d, oppM){
   if(!olOn()) return d;
   if(pl.adT>0 && OL_AD[pl.type] && OL_AD[pl.type].dr) d *= OL_AD[pl.type].dr;
   const enemyDom = activeDomain && activeDomain.owner && activeDomain.owner!==pl && !domainClash;
-  if(!enemyDom && !pl._ubk && !(oppM && oppM.bmT>0) && pl.state===S.BLOCK){
+  // unblockable: Maximum Output moves (except one per fighter), supers and ultimates — a PERFECT BLOCK still counters them
+  const unblock = pl._ubk || (oppM && (oppM.bmT>0 || (oppM._ubUntil > now && oppM.state!==S.ATCK) || oppM.rampT>0 || oppM.mechUltPhase || oppM.state===S.YUJIULT));
+  if(!enemyDom && pl.state===S.BLOCK){
     if(pl.parryT>0){
       pl.parryT = 0; pl.parryLock = 0; pl.guard = Math.min(OL.GUARD_MAX, pl.guard+25); pl._guardStamp = now; pl.iframes = Math.max(pl.iframes, 140);
       addSpeech(pl.x+PW/2, pl.y-24, 'PERFECT BLOCK', '#ffffff', 700); addRing(pl.x+PW/2+pl.facing*14, pl.y+PH/2, '#ffffff', 70); addParts(pl.x+PW/2+pl.facing*14, pl.y+PH/2, '#e8f4ff', 14, 6);
@@ -12977,6 +12984,8 @@ function guardFilter(pl, d, oppM){
         oppM.vx = Math.sign(oppM.x-pl.x)*4; oppM.ss(S.STUN, OL.PARRY_STAGGER); addSpeech(oppM.x+PW/2, oppM.y-10, 'STAGGERED', '#bbb', 600); }
       return 0;
     }
+    if(unblock){ if(pl._ubSaidT !== now){ pl._ubSaidT = now; addSpeech(pl.x+PW/2, pl.y-24, 'UNBLOCKABLE', '#ff8a6a', 600); } }
+    else {
     pl.guard -= d*OL.GUARD_COST; pl.guardRegenT = OL.GUARD_DELAY; pl._guardStamp = now;
     if(pl.guard <= 0){
       pl.guard = 0; addSpeech(pl.x+PW/2, pl.y-24, 'GUARD BREAK', '#ff6a6a', 900); snd('heavy', pl.x); doShake(8);
@@ -12986,6 +12995,7 @@ function guardFilter(pl, d, oppM){
     pl.vx = (oppM ? Math.sign(pl.x-oppM.x)||-pl.facing : -pl.facing)*3.2;
     addParts(pl.x+PW/2+pl.facing*14, pl.y+PH*0.45, '#9fd8ff', 6, 3); snd('block', pl.x);
     return d*OL.CHIP;
+    }
   }
   if(oppM){
     const inCombo = [S.STUN,S.RAGD,S.SLAM,S.FRAMED].includes(pl.state) || now - (pl.lastHitT||-1e9) < 120;
@@ -13204,7 +13214,7 @@ function drawOlMoveHelp(pl, x, y, w){
     ['TIMING', 'press again as the ring closes on your fist → PERFECT (+50%, Black Flash for Yuji/Todo/Mahito). Too early = combo drops'],
     ['DEFENCE', `hold ${keyLbl(pl,'block')} to block (guard meter) · tap it as a hit lands → PERFECT BLOCK · ${keyLbl(pl,'dash')} or double-tap = dash (i-frames)`],
   ];
-  for(const n of [1,2]) if(V[n]) lines.push([`${keyLbl(pl,'vtog')} → ${keyLbl(pl,'ab'+n)}`, `${V[n].name} (${ceVarCost(pl, n)} CE) — ${V[n].desc}`]);
+  for(const n of [1,2]) if(V[n]) lines.push([`${keyLbl(pl,'vtog')} → ${keyLbl(pl,'ab'+n)}`, `${V[n].name} (${ceVarCost(pl, n)} CE, ${V[n].block ? 'blockable' : 'counter only'}) — ${V[n].desc}`]);
   if(AD) lines.push([`${keyLbl(pl,'atk')}+${keyLbl(pl,'ult')}`, `${AD.name} — ${AD.note}`]);
   ctx.save(); ctx.textAlign = 'left';
   ctx.fillStyle = 'rgba(0,0,0,0.78)'; ctx.fillRect(x-8, y-16, w+16, 172);
@@ -13377,11 +13387,11 @@ function olFillWiki(){
   <tr><td>Tap block as a hit lands</td><td><b>PERFECT BLOCK</b>: no damage, the attacker is staggered, +guard and domain charge. Mashing it doesn't work — there's a short lockout between attempts.</td></tr>
   <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> with invincibility frames — dodge through attacks. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
   <tr><td>Long combos</td><td>Damage scales down from the 3rd hit (to ×0.5) and stun gets shorter, so no infinite combos.</td></tr>
-  <tr><td>V (toggle) then Q / E</td><td><b>Variant mode</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>variants</b> instead (about twice the cursed energy of the normal move, 6s cooldown each). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
+  <tr><td>V (toggle) then Q / E</td><td><b>Maximum Output</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>Maximum Output</b> versions instead (about twice the cursed energy of the normal move, 6s cooldown each). While it's on you can't use your normal moves, super or domain. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
   <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (40 CE, then a 25s cooldown).</td></tr></table>
-  <h2>Variants & clan techniques</h2><table><tr><th>Fighter</th><th>Input</th><th>Move</th><th>Details</th></tr>`;
+  <h2>Maximum Output & clan techniques</h2><p>One Maximum Output move per fighter can be <b>blocked</b>; the other can only be <b>countered</b> (perfect block). Supers and ultimates can't be blocked either — only countered.</p><table><tr><th>Fighter</th><th>Input</th><th>Move</th><th>Details</th></tr>`;
   const keyN = {1:'V → Q', 2:'V → E'};
-  for(const t in OL_VARS) for(const n in OL_VARS[t]){ const v = OL_VARS[t][n]; h += `<tr><td>${nm(t)}</td><td>${keyN[n]}</td><td>${v.name}</td><td>${v.desc} <b>${ceVarCost({type:t}, n)} CE.</b></td></tr>`; }
+  for(const t in OL_VARS) for(const n in OL_VARS[t]){ const v = OL_VARS[t][n]; h += `<tr><td>${nm(t)}</td><td>${keyN[n]}</td><td>${v.name}</td><td>${v.desc} <b>${ceVarCost({type:t}, n)} CE.</b> <em>${v.block ? 'Blockable.' : 'Unblockable — counter it with a perfect block.'}</em></td></tr>`; }
   for(const t in OL_AD){ const a = OL_AD[t]; h += `<tr><td>${nm(t)}</td><td>CLICK + F</td><td>${a.name}</td><td>${a.note}</td></tr>`; }
   el.innerHTML = h + '</table>';
 }
@@ -14172,7 +14182,7 @@ const KEY_NAMES = {Mouse0:'LEFT CLICK', Mouse2:'RIGHT CLICK', ShiftLeft:'L-SHIFT
 const keyName = c => KEY_NAMES[c] || c.replace(/^Key|^Digit/, '');
 const PAUSE_ROWS = [['left','Move left'], ['right','Move right'], ['jump','Jump'], ['down','Crouch · drop through platforms · aim down'], ['atk','Attack'],
   ['ab1','Ability 1'], ['ab2','Ability 2'], ['ab3','Special (charged)'], ['ult','Domain / ultimate'], ['pick','Pick up / use item'], ['feat','Feat (e.g. Kenjaku toggle)'],
-  ['block','Block (hold) · tap as a hit lands = perfect block'], ['dash','Dash / dodge (or double-tap a direction)'], ['vtog','Variant mode on / off (Q / E become variants)']];
+  ['block','Block (hold) · tap as a hit lands = perfect block'], ['dash','Dash / dodge (or double-tap a direction)'], ['vtog','Maximum Output on / off (abilities 1 / 2 become their Maximum Output versions)']];
 function togglePause(by){
   if(phase!=='fight') return;
   paused = !paused; pausedBy = paused ? by : 0;
@@ -14197,7 +14207,7 @@ function drawPauseColumn(pl, slot, binds, x, y, w, title){
   }
   ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.6)';
   const extra = online
-    ? ['V = variant mode (Q / E become variants, other moves locked) · hold ATTACK + F = anti-domain technique (if your fighter has one)', 'Combos: attack ×3, press again as the ring closes for a PERFECT · hold TAB in a fight for the full move list']
+    ? ['V = Maximum Output (Q / E become their Maximum Output versions, other moves locked) · hold ATTACK + F = anti-domain technique (if your fighter has one)', 'Combos: attack ×3, press again as the ring closes for a PERFECT · hold TAB in a fight for the full move list']
     : ['Hold TAB in a fight for the full move list'];
   for(const t of extra){ ctx.fillText(t, x, yy+4); yy += 14; }
   return yy;
@@ -14260,10 +14270,10 @@ function drawCombatGuide(pl, x, y, w){
     yr = guideBlock('BLOCK', kfill(pl, 'Hold {block}: you take only 20% chip damage but your GUARD bar (under your health) drains. If it empties: GUARD BREAK, stunned for 1s. Blocking does nothing against an enemy domain\'s sure-hit.'), xr, yr, colW);
     yr = guideBlock('PERFECT BLOCK', kfill(pl, 'Tap {block} just as a hit lands: no damage, the attacker is staggered for 0.65s, and you gain guard and domain charge. Spamming it doesn\'t work — there\'s a short lockout between taps.'), xr, yr, colW);
     yr = guideBlock('DASH', kfill(pl, '{dash} or double-tap {left} / {right}: a quick dash with invincibility frames — dodge straight through attacks. One air dash per jump. It can cancel a block or a hit that landed.'), xr, yr, colW);
-    yr = guideBlock('VARIANTS & TECHNIQUES', kfill(pl, '{vtog} toggles VARIANT MODE: {ab1} / {ab2} fire their variants (about twice the CE) and your other moves are locked. Hold {atk} + {ult} for your anti-domain technique, if your fighter has one. Your exact moves are on the next page.'), xr, yr, colW);
+    yr = guideBlock('MAXIMUM OUTPUT', kfill(pl, '{vtog} toggles MAXIMUM OUTPUT: {ab1} / {ab2} fire stronger versions (about twice the CE); your super and domain still work. One of the two can be blocked, the other only countered. Hold {atk} + {ult} for your anti-domain technique, if your fighter has one. Your exact moves are on the next page.'), xr, yr, colW);
   } else {
     yl = guideBlock('BASIC COMBO', kfill(pl, '{atk} three times: each punch deals 2 and fills a combo pip. The 4th attack is a FINISHER — on the ground it deals 5 and knocks them away; in the air it\'s a dive slam for 15. You can move while you swing.'), x, yl, colW);
-    yl = guideBlock('VARIANTS', kfill(pl, 'Press {vtog} to switch into VARIANT MODE (your aura lights up): {ab1} and {ab2} fire their variants for about twice the CE, and your other moves are locked until you press {vtog} again.'), x, yl, colW);
+    yl = guideBlock('MAXIMUM OUTPUT', kfill(pl, 'Press {vtog} to switch into MAXIMUM OUTPUT (your aura lights up): {ab1} and {ab2} fire stronger versions for about twice the CE. Your super and domain still work. Press {vtog} again to switch back.'), x, yl, colW);
     yl = guideBlock('ONLINE HAS MORE', 'Online (separate computers) melee is deeper: combo strings with directional finishers, perfect timing, blocking, perfect blocks and dashes.', x, yl, colW);
   }
   const _ceP = CE_PROFILE[ceProfKey(pl)] || [100,7], _ceT = `Moves spend CE (the blue bar under your health) and have 3/4 of their old cooldown. Super: its hit charge + 50% CE. Domain: a full bar · ultimate: 75%; both empty it. You: ${_ceP[0]} CE, refills ${_ceP[1]}/s.`;
@@ -14289,7 +14299,7 @@ function drawFighterGuide(pl, x, y, w, twoCol){
   if(!twoCol) yr = yl;
   if(online){
     const V = OL_VARS[pl.type] || {}, AD = OL_AD[pl.type];
-    for(const n of [1,2]) if(V[n]) yr = guideBlock(`[${keyLbl(pl,'vtog')} → ${keyLbl(pl,'ab'+n)}]  ${V[n].name} · ${ceVarCost(pl, n)} CE`, V[n].desc, xr, yr, colW, '#ffe066');
+    for(const n of [1,2]) if(V[n]) yr = guideBlock(`[${keyLbl(pl,'vtog')} → ${keyLbl(pl,'ab'+n)}]  ${V[n].name} · ${ceVarCost(pl, n)} CE · ${V[n].block ? 'blockable' : 'counter only'}`, V[n].desc, xr, yr, colW, '#ffe066');
     yr = AD ? guideBlock(`[${keyLbl(pl,'atk')} + ${keyLbl(pl,'ult')}]  ${AD.name}`, AD.note, xr, yr, colW, AD.col)
             : guideBlock(`[${keyLbl(pl,'atk')} + ${keyLbl(pl,'ult')}]  —`, 'No anti-domain technique for this fighter.', xr, yr, colW, '#888');
   }
@@ -14437,7 +14447,7 @@ function playerEffects(pl){
   if(pl.jackpotT>0) add('Jackpot', pl.jackpotT, true);
   if(pl.higuSwordT>0) add('Executioner\'s Sword', pl.higuSwordT, true);
   if(pl.counterT>0) add('Counter stance', pl.counterT, true);
-  if(pl.varMode) add('Variant mode', null, true);
+  if(pl.varMode) add('Maximum Output', null, true);
   if(pl.rctT>0) add('Reverse Cursed Technique', pl.rctT, true);
   if(pl.infT>0) add('Infinity', pl.infT, true);
   if(pl.rikaT>0) add('Rika guarding', pl.rikaT, true);

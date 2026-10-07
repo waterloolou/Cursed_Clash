@@ -36,7 +36,7 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 | Abilities | Q · E · R | 1 · 2 · 3 | J · K · L |
 | Domain / ultimate | F | Q | ; |
 | Block · Dash *(online only)* | Right click / C · Shift | — | — |
-| Variant mode on/off (aura lights up) | V | E | I |
+| Maximum Output on/off (aura lights up) | V | E | I |
 
 ## Cursed energy
 
@@ -45,7 +45,7 @@ Every fighter has a **cursed energy (CE)** bar under their health that refills o
 - **Q / E** cost CE (stronger moves cost more) and have a cooldown of 3/4 of the original. If you can't afford one, its box goes dark and shows the cost.
 - **Super (R)** still needs its hit charge, plus **50%** of the bar.
 - **Domains** need a **full** bar; **ultimates** (fighters without a domain) need **75%**. Both empty it.
-- **Variant mode** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): Q / E fire their variants for about twice the CE; your other moves are locked until you press V again.
+- **Maximum Output** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): ability 1 / 2 fire stronger versions for about twice the CE, and your super and domain still work. One Maximum Output move per fighter can be blocked; the other, and every super and ultimate, can only be countered with a perfect block.
 - Moves are expensive: most fighters can only chain two or three before waiting.
 - Pools follow the lore: special grades get much bigger pools, Yuta (480) and Mechamaru (420) have by far the most, Gojo and Sukuna refill several times faster than anyone, Takaba has the smallest. Hakari's jackpot gives infinite CE.
 - **Black Flash** makes your CE refill 250% faster for 10s.
