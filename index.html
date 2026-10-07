@@ -763,7 +763,7 @@ const ATK_START   = 85;
 const ATK_ACT     = 130;
 const ATK_REC     = 70;
 const ATK_RANGE   = 88;
-const STUN_MS     = 380;
+const STUN_MS     = 290;
 const RAGD_MS     = 850;
 const SLAM_MS     = 1100;
 const COMBO_RESET = 2600;
@@ -13074,7 +13074,7 @@ Player.prototype._olLandHit = function(def){
     case 'j1': case 'j2': case 'a1': case 'a2':
       def.vx = f*2;
       if(K.air || !def.onGround){ def.vy = -5.4; this.vy = Math.min(this.vy, -3.4); }
-      def.ss(S.STUN, K.air ? 430 : 500);
+      def.ss(S.STUN, K.air ? 330 : 380);
       addParts(mx, my, '#bbb', 7, 3); addRing(mx, my, '#888', 28); doShake(3); break;
     case 'heavy': case 'aheavy':
       def._initRd(f*10.5, -7, .13*f); def.ss(S.RAGD, RAGD_MS);
