@@ -220,7 +220,7 @@ canvas {
           <a data-p="jogo" style="--c:#ff7a3a"><b>Jogo</b><span>Ember Insects · Flame Dash · Lava Mound · Iron Mountain</span></a>
           <a data-p="dagon" style="--c:#4fa3e0"><b>Dagon</b><span>Flood · Water Jet · Death Swarm · Captivating Skandha</span></a>
           <a data-p="hanami" style="--c:#9bc46a"><b>Hanami</b><span>Cursed Buds · Flower Field · Root Grab · Root Rampage</span></a>
-          <a data-p="mahito" style="--c:#8fa3b8"><b>Mahito</b><span>Idle Transfiguration · Soul Isomer · Distorted Killing · Perfection</span></a>
+          <a data-p="mahito" style="--c:#8fa3b8"><b>Mahito</b><span>Body Repel · Soul Isomer · Idle Transfiguration · Perfection</span></a>
           <a data-p="takaba" style="--c:#e8c547"><b>Takaba</b><span>Rock Paper Scissors · 1000 Years of Death · Counter · The Truck</span></a>
           <a data-p="naoya" style="--c:#e6d3a3"><b>Naoya</b><span>Projection Sorcery · 24 FPS · 4 lives</span></a>
           <a data-p="megumi" style="--c:#6f8fd6"><b>Megumi</b><span>Ten Shadows · Divine Dogs · Shadow Garden</span></a>
@@ -434,7 +434,7 @@ canvas {
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Dismantle</td><td>A fast slicing projectile, 18 damage and a knockdown. In the air you hang for a moment and aim it up or down. 44 CE, 4.1s cooldown.</td></tr>
-          <tr><td>E</td><td>Cleave</td><td>Point-blank only. Holds the target while six slashes land for 30 total. 56 CE, 5.2s cooldown. <b>In the air:</b> Aerial Cleave, a diving cross-slash that spikes the target into the ground for 20.</td></tr>
+          <tr><td>E</td><td>Cleave</td><td>Point-blank: if the nearest foe is within ~110px he steps right in, then holds them while six slashes land for 30 total. 56 CE, 5.2s cooldown. <b>In the air:</b> Aerial Cleave, a diving cross-slash that spikes the target into the ground for 20.</td></tr>
           <tr><td>R</td><td>Fuga <em>(super, 40)</em></td><td>A 1.4s bow draw (interruptible; aim with up / down), then a flame arrow: 55 damage, fire-pillar explosion. Explodes on walls and terrain too.</td></tr>
           <tr><td>F</td><td>Malevolent Shrine <em>(domain, 150)</em></td><td>10 seconds. The shrine rises, slashes rain across the arena (and through the terrain), and the opponent takes 5 damage per second.</td></tr>
           <tr><td>Movement</td><td>Cursed Step</td><td>Can jump a second time in mid-air, kicking off a burst of cursed energy. Runs 4% faster.</td></tr>
@@ -6361,7 +6361,8 @@ function drawShrineDomain(){
   ctx.globalAlpha=1;
 }
 
-const DISMANTLE_RANGE     = 2 * BLOCK;  // very close — nearly touching
+const DISMANTLE_RANGE     = 2 * BLOCK + PW;  // point blank (bodies touching)
+const DISMANTLE_REACH     = 110;     // within this he steps in to point blank first
 const DISMANTLE_SLASH_N   = 6;      // number of slash marks
 const DISMANTLE_SLASH_INT = 130;    // ms between slash marks
 const DISMANTLE_DELAY     = 550;    // ms before first slash mark appears
@@ -8141,8 +8142,12 @@ class Player {
   _startDismantle(other){
     if([S.ATCK,S.DIVE,S.STUN,S.RAGD,S.SLAM,S.DEAD,S.CLEAVE,S.DISMANTLE,S.SUKAIR].includes(this.state)) return;
     if(!this.onGround){ this._startAirCleave(); return; }      // air variant
-    const dist = Math.abs((this.x + PW/2) - (other.x + PW/2));
-    if(dist > DISMANTLE_RANGE) { this.dismantleOutline = 700; return; } // too far — flash red outline
+    // pick the closest fighter that can actually be hit (same height band), and step in to point blank if they're a short hop away
+    let best = null, bd = 1e9;
+    for(const d of dagonFoes(this)){ if(!d || !d.hittable || Math.abs(d.y - this.y) > PH*0.9) continue; const dd = Math.abs((this.x+PW/2) - (d.x+PW/2)); if(dd < bd){ bd = dd; best = d; } }
+    if(!best || bd > DISMANTLE_REACH) { this.dismantleOutline = 700; return; } // too far — flash red outline
+    other = best;
+    if(bd > DISMANTLE_RANGE){ const f = Math.sign(other.x - this.x) || this.facing; this.facing = f; safeTeleport(this, other.x - f*(PW+2), this.y); }
     // Stun the enemy immediately
     other.vx = 0;
     other.ss(S.STUN, DISMANTLE_STUN);
