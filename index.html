@@ -679,7 +679,7 @@ canvas {
           <tr><td>E</td><td>Garuda Throw</td><td>She hurls Garuda like a missile: 10 damage and a knockback. In extreme mass it flies slower but hits like a truck and smashes terrain; in light mass it's faster. 48 CE, 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Mass Shift <em>(special)</em></td><td>Cycles her mass: <b>Regular</b> (nothing changes) → <b>Extreme</b> (every hit she lands does <b>double damage</b>, but she's 28% slower, jumps lower, moves cost 50% more CE and it burns 6 CE a second — at 0 it drops back to regular) → <b>Light</b> (45% faster, jumps 25% higher, moves cost 70% less CE, but only <b>25% damage</b>). Each shift costs <b>50% of her CE and 5 HP</b>.</td></tr>
           <tr><td>F</td><td>Star Rage: Black Hole <em>(ultimate, 150)</em></td><td>She gives herself so much mass that she collapses into a black hole for 4s: it drags everyone in, eats the terrain around it, and crushes anyone at the centre (3 damage every 0.25s, unblockable), then bursts (8 and a launch). Like in her fight with Kenjaku, it costs her: <b>Yuki loses 30 HP</b> when it ends. Needs 75% CE.</td></tr>
-          <tr><td>Max Output</td><td>Star Rage Rush · Uppercut: Garuda Dive</td><td><b>Star Rage Rush</b> (counter only): four quick punches and a last one that sends them flying across the map. <b>Uppercut: Garuda Dive</b> (blockable): an uppercut launch (6), then Garuda climbs above them and divebombs (10). Both scale with her mass.</td></tr>
+          <tr><td>Max Output</td><td>Star Rage Rush · Uppercut: Garuda Dive</td><td><b>Star Rage Rush</b> (counter only): she dashes in on anyone within 220px, four quick punches and a last one that sends them flying across the map. <b>Uppercut: Garuda Dive</b> (blockable): she dashes in (200px) with an uppercut launch (6), then Garuda climbs above them and divebombs (10). Both scale with her mass.</td></tr>
           <tr><td>Anti-domain</td><td>Simple Domain: New Shadow Style</td><td>Hold attack + F: 8s of protection from domain sure-hits.</td></tr>
         </table>
       </section>
@@ -12740,13 +12740,18 @@ const OL_VARS = {
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 11, {rag:[11,-6,RAGD_MS], col:'#ff4a5a'}); addParts(d.x+PW/2, d.y+PH/2, '#a00010', 14, 6); } }},
   },
   yuki: {
-    1:{name:'Star Rage Rush', desc:'Four fast punches (3 each), then a last one with all her mass behind it: 8 damage and they fly across the map. Scales with her mass.', lock:820, run(p){
-      const hit = (dmg, o) => { if(p.state!==S.OVAR) return; const [x,y,w,h] = olFront(p, 74); snd('swing', p.x);
-        for(const d of olArea(p, x, y, w, h)){ olHit(p, d, dmg, Object.assign({col:yukiMass(p).col, dir:p.facing}, o)); addParts(d.x+PW/2, d.y+PH*0.4, yukiMass(p).col, 6, 3); } };
-      for(let i=0;i<4;i++) olAfter(i*130, () => hit(3, {stun:320, push:0.8}));
-      olAfter(600, () => { hit(8, {rag:[28, -9, RAGD_MS*1.4]}); if(p.state===S.OVAR){ doShake(p.yukiMass===1 ? 16 : 9); snd('heavy', p.x); } }); }},
-    2:{block:true, name:'Uppercut: Garuda Dive', desc:'An uppercut that launches them (6), then Garuda climbs above them and divebombs straight down (10).', lock:420, run(p){
-      const [x,y,w,h] = olFront(p, 70); snd('swing', p.x);
+    1:{name:'Star Rage Rush', desc:'Closes in on the nearest foe within 220px, four fast punches (3 each), then a last one with all her mass behind it: 8 damage and they fly across the map. Scales with her mass.', lock:820, run(p){
+      yukiLunge(p, 220);
+      const hit = (dmg, o, big) => { if(p.state!==S.OVAR) return; const [x,y,w,h] = olFront(p, 80); snd('swing', p.x);
+        const fx = p.x+PW/2 + p.facing*(PW/2+26), fy = p.y+PH*(0.32 + Math.random()*0.16);
+        olShot(p, {kind:'orbfx', x:fx, y:fy, life:big ? 260 : 150, col:yukiMass(p).col, dmg:0});
+        for(const d of olArea(p, x, y, w, h)){ olHit(p, d, dmg, Object.assign({col:yukiMass(p).col, dir:p.facing}, o)); addParts(d.x+PW/2, d.y+PH*0.4, yukiMass(p).col, big ? 18 : 6, big ? 7 : 3); } };
+      for(let i=0;i<4;i++) olAfter(60 + i*130, () => { if(p.state===S.OVAR) p.vx = p.facing*1.2; hit(3, {stun:360, push:0.6}); });
+      olAfter(640, () => { hit(8, {rag:[28, -9, RAGD_MS*1.4]}, true); if(p.state===S.OVAR){ doShake(p.yukiMass===1 ? 16 : 9); snd('heavy', p.x); } }); }},
+    2:{block:true, name:'Uppercut: Garuda Dive', desc:'Closes in on the nearest foe within 200px with an uppercut that launches them (6), then Garuda climbs above them and divebombs straight down (10).', lock:420, run(p){
+      yukiLunge(p, 200);
+      const [x,y,w,h] = olFront(p, 80); snd('swing', p.x);
+      olShot(p, {kind:'orbfx', x:p.x+PW/2 + p.facing*(PW/2+20), y:p.y+PH*0.2, life:220, col:yukiMass(p).col, dmg:0});
       for(const d of olArea(p, x, y, w, h)) if(olHit(p, d, 6, {launch:-13, stun:1100, col:yukiMass(p).col})){
         addParts(d.x+PW/2, d.y+PH*0.3, '#f2d36b', 10, 4);
         if(!yukiGaruda(p)) garudas.push({owner:p, kind:'dive', tgt:netRef(d), x:p.x+PW/2, y:p.y+PH*0.3, hy:d.y-150, t:0});
@@ -14776,6 +14781,13 @@ const YUKI_MASS = [   // name, damage dealt, speed, jump, CE cost multiplier, co
   {name:'LIGHT MASS',   dmg:0.25, spd:1.45, jmp:1.25, ce:0.3, col:'#bfe8ff'},
 ];
 const garudas = [];    // synced: {owner, kind:'grap'|'throw'|'dive', x, y, vx, vy, t, ...}
+// Max Output moves dash her in next to the nearest foe first (either side), so they don't whiff at mid range
+function yukiLunge(p, reach){
+  const d = olNearest(p, reach); if(!d) return null;
+  const f = Math.sign(d.x - p.x) || p.facing, x0 = p.x; p.facing = f;
+  if(Math.abs(d.x - p.x) > PW+30){ safeTeleport(p, d.x - f*(PW+18), p.y); olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:180, dmg:0, col:yukiMass(p).col}); }
+  return d;
+}
 function isYuki(pl){ return !!pl && pl.type==='yuki'; }
 function yukiMass(pl){ return YUKI_MASS[(pl && pl.yukiMass)||0]; }
 function yukiGaruda(pl){ return garudas.find(g => g.owner===pl); }
