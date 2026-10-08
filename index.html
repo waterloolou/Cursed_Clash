@@ -450,7 +450,7 @@ canvas {
 
       <section data-p="items">
         <h1>Items</h1>
-        <p>Cursed tools appear every <b>26 seconds</b> (at most 2 at once), often on rooftops and ledges. Stand on one and press <b>G</b>. You can carry one at a time; your HUD shows it and its timer.</p>
+        <p>Cursed tools are rare: one appears every <b>48 seconds</b> (only one on the map at a time, the first after 30s), often on rooftops and ledges. Stand on one and press <b>G</b>. You can carry one at a time; your HUD shows it and its timer. A weapon item (Playful Cloud, Inverted Spear) <b>replaces the weapon already in your hands</b> — Mei Mei's axe, Higuruma's gavel, Yuta's katana — until it wears off; their special moves still bring the weapon out.</p>
         <table>
           <tr><th>Item</th><th>Lasts</th><th>Effect</th></tr>
           <tr><td><b style="color:#e0533f">Playful Cloud</b></td><td>20s</td><td>Punches swing ~1.7× faster, reach further and deal +3 damage (more on finishers).</td></tr>
@@ -506,7 +506,8 @@ canvas {
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Slice &amp; Dice</td><td>Five quick slashes (4 each) that drag the target along, last one launches. 3.8s cooldown.</td></tr>
           <tr><td>E</td><td>Cursed Fist</td><td>Sheathe, leap and float while steering, then slam (press Q to slam early): 28 damage in a big crater. 4.9s cooldown.</td></tr>
-          <tr><td>R</td><td>Copy <em>(super, 40)</em></td><td>Touch the opponent (8 damage) to copy their signature move, then press R again to use it once: Yuji → giant Dismantle, Gojo → Hollow Purple, Sukuna → Fuga, Yuta → Slice &amp; Dice.</td></tr>
+          <tr><td>R</td><td>Copy <em>(super, 40)</em></td><td>Yuta copies one of the opponent's own moves and uses it on the spot. <b>What he copies depends on the best combo he's landed</b> since his last copy (shown on the button): <b>10+ damage</b> → their ability 1, <b>30+</b> → their ability 2, <b>50+</b> → their super. Works on every fighter.</td></tr>
+          <tr><td>R <em>(Max Output)</em></td><td>Rika</td><td>Spends the super charge to summon <b>Rika</b> for 25s. While she's out: <b>Q</b> Rika: Grab — she holds the nearest foe within 320px for <b>7 seconds</b> (no escape, +125% damage taken). <b>E</b> Rika: Eat — she bites the foe in front (10) and Yuta <b>copies their super</b> (press R to use it). <b>F</b> becomes the <b>True Love Beam</b>: needs the ultimate bar and 100 CE, a 1.4s charge that can be interrupted (you keep half the bar), then a full-map beam for <b>85</b> that erases all terrain in its path. <b>Double jump</b>: Rika catches Yuta and hurls him high into the air (costs 4 HP).</td></tr>
           <tr><td>F</td><td>Authentic Mutual Love <em>(domain, 150)</em></td><td>15 seconds. Katanas lie on the ground: attack next to one to grab and throw it (6 damage, +1 charge). Every katana he picks up also makes him <b>20% faster for 5s</b> (stacks up to +60%). Four charges unlock <b>Jacob's Ladder</b> (press F): a beam that takes 80% of the opponent's max HP (can't kill).</td></tr>
           <tr><td>Movement</td><td>Special-Grade Speed</td><td>The fastest runner on the roster: 18% faster.</td></tr>
         </table>
@@ -826,7 +827,7 @@ const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult',
             YUTASLICE:'yutaslice', YUTAFIST:'yutafist',
             MECHADRILL:'mechadrill', MECHULT:'mechult', TODOPUNCH:'todopunch', CHOSOPB:'chosopb',
-            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs', YUKIGRAP:'yukigrap', YUKIHOLE:'yukihole' };
+            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', YUTABEAM:'yutabeam', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs', YUKIGRAP:'yukigrap', YUKIHOLE:'yukihole' };
 
 const YUTAFIST_SHEATHE_DUR = 400;   // ms sword disappears
 const YUTAFIST_AIM_DUR     = 1200;  // ms to aim arc
@@ -960,7 +961,10 @@ const ITEM_DEFS = {
 const ITEM_KINDS = Object.keys(ITEM_DEFS);
 const worldItems = [];      // {kind, x, y, t}
 const speechFx = [];        // floating speech bubbles {x, y, text, col, life, max}
-let itemSpawnT = 15000, _itemSeq = 0;
+let itemSpawnT = 30000, _itemSeq = 0;
+const ITEM_SPAWN_MS = 48000, ITEM_WEAPONS = new Set(['cloud','isoh']);
+// a cursed-tool item held in hand replaces the fighter's own weapon (axe, gavel, katana) until it wears off
+function itemWeapon(p){ return !!(p && p.item && ITEM_WEAPONS.has(p.item)); }
 
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1469,12 +1473,12 @@ function spawnItem(){
 }
 function tickItems(dt){
   itemSpawnT -= dt;
-  const maxItems = 2;
-  if(itemSpawnT <= 0){ itemSpawnT = 26000; if(worldItems.length < maxItems) spawnItem(); }
+  const maxItems = 1;
+  if(itemSpawnT <= 0){ itemSpawnT = ITEM_SPAWN_MS; if(worldItems.length < maxItems) spawnItem(); }
   for(const it of worldItems){ it.t += dt; it.y = terGroundTop(it.x-10, 20, it.y-1, true); }
   for(let i=speechFx.length-1;i>=0;i--){ speechFx[i].life -= dt; if(speechFx[i].life<=0) speechFx.splice(i,1); }
 }
-function resetItems(){ worldItems.length = 0; speechFx.length = 0; itemSpawnT = 15000; }
+function resetItems(){ worldItems.length = 0; speechFx.length = 0; itemSpawnT = 30000; }
 
 const ISOH_SRC = 'data:image/png;base64,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';
 let _isohIm = null;
@@ -7205,6 +7209,7 @@ class Player {
     this.cleaveAir=false; this.cleaveAimAngle=0; this.cleaveAimTime=0;
     // Dismantle
     this.dismantleDown=false; this.dismantleCooldown=0;
+    this.yCopy=null; this.yCopyReady=null; this.rikaOnT=0; this.rikaHeldT=0; this.cmbBest=0; this.cmbCur=0;
     this.dismantleOutline=0; this.cleaveChainT=0; this.cleaveChainN=0; this.dismPend=null; this.blueFists=0;
     this.dismantleArm=0;
     // Fuga
@@ -7291,7 +7296,7 @@ class Player {
     this.pbChargeTime=0; this.pbCooldown=0; this.pbDown=false;
   }
 
-  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem, vm = this.varMode; if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = !!vm; }
+  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem, vm = this.varMode; if(this.yCopy) this._yutaEndCopy(); if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = !!vm; }
 
   get hittable(){
     if(this.mechUltPhase===1 || this.mechUltPhase===2) return false; // underground
@@ -7314,7 +7319,8 @@ class Player {
         const c = this.naoCmb||0; d *= c >= NAO_CMB_HARD ? 0.2 : c >= NAO_CMB_SOFT ? 0.5 : 1;
         this.naoCmb = c + d; this.naoCmbT = terClock;
       }
-      if(oppM && d > 0) oppM.dmgDealt = (oppM.dmgDealt||0) + Math.min(d, old); }
+      if(oppM && d > 0) oppM.dmgDealt = (oppM.dmgDealt||0) + Math.min(d, old);
+      if(oppM && d > 0 && isYutaP(oppM)) yutaTrackCombo(oppM, Math.min(d, old)); }
     d = guardFilter(this, d, this===p1 ? p2 : this===p2 ? p1 : null);
     this._hp = Math.max(0, old - d);
     if(this===p2 && typeof gameMode!=='undefined' && gameMode==='training' && trainOpt.immortal) this._hp = Math.max(1, this._hp);
@@ -7375,6 +7381,7 @@ class Player {
   }
   ss(s,dur=0){
     if(this.framedT>0 && s!==S.DEAD && s!==S.FRAMED) return;     // frozen in one of Naoya's frames
+    if(this.state===S.YUTABEAM && !this.beamFired && (s===S.STUN || s===S.RAGD || s===S.SLAM || s===S.DEAD)){ this.domainCharge = DOMAIN_CHARGE_REQ*0.5; addSpeech(this.x+PW/2, this.y-24, 'BEAM INTERRUPTED', '#999', 800); }
     if(this.state===S.FUGA && this.sTimer > FUGA_ARMOR && (s===S.STUN || s===S.RAGD || s===S.SLAM)){   // Fuga can only be interrupted at the very start
       if(terClock - (this._fugaArmT||-1e9) > 500){ this._fugaArmT = terClock; addSpeech(this.x+PW/2, this.y-24, 'UNSTOPPABLE', '#ff9a3a', 500); } return; }
     if(this._guardStamp===terClock && (s===S.STUN || s===S.RAGD || s===S.SLAM)) return;
@@ -7496,6 +7503,42 @@ class Player {
     if(olOn() && !this.isPuppet){ const r = this._olPre(dt, other, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked); ab1Edge = r[0]; ab2Edge = r[1]; ab3Edge = r[2]; domEdge = r[3]; }
     else if(!this.isPuppet) this._varLocal(dt, other, abilityBlocked);
 
+    // ── YUTA: Copy runs the opponent's move as if it were his own; Rika in Maximum Output ──
+    if(this.yCopy){
+      const c = this.yCopy;
+      if(c.t===0){ ab1Edge = c.slot==='ab1'; ab2Edge = c.slot==='ab2'; ab3Edge = c.slot==='ab3'; domEdge = false; }
+      else { ab1Edge = ab2Edge = ab3Edge = domEdge = false; }
+      c.t += dt || 1;
+      if((c.t > 200 && [S.IDLE,S.WALK,S.AIR,S.STUN,S.RAGD,S.DEAD].includes(this.state)) || c.t > 7000){ this._yutaEndCopy(); ab1Edge = ab2Edge = ab3Edge = domEdge = false; }
+    } else if(this.type==='yuta' && !this.isPuppet){
+      const free = !abilityBlocked && [S.IDLE,S.WALK,S.AIR].includes(this.state);
+      if(ab3Edge && free){
+        ab3Edge = false;
+        if(this.yCopyReady){ const r = this.yCopyReady; this.yCopyReady = null; this._yutaStartCopy(r.type, r.slot); ab3Edge = r.slot==='ab3'; ab1Edge = r.slot==='ab1'; ab2Edge = r.slot==='ab2'; this.yCopy.t = dt || 1; }
+        else if(this.varMode && !(this.rikaOnT>0)){
+          if(this.yutaCopyUltCharge >= YUTA_COPY_ULT_REQ){ this.yutaCopyUltCharge = 0; this.rikaOnT = RIKA_MS;
+            addRing(this.x+PW/2, this.y+PH/2, '#cc88ff', 140); addParts(this.x+PW/2, this.y, '#e8e4ec', 30, 7); doShake(14); snd('domain', this.x);
+            showTxt('RIKA', 1200); sayFor(this, 'Come, Rika.'); }
+          else addSpeech(this.x+PW/2, this.y-20, `RIKA NEEDS ${YUTA_COPY_ULT_REQ} DAMAGE CHARGE`, '#999', 800);
+        } else if(this.yutaCopyUltCharge >= YUTA_COPY_ULT_REQ){
+          const slot = yutaCopyTier(this), opp = other;
+          if(!slot) addSpeech(this.x+PW/2, this.y-20, `BEST COMBO ${Math.floor(this.cmbBest||0)} — NEED 10+`, '#999', 900);
+          else if(!opp || opp.state===S.DEAD) addSpeech(this.x+PW/2, this.y-20, 'NOBODY TO COPY', '#999', 700);
+          else { this.yutaCopyUltCharge = 0; this.cmbBest = 0; const ot = opp.type; this._yutaStartCopy(ot, slot);
+            ab1Edge = slot==='ab1'; ab2Edge = slot==='ab2'; ab3Edge = slot==='ab3'; this.yCopy.t = dt || 1; }
+        }
+      }
+      // with Rika out, the ultimate is her True Love Beam
+      if(domEdge && free && this.rikaOnT>0 && !activeDomain){
+        domEdge = false;
+        if(this.domainCharge < DOMAIN_CHARGE_REQ) addSpeech(this.x+PW/2, this.y-20, 'BEAM NEEDS A FULL ULTIMATE BAR', '#999', 800);
+        else if(!ceInfinite(this) && (this.ce||0) < YUTA_BEAM_CE) ceDeny(this, 'ult', YUTA_BEAM_CE);
+        else { if(!ceInfinite(this)) this.ce -= YUTA_BEAM_CE; this.domainCharge = 0; this.beamFired = false;
+          this.ss(S.YUTABEAM, YUTA_BEAM_CHARGE + 500); this._ubUntil = Math.max(this._ubUntil||0, terClock + 2400);
+          addSpeech(this.x+PW/2, this.y-24, 'TRUE LOVE BEAM', '#ff88cc', 1200); sayFor(this, 'Rika… let\'s go all out.'); snd('charge', this.x); }
+      }
+    }
+
     // ── YUJI: 1=Piercing Blood(hold), 2=Black Blur, Q=Dismantle Ult ──
     if(this.type==='yuji'){
       if(this.pbCooldown>0) this.pbCooldown=Math.max(0,this.pbCooldown-dt);
@@ -7549,13 +7592,7 @@ class Player {
         this.yutaFistPhase=2; this.yutaFistTimer=0;
       }
       // 3 = Copy touch (if charged) or use copied ult
-      if(ab3Edge && !abilityBlocked && ![S.YUTASLICE,S.YUTAFIST].includes(this.state)){
-        if(this.yutaCopiedUlt){
-          this._fireYutaCopiedUlt(other);
-        } else if(this.yutaCopyUltCharge>=YUTA_COPY_ULT_REQ){
-          this._startYutaCopyTouch(other);
-        }
-      }
+      // (3 = Copy / Rika is handled above, before the fighters' own blocks)
       // Q = Domain or Jacob's Ladder
       if(domEdge && !abilityBlocked && ![S.YUTASLICE,S.YUTAFIST,S.DOMAIN].includes(this.state)){
         const inDomain = activeDomain && activeDomain.owner===this && activeDomain.type==='love';
@@ -8069,6 +8106,11 @@ class Player {
           else if(keys[c.right]){this.vx=SPD*mv.spd*chargeSlow;this.facing=1;}
           else{this.vx*=.7; if(Math.abs(this.vx)<.15) this.vx=0;}
           if(jmpEdge&&this.onGround&&!(this.type==='yuji'&&this.pbChargeTime>0)){this.vy=JUMP_V*mv.jmp;this.onGround=false;this.jmpDown=true; if(!this.isPuppet) snd('jump', this.x);}
+          else if(jmpEdge && isYutaP(this) && this.rikaOnT>0 && !this.rikaThrowUsed && !this.isPuppet){
+            // Rika catches Yuta and hurls him into the air
+            this.rikaThrowUsed = true; this.vy = JUMP_V*1.75; this.jmpDown = true; this._rawDmg = true; this.hp = Math.max(1, this.hp - YUTA_THROW_DMG); this._rawDmg = false;
+            addDmg(this.x+PW/2, this.y-10, YUTA_THROW_DMG, '#c0182a'); addRing(this.x+PW/2, this.y+PH, '#cc88ff', 50); snd('jump', this.x); addSpeech(this.x+PW/2, this.y-24, 'RIKA, THROW!', '#cc88ff', 700);
+          }
           else if(false && jmpEdge && this.type==='sukuna' && !this.djUsed && !this.isPuppet){
             // Cursed Step: a second jump off a burst of cursed energy
             this.djUsed=true; this.vy=JUMP_V*0.88; this.jmpDown=true; snd('jump', this.x);
@@ -8135,6 +8177,7 @@ class Player {
       case S.MEGCAST:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR); break;
       case S.MEGWCS:     this._tickMegWcs(dt); break;
       case S.YUKIGRAP:   this._tickYukiGrap(dt); break;
+      case S.YUTABEAM:   this._tickYutaBeam(dt); break;
       case S.YUKIHOLE:   this._tickYukiHole(dt); break;
       case S.FRAMED:     this.vx = 0; this.vy = 0; if(!(this.framedT>0)) this.ss(this.onGround ? S.IDLE : S.AIR); break;
       case S.TAKACTR:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.counterT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
@@ -9612,7 +9655,7 @@ class Player {
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
   _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -10715,7 +10758,7 @@ class Player {
     drawFramedOverlay(this);
     if(this.type==='mahito' || this.reshapeT>0 || this.soulMarks>0) drawMahitoBody(this);
     // Mei Mei: the battle axe
-    if(this.type==='meimei' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state)){
+    if(this.type==='meimei' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state) && !(itemWeapon(this) && ![S.MEISPIN,S.MEICHOP].includes(this.state))){
       const h = this._hand, f = this.facing;
       if(this.state===S.MEISPIN){
         const cx = this.x+PW/2, cy = this.y+PH/2;
@@ -10733,7 +10776,7 @@ class Player {
       ctx.restore();
     }
     // Higuruma: gavel (or the Executioner's Sword) in hand
-    if(this.type==='higuruma' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state)){
+    if(this.type==='higuruma' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state) && !(itemWeapon(this) && ![S.HIGUGAVEL,S.HIGUTHROW].includes(this.state) && !(this.higuSwordT>0))){
       const h = this._hand, f = this.facing;
       const custom = [S.HIGUGAVEL,S.HIGUTHROW].includes(this.state);
       const sword = this.higuSwordT>0 && !custom;
@@ -11414,7 +11457,7 @@ class Player {
     ctx.beginPath(); ctx.arc(cx,cy+headY+bob*.5,HEAD_R,0,Math.PI*2); ctx.fill(); ctx.stroke();
 
     // ── YUTA SWORD ── shown only when sword is visible
-    if(this.type==='yuta' && this.yutaSwordVisible!==false){
+    if(this.type==='yuta' && this.yutaSwordVisible!==false && !(itemWeapon(this) && this.state!==S.YUTASLICE)){
       const isSlicing = this.state===S.YUTASLICE;
       const sliceAnim = isSlicing ? this.yutaSliceAnim : 0;
       const sliceIdx  = isSlicing ? this.yutaSliceIdx  : 0;
@@ -12083,7 +12126,7 @@ class Player {
         let fillPct;
         if(i===0)      fillPct = Math.max(0, 1-this.yutaSliceCooldown/YUTA_SLICE_COOLDOWN);
         else if(i===1) fillPct = Math.max(0, 1-this.yutaFistCooldown/YUTAFIST_COOLDOWN);
-        else           fillPct = this.yutaCopiedUlt ? 1 : Math.min(1, this.yutaCopyUltCharge/YUTA_COPY_ULT_REQ);
+        else           fillPct = this.yCopyReady ? 1 : (this.varMode && this.rikaOnT>0) ? this.rikaOnT/RIKA_MS : Math.min(1, this.yutaCopyUltCharge/YUTA_COPY_ULT_REQ);
 
         const ready = fillPct>=1;
         const isUlt = i===2;
@@ -12108,14 +12151,11 @@ class Player {
         let label;
         if(i===0)      label = `SLICE [${k1}]`;
         else if(i===1) label = `FIST [${k2}]`;
-        else if(this.yutaCopiedUlt){
-          const n = this.yutaCopiedUlt==='yuji'?'DISMANTLE'
-                  : this.yutaCopiedUlt==='gojo'?'HOLLOW'
-                  : this.yutaCopiedUlt==='sukuna'?'FUGA':'SLICE';
-          label = `COPY: ${n} [${k3}]`;
-          ctx.fillStyle='#ffccee';
-        } else {
-          label = `COPY [${k3}]`;
+        else if(this.yCopyReady){ label = `${copySlotName(this.yCopyReady.type, this.yCopyReady.slot).toUpperCase()} [${k3}]`; ctx.fillStyle='#ffccee'; }
+        else if(this.varMode){ label = this.rikaOnT>0 ? `RIKA ${Math.ceil(this.rikaOnT/1000)}s` : `SUMMON RIKA [${k3}]`; }
+        else {
+          const tier = yutaCopyTier(this), opp = this===p1 ? p2 : p1;
+          label = tier && opp ? `COPY: ${copySlotName(opp.type, tier).toUpperCase()} [${k3}]` : `COPY · COMBO ${Math.floor(this.cmbBest||0)}/10`;
         }
         ctx.fillText(label, ax+aw/2, abY+13);
       }
@@ -12768,12 +12808,16 @@ const OL_VARS = {
         olShot(p, {kind:'soul', x:d.x+PW/2, y:d.y+PH*0.4, life:500, dmg:0}); addSpeech(d.x+PW/2, d.y-30, '-25 CE', '#bfe3ff', 700); } }},
   },
   yuta: {
-    1:{block:true, name:'Rika: Guardian', desc:'Rika looms over Yuta for 2.5s. The first attack that would hit him is caught in her hand instead (no damage), and she swats the attacker for 8.', lock:240, run(p){
-      p.rikaT = 2500; addRing(p.x+PW/2, p.y+PH/2, '#cc88ff', 70); snd('domain', p.x); sayFor(p, 'Rika.'); }},
-    2:{name:'Copied Cursed Speech: "Don\'t Move."', desc:'Yuta copies Cursed Speech: the nearest foe within 450px freezes for 0.9s (can\'t be blocked). Hurts Yuta\'s throat: 3 self-damage.', lock:420, run(p){
-      const d = olNearest(p, 450); addSpeech(p.x+PW/2, p.y-20, 'DON\'T MOVE.', '#e8e0ff', 900); snd('domain', p.x);
-      p._rawDmg = true; p.hp = Math.max(1, p.hp-3); p._rawDmg = false;
-      if(d){ addRing(d.x+PW/2, d.y+PH/2, '#e8e0ff', 50); olHit(p, d, 0.01, {ubk:true, stun:900, col:'#e8e0ff'}); } }},
+    1:{name:'Rika: Grab', req:p => p.rikaOnT>0, reqTxt:'SUMMON RIKA FIRST', desc:'Rika seizes the nearest foe within 320px and holds them for 7s: they can\'t escape, and every hit they take does +125% damage.', lock:360, run(p){
+      const d = olNearest(p, RIKA_GRAB_R); snd('heavy', p.x);
+      if(!d){ addSpeech(p.x+PW/2, p.y-20, 'NOTHING TO GRAB', '#999', 600); return; }
+      if(olHit(p, d, 4, {stun:800, col:'#cc88ff'}) && d.state!==S.DEAD){ d.rikaHeldT = RIKA_GRAB_MS; d.rikaHeldBy = netRef(p);
+        addSpeech(d.x+PW/2, d.y-30, 'CAUGHT BY RIKA', '#cc88ff', 1000); addRing(d.x+PW/2, d.y+PH/2, '#cc88ff', 70); doShake(10); sayFor(p, 'Rika, hold them.'); } }},
+    2:{block:true, name:'Rika: Eat', req:p => p.rikaOnT>0, reqTxt:'SUMMON RIKA FIRST', desc:'Rika bites a chunk out of the foe in front (10) — and Yuta copies their super on the spot. Press the super key to use it.', lock:360, run(p){
+      const [x,y,w,h] = olFront(p, 130); snd('slash', p.x);
+      for(const d of olArea(p, x, y, w, h)){ if(olHit(p, d, 10, {stun:500, push:2, col:'#cc88ff'})){ addParts(d.x+PW/2, d.y+PH/2, '#a01020', 18, 6);
+        p.yCopyReady = {type:d.type, slot:'ab3'}; addSpeech(p.x+PW/2, p.y-30, `COPIED: ${copySlotName(d.type, 'ab3').toUpperCase()} [${keyLbl(p,'ab3')}]`, '#ffccee', 1300); }
+        break; } }},
   },
   mechamaru: {
     1:{block:true, name:'Sword Formation', desc:'Arm becomes a blade and he dashes 160px through the foe: 9 damage.', lock:300, run(p){
@@ -13246,6 +13290,7 @@ function varFire(p, other){
   for(let n=1;n<=2;n++){
     if(!p._vEdges[n-1]) continue;
     const v = V[n]; if(!v) continue;
+    if(v.req && !v.req(p)){ olTag(p, v.reqTxt || 'NOT READY', '#888', 600); continue; }
     if(p.varCd[n]>0){ olTag(p, `${Math.ceil(p.varCd[n]/1000)}s`, '#888', 400); continue; }
     const cost = ceVarCost(p, n);
     if(!ceCanPay(p, cost)){ ceDeny(p, 'ab'+n, cost); continue; }
@@ -13397,7 +13442,7 @@ Player.prototype._olTickAtk = function(dt, atkEdge){
 };
 Player.prototype._olAtkBox = function(){
   const K = OL_KINDS[this.oaKind], f = this.facing;
-  const R = K.r + (this.item==='cloud' ? 34 : this.item==='isoh' ? 22 : 0) + (this.type==='meimei' ? 14 : 0);
+  const R = K.r + (this.item==='cloud' ? 34 : this.item==='isoh' ? 22 : 0) + (this.type==='meimei' && !itemWeapon(this) ? 14 : 0);
   if(this.oaKind==='spike') return {x: f===1 ? this.x-8 : this.x-38, y:this.y-6, w:PW+46, h:PH+26};
   let y = this.y+4, h = PH-8;
   if(this.oaKind==='sweep'){ y = this.y+PH*0.55; h = PH*0.45+6; }
@@ -15207,6 +15252,120 @@ function drawYukiBody(pl){
   ctx.restore();
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// YUTA — Copy (by best combo) and Rika (Maximum Output)
+//  Copy: your best combo since the last copy decides what you take from the opponent:
+//        10+ damage → their ability 1 · 30+ → ability 2 · 50+ → their super
+//  Rika (R in Maximum Output, uses the super charge): 25s. Grab (7s hold, +125% damage taken),
+//        Eat (copies their super), True Love Beam (F with Rika out: 100 CE, 85, erases terrain), and a throw on double jump
+// ═══════════════════════════════════════════════════════════════════
+const YUTA_COPY_TIERS = [[50,'ab3'], [30,'ab2'], [10,'ab1']], YUTA_CMB_GAP = 1500;
+const RIKA_MS = 25000, RIKA_GRAB_MS = 7000, RIKA_GRAB_DMG_IN = 2.25, RIKA_GRAB_R = 320;
+const YUTA_BEAM_CE = 100, YUTA_BEAM_CHARGE = 1400, YUTA_BEAM_DMG = 85, YUTA_BEAM_H = 90, YUTA_THROW_DMG = 4;
+function isYutaP(p){ return !!p && (p.baseType||p.type)==='yuta'; }
+function copySlotName(type, slot){ const r = (MOVE_INFO[type]||[]).find(m => m[0]===slot); return r ? r[1].replace(/ · .*$/, '') : slot.toUpperCase(); }
+function yutaCopyTier(p){ const b = p.cmbBest||0; for(const [min, slot] of YUTA_COPY_TIERS) if(b >= min) return slot; return null; }
+// combo tracking (called from the hp setter for every hit a Yuta lands)
+function yutaTrackCombo(att, d){
+  if(terClock - (att.cmbLastT||-1e9) > YUTA_CMB_GAP) att.cmbCur = 0;
+  att.cmbCur = (att.cmbCur||0) + d; att.cmbLastT = terClock; att.cmbBest = Math.max(att.cmbBest||0, att.cmbCur);
+}
+// run one of the opponent's moves as Yuta: borrow their technique for the length of the move
+Player.prototype._yutaStartCopy = function(type, slot){
+  const meters = {}; for(const [f, c] of TRAIN_METERS){ meters[f] = this[f]; try{ this[f] = eval(c); }catch(e){} }
+  this.yCopy = {type, slot, t:0, meters};
+  this.baseType = 'yuta'; this.type = type;
+  const cd = CE_SLOTS[type] && CE_SLOTS[type][slot]; if(cd) this[cd[0]] = 0;
+  addRing(this.x+PW/2, this.y+PH/2, '#ff88cc', 70); addParts(this.x+PW/2, this.y+PH/2, '#ff88cc', 18, 5); snd('domain', this.x);
+  addSpeech(this.x+PW/2, this.y-28, `COPY: ${copySlotName(type, slot).toUpperCase()}`, '#ffccee', 1100); sayFor(this, 'Copy.');
+};
+Player.prototype._yutaEndCopy = function(){
+  const c = this.yCopy; if(!c) return;
+  this.type = 'yuta'; this.baseType = null;
+  for(const f in c.meters) this[f] = c.meters[f];
+  this.yCopy = null;
+};
+
+function tickRika(dt){
+  for(const p of [p1, p2]){
+    if(!p || !isYutaP(p)) continue;
+    if(p.rikaOnT>0){ p.rikaOnT = Math.max(0, p.rikaOnT - dt); if(p.state===S.DEAD) p.rikaOnT = 0;
+      if(p.rikaOnT<=0){ addSpeech(p.x+PW/2, p.y-30, 'RIKA FADES', '#cc88ff', 900); addParts(p.x+PW/2 - p.facing*34, p.y, '#e8e4ec', 20, 5); } }
+    if(p.onGround) p.rikaThrowUsed = false;
+  }
+  // fighters caught in Rika's hand
+  for(const d of [p1, p2]){
+    if(!d || !(d.rikaHeldT>0)) continue;
+    const o = netRes(d.rikaHeldBy);
+    d.rikaHeldT = Math.max(0, d.rikaHeldT - dt);
+    if(!o || o.state===S.DEAD || !(o.rikaOnT>0) || d.state===S.DEAD){ d.rikaHeldT = 0; }
+    if(d.rikaHeldT<=0){ if(d.state===S.STUN) d.ss(d.onGround ? S.IDLE : S.AIR); if(o) safeTeleport(d, d.x, d.y); continue; }
+    const hx = o.x+PW/2 + o.facing*58 - PW/2, hy = o.y - 34;
+    d.x += (hx - d.x)*0.25; d.y += (hy - d.y)*0.25; d.vx = 0; d.vy = 0;
+    if(d.state!==S.STUN && d.state!==S.RAGD) d.ss(S.STUN, 600); if(d.state===S.STUN) d.sTimer = 0;
+  }
+}
+
+Player.prototype._tickYutaBeam = function(dt){
+  this.vx = 0; this.vy = 0;
+  if(!this.beamFired && this.sTimer >= YUTA_BEAM_CHARGE){
+    this.beamFired = true;
+    const f = this.facing, y0 = this.y + PH*0.35, x0 = this.x+PW/2, x1 = f>0 ? W+40 : -40;
+    yutaBeams.push({owner:this, x:x0, y:y0, x2:x1, t:0, life:900});
+    if(!IS_GUEST) carveRect(Math.min(x0, x1), y0 - YUTA_BEAM_H/2, Math.abs(x1-x0), YUTA_BEAM_H);
+    for(const d of olArea(this, Math.min(x0, x1), y0 - YUTA_BEAM_H/2 - PH*0.4, Math.abs(x1-x0), YUTA_BEAM_H + PH*0.4))
+      olHit(this, d, YUTA_BEAM_DMG, {ubk:true, any:true, rag:[f*18, -9, RAGD_MS*1.5], dir:f, col:'#ff88cc'});
+    doShake(26); snd('beam', this.x); snd('boom', this.x); showTxt('PURE LOVE', 1200);
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+const yutaBeams = [];   // synced: {owner, x, y, x2, t, life}
+function tickYutaBeams(dt){ for(let i=yutaBeams.length-1;i>=0;i--){ const b = yutaBeams[i]; b.t += dt; if(b.t > b.life) yutaBeams.splice(i,1); } }
+function drawYutaBeams(){
+  for(const b of yutaBeams){
+    const k = b.t/b.life, a = k < 0.15 ? k/0.15 : 1 - (k-0.15)/0.85, hh = YUTA_BEAM_H*(0.7 + 0.3*Math.sin(b.t*0.05));
+    ctx.save(); ctx.globalAlpha = Math.max(0, a); ctx.globalCompositeOperation = 'lighter';
+    const x0 = Math.min(b.x, b.x2), w = Math.abs(b.x2 - b.x);
+    let g = ctx.createLinearGradient(0, b.y - hh, 0, b.y + hh); g.addColorStop(0, 'rgba(255,120,200,0)'); g.addColorStop(0.5, 'rgba(255,140,220,0.9)'); g.addColorStop(1, 'rgba(255,120,200,0)');
+    ctx.fillStyle = g; ctx.fillRect(x0, b.y - hh, w, hh*2);
+    g = ctx.createLinearGradient(0, b.y - hh*0.35, 0, b.y + hh*0.35); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(x0, b.y - hh*0.35, w, hh*0.7);
+    ctx.restore();
+  }
+}
+// Rika: a huge pale cursed spirit hovering behind Yuta
+function drawRika(p){
+  if(!(p.rikaOnT>0) || p.state===S.DEAD) return;
+  const f = p.facing, t = Date.now(), bob = Math.sin(t*0.004)*4;
+  const fade = Math.min(1, (RIKA_MS - p.rikaOnT)/400, p.rikaOnT/500);
+  const cx = p.x+PW/2 - f*34, cy = p.y - 26 + bob;
+  const grab = [1,2].some(() => false) || (p.state===S.OVAR && p.varName && /Rika/.test(p.varName)) || [p1,p2].some(d => d && d.rikaHeldT>0 && d.rikaHeldBy===netRef(p));
+  const beam = p.state===S.YUTABEAM;
+  ctx.save(); ctx.globalAlpha = fade; ctx.translate(cx, cy); ctx.scale(f, 1);
+  // body
+  ctx.fillStyle = '#ebe7ef'; ctx.strokeStyle = '#2a2230'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-34, 70); ctx.quadraticCurveTo(-52, 10, -30, -34); ctx.quadraticCurveTo(0, -62, 30, -36); ctx.quadraticCurveTo(48, 10, 30, 70); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // crown of horns
+  ctx.fillStyle = '#d8d2de'; for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.moveTo(k*12-5, -48); ctx.lineTo(k*12 + k*3, -68 - (2-Math.abs(k))*6); ctx.lineTo(k*12+5, -48); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+  // eyes
+  ctx.fillStyle = '#120a18'; for(const [ex, ey, r] of [[-12,-26,6],[12,-26,6],[0,-38,3.5],[-22,-12,3],[22,-12,3]]){ ctx.beginPath(); ctx.arc(ex, ey, r, 0, Math.PI*2); ctx.fill(); }
+  ctx.fillStyle = beam ? '#ff88cc' : '#cc88ff'; for(const ex of [-12, 12]){ ctx.beginPath(); ctx.arc(ex, -26, 2, 0, Math.PI*2); ctx.fill(); }
+  // the mouth: wide, full of teeth (glows during the beam)
+  ctx.fillStyle = beam ? `rgba(255,140,220,${0.6+0.4*Math.sin(t*0.03)})` : '#3a1020';
+  ctx.beginPath(); ctx.ellipse(4, 2, 22, beam ? 13 : 8, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f8f6f0'; for(let k=-4;k<=4;k++){ ctx.beginPath(); ctx.moveTo(4+k*5-2, -6+(beam?-5:0)); ctx.lineTo(4+k*5, 0); ctx.lineTo(4+k*5+2, -6+(beam?-5:0)); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(4+k*5-2, 10+(beam?5:0)); ctx.lineTo(4+k*5, 4); ctx.lineTo(4+k*5+2, 10+(beam?5:0)); ctx.fill(); }
+  // arms: one reaching forward (further when grabbing)
+  ctx.strokeStyle = '#2a2230'; ctx.fillStyle = '#ebe7ef'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  const reach = grab ? 92 : 46;
+  ctx.beginPath(); ctx.moveTo(26, 6); ctx.quadraticCurveTo(reach*0.6, -24, reach, -8); ctx.stroke();
+  ctx.lineWidth = 6; ctx.strokeStyle = '#ebe7ef'; ctx.beginPath(); ctx.moveTo(26, 6); ctx.quadraticCurveTo(reach*0.6, -24, reach, -8); ctx.stroke();
+  ctx.lineWidth = 9; ctx.strokeStyle = '#2a2230'; ctx.beginPath(); ctx.moveTo(-28, 10); ctx.quadraticCurveTo(-50, 30, -40, 58); ctx.stroke();
+  ctx.lineWidth = 6; ctx.strokeStyle = '#ebe7ef'; ctx.beginPath(); ctx.moveTo(-28, 10); ctx.quadraticCurveTo(-50, 30, -40, 58); ctx.stroke();
+  ctx.restore();
+}
+
 function drawTakaba(){ for(const tr of trucks) drawTruck(tr); }
 function drawTakabaBody(pl){
   if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
@@ -15392,7 +15551,7 @@ const CHAR_TIPS = {
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, a bit less damage, longer final cooldown).', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
   gojo:     ['Lapse Blue and Reversal Red can be steered while they fly — press {ab1} again to burst Blue early.', 'Hollow Purple aims with {jump} / {down} and tunnels through walls.', 'Hold {jump} while falling to float down slowly (Infinity Float).'],
   yuji:     ['Hold {ab1} to charge Piercing Blood (longer = more damage), aim with {jump} / {down}, release to fire.', 'Black Flash: after the lunge, press when the spark lines up — your timing decides if it lands.', 'His ultimate (Dismantle) charges on its own meter.'],
-  yuta:     ['Copy: touch the opponent first, then use their signature move once.', 'Inside his domain, walk over a katana and press {atk} to grab it; enough katanas unlock Jacob\'s Ladder on {ult}.', 'He\'s the fastest runner — use it to pick your fights.'],
+  yuta:     ['Copy grows with your combos: land a 10 / 30 / 50 damage combo to copy their ability 1 / ability 2 / super.', 'Maximum Output + {ab3} summons Rika: {ab1} Grab, {ab2} Eat (copies their super), {ult} True Love Beam, double-jump for a Rika throw.', 'Inside his domain, walk over a katana and press {atk} to grab it; enough katanas unlock Jacob\'s Ladder on {ult}.', 'He\'s the fastest runner — use it to pick your fights.'],
   mechamaru:['Hold {jump} on the ground to charge the jets, then fly.', 'Mini Cannon aims with {jump} / {down} while it charges.', 'With the puppet out, press {ab3} again to swap bodies with it.', 'Ultimate Mechamaru ends with your death — save it to finish a fight.'],
   todo:     ['Haymaker in the air becomes a meteor dive.', 'Online, click an item or a fighter first to choose who Boogie Woogie swaps with.', 'With your brother out, hold {down} and press {ab2} to swap with him.', 'Long falls end in a shockwave that stuns anyone close.'],
   choso:    ['Hold {ab1} to charge Piercing Blood, aim with {jump} / {down}.', 'The Convergence orb follows you — press {ab2} again to detonate it.', 'You leave blood pools when hurt; Supernova ({ult}) detonates all of them, so fight near your blood.'],
@@ -15635,7 +15794,7 @@ function drawEffects(pl, x, flip){
 }
 
 function clearProjectiles(){
-  naoFrames.length=0; naoGame=null; shikis.length=0; garudas.length=0; meiBlasts.length=0;
+  naoFrames.length=0; naoGame=null; shikis.length=0; garudas.length=0; meiBlasts.length=0; yutaBeams.length=0;
   parts.length=0; rings.length=0; dmgNums.length=0; cleaves.length=0;
   dismantleEvents.length=0; slashMarks.length=0;
   fugaShots.length=0; explosions.length=0; flameTrails.length=0;
@@ -15776,7 +15935,7 @@ const MOVE_INFO = {
   yuji:     [['atk','Punch combo','3rd hit starts a Black Flash timing bar.'], ['ab1','Piercing Blood','Hold to charge (10–30), aim with up / down.'],
              ['ab2','Divergent Combo','Lunge + two punches + kick (20).'], ['ab3','Black Flash · super','Lunge, then time the spark: 28 damage.'], ['ult','Dismantle (ultimate)','Giant slash across the screen (55).']],
   yuta:     [['ab1','Slice & Dice','Five slashes that drag the target (20).'], ['ab2','Cursed Fist','Leap, steer, then slam a crater (28).'],
-             ['ab3','Copy · super','Touch the foe, then use their signature move once.'], ['ult','Authentic Mutual Love','Domain: grab katanas (+20% speed each) → Jacob\'s Ladder.'], ['move','Special-Grade Speed','Fastest runner.']],
+             ['ab3','Copy · super','Best combo 10+/30+/50+ → copy their ability 1 / 2 / super. Max Output: Rika.'], ['ult','Authentic Mutual Love','Domain: grab katanas (+20% speed each) → Jacob\'s Ladder.'], ['move','Special-Grade Speed','Fastest runner.']],
   mechamaru:[['ab1','Drill Drive','Dash through terrain, carry + stun (22).'], ['ab2','Mini Cannon','Short charge, aim, close-range blast (16).'],
              ['ab3','Summon Puppet · super','AI Mechamaru for 20s. Press again to swap bodies with it.'], ['ult','Ultimate Mechamaru','Giant mech 20s: big wall-piercing lasers + long cannon. Then you die.'], ['move','Jet Flight','Hold jump on the ground, then fly.']],
   todo:     [['ab1','Haymaker','Huge-knockback punch (14). In the air: meteor dive.'], ['ab2','Boogie Woogie','Clap to swap places (click to pick a target online).'],
@@ -16490,7 +16649,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -16976,7 +17135,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickMeiBlasts(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -17014,7 +17173,7 @@ function simFight(dt){
 function drawFight(dt){
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawDomain();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawShikis(); drawYuki(); drawMeiBlasts(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();

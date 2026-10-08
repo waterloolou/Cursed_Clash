@@ -31,6 +31,11 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
+## Latest: Yuta rework
+- **Copy** now depends on your best combo since the last copy: 10+ damage copies the opponent's ability 1, 30+ their ability 2, 50+ their super — works on every fighter.
+- **Maximum Output + R summons Rika** for 25s: **Rika: Grab** (7s hold, +125% damage taken), **Rika: Eat** (copies their super), **True Love Beam** on F (100 CE, 85 damage, erases terrain, can be interrupted), and a Rika throw on double jump.
+- **Items** are rarer (one every 48s, one at a time), and a weapon item replaces the weapon already in your hands.
+
 ## Latest: ultimate reworks
 - **Domains** cover the whole map and shatter all of its terrain; it rebuilds ~6s after the domain closes (never right next to a fighter).
 - **Hakari**: 25% jackpot per roll, +10% after every miss, and **Jackpot Continuation** (a jackpot can keep going).
