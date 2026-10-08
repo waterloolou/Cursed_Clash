@@ -31,6 +31,12 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
+## Latest: Zoners
+Jogo, Dagon and Hanami now shape the map, and each counters the next: **Jogo's fire burns Hanami's flowers · Hanami's flowers drink Dagon's water · Dagon's water douses Jogo's lava and mounds.** Their zones stay until a domain opens, their owner dies, or the counter removes them.
+- **Jogo**: Lava Mounds are permanent (can't erupt in water); Flame Dash, Maximum Meteor and fire towers leave cracked lava ground that hurts and burns.
+- **Dagon**: Flood pours real, flowing water that runs off ledges and pools — and covers far more ground.
+- **Hanami**: Flower Fields stay where they're planted.
+
 ## Latest: Yuta rework
 - **Copy** now depends on your best combo since the last copy: 10+ damage copies the opponent's ability 1, 30+ their ability 2, 50+ their super — works on every fighter.
 - **Maximum Output + R summons Rika** for 25s: **Rika: Grab** (7s hold, +125% damage taken), **Rika: Eat** (copies their super), **True Love Beam** on F (100 CE, 85 damage, erases terrain, can be interrupted), and a Rika throw on double jump.
