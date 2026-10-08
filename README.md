@@ -33,7 +33,7 @@ Also recent:
 
 ## Controls
 
-Press **ESC** in a fight to pause — the pause menu lists every key (and lights up whatever you press), explains the combat system, and shows your fighter's moves and tips. Hold **TAB** in a fight for the move list. The in-game **Wiki** (home screen) covers every character.
+Every key can be changed: **⌨ CONTROLS** on the home screen (saved in your browser). Press **ESC** in a fight to pause — the pause menu lists every key (and lights up whatever you press), explains the combat system, and shows your fighter's moves and tips. Hold **TAB** in a fight for the move list. The in-game **Wiki** (home screen) covers every character.
 
 | | Online (your own keyboard) | Local P1 | Local P2 |
 |---|---|---|---|
@@ -44,21 +44,18 @@ Press **ESC** in a fight to pause — the pause menu lists every key (and lights
 | Block · Dash *(online only)* | Right click / C · Shift | — | — |
 | Maximum Output on/off (aura lights up) | V | E | I |
 | Feat (e.g. Kenjaku swap) | T | T | Right Shift |
+| Chat *(online)* | Enter | — | — |
 | Pick up item | G | G | Enter |
 | Pause | Esc | Esc | Backspace |
 
 ## Cursed energy
 
-Every fighter has a **cursed energy (CE)** bar under their health that refills on its own:
+Every fighter has a **cursed energy (CE)** bar under their health that refills on its own. **Only Maximum Output spends it.**
 
-- **Q / E** cost CE (stronger moves cost more) and have a cooldown of 3/4 of the original. If you can't afford one, its box goes dark and shows the cost.
-- **Super (R)** still needs its hit charge, plus **50%** of the bar.
-- **Domains** need a **full** bar; **ultimates** (fighters without a domain) need **75%**. Both empty it.
-- **Maximum Output** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): ability 1 / 2 fire stronger versions for about twice the CE, and your super and domain still work. One Maximum Output move per fighter can be blocked; the other, and every super and ultimate, can only be countered with a perfect block.
-- Moves are expensive: most fighters can only chain two or three before waiting.
-- Pools follow the lore: special grades get much bigger pools, Yuta (480) and Mechamaru (420) have by far the most, Gojo and Sukuna refill several times faster than anyone, Takaba has the smallest. Hakari's jackpot gives infinite CE.
-- **Black Flash** makes your CE refill 250% faster for 10s.
-- **Choso** can pay with his blood when he's out of CE (1 HP = 3 CE, never below 1 HP), leaving a blood pool.
+- **Regular moves are free**: Q / E just have their cooldowns (3/4 of the original). Supers and domains / ultimates only need their hit charge.
+- **Maximum Output** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): ability 1 / 2 fire stronger versions for **up to 10 CE** each, and your super and domain still work. One Maximum Output move per fighter can be blocked; the other, and every super and ultimate, can only be countered with a perfect block. Every fighter's moves are listed on their wiki page.
+- A few extras also use CE: anti-domain techniques, Sukuna's Dismantle chain and Spider Web, Mahito's killing form, Yuki's extreme mass, and the Reverse Cursed Technique feat.
+- **Black Flash** makes your CE refill 250% faster for 10s. Hakari's jackpot gives infinite CE.
 - The shop's **Six Eyes** and **Cursed Energy Flow** make it refill faster.
 
 ## Notes
