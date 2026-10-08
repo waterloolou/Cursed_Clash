@@ -387,7 +387,7 @@ canvas {
         <ul>
           <li><b>Fall damage</b>: a long drop costs a little health (1–8 HP, never lethal).</li>
           <li><b>Regeneration</b>: after <b>15 seconds</b> without dealing or taking damage, you heal <b>2 HP every 3 seconds</b>.</li>
-          <li><b>Crumbling terrain</b>: cut a chunk loose (nothing holding it up) and it falls — it hurts anyone it lands on, then shatters. Broken terrain grows back after 30s.</li>
+          <li><b>Crumbling terrain</b>: cut a chunk loose (nothing holding it up) and it falls — it hurts anyone it lands on, then shatters. Broken terrain grows back after 30s, but never within ~90px of a fighter. Domains shatter the whole map's terrain.</li>
         </ul>
         <h2>Cursed energy</h2>
         <p>Every fighter has a <b>cursed energy (CE) bar</b> under their health bar that refills on its own. Only <b>Maximum Output</b> spends it.</p>
@@ -429,7 +429,7 @@ canvas {
           <li>Yuji's ultimate uses its own 100-damage meter.</li>
         </ul>
         <h2>Domains</h2>
-        <p>On the big maps a domain opens a screen-sized arena around its caster and pulls the opponent in. Anti-domain techniques (online: hold click + F, for fighters who have one) block domain sure-hits, and the <b>Inverted Spear of Heaven</b> shatters a domain on hit.</p>
+        <p>A domain floods the <b>whole map</b> and <b>shatters every piece of terrain</b> on it: nobody is fenced in or dragged anywhere, and the camera keeps following the fighters. When it closes the map stays empty for about 6 seconds, then rebuilds itself — never right next to a fighter, so you can't get sealed in. Its set pieces (katanas, geysers, the court) appear around the caster. Anti-domain techniques (online: hold click + F, for fighters who have one) block domain sure-hits, and the <b>Inverted Spear of Heaven</b> shatters a domain on hit.</p>
       </section>
 
       <section data-p="maps">
@@ -480,7 +480,7 @@ canvas {
           <tr><td>Q</td><td>Lapse Blue</td><td>Summons a blue orb you steer with the movement keys for up to 3s (Gojo stands still). Press again to detonate early: 20 damage and a pull. 4.5s cooldown.</td></tr>
           <tr><td>E</td><td>Reversal Red</td><td>A fast red orb that blasts the target away for 20. 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Hollow Purple <em>(super, 40)</em></td><td>1.5s to merge Red and Blue (aim with up / down), then a slow orb that deals 50 and bores a round tunnel through everything in its path.</td></tr>
-          <tr><td>F</td><td>Infinite Void <em>(domain, 150)</em></td><td>10 seconds of stun-lock on the opponent. Deals no damage by itself — use the time.</td></tr>
+          <tr><td>F</td><td>Infinite Void <em>(domain, 150)</em></td><td>10 seconds of total lock-down: inside the Void the opponent <b>can't move, jump or fight at all</b> — the only way out is an anti-domain technique (Simple Domain, Falling Blossom Emotion, Domain Amplification…). Deals no damage by itself — use the time.</td></tr>
           <tr><td>Movement</td><td>Infinity Float</td><td>Hold jump while falling to drift down slowly.</td></tr>
         </table>
       </section>
@@ -507,7 +507,7 @@ canvas {
           <tr><td>Q</td><td>Slice &amp; Dice</td><td>Five quick slashes (4 each) that drag the target along, last one launches. 3.8s cooldown.</td></tr>
           <tr><td>E</td><td>Cursed Fist</td><td>Sheathe, leap and float while steering, then slam (press Q to slam early): 28 damage in a big crater. 4.9s cooldown.</td></tr>
           <tr><td>R</td><td>Copy <em>(super, 40)</em></td><td>Touch the opponent (8 damage) to copy their signature move, then press R again to use it once: Yuji → giant Dismantle, Gojo → Hollow Purple, Sukuna → Fuga, Yuta → Slice &amp; Dice.</td></tr>
-          <tr><td>F</td><td>Authentic Mutual Love <em>(domain, 150)</em></td><td>15 seconds. Katanas lie on the ground: attack next to one to grab and throw it (6 damage, +1 charge). Four charges unlock <b>Jacob's Ladder</b> (press F): a beam that takes 80% of the opponent's max HP (can't kill).</td></tr>
+          <tr><td>F</td><td>Authentic Mutual Love <em>(domain, 150)</em></td><td>15 seconds. Katanas lie on the ground: attack next to one to grab and throw it (6 damage, +1 charge). Every katana he picks up also makes him <b>20% faster for 5s</b> (stacks up to +60%). Four charges unlock <b>Jacob's Ladder</b> (press F): a beam that takes 80% of the opponent's max HP (can't kill).</td></tr>
           <tr><td>Movement</td><td>Special-Grade Speed</td><td>The fastest runner on the roster: 18% faster.</td></tr>
         </table>
       </section>
@@ -519,10 +519,10 @@ canvas {
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Jump</td><td>Jet flight</td><td>Hold jump on the ground for 0.5s to lift off and fly freely for 3s.</td></tr>
           <tr><td>Q</td><td>Drill Drive</td><td>Dash forward drilling through terrain; catches the opponent (22 damage), carries them and stuns for 0.7s. 5.2s cooldown.</td></tr>
-          <tr><td>E</td><td>Mini Ultra Cannon</td><td>A short charge (aim with up / down), then a close-range cannon blast: 16 damage, big knockback, blows a cone out of the terrain. Works mid-flight. 4.9s cooldown.</td></tr>
+          <tr><td>E</td><td>Mini Ultra Cannon</td><td>A short charge (aim with up / down), then a cannon blast that reaches 260px straight through walls: 16 damage, big knockback, blows a cone out of the terrain. Works mid-flight. 4.9s cooldown.</td></tr>
           <tr><td>R</td><td>Summon Puppet <em>(super, 40)</em></td><td>A computer-controlled Mechamaru (30 HP) fights beside you for 20s with melee, Drill Drive and flight. <b>Press R again while it's out to swap bodies</b> — you take over the puppet's position and it takes yours (1.5s cooldown).</td></tr>
           <tr><td>Click + F <em>(online)</em></td><td>Simple Domain (Sealed)</td><td>Kokichi never trained in New Shadow Style — he watched Miwa use Simple Domain and sealed his own copies into the mech. 6 seconds of protection from domain sure-hits, castable even while a domain has you stunned. Only <b>4 charges per match</b>.</td></tr>
-          <tr><td>F</td><td>Ultimate Mechamaru <em>(domain, 150)</em></td><td>Sink into the ground and burst out in a giant mech for 20s. Takes half damage and can't be stunned or knocked back. <b>Q</b> Pigeon Viola: six homing lasers (5 each). <b>E</b> Ultra Cannon: close-range blast for 38. <b>Attack</b>: mech punch for 7. <b>Jump</b>: jet-jump up through ceilings. <b>Down</b>: stomp through the floor (it also falls through any opening). When time runs out the mech overloads (20 damage nearby) and <b>Mechamaru dies</b>.</td></tr>
+          <tr><td>F</td><td>Ultimate Mechamaru <em>(domain, 150)</em></td><td>Sink into the ground and burst out in a giant mech for 20s. Takes half damage and can't be stunned or knocked back. <b>Q</b> Pigeon Viola: six big homing lasers (5 each) that bore straight through walls. <b>E</b> Ultra Cannon: a 420px blast for 38 that tears through terrain. <b>Attack</b>: mech punch for 7. <b>Jump</b>: jet-jump up through ceilings. <b>Down</b>: stomp through the floor (it also falls through any opening). When time runs out the mech overloads (20 damage nearby) and <b>Mechamaru dies</b>.</td></tr>
           <tr><td>Movement</td><td>Jet Flight</td><td>Hold jump on the ground to charge the jets, then fly freely for a few seconds.</td></tr>
         </table>
       </section>
@@ -547,7 +547,7 @@ canvas {
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Piercing Blood</td><td>Hold up to 4s and aim with up / down: 10 to 40 damage, longer beam with more charge, cuts through terrain. 3.8s cooldown.</td></tr>
-          <tr><td>E</td><td>Convergence</td><td>Create a blood orb that follows you; press again to detonate it for 12 damage and a knockback. 4.5s cooldown.</td></tr>
+          <tr><td>E</td><td>Convergence</td><td>Create a blood orb that follows you; press again to detonate it for 12 damage and a knockback. The blood splashes down into <b>blood pools</b> on the floor below — more fuel for Supernova. 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Slicing Exorcism <em>(super, 40)</em></td><td>A spinning blood ring that bounces off walls up to 4 times, 16 damage per hit.</td></tr>
           <tr><td>Passive</td><td>Bleeding</td><td>Whenever Choso takes damage he leaves a blood pool. Pools stay for the whole match, across rounds, with no limit.</td></tr>
           <tr><td>F</td><td>Supernova <em>(domain, 150)</em></td><td>Every blood pool on the map explodes in a chain, cratering the terrain and hitting anyone nearby. The more he's bled — and the closer the opponent is to the pools — the bigger it gets.</td></tr>
@@ -562,7 +562,7 @@ canvas {
           <tr><td>Q</td><td>Long Gavel</td><td>The handle stretches about 300px and sweeps forward: 12 damage and a knockback from far away. Cuts a line through terrain. 3.4s cooldown. <b>In the air:</b> he hangs in place and sweeps diagonally downward.</td></tr>
           <tr><td>E</td><td>Heavy Gavel</td><td>The head swells to giant size and slams down in front of him: 24 damage, huge knockback, leaves a crater. Slow wind-up. 5.2s cooldown. <b>In the air:</b> Plunging Gavel, which drives him straight down, spikes anyone underneath (18) and blasts a huge crater (14 to anyone nearby).</td></tr>
           <tr><td>R</td><td>Gavel Throw <em>(super, 40)</em></td><td>Throws the gavel (hold up or down to angle it). If it hits, the target is stunned and Higuruma rushes them at full speed, smashing through terrain, for a 16-damage finisher.</td></tr>
-          <tr><td>F</td><td>Deadly Sentencing <em>(domain, 150)</em></td><td>Both fighters are put on the stands for a trial. Each gets a row of key prompts; press them in order. A wrong key locks you out for half a second. If Higuruma finishes first, the verdict is <b>GUILTY</b>. If the defense finishes first, or the clock runs out with a tie, it's <b>NOT GUILTY</b>.</td></tr>
+          <tr><td>F</td><td>Deadly Sentencing <em>(domain, 150)</em></td><td>Both fighters are put on the stands for a trial. The court <b>confiscates the defendant's ability to jump</b> — for the whole domain and, on a GUILTY verdict, for as long as the executioner's sword lasts. Each gets a row of key prompts; press them in order. A wrong key locks you out for half a second. If Higuruma finishes first, the verdict is <b>GUILTY</b>. If the defense finishes first, or the clock runs out with a tie, it's <b>NOT GUILTY</b>.</td></tr>
           <tr><td>Verdict</td><td>Executioner's Sword</td><td>On a guilty verdict Higuruma holds the Executioner's Sword for 20 seconds: longer reach, and <b>any</b> melee hit kills instantly. An anti-domain technique (Simple Domain, Hollow Wicker Basket, Falling Blossom Emotion) blocks the execution.</td></tr>
           <tr><td>Movement</td><td>Objection Step</td><td>Double-tap left or right to quick-step a short distance (free, 1.1s apart).</td></tr>
           <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like he used against Sukuna: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 15s cooldown.</td></tr>
@@ -576,7 +576,7 @@ canvas {
           <tr><td>Q</td><td>Pachinko Balls</td><td>Fires a spread of 6 steel balls that arc and bounce off walls and floors. 4 damage each with a tiny flinch. 3.2s cooldown.</td></tr>
           <tr><td>E</td><td>Shutter Doors</td><td>Metal shutters <b>auto-aim</b>: they slam shut on the nearest opponent within 340px (either side) — 15 damage, trapped for 1s. With nobody in range, the shutter drops flat under Hakari as a <b>jump pad</b> that springs him high into the air (one bounce, lasts 3s). 4.9s cooldown.</td></tr>
           <tr><td>R</td><td>Rough Energy Punch <em>(special, 40)</em></td><td>A charged cursed-energy punch: 35 damage and sends the target flying across the map.</td></tr>
-          <tr><td>F</td><td>Idle Death Gamble <em>(domain, 150)</em></td><td>The entire map becomes his domain for 25s, with no frame lock. Every 5s the reels roll, with a 10% chance of 7-7-7 each time.</td></tr>
+          <tr><td>F</td><td>Idle Death Gamble <em>(domain, 150)</em></td><td>The entire map becomes his domain for 25s, with no frame lock. Every 5s the reels roll: a <b>25%</b> chance of 7-7-7, and every miss raises the next roll by 10% (Increased Probability), so roll 5 is 65%. <b>Jackpot Continuation:</b> when a jackpot runs out, the reels spin again — 50% to keep the rush going for another 15s (full heal), then 36%, 26% (up to 3 continuations).</td></tr>
           <tr><td>Jackpot</td><td>Fever</td><td>Instant full heal, and he <b>can't die for 30 seconds</b> (health stops at 1). R becomes <b>Jackpot Leap</b> (2 uses): rocket into the air, then crash down on the opponent for 45 damage in a huge radius. The domain closes once the jackpot hits.</td></tr>
           <tr><td>Movement</td><td>Fever</td><td>Runs 6% faster; during a jackpot he runs 30% faster and jumps 15% higher.</td></tr>
         </table>
@@ -589,7 +589,7 @@ canvas {
           <tr><td>Q</td><td>Axe Chop</td><td>An overhead chop straight down in front of her: 16 damage and the target is floored. Hits on airborne targets spike them into the ground. 3.4s cooldown.</td></tr>
           <tr><td>E</td><td>Axe Spin</td><td>She spins with the axe while drifting forward: three hits all around her (6 each); the last one knocks them away. Slows her fall in the air. 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Ui Ui</td><td>Press R to place Ui Ui where she's standing. He stays there for good: press R again to teleport to him as often as you like, with <b>no cooldown</b>. Hold <b>down</b> + R to move him to where you are now. He's only lost if Mei Mei dies (he carries over to the next round if she survives) or if the opponent damages him with a punch or projectile; then it takes 12s before she can call him again.</td></tr>
-          <tr><td>F</td><td>Bird Strike <em>(super, 150)</em></td><td>Summons a crow you steer with the movement keys while Mei Mei stands still. Press F again and it dives in a straight line until it hits someone, then explodes: <b>90 damage</b> on a direct hit (less to anyone caught nearby). It dives on its own after 6s, or if Mei Mei is hit.</td></tr>
+          <tr><td>F</td><td>Bird Strike <em>(super, 150)</em></td><td>Summons a crow you steer with the movement keys while Mei Mei stands still. Press F again and it dives in a straight line until it hits someone, then bursts into a <b>sphere of cursed energy</b> that sucks everything nearby toward its core: <b>90 damage</b> on a direct hit (less to anyone caught nearby). It dives on its own after 6s, or if Mei Mei is hit.</td></tr>
           <tr><td>Movement</td><td>Axe Momentum</td><td>Keeps full running speed while swinging her axe.</td></tr>
           <tr><td>Click + F <em>(online)</em></td><td>Ui Ui: Simple Domain</td><td>Ui Ui raises a box-shaped Simple Domain around himself for 6s; while Mei Mei stands inside it she's immune to domain sure-hits. Needs Ui Ui placed. 15s cooldown.</td></tr>
         </table>
@@ -627,7 +627,7 @@ canvas {
           <tr><td>Q</td><td>Cursed Buds</td><td>Throws 3 arcing seeds (hold down or up to throw them low or high). Each one that lands deals 5 damage and drains about 17% of the opponent's ultimate / domain bar. 5.2s cooldown.</td></tr>
           <tr><td>E</td><td>Flower Field</td><td>A field of flowers blooms on the ground in front of her for 4 seconds. Anyone standing in it is stunned briefly and takes 7 damage (once every 1.5s). 6.8s cooldown.</td></tr>
           <tr><td>R</td><td>Root Grab <em>(super, 35)</em></td><td>Aim with up / down, then a root lashes out up to 440px. If it catches the opponent it drags them right up to Hanami: 10 damage and a short stun.</td></tr>
-          <tr><td>F</td><td>Root Rampage <em>(ultimate, 150)</em></td><td>For 15 seconds a giant root bursts out and follows your <b>mouse</b> (online, your own mouse). The tip hits for 8 and knocks people around. Everything it grows through becomes a root platform anyone can stand on. The roots wither shortly after it ends. Without a mouse over the game, the root hunts the opponent on its own.</td></tr>
+          <tr><td>F</td><td>Root Rampage <em>(ultimate, 150)</em></td><td>For 12 seconds a giant root bursts out and follows your <b>mouse</b> (online, your own mouse). The tip hits for 14 and knocks people around. Everything it grows through becomes a root platform anyone can stand on. The roots wither shortly after it ends. Without a mouse over the game, the root hunts the opponent on its own.</td></tr>
           <tr><td>Movement</td><td>Nature's Spring</td><td>Jumps 10% higher.</td></tr>
           <tr><td>Click + F <em>(online)</em></td><td>Domain Amplification</td><td>Like she used against Gojo in Shibuya: 5s of immunity to domain sure-hits and 30% less damage taken, but no abilities while it's up. Press again to drop it early. 15s cooldown.</td></tr>
         </table>
@@ -669,7 +669,7 @@ canvas {
           <tr><td>Movement</td><td>Projection Sorcery</td><td>The fastest fighter (28% faster, building up to 50% after a second of running), but jumps 10% lower and deals 10% less damage. <b>Every 3rd hit of a quick string freezes the target in a frame for 0.6s</b> (at most once every 3s) — a free link into the next hit. To stop wall loops, his damage falls off within one string: half after 25 damage, a fifth after 40. But Projection Sorcery has a rule: <b>if Naoya whiffs Projection Dash, Frame Barrage or one of his Maximum Output moves, he breaks his own 24 fps motion and is frozen in a frame for 5s</b> (taking 14% more damage).</td></tr>
         </table>
         <h2>Vengeful Cursed Spirit (4th life)</h2>
-        <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). Endless mode: after he's been killed three times.</p>
+        <p>When Naoya drops to his last life he comes back as the cursed spirit he became after death: a skull-faced white shell. Pool grows to 220 CE (special grade). <b>The curse only lasts one minute</b> — when the timer under his HUD runs out, he dies. Endless mode: after he's been killed three times.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Rocket</td><td>Turns into a rocket for 2.4s that you steer with the movement keys. Smashes straight through terrain; 20 damage per hit; press Q again to blow up early (8 more around you). 6s cooldown.</td></tr>
@@ -708,7 +708,7 @@ canvas {
           <tr><td>Q</td><td>Garuda Grapple</td><td>Garuda shoots out and latches onto the nearest foe within 380px (either side), then reels Yuki in for a flying knee: 7 damage and a stun. With nobody in range it latches 260px ahead and pulls her there — a movement tool. 3.8s cooldown.</td></tr>
           <tr><td>E</td><td>Garuda Throw</td><td>She hurls Garuda like a missile: 10 damage and a knockback. In extreme mass it flies slower but hits like a truck and smashes terrain; in light mass it's faster. 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Mass Shift <em>(special)</em></td><td>Cycles her mass: <b>Regular</b> (nothing changes) → <b>Extreme</b> (every hit she lands does <b>double damage</b>, but she's 28% slower, jumps lower, moves cost 50% more CE and it burns 6 CE a second — at 0 it drops back to regular) → <b>Light</b> (45% faster, jumps 25% higher, moves cost 70% less CE, but only <b>25% damage</b>). Each shift costs <b>50% of her CE and 5 HP</b>.</td></tr>
-          <tr><td>F</td><td>Star Rage: Black Hole <em>(ultimate, 150)</em></td><td>She gives herself so much mass that she collapses into a black hole for 4s: it drags everyone in, eats the terrain around it, and crushes anyone at the centre (3 damage every 0.25s, unblockable), then bursts (8 and a launch). Like in her fight with Kenjaku, it costs her life: <b>Yuki self-destructs when it ends</b> and loses that life, so save it for when it wins the round.</td></tr>
+          <tr><td>F</td><td>Star Rage: Black Hole <em>(ultimate, 150)</em></td><td>She gives herself so much mass that she collapses into a black hole for 4s. It grows until it has <b>swallowed half the map</b>: it drags in everyone on the map, eats all the terrain inside it, and crushes anyone within its event horizon (3 damage every 0.25s, unblockable), then bursts (8 and a launch). Like in her fight with Kenjaku, it costs her life: <b>Yuki self-destructs when it ends</b> and loses that life, so save it for when it wins the round.</td></tr>
           <tr><td>Anti-domain</td><td>Simple Domain: New Shadow Style</td><td>Hold attack + F: 8s of protection from domain sure-hits.</td></tr>
         </table>
       </section>
@@ -897,10 +897,10 @@ const PV_LIFE            = 2800;
 const PV_COOLDOWN        = 4600;
 const UC_CHARGE          = 650;     // Ultra Cannon charge-up
 const UC_FIRE            = 420;     // blast duration (visual)
-const UC_RANGE           = 230;     // close range only
+const UC_RANGE           = 420;     // long blast that tears straight through walls
 const UC_DMG             = 38;
 const UC_COOLDOWN        = 8500;
-const MUC_CHARGE = 420, MUC_REC = 380, MUC_RANGE = 175, MUC_DMG = 16, MUC_CD = 6500;   // mini Ultra Cannon (no mech needed)
+const MUC_CHARGE = 420, MUC_REC = 380, MUC_RANGE = 260, MUC_DMG = 16, MUC_CD = 6500;   // mini Ultra Cannon (no mech needed)
 const MP_DUR             = 340;     // mech punch (attack key)
 const MP_DMG             = 7;
 const MP_COOLDOWN        = 650;
@@ -2243,7 +2243,8 @@ function drawClash(){
 const HAK_BALL_CD = 4200, HAK_BALL_N = 6, HAK_BALL_DMG = 4, HAK_BALL_SPD = 10;
 const HAK_DOOR_CD = 6500, HAK_DOOR_DMG = 15, HAK_DOOR_RANGE = 340, HAK_DOOR_CLOSE = 260, HAK_DOOR_HOLD = 1000, HAK_DOOR_H = 112;
 const HAK_PUNCH_REQ = 40, HAK_PUNCH_DMG = 35, HAK_PUNCH_WIND = 320, HAK_PUNCH_TOTAL = 700;
-const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.10;
+const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.25, GAMBLE_ODDS_UP = 0.10;   // each miss raises the next roll's odds (Increased Probability)
+const JACKPOT_CONT_ODDS = 0.5, JACKPOT_CONT_DUR = 15000, JACKPOT_CONT_MAX = 3;   // Continuation: when a jackpot runs out, the reels spin again
 const JACKPOT_DUR = 30000, JACKPOT_LEAPS = 2, JACKPOT_LEAP_DMG = 45, JACKPOT_LEAP_R = 170;
 const pachinkoBalls = [];   // {owner, x, y, vx, vy, bounces, life, hits:{}}
 const shutterDoors = [];    // {owner, x, y, t, hit}
@@ -2358,7 +2359,7 @@ function startGambleDomain(owner){
   snd('domain', owner.x); sayFor(owner, DOMAIN_LINES.gamble);
 }
 function hakariJackpot(h){
-  h.jackpotT = JACKPOT_DUR; h.jackpotLeaps = JACKPOT_LEAPS;
+  h.jackpotT = JACKPOT_DUR; h.jackpotLeaps = JACKPOT_LEAPS; h.jackCont = 0;
   h._hp = h.maxHp;                                   // instant full heal
   addRing(h.x+PW/2, h.y+PH/2, '#ffe066', 160); addRing(h.x+PW/2, h.y+PH/2, '#7fffd0', 100);
   addParts(h.x+PW/2, h.y+PH/2, '#ffe066', 40, 10); doShake(22);
@@ -2373,12 +2374,12 @@ function tickGamble(d, dt){
     G.spin -= dt;
     if(Math.random()<0.5) G.reels = G.reels.map((r, k) => G.spin < GAMBLE_SPIN*(0.55-0.15*k) ? r : 1 + (Math.random()*7|0));
     if(G.spin <= 0){
-      const win = G.force || Math.random() < GAMBLE_ODDS;
+      const win = G.force || Math.random() < GAMBLE_ODDS + GAMBLE_ODDS_UP*(G.misses||0);
       if(win) G.reels = [7,7,7];
       else { const a = 1+(Math.random()*7|0), b = 1+(Math.random()*7|0); let c = 1+(Math.random()*7|0); if(a===b && b===c) c = c%7+1; G.reels = Math.random()<0.3 ? [7,7,(Math.random()*6|0)+1] : [a,b,c]; }
       G.result = win ? 'jackpot' : 'miss'; G.resT = 1200;
       if(win){ G.jackpot = true; hakariJackpot(o); d.timer = 1600; }
-      else addSpeech(o.x+PW/2, o.y-70, 'MISS…', '#9aa', 900);
+      else { G.misses = (G.misses||0) + 1; addSpeech(o.x+PW/2, o.y-70, `MISS… ODDS UP (${Math.round((GAMBLE_ODDS + GAMBLE_ODDS_UP*G.misses)*100)}%)`, '#9aa', 1000); }
     }
     return;
   }
@@ -2624,8 +2625,11 @@ function tickMeiMei(dt){
       if(o.state!==S.MEICROW && o.state!==S.DEAD) meiCrowDash(c);   // Mei Mei got hit: crow commits
     }
     if(boom){
-      carveCircle(c.x, c.y, 40);
-      addExplosion(c.x, c.y); addRing(c.x, c.y, '#ffffff', 70); addRing(c.x, c.y, '#2a2a3a', CROW_R+30); doShake(22);
+      carveCircle(c.x, c.y, 56);
+      // the crow bursts into a sphere of raw cursed energy that collapses inward (no fire column)
+      meiBlasts.push({x:c.x, y:c.y, t:0, life:900}); addRing(c.x, c.y, '#d9d4ff', 90); addRing(c.x, c.y, '#3a2a6a', CROW_R+30); doShake(22); snd('orb', c.x);
+      for(const def of meiFoes(o)){ if(def.state===S.DEAD) continue; const ddx = c.x-(def.x+PW/2), ddy = c.y-(def.y+PH/2), dd = Math.hypot(ddx, ddy);
+        if(dd < CROW_R*2.2 && dd > 1){ def.vx += ddx/dd*7; def.vy += ddy/dd*4; } }        // sucked toward the core first
       for(const def of meiFoes(o)){
         if(!def.hittable) continue;
         const dx = def.x+PW/2-c.x, dy = def.y+PH/2-c.y, d = Math.hypot(dx, dy);
@@ -2639,6 +2643,23 @@ function tickMeiMei(dt){
       crows.splice(i,1);
       if(o.state===S.MEICROW) o.ss(o.onGround ? S.IDLE : S.AIR);
     }
+  }
+}
+const meiBlasts = [];   // synced: Bird Strike's cursed-energy implosion {x, y, t, life}
+function tickMeiBlasts(dt){ for(let i=meiBlasts.length-1;i>=0;i--){ const b = meiBlasts[i]; b.t += dt; if(b.t > b.life) meiBlasts.splice(i,1); } }
+function drawMeiBlasts(){
+  const t = Date.now();
+  for(const b of meiBlasts){
+    const p = b.t/b.life, grow = p < 0.35 ? p/0.35 : 1 - (p-0.35)/0.65*0.75, R = 20 + 70*grow, a = p < 0.8 ? 1 : (1-p)/0.2;
+    ctx.save(); ctx.translate(b.x, b.y); ctx.globalAlpha = a;
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R*1.6); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.45, 'rgba(40,20,90,0.95)'); g.addColorStop(0.8, 'rgba(180,160,255,0.5)'); g.addColorStop(1, 'rgba(180,160,255,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R*1.6, 0, Math.PI*2); ctx.fill();
+    for(let arm=0;arm<4;arm++){ ctx.save(); ctx.rotate(-t*0.008 + arm*Math.PI/2); ctx.strokeStyle = 'rgba(217,212,255,0.85)'; ctx.lineWidth = 2.5; ctx.beginPath();
+      for(let s=0;s<=1;s+=0.05){ const r = R*0.3 + s*R*1.3, an = s*2.4; s===0 ? ctx.moveTo(Math.cos(an)*r, Math.sin(an)*r) : ctx.lineTo(Math.cos(an)*r, Math.sin(an)*r); } ctx.stroke(); ctx.restore(); }
+    // feathers / debris pulled in
+    ctx.fillStyle = '#2a2a3a'; for(let k=0;k<12;k++){ const an = k*0.52 + t*0.004, r = R*1.8*(1 - ((t*0.002 + k*0.13) % 1)); ctx.fillRect(Math.cos(an)*r, Math.sin(an)*r, 4, 2); }
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI*2); ctx.stroke();
+    ctx.restore();
   }
 }
 function meiCrowDash(c){
@@ -3097,7 +3118,7 @@ function drawDagon(){
 const HANA_BUD_CD = 7000, BUD_N = 3, BUD_SPD = 8.5, BUD_DMG = 5, BUD_DRAIN = 25;
 const HANA_FIELD_CD = 9000, FIELD_W = 200, FIELD_LIFE = 4000, FIELD_GROW = 350, FIELD_DMG = 7, FIELD_STUN = 600, FIELD_REHIT = 1500;
 const HANA_GRAB_REQ = 35, GRAB_WIND = 160, GRAB_LEN = 440, GRAB_SPD = 26, GRAB_DRAG = 380, GRAB_DMG = 10;
-const RAMPAGE_MS = 15000, ROOT_SPD = 7.5, ROOT_R = 8, ROOT_TIP_R = 22, ROOT_DMG = 8, ROOT_REHIT = 900, ROOT_MAX_CELLS = 2600, ROOT_LINGER = 1800;
+const RAMPAGE_MS = 12000, ROOT_SPD = 7.5, ROOT_R = 8, ROOT_TIP_R = 22, ROOT_DMG = 14, ROOT_REHIT = 900, ROOT_MAX_CELLS = 2600, ROOT_LINGER = 1800;
 const MAT_ROOT = 14;
 const hanaBuds = [];      // {owner, x, y, vx, vy, t, stuck:ref|null, sx, sy}
 const flowerFields = [];  // {owner, x, y, t, hits:{}}
@@ -4047,13 +4068,12 @@ function tickMechLasers(dt){
     L.x += Math.cos(L.ang)*L.spd*f;
     L.y += Math.sin(L.ang)*L.spd*f;
     let dead = L.life<=0 || L.x<-40 || L.x>W+40 || L.y<-80;
-    if(!dead && L.age > 120 && terAt(L.x, L.y)){
-      carveCircle(L.x, L.y, 10); addParts(L.x, L.y, L.col, 6, 3); dead = true;
-    }
+    // Pigeon Viola lasers are bigger now and punch straight through walls (carving a tunnel as they go)
+    if(!dead && L.age > 60 && terAt(L.x, L.y)){ if(!IS_GUEST) carveCircle(L.x, L.y, 15); if(Math.random()<0.3) addParts(L.x, L.y, L.col, 3, 2); }
     if(L.y >= GND){ addParts(L.x, GND, L.col, 5, 3); dead = true; }
     if(!dead && t.hittable){
       const dx = (t.x+PW/2)-L.x, dy = (t.y+PH/2)-L.y;
-      if(dx*dx+dy*dy < 22*22){
+      if(dx*dx+dy*dy < 36*36){
         mechHitEnemy(L.owner, t, PV_DMG, L.col, 'light', Math.cos(L.ang)>=0?1:-1);
         addParts(L.x, L.y, L.col, 8, 4); addRing(L.x, L.y, L.col, 22); doShake(2);
         dead = true;
@@ -4075,13 +4095,13 @@ function drawMechLasers(){
     const pts = [...L.trail, {x:L.x, y:L.y}];
     for(let k=1;k<pts.length;k++){
       const a = k/pts.length;
-      ctx.strokeStyle = L.col; ctx.globalAlpha = a*0.55; ctx.lineWidth = 7*a;
+      ctx.strokeStyle = L.col; ctx.globalAlpha = a*0.55; ctx.lineWidth = 14*a;
       ctx.beginPath(); ctx.moveTo(pts[k-1].x, pts[k-1].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke();
-      ctx.strokeStyle = '#fff'; ctx.globalAlpha = a*0.9; ctx.lineWidth = 2*a;
+      ctx.strokeStyle = '#fff'; ctx.globalAlpha = a*0.9; ctx.lineWidth = 4*a;
       ctx.beginPath(); ctx.moveTo(pts[k-1].x, pts[k-1].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke();
     }
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(L.x, L.y, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(L.x, L.y, 6, 0, Math.PI*2); ctx.fill();
   }
   ctx.restore();
 
@@ -4790,7 +4810,7 @@ const terLog = [];
 function terrainReset(){
   terGen++; terLog.length = 0; terAnchor = null; if(terFallSeeds) terFallSeeds.length = 0; if(fallChunks) fallChunks.length = 0;
   try{ resetItems(); }catch(e){}
-  terCur.set(terBase); terBroke.fill(0); terBrokenList = []; terDirty = true; terClock = 0;
+  terCur.set(terBase); terBroke.fill(0); terBrokenList = []; terDirty = true; terClock = 0; terDomWas = false; terHoldUntil = 0;
 }
 
 // ── Collision queries ──
@@ -4939,22 +4959,44 @@ function terrainProjectilePass(){
   for(const b of piercingBeams) if(b.length>0) carveCapsule(b.x, b.y, b.x + b.dir*b.length, b.y, 4);
 }
 
+// Domains shatter every piece of terrain on the map. While a domain is open nothing grows back;
+// once it closes the map stays empty for a few seconds, then rebuilds — never right next to a fighter.
+const TER_DOMAIN_HOLD = 6000, TER_SAFE = 90, TER_REGROW_MAX = 320;
+let terDomWas = false, terHoldUntil = 0;
+function terShatterAll(){
+  if(IS_GUEST) return;
+  let n = 0;
+  for(let i=0;i<terCur.length;i++){ const v = terCur[i]; if(!v) continue;
+    terCur[i] = 0; terBroke[i] = -1e12; terBrokenList.push(i); n++;
+    if(n % 70 === 0){ const cx = (i % T_COLS)*T_CELL + 3, cy = T_TOP + Math.floor(i / T_COLS)*T_CELL + 3; addParts(cx, cy, TER_COLORS[v][0], 2, 5); } }
+  if(!n) return;
+  if(terFallSeeds) terFallSeeds.length = 0; if(typeof fallChunks!=='undefined') fallChunks.length = 0;
+  terDirty = true; doShake(18);
+  // viewers get the whole (now empty) map in one go instead of 30k single-cell changes
+  if(typeof NET!=='undefined') for(const c of NET.conns) c.terGen = -1;
+}
 function tickTerrain(dt){
   terClock += dt;
   terDebrisBudget = Math.min(60, terDebrisBudget + 40);
+  const domOn = !!activeDomain;
+  if(domOn && !terDomWas) terShatterAll();
+  if(!domOn && terDomWas) terHoldUntil = terClock + TER_DOMAIN_HOLD;
+  terDomWas = domOn;
+  if(domOn || terClock < terHoldUntil) return;
   terRespawnTick -= dt;
   if(terRespawnTick > 0 || !terBrokenList.length) return;
   terRespawnTick = 150;
   const bodies = [p1, p2]; if(puppet) bodies.push(puppet);
-  const boxes = bodies.map(b => b.bodyBox());
+  const boxes = bodies.filter(b => b && b.state!==S.DEAD).map(b => b.bodyBox());
   const keep = [];
   let restored = 0;
   for(const i of terBrokenList){
     if(terCur[i] || !terBase[i]){ continue; }
-    if(terClock - terBroke[i] < T_RESPAWN){ keep.push(i); continue; }
+    if(terClock - terBroke[i] < T_RESPAWN || restored >= TER_REGROW_MAX){ keep.push(i); continue; }
     const cx = (i % T_COLS)*T_CELL, cy = T_TOP + Math.floor(i / T_COLS)*T_CELL;
     let blocked = false;
-    for(const b of boxes) if(cx < b.x+b.w && cx+T_CELL > b.x && cy < b.y+b.h && cy+T_CELL > b.y){ blocked = true; break; }
+    // keep a clear pocket around every fighter so nobody gets sealed inside regrowing terrain
+    for(const b of boxes) if(cx < b.x+b.w+TER_SAFE && cx+T_CELL > b.x-TER_SAFE && cy < b.y+b.h+TER_SAFE && cy+T_CELL > b.y-TER_SAFE){ blocked = true; break; }
     if(blocked){ keep.push(i); continue; }
     terCur[i] = terBase[i]; restored++; terLog.push(i, terBase[i], 0);
     if(restored % 9 === 1) addParts(cx+3, cy+3, TER_COLORS[terBase[i]][0], 1, 1);
@@ -5719,7 +5761,7 @@ function domainFrame(owner){
 function startDomain(owner){
   const fr = domainFrame(owner);
   // The domain swallows the opponent: anyone outside gets pulled onto the caster's floor
-  if(fr.x || fr.y){
+  if(false){
     const opp = owner===p1 ? p2 : p1;
     if(opp){
       const inside = opp.x > fr.x+10 && opp.x < fr.x+VW-PW-10 && opp.y > fr.y-40 && opp.y+PH < fr.y+VH;
@@ -5826,10 +5868,12 @@ function tickDomain(dt, p1, p2){
     for(const db of d.debrisAngle){ db.a += db.spd * (dt/1000); db.r += db.drift*dt*0.1; db.r=Math.max(40,Math.min(120,db.r)); }
     // Keep enemy stunned the entire time
     const def = d.owner===p1 ? p2 : p1;
-    if(d.voidRise >= 0.4 && def.hittable && !(def.sdT>0) && def.state !== S.STUN && def.state !== S.DEAD){
-      def.vx=0; def.vy=0; def.ss(S.STUN, 800);
+    // Infinite Void: no moving and no fighting at all inside it — only an anti-domain technique gets you out
+    if(d.voidRise >= 0.4 && def && def.state !== S.DEAD && !(def.sdT>0)){
+      if(![S.STUN,S.RAGD,S.SLAM,S.DOMAIN].includes(def.state)){ def.vx=0; def.vy=Math.max(0, def.vy); def.ss(S.STUN, 800); }
+      if(def.state === S.STUN){ def.sTimer = 0; def.vx = 0; }   // keep refreshing stun
+      def.voidLock = 200;
     }
-    if(def.state === S.STUN) def.sTimer = 0; // keep refreshing stun
   }
 
   if(d.timer <= 0){ activeDomain = null; return; }
@@ -5841,10 +5885,28 @@ function tickDomain(dt, p1, p2){
   }
 }
 
+// the domain floods the whole map: an ambient wash in the domain's colours behind the arena around the caster
+const DOMAIN_AMBIENT = {shrine:['#1c0306','#4a0a10'], void:['#01020c','#0a1440'], love:['#14060f','#3a1030'], court:['#0e0906','#2a1a0e'], womb:['#0c0418','#2a1048'],
+  volcano:['#1a0602','#5a1804'], ocean:['#021220','#0a3a5a'], soul:['#09080c','#2a2234'], moon:['#000000','#16161c']};
+function drawDomainAmbient(){
+  const d = activeDomain, C = DOMAIN_AMBIENT[d.type]; if(!C) return;
+  const a = Math.max(0, Math.min(1, (d.totalDuration - d.timer)/900, d.timer/700));
+  const fr = d.frame || {x:0, y:0}, cx = fr.x + VW/2, cy = fr.y + VH/2, t = Date.now();
+  ctx.save(); ctx.globalAlpha = a*0.94;
+  const g = ctx.createRadialGradient(cx, cy, 80, cx, cy, Math.max(W, H)*1.1); g.addColorStop(0, C[1]); g.addColorStop(1, C[0]);
+  ctx.fillStyle = g; ctx.fillRect(-200, -600, W+400, H+1200);
+  // a little life in the wash so it reads as the same space, not a backdrop
+  ctx.globalAlpha = a*0.5;
+  for(let k=0;k<60;k++){ const x = ((k*397.3 + t*0.01*(k%3+1)) % (W+200)) - 100, y = ((k*211.7) % (H+400)) - 200;
+    ctx.fillStyle = d.type==='void' ? '#bfe0ff' : d.type==='shrine' ? '#ff4a4a' : d.type==='volcano' ? '#ffb070' : d.type==='ocean' ? '#8fd0ff' : '#c9b8ff';
+    ctx.fillRect(x, y, d.type==='shrine' ? 18 : 2, d.type==='shrine' ? 1.5 : 2); }
+  ctx.restore();
+}
 function drawDomain(){
   if(!activeDomain) return;
   if(activeDomain.type === 'gamble'){ drawGambleWorld(); return; }
   const fr = activeDomain.frame || {x:0, y:0};
+  if(fr.x || fr.y) drawDomainAmbient();
   ctx.save(); ctx.translate(fr.x, fr.y);
   withView(() => {
     if(activeDomain.type === 'shrine') drawShrineDomain();
@@ -5857,6 +5919,20 @@ function drawDomain(){
     else if(activeDomain.type === 'moon') drawMoonDomain();
     else drawVoidDomain();
   });
+  ctx.restore();
+  if(fr.x || fr.y) drawDomainFeather(fr);
+}
+// soften the arena's edges into the map-wide wash so the domain reads as one space
+function drawDomainFeather(fr){
+  const d = activeDomain, C = DOMAIN_AMBIENT[d.type]; if(!C) return;
+  const a = Math.max(0, Math.min(1, (d.totalDuration - d.timer)/900, d.timer/700))*0.94, B = 140;
+  const hex = C[1], r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), bl = parseInt(hex.slice(5,7),16);
+  const col = al => `rgba(${r},${g},${bl},${al})`;
+  ctx.save();
+  for(const [x0,y0,x1,y1,rx,ry,rw,rh] of [[fr.x,0,fr.x+B,0, fr.x,fr.y,B,VH], [fr.x+VW,0,fr.x+VW-B,0, fr.x+VW-B,fr.y,B,VH], [0,fr.y,0,fr.y+B, fr.x,fr.y,VW,B], [0,fr.y+VH,0,fr.y+VH-B, fr.x,fr.y+VH-B,VW,B]]){
+    const gr = ctx.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, col(a)); gr.addColorStop(1, col(0));
+    ctx.fillStyle = gr; ctx.fillRect(rx, ry, rw, rh);
+  }
   ctx.restore();
 }
 
@@ -7042,7 +7118,7 @@ function drawAura(pl, cx, feetY){
 // ═══ TELEPORTS — one clean landing for every blink / swap ═══
 // Keeps the fighter inside the arena (and an open domain), pushes them out of walls, settles them on a floor that's
 // right under them, kills leftover momentum, and tells the movement code not to "sweep" from the old spot this frame.
-function tpFrame(){ const f = activeDomain && activeDomain.frame; return f && (f.x || f.y) ? f : null; }
+function tpFrame(){ return null; }   // domains cover the whole map now: teleports use the map bounds
 function tpInArena(x, y){ const f = tpFrame(); if(!f) return x > -PW && x < W && y < GND+10; return x > f.x-PW && x < f.x+VW && y > f.y-80 && y < f.y+VH; }
 function tpFree(x, y){ const f = tpFrame(), x0 = f ? f.x+10 : 10, x1 = f ? f.x+VW-PW-10 : W-PW-10; return x >= x0 && x <= x1 && !terSolid(x, y+0.5, PW, PH-1); }
 function safeTeleport(pl, x, y, keepVx){
@@ -7334,11 +7410,7 @@ class Player {
       if((this._tpN||0)!==tp0){ if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick(); }   // teleported: already placed cleanly
       else if(this._moveTerrain(px,py)) this.onGround=true;
     }
-    if(activeDomain && activeDomain.frame && (activeDomain.frame.x || activeDomain.frame.y)){
-      const fr = activeDomain.frame;
-      this.x = Math.max(fr.x+10, Math.min(fr.x+VW-PW-10, this.x));
-      if([S.RAGD,S.SLAM,S.DEAD].includes(this.state)) this.rdX = Math.max(fr.x+10, Math.min(fr.x+VW-PW-10, this.rdX));
-    }
+
   }
 
   // Resolve movement from (px,py) to (this.x,this.y) against terrain. Returns true if standing.
@@ -7558,7 +7630,15 @@ class Player {
       if(this.jackpotT>0){
         this.jackpotT = Math.max(0, this.jackpotT-dt);
         if(Math.random()<0.5) addParts(this.x+PW/2+(Math.random()-0.5)*PW, this.y+PH*Math.random(), Math.random()<0.5 ? '#7fffd0' : '#ffe066', 1, 2);
-        if(this.jackpotT<=0){ this.jackpotLeaps = 0; addSpeech(this.x+PW/2, this.y-10, 'FEVER OVER', '#9aa', 1000); }
+        if(this.jackpotT<=0){
+          // Jackpot Continuation: like a pachinko rush, the jackpot can keep going (each time it's harder)
+          const n = this.jackCont||0;
+          if(n < JACKPOT_CONT_MAX && Math.random() < JACKPOT_CONT_ODDS/Math.pow(1.4, n)){
+            this.jackCont = n + 1; this.jackpotT = JACKPOT_CONT_DUR; this.jackpotLeaps = Math.max(this.jackpotLeaps||0, 1); this._hp = this.maxHp;
+            addRing(this.x+PW/2, this.y+PH/2, '#ffe066', 120); doShake(12); snd('jackpot', this.x);
+            showTxt(`CONTINUATION ×${this.jackCont}!`, 1400); addSpeech(this.x+PW/2, this.y-20, 'THE RUSH CONTINUES', '#7fffd0', 1200); sayFor(this, 'It\'s still going!');
+          } else { this.jackpotLeaps = 0; addSpeech(this.x+PW/2, this.y-10, n ? `FEVER OVER (${n} CONTINUATIONS)` : 'FEVER OVER', '#9aa', 1200); }
+        }
       }
       const free = !abilityBlocked && [S.IDLE,S.WALK,S.AIR].includes(this.state);
       if(ab1Edge && free && this.hakBallCd<=0){
@@ -7883,7 +7963,11 @@ class Player {
     }
 
     const atkEdge=keys[c.atk]&&!this.atkDown;
-    const jmpEdge=keys[c.jmp]&&!this.jmpDown;
+    let jmpEdge=keys[c.jmp]&&!this.jmpDown;
+    // Deadly Sentencing: the court confiscates the defendant's ability to jump
+    const _jOpp = this===p1 ? p2 : this===p2 ? p1 : null;
+    if(jmpEdge && !this.isPuppet && ((activeDomain && activeDomain.type==='court' && activeDomain.owner!==this) || (_jOpp && _jOpp.type==='higuruma' && _jOpp.higuSwordT>0))){
+      jmpEdge = false; if(terClock - (this._noJumpT||-1e9) > 900){ this._noJumpT = terClock; addSpeech(this.x+PW/2, this.y-22, 'JUMP CONFISCATED', '#f1d27a', 800); } }
     if(!keys[c.atk]) this.atkDown=false; else this.atkDown=true;
     if(!keys[c.jmp]) this.jmpDown=false; else this.jmpDown=true;
     if(this.comboTimer>COMBO_RESET) this.combo=0;
@@ -7899,6 +7983,9 @@ class Player {
         const kx = k.x + KF.x, ky = KF.y + 430;
         if(!k.grabbed && Math.abs((this.x+PW/2)-kx)<55 && this.onGround){
           k.grabbed=true;
+          // every katana he picks up speeds him up for 5s (stacks up to +60%)
+          this.swordStacks = terClock < (this.swordSpdUntil||0) ? Math.min(3, (this.swordStacks||0) + 1) : 1; this.swordSpdUntil = terClock + 5000;
+          addSpeech(this.x+PW/2, this.y-22, `SPEED +${this.swordStacks*20}%`, '#cc88ff', 700);
           this.jacobLadderCharge=Math.min(JACOB_LADDER_REQ,this.jacobLadderCharge+1);
           if(this.jacobLadderCharge>=JACOB_LADDER_REQ) this.jacobReady=true;
           addParts(kx,ky,'#cc88ff',10,5); addRing(kx,ky,'#cc88ff',35); doShake(3);
@@ -9816,6 +9903,7 @@ class Player {
     if(floods.length){ if(inFlood(this, false)) spd *= 0.55; if(this.type==='dagon' && inFlood(this, true)) spd *= 1.4; }
     if(this._vow('heavenly')) spd *= 1.3;
     if(this.gardenT>0) spd *= MEG_GARDEN_SPD;
+    if(this.swordSpdUntil && terClock < this.swordSpdUntil) spd *= 1 + 0.2*(this.swordStacks||1);   // Yuta: katanas picked up in his domain
     if(this.type==='yuki'){ const M = yukiMass(this); spd *= M.spd; jmp *= M.jmp; }
     if(this.rabbitT>0) spd *= 0.7;
     if(this.wellT>0){ spd *= 0.15; jmp *= 0.4; }
@@ -9962,6 +10050,11 @@ class Player {
       const dx = def.x+PW/2 - o.x, dy = def.y+PH/2 - o.y;
       if(Math.hypot(dx, dy) < CHOSO_CONV_R+16) chosoHit(this, def, CHOSO_CONV_DMG, Math.sign(dx||1)*9, -6, RAGD_MS);
     }
+    // the orb's blood splashes down as pools on the floor below (more fuel for Supernova)
+    for(const off of [-34, 0, 34]){ const x = o.x + off + (Math.random()-0.5)*10, y = terGroundTop(x-6, 12, o.y, true);
+      if(y - o.y > 400) continue;
+      const near = bloodPools.find(b => Math.abs(b.x-x) < 26 && Math.abs(b.y-y) < 10);
+      if(near) near.size = Math.min(30, near.size + 6); else bloodPools.push({x, y, size: off===0 ? 14 : 9}); }
     this.chosoConvCd = CHOSO_CONV_CD;
   }
   _chosoSupernova(){
@@ -11545,6 +11638,7 @@ class Player {
         ctx.strokeStyle='rgba(176,124,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
         ctx.fillStyle = ready||on ? '#f4eaff' : '#9a88b8'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
         ctx.fillText(on ? 'TIME CELL MOON PALACE' : ready ? `MOON PALACE [${keyLbl(this,'ult')}]` : `DOMAIN ${Math.floor(pct*100)}%`, bx+bw/2, domY+10);
+        if(this.curseT>0 && !isTraining()){ ctx.fillStyle = this.curseT < 10000 ? '#ff6a6a' : '#c9b0ff'; ctx.font=`700 10px 'Rajdhani',sans-serif`; ctx.fillText(`CURSE FADES IN ${Math.ceil(this.curseT/1000)}s`, bx+bw/2, domY+26); }
       } else {
         ctx.strokeStyle='rgba(230,211,163,0.35)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
         ctx.fillStyle = '#9a8c6a'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
@@ -14012,7 +14106,7 @@ function drawTruck(tr){
 //  4th life → Vengeful Cursed Spirit: Rocket · Frame Field · Time Cell Moon Palace
 //  Passive: speed builds while he runs; every 3rd hit of a quick string freezes the foe in a frame.
 // ═══════════════════════════════════════════════════════════════════
-const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9;
+const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9, NAO_CURSE_MS = 60000;   // the vengeful curse only lasts a minute
 const NAO_DASH_CD = 5000, NAO_DASH_SPD = 21, NAO_DASH_MS = 420, NAO_DASH_DMG = 14;
 const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 420], NAO_COMBO_FIN = 600, NAO_COMBO_JAB = 3, NAO_COMBO_KICK = 9;
 const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 5000, NAO_FRAME_DMG_IN = 1.14;
@@ -14127,7 +14221,7 @@ function drawNaoGame(){
 function naoyaCurse(pl){
   if(!pl || pl.type==='naoyac') return;
   pl.baseType = 'naoya'; pl.type = 'naoyac'; pl.name = 'NAOYA (CURSE)'; pl.charColor = '#9a6fd6'; pl.charDimColor = '#3a2560';
-  pl.ce = undefined; pl.ceMax = undefined;
+  pl.ce = undefined; pl.ceMax = undefined; pl.curseT = NAO_CURSE_MS;
   addRing(pl.x+PW/2, pl.y+PH/2, '#9a6fd6', 120); addParts(pl.x+PW/2, pl.y+PH/2, '#5a3a8a', 30, 7); doShake(12);
   showTxt('NAOYA RETURNS AS A CURSE', 1600); sayFor(pl, 'I came back to kill you myself.');
 }
@@ -14146,6 +14240,11 @@ function naoLifeCheck(pl){
 
 // ── per-fighter ability block (called from _updateCore) ──
 Player.prototype._naoyaAbilities = function(dt, e1, e2, e3, eD, blocked){
+  if(this.type==='naoyac' && this.curseT>0 && !isTraining() && this.state!==S.DEAD){
+    this.curseT = Math.max(0, this.curseT - dt);
+    if(this.curseT<=0){ addSpeech(this.x+PW/2, this.y-30, 'THE CURSE FADES', '#c9b0ff', 1400); showTxt('NAOYA\'S CURSE FADES AWAY', 1400);
+      addParts(this.x+PW/2, this.y+PH/2, '#5a3a8a', 30, 6); this._rawDmg = true; this.hp = 0; this._rawDmg = false; this._hp = 0; this._initRd(0,-2,0.05); this.ss(S.DEAD); return; }
+  }
   for(const k of ['naoDashCd','naoComboCd','naoRocketCd','naoFieldCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
   const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), opp = this===p1 ? p2 : p1;
   if(this.type==='naoya'){
@@ -14973,25 +15072,28 @@ Player.prototype._tickYukiHole = function(dt){
   this.holeT = Math.max(0, (this.holeT||0) - dt);
   const cx = this.holeX, cy = this.holeY, k = dt/16.67, grow = Math.min(1, (YUKI_HOLE_MS - this.holeT)/900);
   this.x = cx - PW/2; this.y = cy - PH*0.45;
-  if(!IS_GUEST && Math.random() < 0.35) carveCircle(cx + (Math.random()-0.5)*80*grow, cy + (Math.random()-0.5)*80*grow, 10 + 24*grow);
+  // it keeps growing until it has swallowed half the map: everything inside the event horizon is eaten
+  const CR = yukiHoleRadius(this), PR = Math.max(W, H)*0.75;
+  if(!IS_GUEST){ for(let n=0;n<3;n++){ const a = Math.random()*Math.PI*2, r = Math.random()*CR; carveCircle(cx + Math.cos(a)*r, cy + Math.sin(a)*r, 14 + CR*0.08); }
+    if(Math.random()<0.5){ const a = Math.random()*Math.PI*2; carveCircle(cx + Math.cos(a)*CR, cy + Math.sin(a)*CR, 18); } }
   for(const d of olFoes(this)){
     if(d.state===S.DEAD) continue;
     const dx = cx - (d.x+PW/2), dy = cy - (d.y+PH/2), dist = Math.hypot(dx, dy);
-    if(dist > YUKI_HOLE_R*1.6) continue;
-    const pull = (1.4 + 3.2*(1 - Math.min(1, dist/(YUKI_HOLE_R*1.6))))*grow;
+    if(dist > PR) continue;
+    const pull = (1.6 + 3.6*(1 - Math.min(1, dist/PR)))*grow;
     if([S.RAGD,S.SLAM].includes(d.state)){ d.rdVx += dx/dist*pull*0.4*k; d.rdVy += dy/dist*pull*0.4*k; }
     else { d.vx = dx/(dist||1)*pull*2.2; d.vy = Math.min(d.vy, 0) + dy/(dist||1)*pull*0.8*k; }
   }
   this.holeTick = (this.holeTick||0) + dt;
   if(this.holeTick >= YUKI_HOLE_TICK){ this.holeTick = 0;
     for(const d of olFoes(this)){ if(d.state===S.DEAD) continue; const dist = Math.hypot(cx - (d.x+PW/2), cy - (d.y+PH/2));
-      if(dist < 90*Math.max(0.5, grow)){ d._ubk = true; olHit(this, d, YUKI_HOLE_DMG, {any:true, stun:300, col:'#7a4aff'}); d._ubk = false; } }
+      if(dist < Math.max(90, yukiHoleRadius(this))){ d._ubk = true; olHit(this, d, YUKI_HOLE_DMG, {any:true, stun:300, col:'#7a4aff'}); d._ubk = false; } }
     doShake(4);
   }
   if(this.holeT <= 0){
     // the mass collapses — Star Rage this heavy costs her own body
     this.iframes = 0; addRing(cx, cy, '#7a4aff', 200); addParts(cx, cy, '#1a0a30', 40, 10); doShake(20); snd('boom', cx);
-    for(const d of olFoes(this)) if(Math.hypot(cx - (d.x+PW/2), cy - (d.y+PH/2)) < 160) olHit(this, d, 8, {any:true, rag:[Math.sign(d.x+PW/2-cx||1)*16, -10, RAGD_MS*1.3], col:'#7a4aff'});
+    for(const d of olFoes(this)) if(Math.hypot(cx - (d.x+PW/2), cy - (d.y+PH/2)) < yukiHoleRadius(this) + 160) olHit(this, d, 8, {any:true, rag:[Math.sign(d.x+PW/2-cx||1)*16, -10, RAGD_MS*1.3], col:'#7a4aff'});
     // like her last stand against Kenjaku, the black hole takes Yuki with it
     const lost = this.hp; this._rawDmg = true; this.jackpotT = 0; this.hp = 0; this._rawDmg = false; this._hp = 0; addDmg(cx, cy-30, Math.ceil(lost), '#c0182a');
     addSpeech(cx, cy-50, 'SELF-DESTRUCTED', '#c9b0ff', 1400); showTxt('YUKI COLLAPSES INTO HER OWN BLACK HOLE', 1400);
@@ -15063,10 +15165,12 @@ function drawYuki(){
     }
   }
 }
+// event-horizon radius: grows over the 4.2s until it covers half the map's width
+function yukiHoleRadius(pl){ const k = Math.min(1, (YUKI_HOLE_MS - (pl.holeT||0))/YUKI_HOLE_MS); return 40 + (W*0.25 - 40)*k*k*(3 - 2*k); }
 function drawYukiHole(pl){
   const cx = pl.holeX, cy = pl.holeY, t = Date.now(), grow = Math.min(1, (YUKI_HOLE_MS - (pl.holeT||0))/900);
   ctx.save();
-  const R = 26 + 30*grow;
+  const R = yukiHoleRadius(pl);
   const g = ctx.createRadialGradient(cx, cy, R*0.6, cx, cy, R*3.2); g.addColorStop(0, 'rgba(122,74,255,0.55)'); g.addColorStop(0.4, 'rgba(255,170,90,0.25)'); g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R*3.2, 0, Math.PI*2); ctx.fill();
   // accretion disk
@@ -15293,7 +15397,7 @@ const CHAR_TIPS = {
   todo:     ['Haymaker in the air becomes a meteor dive.', 'Online, click an item or a fighter first to choose who Boogie Woogie swaps with.', 'With your brother out, hold {down} and press {ab2} to swap with him.', 'Long falls end in a shockwave that stuns anyone close.'],
   choso:    ['Hold {ab1} to charge Piercing Blood, aim with {jump} / {down}.', 'The Convergence orb follows you — press {ab2} again to detonate it.', 'You leave blood pools when hurt; Supernova ({ult}) detonates all of them, so fight near your blood.'],
   higuruma: ['Double-tap a direction to dash (Objection Step).', 'Heavy Gavel in the air becomes a plunge.', 'Deadly Sentencing is a key-press race — follow the prompts faster than the defendant. Guilty = a 20s instakill sword.'],
-  hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Nobody in range? Shutter Doors becomes a jump pad under you: great for reaching high platforms or escaping.', 'Idle Death Gamble rolls a 10% jackpot every 5s; a jackpot makes you unkillable.'],
+  hakari:   ['Shutter Doors trap them for 1s — follow up with Rough Punch.', 'Nobody in range? Shutter Doors becomes a jump pad under you: great for reaching high platforms or escaping.', 'Idle Death Gamble: 25% jackpot each roll, +10% after every miss. When a jackpot ends it can CONTINUE (50%, then less).'],
   naoya:    ['Projection Dash stops on the first fighter it reaches — line it up.', 'Every 3rd hit of a quick string freezes them in a frame for 0.6s: chain straight into Frame Barrage or a dash.', '24 FPS: mix {atk} in with the directions to make your motion hard to follow.', 'You get 4 lives but only 75 HP each. The last one is spent as a cursed spirit.', 'Don\'t whiff: a missed Projection Dash or Barrage freezes YOU in a frame for 5s.'],
   naoyac:   ['Rocket steers with {left} {right} {jump} {down}; press {ab1} again to blow up early.', 'Lay a Frame Field where they\'ll walk, then press {ab2} to set it off — caught fighters take 22.', 'In Time Cell Moon Palace they only get hurt while moving: freeze them in frames and let the domain work.'],
   yuki:     ['Extreme mass doubles every hit you land — punches included — but you\'re slow and it burns CE. Switch when you have them cornered.', 'Light mass is for running and chasing: very fast, cheap moves, but only 25% damage.', 'Each mass shift costs half your CE and 5 HP, so don\'t flip back and forth.', 'Black Hole kills you when it ends (you lose that life): use it to take them down with you, or when they\'re already low.', 'Enemy domain? Hold {atk} and press {ult} for Simple Domain.'],
@@ -15531,7 +15635,7 @@ function drawEffects(pl, x, flip){
 }
 
 function clearProjectiles(){
-  naoFrames.length=0; naoGame=null; shikis.length=0; garudas.length=0;
+  naoFrames.length=0; naoGame=null; shikis.length=0; garudas.length=0; meiBlasts.length=0;
   parts.length=0; rings.length=0; dmgNums.length=0; cleaves.length=0;
   dismantleEvents.length=0; slashMarks.length=0;
   fugaShots.length=0; explosions.length=0; flameTrails.length=0;
@@ -15668,27 +15772,27 @@ const MOVE_INFO = {
   sukuna:   [['ab1','Dismantle','Slicing projectile (18). Hit = chain it again for 10 CE.'], ['ab2','Cleave','Steps in, short wind-up, then 6 slashes (30).'],
              ['ab3','Fuga · super','Aim with up / down. Unstoppable after 0.3s. 55 + explosion.'], ['ult','Malevolent Shrine','Domain: constant slashes on the opponent.'], ['move','Spider Web','Dismantle + Cleave together, 70%+ CE: 260px web (24).']],
   gojo:     [['ab1','Lapse Blue','Steerable orb that pulls; press again to burst.'], ['ab2','Reversal Red','Steerable orb that blasts the target away.'],
-             ['ab3','Hollow Purple · super','Aimable orb (50) that tunnels through walls.'], ['ult','Infinite Void','Domain: the opponent is frozen in place.'], ['move','Infinity Float','Hold jump while falling to glide.']],
+             ['ab3','Hollow Purple · super','Aimable orb (50) that tunnels through walls.'], ['ult','Infinite Void','Domain: they can\'t move or fight — only anti-domain escapes.'], ['move','Infinity Float','Hold jump while falling to glide.']],
   yuji:     [['atk','Punch combo','3rd hit starts a Black Flash timing bar.'], ['ab1','Piercing Blood','Hold to charge (10–30), aim with up / down.'],
-             ['ab2','Divergent Combo','Lunge + two punches + kick (25).'], ['ab3','Black Flash · super','Lunge, then time the spark: 35 damage.'], ['ult','Dismantle (ultimate)','Giant slash across the screen (70).']],
+             ['ab2','Divergent Combo','Lunge + two punches + kick (20).'], ['ab3','Black Flash · super','Lunge, then time the spark: 28 damage.'], ['ult','Dismantle (ultimate)','Giant slash across the screen (55).']],
   yuta:     [['ab1','Slice & Dice','Five slashes that drag the target (20).'], ['ab2','Cursed Fist','Leap, steer, then slam a crater (28).'],
-             ['ab3','Copy · super','Touch the foe, then use their signature move once.'], ['ult','Authentic Mutual Love','Domain: grab katanas → Jacob\'s Ladder.'], ['move','Special-Grade Speed','Fastest runner.']],
+             ['ab3','Copy · super','Touch the foe, then use their signature move once.'], ['ult','Authentic Mutual Love','Domain: grab katanas (+20% speed each) → Jacob\'s Ladder.'], ['move','Special-Grade Speed','Fastest runner.']],
   mechamaru:[['ab1','Drill Drive','Dash through terrain, carry + stun (22).'], ['ab2','Mini Cannon','Short charge, aim, close-range blast (16).'],
-             ['ab3','Summon Puppet · super','AI Mechamaru for 20s. Press again to swap bodies with it.'], ['ult','Ultimate Mechamaru','Giant mech for 20s… then you die.'], ['move','Jet Flight','Hold jump on the ground, then fly.']],
+             ['ab3','Summon Puppet · super','AI Mechamaru for 20s. Press again to swap bodies with it.'], ['ult','Ultimate Mechamaru','Giant mech 20s: big wall-piercing lasers + long cannon. Then you die.'], ['move','Jet Flight','Hold jump on the ground, then fly.']],
   todo:     [['ab1','Haymaker','Huge-knockback punch (14). In the air: meteor dive.'], ['ab2','Boogie Woogie','Clap to swap places (click to pick a target online).'],
              ['ab3','Imaginary Brother · super','His best friend rushes in for a 3-hit combo (17).'], ['ult','Unlimited Boogie','Boogie Woogie has no cooldown for 20s.'], ['move','Heavyweight Landing','Big falls stun anyone close.']],
-  choso:    [['ab1','Piercing Blood','Hold to charge (10–40), aim with up / down.'], ['ab2','Convergence','Blood orb follows you; press again to detonate (12).'],
+  choso:    [['ab1','Piercing Blood','Hold to charge (10–40), aim with up / down.'], ['ab2','Convergence','Blood orb follows you; detonate (12) — it leaves blood pools.'],
              ['ab3','Slicing Exorcism · super','Blood ring bouncing off walls (16 per hit).'], ['ult','Supernova','Every blood pool he has bled explodes.'], ['move','Bleeding','Taking damage leaves blood pools.']],
   higuruma: [['ab1','Long Gavel','Gavel stretches ~300px and sweeps (12).'], ['ab2','Heavy Gavel','Giant overhead smash (24). In the air: plunge.'],
-             ['ab3','Gavel Throw · super','Hit = stun + rush them down (8 + 16).'], ['ult','Deadly Sentencing','Key-press trial: win = 20s instakill sword.'], ['move','Objection Step','Double-tap a direction to dash.']],
+             ['ab3','Gavel Throw · super','Hit = stun + rush them down (8 + 16).'], ['ult','Deadly Sentencing','Key-press trial (they can\'t jump): win = 20s instakill sword.'], ['move','Objection Step','Double-tap a direction to dash.']],
   hakari:   [['ab1','Pachinko Balls','Spread of bouncing steel balls (4 each).'], ['ab2','Shutter Doors','Auto-aims: 15 + trapped 1s. Out of range = jump pad.'],
-             ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25s; 10% jackpot every 5s → unkillable.'], ['move','Fever','Faster during a jackpot.']],
+             ['ab3','Rough Punch · super','35 damage, sends them flying.'], ['ult','Idle Death Gamble','25%+ jackpot every 5s (rises on misses); jackpots can continue.'], ['move','Fever','Faster during a jackpot.']],
   naoya:    [['ab1','Projection Dash','Sprints and punches the first foe in reach (14). Miss = frozen.'], ['ab2','Frame Barrage','Four frame-apart jabs (3 each) and a launching kick (9).'],
-             ['ab3','24 FPS · super','Copy his motion (12 keys, 24 online) or be frozen for 5s.'], ['ult','Vengeful Curse','No domain yet: his last life returns him as a curse.'], ['move','Projection Sorcery','Fastest; every 3rd quick hit freezes them. 4 lives of 75 HP.']],
+             ['ab3','24 FPS · super','Copy his motion (12 keys, 24 online) or be frozen for 5s.'], ['ult','Vengeful Curse','His last life returns him as a curse — for one minute.'], ['move','Projection Sorcery','Fastest; every 3rd quick hit freezes them. 4 lives of 75 HP.']],
   naoyac:   [['ab1','Rocket','Steerable rocket (20 per hit). Press again to detonate.'], ['ab2','Frame Field','Five frames ahead; press again to detonate (22 if caught).'],
              ['ab3','24 FPS · super','The frame prompt: miss a key = frozen for 5s.'], ['ult','Time Cell Moon Palace','Domain: moving tears their cells (2 every 0.25s).'], ['move','Cursed Projection','Even faster; still freezes every 3rd quick hit.']],
   yuki:     [['ab1','Garuda Grapple','Garuda grabs the nearest foe (380px) and reels her in: knee for 7.'], ['ab2','Garuda Throw','Throws Garuda as a missile (10). Heavier mass = bigger hit.'],
-             ['ab3','Mass Shift · special','Regular → Extreme (2× dmg, slow) → Light (fast, 25% dmg). 5 HP.'], ['ult','Black Hole','Black hole for 4s: pulls and crushes. Then she self-destructs.'], ['move','Star Rage','Mass changes her speed. Anti-domain: Simple Domain.']],
+             ['ab3','Mass Shift · special','Regular → Extreme (2× dmg, slow) → Light (fast, 25% dmg). 5 HP.'], ['ult','Black Hole','Swallows half the map in 4s. Then she self-destructs.'], ['move','Star Rage','Mass changes her speed. Anti-domain: Simple Domain.']],
   megumi:   [['ab1','Rabbit Escape','A swarm of rabbits covers his retreat: he blinks back, they slow and nibble.'], ['ab2','Bottomless Well','Two Toads lash their tongues: 5 and drag the foe in'],
              ['ab3','Divine Dog: Totality · super','The white wolf hunts them down: three bites (6 each).'], ['ult','Chimera Shadow Garden','Incomplete domain 12s: no cooldowns, free CE, faster.'], ['move','Ten Shadows','6% faster. Maximum Output ult + Meguna feat: Sukuna.']],
   meguna:   [['ab1','Nue Totality','A giant Nue calls down three lightning strikes (6 each).'], ['ab2','Agito','A merged shikigami charges through (5 x3); heals him 6.'],
@@ -15698,7 +15802,7 @@ const MOVE_INFO = {
   mahito:   [['ab1','Body Repel','His arm becomes a blade and stabs 130px (11).'], ['ab2','Soul Isomer','A transfigured human runs at the foe and explodes (16).'],
              ['ab3','Idle Transfiguration · super','Soul touch (8) + reshape. 3rd touch = instant kill.'], ['ult','Self-Embodiment of Perfection','Domain: hands close in; every touch hits for 6 and reshapes.'], ['move','Soul Malleability','Slips through thin walls; regenerates when not hit for 4s.']],
   hanami:   [['ab1','Cursed Buds','3 seeds (5 each); each hit drains ~17% of their ultimate bar.'], ['ab2','Flower Field','Flowers bloom ahead: standing in them stuns + 7 damage.'],
-             ['ab3','Root Grab · super','Aimable root lash: grabs the foe and drags them to you (10).'], ['ult','Root Rampage','15s: a root follows your mouse (8) and leaves walkable roots.'], ['move','Nature\'s Spring','Jumps 10% higher.']],
+             ['ab3','Root Grab · super','Aimable root lash: grabs the foe and drags them to you (10).'], ['ult','Root Rampage','12s: a root follows your mouse (14) and leaves walkable roots.'], ['move','Nature\'s Spring','Jumps 10% higher.']],
   dagon:    [['ab1','Flood','Water pool in front: foes slowed + small damage, Dagon faster.'], ['ab2','Water Jet','Aimable high-pressure jet (12) that knocks back.'],
              ['ab3','Death Swarm · super','Stream of 8 homing fish (5 each), aimable.'], ['ult','Captivating Skandha','Domain: giant fish leap at the foe from all sides.'], ['move','Tidal Body','40% faster in his own flood.']],
   jogo:     [['ab1','Ember Insects','Clinging fire bug: +1s on their cooldowns for 10s.'], ['ab2','Flame Dash','Dash through them (8) and set them on fire (3 every 0.5s, 3s).'],
@@ -16386,7 +16490,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames, shikis, garudas };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -16872,7 +16976,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickMeiBlasts(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -16910,7 +17014,7 @@ function simFight(dt){
 function drawFight(dt){
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawDomain();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawShikis(); drawYuki(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawShikis(); drawYuki(); drawMeiBlasts(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();

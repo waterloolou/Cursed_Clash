@@ -31,6 +31,12 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
+## Latest: ultimate reworks
+- **Domains** cover the whole map and shatter all of its terrain; it rebuilds ~6s after the domain closes (never right next to a fighter).
+- **Hakari**: 25% jackpot per roll, +10% after every miss, and **Jackpot Continuation** (a jackpot can keep going).
+- **Naoya**'s vengeful curse only lasts one minute. **Gojo**'s Infinite Void: no moving or fighting except anti-domain. **Higuruma**'s court confiscates jumping.
+- **Hanami** Root Rampage 12s / 14 per hit · **Yuki**'s black hole swallows half the map · **Yuta** gets faster with each katana · **Mechamaru**'s Pigeon Viola and Ultra Cannons are bigger and go through walls · **Choso**'s Convergence leaves blood pools · **Mei Mei**'s Bird Strike implodes as a sphere of cursed energy.
+
 ## Controls
 
 Every key can be changed: **⌨ CONTROLS** on the home screen (saved in your browser). Press **ESC** in a fight to pause — the pause menu lists every key (and lights up whatever you press), explains the combat system, and shows your fighter's moves and tips. Hold **TAB** in a fight for the move list. The in-game **Wiki** (home screen) covers every character.
