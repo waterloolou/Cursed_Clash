@@ -31,8 +31,15 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: combat overhaul + character batch
-- **Evasive** (like JJS): a meter under your CE bar fills over time and when you're hit. When it's full, press **dash** (online) or **down + jump** (one keyboard) while stunned or knocked down to burst free. Getting up from a knockdown no longer gives invincibility.
+## Latest: performance + online fixes (merged)
+- **Smoother on slow computers**: the game switches to *lite effects* by itself if the frame rate stays low (no glow blur, half the particles), the canvas no longer renders at full 4K on big screens, and particles / damage numbers are capped.
+- **Can't freeze any more**: if one frame hits an error, the game logs it and keeps running.
+- **Online is sturdier**: paste a whole **invite link** into JOIN, the guest tries every relay server at once, reconnecting/reloading doesn't create a ghost player, keep-alive pings run even in a background tab, the disconnect timeout is 15s, and domains / terrain are sent in much smaller pieces.
+- **Dash has no i-frames** any more (it's for repositioning), and Sukuna's Cleave can no longer be dodged just by dashing.
+- **Getting up after a knockdown**: no i-frames at the start of a combo, then longer the longer the combo has lasted (up to 1.5s). Evasive still breaks you out.
+
+## Combat overhaul + character batch
+- **Evasive** (like JJS): a meter under your CE bar fills over time and when you're hit. When it's full, press **dash** (online) or **down + jump** (one keyboard) while stunned or knocked down to burst free.
 - **Variable stun** (bigger hits and longer combos stun longer), **combo follow** (you drift after the target automatically), **uppercuts** (hold jump on the finisher, keep holding to leap after them) and **downslams** (down + attack in the air). Whiffed air punches no longer stall your fall.
 - **CE**: regular non-melee moves cost a little (3–8); punches and weapon swings stay free; changing your weapon costs CE. Maximum Output moves cost 18.
 - **Domains** now cover the entire map, wherever the fighters are.

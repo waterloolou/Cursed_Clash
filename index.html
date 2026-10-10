@@ -381,7 +381,7 @@ canvas {
           <li><b>Evasive</b> (like JJS): a thin meter under your CE bar fills over time and when you get hit. When it's full, press <b>dash</b> (online) or <b>down + jump</b> (one keyboard) while you're stunned, knocked down or frozen to burst free with a moment of invincibility. Doesn't work against a domain's sure-hit or Rika's grab (mash for that).</li>
           <li><b>Casting a domain</b> spends the bar right away. For the first <b>third of the hand sign</b> you can be interrupted; after that you're untouchable until it opens. Once it's open you can be hit as normal (except Higuruma, who can't be hurt during his trial).</li>
           <li>If your domain gets <b>cancelled</b> — the cast is interrupted, you lose a clash, it's shattered by the Inverted Spear, or you die mid-domain — you get <b>50% of the domain bar back</b>.</li>
-          <li>Knocked-down fighters can't be hit until they get up. Getting up gives <b>no</b> invincibility any more — use Evasive to escape a combo. You still flicker with i-frames after respawning.</li>
+          <li>Knocked-down fighters can't be hit until they get up. After standing up they get <b>i-frames</b> that depend on how long the combo lasted: <b>none</b> at the start of a combo, and longer the longer it has gone on (up to 1.5s). Respawning still gives a short window of i-frames. To break out of a long combo yourself, use <b>Evasive</b>.</li>
           <li>You can keep moving while you swing (you just can't turn around mid-punch).</li>
           <li>Hold <b>TAB</b> during a fight to see both fighters' moves.</li>
           <li>Playing <b>online</b> (separate computers)? Melee works differently: real combo strings, blocking, perfect blocks, dashes and Maximum Output (V). See <b>Online Combat</b> in the sidebar.</li>
@@ -759,7 +759,7 @@ canvas {
     <div id="lbMain">
       <button class="lb-btn" id="btnHost">HOST ONLINE GAME</button>
       <div class="lb-or">— OR JOIN WITH A CODE —</div>
-      <div class="lb-join"><input id="joinCode" maxlength="5" placeholder="CODE" autocomplete="off" spellcheck="false"><button class="lb-btn" id="btnJoin">JOIN</button></div>
+      <div class="lb-join"><input id="joinCode" maxlength="300" placeholder="CODE or LINK" autocomplete="off" spellcheck="false"><button class="lb-btn" id="btnJoin">JOIN</button></div>
       <div class="lb-or">— OR PLAY ON THIS COMPUTER —</div>
       <button class="lb-btn local" id="btnLocal">LOCAL 2 PLAYER · SAME KEYBOARD</button>
       <button class="lb-btn local" id="btnTrain">🧪 TRAINING · SOLO — TEST EVERY CHARACTER</button>
@@ -796,9 +796,14 @@ const VW = 960, VH = 520;        // VIEW size (screen / HUD space)
 function withDims(w, h, g, fn){ const a=W, b=H, c=GND; W=w; H=h; GND=g; try{ return fn(); } finally{ W=a; H=b; GND=c; } }
 const withView = fn => withDims(VW, VH, 430, fn);
 
+let LITE = false;   // auto-enabled when the frame rate stays low: drops shadow blur and halves particles
+{ const d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'shadowBlur');
+  if(d && d.set) Object.defineProperty(ctx, 'shadowBlur', {configurable:true, get(){ return d.get.call(ctx); }, set(v){ d.set.call(ctx, LITE ? 0 : v); }}); }
 function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  // The backing store is capped (the CSS stretches it to the window): filling a 4K canvas every frame was a big cost on large screens
+  const w = Math.max(1, window.innerWidth), h = Math.max(1, window.innerHeight), k = Math.min(1, 1600/w, 1000/h);
+  canvas.width  = Math.max(1, Math.round(w*k));
+  canvas.height = Math.max(1, Math.round(h*k));
 }
 resize();
 window.addEventListener('resize', resize);
@@ -825,6 +830,12 @@ const ATK_REC     = 70;
 const ATK_RANGE   = 88;
 const STUN_MS     = 290;
 const RAGD_MS     = 850;
+// Wake-up i-frames: zero for the first WAKE_IF_FREE ms of a combo, then growing with how long it has lasted
+const CB_GAP = 1000, WAKE_IF_FREE = 1200, WAKE_IF_RATE = 0.5, WAKE_IF_MAX = 1500;
+function wakeIframes(pl){
+  const dur = terClock - (pl._cbStart===undefined ? terClock : pl._cbStart);
+  return Math.max(0, Math.min(WAKE_IF_MAX, (dur - WAKE_IF_FREE) * WAKE_IF_RATE));
+}
 const SLAM_MS     = 1100;
 const COMBO_RESET = 2600;
 const DMG_HIT  = 2;
@@ -7098,16 +7109,20 @@ function drawBlackFlashes(){
 // Particles
 const parts = [];
 function addParts(x,y,col,n,pwr){
+  if(parts.length > 700) return;
+  if(LITE) n = Math.ceil(n/2);
   for(let i=0;i<n;i++){
     const a=Math.random()*Math.PI*2, s=(.4+Math.random())*pwr;
     parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1.5,life:1,decay:.026+Math.random()*.024,r:1.5+Math.random()*2.5,col});
   }
 }
 function tickParts(){
-  for(let i=parts.length-1;i>=0;i--){
+  let w = 0;
+  for(let i=0;i<parts.length;i++){
     const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.13; p.life-=p.decay;
-    if(p.life<=0) parts.splice(i,1);
+    if(p.life>0) parts[w++] = p;
   }
+  parts.length = w;
 }
 function drawParts(){
   for(const p of parts){ ctx.globalAlpha=p.life*.9; ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2); ctx.fill(); }
@@ -7118,10 +7133,12 @@ function drawParts(){
 const rings=[];
 function addRing(x,y,col,maxR){ rings.push({x,y,col,r:4,maxR,life:1}); }
 function tickRings(){
-  for(let i=rings.length-1;i>=0;i--){
+  let w = 0;
+  for(let i=0;i<rings.length;i++){
     const r=rings[i]; r.r+=(r.maxR-r.r)*.18; r.life-=.042;
-    if(r.life<=0) rings.splice(i,1);
+    if(r.life>0) rings[w++] = r;
   }
+  rings.length = w;
 }
 function drawRings(){
   for(const r of rings){ ctx.globalAlpha=r.life*.6; ctx.strokeStyle=r.col; ctx.lineWidth=3*r.life; ctx.beginPath(); ctx.arc(r.x,r.y,r.r,0,Math.PI*2); ctx.stroke(); }
@@ -7132,10 +7149,12 @@ function drawRings(){
 const dmgNums=[];
 function addDmg(x,y,val,col){ dmgNums.push({x,y,vy:-2,val,col,life:1}); if(typeof val==='string') return; const v = +val||0; sfxLocal(v>=20 ? 'heavy' : v>=9 ? 'hit2' : 'hit', x); }
 function tickDmgNums(){
-  for(let i=dmgNums.length-1;i>=0;i--){
+  let w = 0;
+  for(let i=0;i<dmgNums.length;i++){
     const d=dmgNums[i]; d.y+=d.vy; d.vy*=.88; d.life-=.018;
-    if(d.life<=0) dmgNums.splice(i,1);
+    if(d.life>0) dmgNums[w++] = d;
   }
+  dmgNums.length = w;
 }
 function drawDmgNums(){
   ctx.textAlign='center';
@@ -7257,7 +7276,7 @@ class Player {
     this.mechGnd = GND;
     this.vx=0; this.vy=0;
     this.facing = this.startF;
-    this.hp=100; this.maxHp=100; this.iframes = 900;
+    this.hp=100; this.maxHp=100; this.iframes = 900; this._cbStart = 0; this._cbLast = -1e9;
     if(isNaoya(this)){ this._hp = NAO_HP; this.maxHp = NAO_HP; }
     this.naoDashCd=0; this.naoComboCd=0; this.naoRocketCd=0; this.naoFieldCd=0; this.naoCharge=0; this.naoTrail=[]; this.framedT=0; this.frameMax=0; this.naoRunT=0; this.naoAng=0; this.naoHitN=0;
     this.megRabCd=0; this.megWellCd=0; this.megNueCd=0; this.megAgiCd=0; this.megCharge=0; this.gardenT=0; this.rabbitT=0; this.wellT=0; this.mahoTurns=0; this.wcsDone=false;
@@ -7475,6 +7494,10 @@ class Player {
       if(s!==S.DEAD) return;          // super armor: nothing stuns or launches the mech
       this._endMechUlt();             // mech destroyed → pilot ejected
     }
+    if(s===S.STUN || s===S.RAGD || s===S.SLAM){   // combo clock: starts on the first hit, ends once they've been free for CB_GAP
+      if(terClock - (this._cbLast===undefined ? -1e9 : this._cbLast) > CB_GAP) this._cbStart = terClock;
+      this._cbLast = terClock;
+    }
     this.state=s; this.sTimer=0; this.sDur=dur;
   }
 
@@ -7517,6 +7540,7 @@ class Player {
     if(dk && keys[dk] && this.onGround && [S.IDLE,S.WALK].includes(this.state) && !(this.pbChargeTime>0)) this.dropT=220;
     if(this.iframes > 0) this.iframes = Math.max(0, this.iframes - dt);
     this._evasiveTick(dt);
+    if(this.state===S.STUN || this.state===S.RAGD || this.state===S.SLAM || this.state===S.FRAMED) this._cbLast = terClock;
     if(this.framedT>0 && tickFramed(this, dt)){ this._vToggle(); tickStatus(this, dt); return; }
     this._loadoutPre(dt);
     this._cePre(dt);
@@ -8530,7 +8554,7 @@ class Player {
   _tickDismantle(dt){
     if(this.dismPend && this.sTimer >= SUK_CLEAVE_REACT){
       const t = netRes(this.dismPend); this.dismPend = null;
-      const ok = t && t.hittable && t.state!==S.DASH && Math.abs((t.x+PW/2) - (this.x+PW/2)) <= DISMANTLE_RANGE + 18 && Math.abs(t.y - this.y) < PH*0.9;
+      const ok = t && t.hittable && Math.abs((t.x+PW/2) - (this.x+PW/2)) <= DISMANTLE_RANGE + 18 && Math.abs(t.y - this.y) < PH*0.9;
       if(!ok){ addSpeech(this.x+PW/2, this.y-18, 'MISSED', '#999', 600); this.dismantleArm = 0; this.ss(S.IDLE); return; }
       if(t.parryT>0){ addSpeech(t.x+PW/2, t.y-24, 'COUNTERED', '#9fd8ff', 800); snd('parry', t.x); this.ss(S.STUN, 650); return; }
       if(t.state===S.BLOCK){ t.hp = Math.max(0, t.hp - 6); addSpeech(t.x+PW/2, t.y-24, 'BLOCKED', '#9fd8ff', 700); this.ss(S.IDLE); return; }
@@ -10727,7 +10751,7 @@ class Player {
   _exitRd(){
     this.x=Math.max(10,Math.min(W-PW-10,this.rdX));
     this.y=Math.min(GND-PH,this.rdY); this.vx=0; this.vy=0; this.rdRot=0; this.ss(S.IDLE);
-    this.iframes = 0;   // no free invincibility on getting up — spend Evasive to escape a combo
+    this.iframes = wakeIframes(this);   // none for a fresh combo, longer the longer it has lasted
     if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
   }
 
@@ -12938,7 +12962,7 @@ function showTxt(t,d=900){fightTxt=t;fightTxtT=d;}
 //    (+50% damage, a BLACK FLASH for Yuji / Todo / Mahito on a finisher). Mashing too early drops the combo.
 //  · Finishers by direction: heavy blow, ↑ launcher (juggle), ↓ sweep. Air string + ↓ meteor spike.
 //  · Hold to BLOCK (guard meter, chip damage, guard break) — tap right as a hit lands for a PERFECT BLOCK.
-//  · Dash / dodge with i-frames (SHIFT or double-tap a direction).
+//  · Dash (SHIFT or double-tap a direction) — no i-frames.
 //  · Damage scaling + hitstun decay inside long combos.
 //  · V toggles variant mode (Q / E become variants). ATTACK + F = the character's anti-domain technique (if they have one).
 // ═══════════════════════════════════════════════════════════════════
@@ -12946,7 +12970,7 @@ function olOn(){ return !!window._olForce || (typeof NET!=='undefined' && (NET.r
 const OL = {
   GUARD_MAX:100, GUARD_REGEN:0.035, GUARD_DELAY:900, CHIP:0.2, GUARD_COST:4.5, BREAK_MS:1000,
   PARRY_WIN:160, PARRY_LOCK:480, PARRY_STAGGER:650,
-  DASH_MS:190, DASH_SPD:2.8, DASH_IF:180, DASH_CD:620, TAP_MS:230,
+  DASH_MS:190, DASH_SPD:2.8, DASH_IF:0, DASH_CD:620, TAP_MS:230,
   EARLY:60, PERF0:150, PERF1:255, LATE:540, MASH_LOCK:360,
   VAR_CD:8000, AD_CD:25000, AD_MS:5000,
 };
@@ -13178,13 +13202,13 @@ const OL_VARS = {
       const x0 = p.x; safeTeleport(p, p.x + p.facing*220, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:240, dmg:0, col:'#e6d3a3'});
       const hs = olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH);
-      for(const d of hs) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, NAO_FRAME_MS, p);
+      for(const d of hs) if(olHit(p, d, 6, {stun:300, col:'#e6d3a3'}) && d.state!==S.DEAD) framePlayer(d, NAO_ATK_FRAME_MS, p);
       if(!hs.length) olAfter(240, () => naoMissed(p));
       snd('dash', p.x); }},
     2:{block:true, name:'Freeze-Frame Jab', desc:'A jab timed between two frames: 5 damage, and the target is frozen in a frame for 3s — a free follow-up (frames don\'t chain: no re-freezing a framed or just-unframed foe).', lock:300, run(p){
       const [x,y,w,h] = olFront(p, 74); snd('swing', p.x);
       const hs = olArea(p, x, y, w, h);
-      for(const d of hs) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, NAO_FRAME_MS, p);
+      for(const d of hs) if(olHit(p, d, 5, {stun:300, col:'#f4f1e6'}) && d.state!==S.DEAD) framePlayer(d, NAO_ATK_FRAME_MS, p);
       if(!hs.length) olAfter(280, () => naoMissed(p)); }},
   },
   naoyac: {
@@ -13199,7 +13223,7 @@ const OL_VARS = {
     2:{name:'Frame Snap', desc:'Snaps the nearest foe within 320px into a frame for 3s; then it bursts for 8.', lock:300, run(p){
       const d = olNearest(p, 320); snd('tick', p.x);
       if(!d) olAfter(280, () => naoMissed(p));
-      if(d){ framePlayer(d, NAO_FRAME_MS, p); olAfter(NAO_FRAME_MS+20, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#d8c8ff', 70); olHit(p, d, 8, {any:true, rag:[8,-6,RAGD_MS], col:'#d8c8ff'}); }); } }},
+      if(d){ framePlayer(d, NAO_ATK_FRAME_MS, p); olAfter(NAO_ATK_FRAME_MS+20, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#d8c8ff', 70); olHit(p, d, 8, {any:true, rag:[8,-6,RAGD_MS], col:'#d8c8ff'}); }); } }},
   },
   megumi: {
     1:{name:'Max Elephant', desc:'Drops Max Elephant on the nearest foe within 400px (or 160px ahead): 12 damage and a big launch, then a water wave shoves anyone nearby away.', lock:360, run(p){
@@ -14043,7 +14067,7 @@ function drawOlMoveHelp(pl, x, y, w){
   const lines = [
     ['COMBOS', `${keyLbl(pl,'atk')} ×3 · hold ↑ / ↓ on the 3rd hit for a launcher / sweep · in the air: ↓+${keyLbl(pl,'atk')} spike`],
     ['TIMING', 'press again as the ring closes on your fist → PERFECT (+50%, Black Flash for Yuji/Todo/Mahito). Too early = combo drops'],
-    ['DEFENCE', `hold ${keyLbl(pl,'block')} to block (guard meter) · tap it as a hit lands → PERFECT BLOCK · ${keyLbl(pl,'dash')} or double-tap = dash (i-frames)`],
+    ['DEFENCE', `hold ${keyLbl(pl,'block')} to block (guard meter) · tap it as a hit lands → PERFECT BLOCK · ${keyLbl(pl,'dash')} or double-tap = dash (no i-frames)`],
   ];
   for(const n of [1,2]) if(V[n]) lines.push([`${keyLbl(pl,'vtog')} → ${keyLbl(pl,'ab'+n)}`, `${V[n].name} (${ceVarCost(pl, n)} CE, ${V[n].block ? 'blockable' : 'counter only'}) — ${V[n].desc}`]);
   if(AD) lines.push([`${keyLbl(pl,'atk')}+${keyLbl(pl,'ult')}`, `${AD.name} — ${AD.note}`]);
@@ -14216,7 +14240,7 @@ function olFillWiki(){
   <tr><td>Timing</td><td>After each hit, a ring closes on your fist. Press again <b>as it meets the inner circle</b> (~0.15–0.25s after impact) for a <b>PERFECT</b> link: +50% damage, and a <b>BLACK FLASH</b> (×2.5) on a finisher for Yuji, Todo and Mahito. Pressing before the hit lands = <b>TOO EARLY</b> — the combo drops and you're locked out briefly. Wait too long (≈0.55s) and the string resets.</td></tr>
   <tr><td>RIGHT-CLICK / C (hold)</td><td><b>Block</b>: takes 20% chip damage and drains your guard meter. Empty meter = <b>GUARD BREAK</b> (stunned 1s). Doesn't work against an enemy domain's sure-hit.</td></tr>
   <tr><td>Tap block as a hit lands</td><td><b>PERFECT BLOCK</b>: no damage, the attacker is staggered, +guard and domain charge. Mashing it doesn't work — there's a short lockout between attempts.</td></tr>
-  <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> with invincibility frames — dodge through attacks. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
+  <tr><td>SHIFT / double-tap A or D</td><td><b>Dash</b> — a quick burst of movement. No invincibility: you can still be hit while dashing. One air dash per jump. Can cancel a block or a landed hit.</td></tr>
   <tr><td>Long combos</td><td>Damage scales down from the 3rd hit (to ×0.5) and stun gets shorter, so no infinite combos.</td></tr>
   <tr><td>V (toggle) then Q / E</td><td><b>Maximum Output</b> (one keyboard: <b>E</b> for player 1, <b>I</b> for player 2, then your ability keys): press V and Q / E fire their <b>Maximum Output</b> versions instead (10 CE each, 6s cooldown each). Your super and domain still work while it's on. Press V again to switch back. A variant can also cancel a jab's startup.</td></tr>
   <tr><td>Hold CLICK + F</td><td>The fighter's <b>anti-domain technique</b>, if their clan / school has one (10 CE, then a cooldown).</td></tr></table>
@@ -14441,7 +14465,7 @@ function drawTruck(tr){
 const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9, NAO_CURSE_MS = 60000;   // the vengeful curse only lasts a minute
 const NAO_DASH_CD = 5000, NAO_DASH_SPD = 21, NAO_DASH_MS = 420, NAO_DASH_DMG = 14;
 const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 420], NAO_COMBO_FIN = 600, NAO_COMBO_JAB = 3, NAO_COMBO_KICK = 9;
-const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 3000, NAO_SPECIAL_FRAME_MS = 5000, NAO_FRAME_IMMUNE = 2500, NAO_FRAME_DMG_IN = 1.14;
+const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 3000, NAO_ATK_FRAME_MS = 3000, NAO_SPECIAL_FRAME_MS = 5000, NAO_FRAME_IMMUNE = 2500, NAO_FRAME_DMG_IN = 1.14;
 const NAO_ROCKET_CD = 8000, NAO_ROCKET_MS = 2400, NAO_ROCKET_SPD = 19, NAO_ROCKET_DMG = 20, NAO_ROCKET_TURN = 0.0055;
 const NAO_FIELD_CD = 7000, NAO_FIELD_N = 5, NAO_FIELD_LIFE = 6000, NAO_FIELD_HOLD = 3000, NAO_FIELD_DMG = 10, NAO_FIELD_TRAP_DMG = 22;
 const NAO_MISS_MS = 3000, NAO_CMB_SOFT = 25, NAO_CMB_HARD = 40, NAO_PASSIVE_CD = 3000;   // whiffing a move breaks his own 24 fps rule: he's frozen in a frame
@@ -16076,7 +16100,7 @@ function drawCombatGuide(pl, x, y, w){
     yl = guideBlock('COMBO SCALING', 'From the 3rd hit on, damage drops (×0.9, ×0.8 … down to ×0.5) and stuns get shorter — so no infinite combos. The hit counter shows on your side of the screen.', x, yl, colW);
     yr = guideBlock('BLOCK', kfill(pl, 'Hold {block}: you take only 20% chip damage but your GUARD bar (under your health) drains. If it empties: GUARD BREAK, stunned for 1s. Blocking does nothing against an enemy domain\'s sure-hit.'), xr, yr, colW);
     yr = guideBlock('PERFECT BLOCK', kfill(pl, 'Tap {block} just as a hit lands: no damage, the attacker is staggered for 0.65s, and you gain guard and domain charge. Spamming it doesn\'t work — there\'s a short lockout between taps.'), xr, yr, colW);
-    yr = guideBlock('DASH', kfill(pl, '{dash} or double-tap {left} / {right}: a quick dash with invincibility frames — dodge straight through attacks. One air dash per jump. It can cancel a block or a hit that landed.'), xr, yr, colW);
+    yr = guideBlock('DASH', kfill(pl, '{dash} or double-tap {left} / {right}: a quick dash (no invincibility, you can be hit mid-dash) — use it to reposition. One air dash per jump. It can cancel a block or a hit that landed.'), xr, yr, colW);
     yr = guideBlock('MAXIMUM OUTPUT', kfill(pl, '{vtog} toggles MAXIMUM OUTPUT: {ab1} / {ab2} fire stronger versions (up to 10 CE each); your super and domain still work. One of the two can be blocked, the other only countered. Hold {atk} + {ult} for your anti-domain technique, if your fighter has one. Your exact moves are on the next page.'), xr, yr, colW);
   } else {
     yl = guideBlock('BASIC COMBO', kfill(pl, '{atk} three times: each punch deals 2 and fills a combo pip. The 4th attack is a FINISHER — on the ground it deals 5 and knocks them away; in the air it\'s a dive slam for 15. You can move while you swing.'), x, yl, colW);
@@ -16785,6 +16809,11 @@ const NET = {
   role:'none', spectator:false, peer:null, conns:[], guest:null, host:null, code:'',
   remote:{h:0, p:0}, lastH:-1, pAcc:0, lastInT:0, fx:[], fxDepth:0, rtt:0, lastPing:0, msg:''
 };
+// Keepalive on a plain timer (not the render loop) so a busy / throttled / background tab never looks like a dropped connection
+setInterval(() => { try{
+  if(NET.role==='guest' && NET.host && NET.host.open) netSend(NET.host, {t:'ping', ts:performance.now()});
+  else if(NET.role==='host') for(const c of NET.conns) if(c.open) netSend(c, {t:'ka'});
+}catch(e){} }, 2000);
 const INPUT_BITS = [...ACTIONS, 'confirm', 'back'];
 const toBits = o => { let b=0; INPUT_BITS.forEach((a,i)=>{ if(o[a]) b|=(1<<i); }); return b; };
 const fromBits = b => { const o={}; INPUT_BITS.forEach((a,i)=>{ o[a]=!!(b&(1<<i)); }); return o; };
@@ -16804,7 +16833,7 @@ function netReset(){
   try{ NET.peer && NET.peer.destroy(); }catch(e){}
   try{ relayStopAll(); }catch(e){}
   NET.role='none'; NET.spectator=false; NET.peer=null; NET.conns=[]; NET.guest=null; NET.host=null;
-  NET.remote={h:0,p:0}; NET.fx=[]; IS_GUEST=false;
+  NET.remote={h:0,p:0}; NET.fx=[]; IS_GUEST=false; NET.relaySeen={};
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -16928,7 +16957,7 @@ function parseRelayMsg(payload){
 // HOST: listen for viewers on every broker that answers
 function relayHostStart(code, onReady){
   const inbox = RELAY_TOPIC+code+'/h';
-  NET.relays = []; let readyCalled = false;
+  NET.relays = []; NET.relaySeen = {}; let readyCalled = false;
   for(const url of RELAY_BROKERS){
     const cl = new MqttClient(url), links = {};
     cl.connect(8000).then(() => {
@@ -16940,7 +16969,9 @@ function relayHostStart(code, onReady){
         let L = links[m.from];
         if(m.kind==='hi'){
           if(L && !L.gone){ L._tx('ok'); return; }
+          { const seen = NET.relaySeen && NET.relaySeen[m.from]; if(seen && !seen.gone && seen.client!==cl) return; }   // already linked through another broker: don't create a second player
           L = links[m.from] = new RelayConn(cl, 'H', m.from, RELAY_TOPIC+code+'/g/'+m.from);
+          if(NET.relaySeen) NET.relaySeen[m.from] = L;
           netAccept(L);
           L._tx('ok'); L._opened();
           return;
@@ -16953,40 +16984,39 @@ function relayHostStart(code, onReady){
   }
 }
 
-// GUEST: try each broker until the host answers on one
+// GUEST: try every broker at once; the first one the host answers on wins (the others are closed)
 async function relayJoin(code){
   const me = Math.random().toString(36).slice(2,10);
   NET.relays = [];
-  let lastErr = 'server';
-  for(const url of RELAY_BROKERS){
-    if(NET.role!=='guest' || NET.code!==code) return null;
-    const cl = new MqttClient(url);
-    try{ await cl.connect(7000); }catch(e){ continue; }
-    if(NET.role!=='guest' || NET.code!==code){ cl.close(); return null; }
-    NET.relays.push(cl);
-    const conn = new RelayConn(cl, me, 'H', RELAY_TOPIC+code+'/h');
-    cl.onmsg = (topic, payload) => {
-      const m = parseRelayMsg(payload); if(!m || m.from!=='H') return;
-      if(m.kind==='ok'){ conn._opened(); return; }
-      conn._rx(m.kind, m.data);
-    };
-    cl.onclose = () => conn._closed();
-    cl.sub(RELAY_TOPIC+code+'/g/'+me);
-    const opened = await new Promise(res => {
-      let n = 0, done = false;
-      conn.on('open', () => { if(!done){ done = true; res(true); } });
-      const tick = () => {
-        if(done) return;
-        if(n++ >= 8 || NET.role!=='guest' || NET.code!==code){ done = true; res(false); return; }
-        conn._tx('hi'); setTimeout(tick, 700);
+  const alive = () => NET.role==='guest' && NET.code===code;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  return new Promise(resolve => {
+    let won = null, connected = 0, finished = false;
+    const finish = r => { if(finished) return; finished = true; resolve(r); };
+    const drop = cl => { try{ cl.close(); }catch(e){} const i = NET.relays.indexOf(cl); if(i>=0) NET.relays.splice(i, 1); };
+    const tryBroker = async url => {
+      const cl = new MqttClient(url);
+      try{ await cl.connect(7000); }catch(e){ return; }
+      if(!alive() || won || finished){ cl.close(); return; }
+      connected++; NET.relays.push(cl);
+      const conn = new RelayConn(cl, me, 'H', RELAY_TOPIC+code+'/h');
+      cl.onmsg = (topic, payload) => {
+        const m = parseRelayMsg(payload); if(!m || m.from!=='H') return;
+        if(m.kind==='ok'){
+          if(!won && !finished){ won = conn; finish(conn); for(const o of NET.relays.slice()) if(o!==cl) drop(o); }
+          if(won===conn) conn._opened();
+          return;
+        }
+        if(won===conn) conn._rx(m.kind, m.data);
       };
-      setTimeout(tick, 150);
-    });
-    if(opened) return conn;
-    lastErr = 'nohost';
-    cl.close(); NET.relays.splice(NET.relays.indexOf(cl), 1);
-  }
-  return {error: lastErr};
+      cl.onclose = () => conn._closed();
+      cl.sub(RELAY_TOPIC+code+'/g/'+me);
+      await sleep(150);
+      for(let n = 0; n < 6 && !won && !finished && alive(); n++){ conn._tx('hi'); await sleep(700); }
+      if(won!==conn) drop(cl);
+    };
+    Promise.all(RELAY_BROKERS.map(u => tryBroker(u).catch(() => {}))).then(() => { if(!won) finish({error: connected ? 'nohost' : 'server'}); });
+  });
 }
 function relayStopAll(){ for(const c of (NET.relays||[])) try{ c.close(); }catch(e){} NET.relays = []; }
 
@@ -17018,7 +17048,11 @@ function netHost(){
 function netAccept(conn){
   conn.on('open', () => { try{ netOnOpen(conn); }catch(e){ console.error('netOnOpen', e); } });
   function netOnOpen(conn){
-    conn.cache = {g:{}, p:{}, a:{}, d:undefined}; conn.pendFx=[]; conn.pendTer=[]; conn.terGen=-1;
+    conn.cache = {g:{}, p:{}, a:{}, dref:null, dk:{}}; conn.pendFx=[]; conn.pendTer=[]; conn.terGen=-1;
+    if(NET.guest && NET.guest!==conn){          // the player reloaded the page / re-clicked the invite: their old link is dead weight
+      const old = NET.guest;
+      if(!old.open || performance.now() - (old.lastSeen||0) > 4000){ try{ old.close(); }catch(e){} if(old._drop) old._drop(); }
+    }
     const isPlayer = !NET.guest;
     if(isPlayer){ NET.guest = conn; NET.remote = {h:0,p:0}; LOADOUT[2] = null; }
     NET.conns.push(conn);
@@ -17032,6 +17066,7 @@ function netAccept(conn){
     if(d.t==='in' && conn===NET.guest){ NET.remote.h = d.h; NET.remote.p |= d.p; if(d.mx!==undefined){ NET.remote.mx = d.mx; NET.remote.my = d.my; NET.remote.mt = performance.now(); } }
     else if(d.t==='sel' && conn===NET.guest){ if(p2 && p2.type==='todo') p2.swapSel = d.sel; }
     else if(d.t==='ping') netSend(conn, {t:'pong', ts:d.ts});
+    else if(d.t==='rs'){ if(conn.cache) conn.cache.dref = null; }
     else if(d.t==='chat') chatRecv(d, conn);
     else if(d.t==='lo' && conn===NET.guest && d.lo){
       const lo = d.lo;
@@ -17053,55 +17088,69 @@ function netAccept(conn){
 }
 
 // ── JOIN ──
+function parseJoinCode(v){
+  v = String(v||'');
+  const m = v.match(/[?&#]join=([A-Za-z0-9]+)/i); if(m) v = m[1];      // a whole pasted invite link works too
+  return v.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+}
 function netJoin(code){
-  code = (code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(code.length < 5){ lbStatus('Enter the 5-character game code.'); return; }
+  code = parseJoinCode(code);
+  if(code.length < 5){ lbStatus('Enter the 5-character game code (or paste the invite link).'); return; }
   netReset(); NET.role='guest'; NET.code=code; IS_GUEST=true; NET.lastSnap=0;
   const forceRelay = new URLSearchParams(location.search).get('relay')==='1';
-  let fellBack = false;
   const alive = () => NET.role==='guest' && NET.code===code;
+  let attached = false, tries = 0;
   const attach = (conn, how) => {
-    NET.host = conn; NET.lastSnap = 0;
+    if(attached){ try{ conn.close(); }catch(e){} return; }
+    attached = true; NET.host = conn; NET.lastSnap = 0;
     conn.on('data', d => netOnHostData(d));
     conn.on('close', () => { if(NET.role==='guest' && NET.host===conn){ netReset(); backToLobby('The host closed the game.', false); } });
     lbStatus('Connected'+how+'!', true);
   };
-  // Plan B: route the game through a public relay server
-  const fallback = async why => {
-    if(fellBack || !alive()) return; fellBack = true;
-    console.warn('direct link failed ('+why+') — using relay');
-    try{ NET.peer && NET.peer.destroy(); }catch(e){} NET.peer = null; NET.host = null;
-    lbStatus('Direct link blocked — connecting through the relay server…', true);
-    const r = await relayJoin(code);
-    if(!alive()) return;
-    if(r && !r.error){ attach(r, ' (via relay)'); return; }
-    netReset();
-    lbStatus(r && r.error==='nohost'
-      ? 'No game found with code '+code+'. Check the code, and make sure the host still has the game open on the code screen.'
-      : MSG_SERVER);
-  };
-  if(forceRelay || typeof Peer==='undefined'){ fallback('forced'); return; }
-  lbStatus('Step 1/3 · Reaching the matchmaking server…');
-  const peer = new Peer(undefined, peerOpts()); NET.peer = peer;
-  const sto = setTimeout(() => { if(NET.peer===peer && !peer.open) fallback('server timeout'); }, 8000);
-  peer.on('open', () => {
-    clearTimeout(sto);
-    if(NET.peer!==peer || !alive()) return;
-    lbStatus('Step 2/3 · Looking for game '+code+'…', true);
-    const conn = peer.connect(PEER_PREFIX+code, {reliable:true, serialization:'raw'});
-    conn.on('iceStateChanged', st => {
-      if(st==='checking') lbStatus('Step 3/3 · Found the game — linking the two computers…', true);
-      if((st==='failed' || st==='disconnected') && !conn.open) fallback('ice '+st);
+  const attempt = () => {
+    if(!alive() || attached) return;
+    let fellBack = false;
+    // Plan B: route the game through a public relay server
+    const fallback = async why => {
+      if(fellBack || attached || !alive()) return; fellBack = true;
+      console.warn('direct link failed ('+why+') — using relay');
+      try{ NET.peer && NET.peer.destroy(); }catch(e){} NET.peer = null; NET.host = null;
+      lbStatus(why==='peer peer-unavailable' ? 'Looking for game '+code+' on the relay…' : 'Direct link blocked — connecting through the relay server…', true);
+      const r = await relayJoin(code);
+      if(!alive() || attached){ if(r && !r.error){ try{ r.close(); }catch(e){} } return; }
+      if(r && !r.error){ attach(r, ' (via relay)'); return; }
+      // the host may simply not be ready yet (invite link opened right away): try again a couple of times
+      if(r && r.error==='nohost' && ++tries < 3){ lbStatus("Host not ready yet — trying again ("+(tries+1)+"/3)…", true); setTimeout(attempt, 2000); return; }
+      netReset();
+      lbStatus(r && r.error==='nohost'
+        ? 'No game found with code '+code+'. Check the code, and make sure the host still has the game open on the code screen.'
+        : MSG_SERVER);
+    };
+    if(forceRelay || typeof Peer==='undefined'){ fallback('forced'); return; }
+    lbStatus('Step 1/3 · Reaching the matchmaking server…');
+    const peer = new Peer(undefined, peerOpts()); NET.peer = peer;
+    const sto = setTimeout(() => { if(NET.peer===peer && !peer.open) fallback('server timeout'); }, 8000);
+    peer.on('open', () => {
+      clearTimeout(sto);
+      if(NET.peer!==peer || !alive()) return;
+      lbStatus('Step 2/3 · Looking for game '+code+'…', true);
+      const conn = peer.connect(PEER_PREFIX+code, {reliable:true, serialization:'raw'});
+      conn.on('iceStateChanged', st => {
+        if(st==='checking') lbStatus('Step 3/3 · Found the game — linking the two computers…', true);
+        if((st==='failed' || st==='disconnected') && !conn.open) fallback('ice '+st);
+      });
+      const to = setTimeout(() => { if(!conn.open) fallback('link timeout'); }, 9000);
+      conn.on('open', () => { clearTimeout(to); if(fellBack || attached || !alive()){ try{ conn.close(); }catch(e){} return; } attach(conn, ''); });
     });
-    const to = setTimeout(() => { if(!conn.open) fallback('link timeout'); }, 9000);
-    conn.on('open', () => { clearTimeout(to); if(fellBack || !alive()){ try{ conn.close(); }catch(e){} return; } attach(conn, ''); });
-  });
-  peer.on('error', err => { if(NET.peer===peer) fallback('peer '+err.type); });
+    // once the game link is up, a hiccup on the matchmaking socket must NOT tear it down
+    peer.on('error', err => { if(NET.peer===peer && !attached) fallback('peer '+err.type); });
+  };
+  attempt();
 }
 function netSendInput(LI){
   if(!NET.host || !NET.host.open) return;
   const now = performance.now();
-  if(NET.lastSnap && now - NET.lastSnap > 6000){ netReset(); backToLobby('Lost connection to the host.', false); return; }
+  if(NET.lastSnap && now - NET.lastSnap > 15000){ netReset(); backToLobby('Lost connection to the host.', false); return; }
   if(now - NET.lastPing > 1000){ NET.lastPing = now; netSend(NET.host, {t:'ping', ts:now}); }
   if(NET.spectator) return;
   const h = toBits(LI.held); NET.pAcc |= toBits(LI.pressed);
@@ -17177,7 +17226,10 @@ function netSnapshot(conn){
     const f = {}; let ch = false;
     for(const k of Object.keys(pl)){
       if(k==='spriteAnim') continue;
-      const e = netEnc(pl[k],0), s = JSON.stringify(e===undefined ? null : e);
+      const v = pl[k], tv = typeof v;
+      if(tv==='number'){ const e = Number.isFinite(v) ? (Number.isInteger(v) ? v : Math.round(v*100)/100) : 0; if(pc.f[k]!==e){ pc.f[k]=e; f[k]=e; ch = true; } continue; }
+      if(tv==='boolean' || tv==='string'){ if(pc.f[k]!==v){ pc.f[k]=v; f[k]=v; ch = true; } continue; }
+      const e = netEnc(v,0), s = '\u0001'+JSON.stringify(e===undefined ? null : e);
       if(pc.f[k]!==s){ pc.f[k]=s; f[k] = e===undefined ? null : e; ch = true; }
     }
     if(ch || !pc.sent){ (P||(P={}))[ref] = {nid:pl.nid, ci:pl.charIdx, f}; pc.sent = true; }
@@ -17187,13 +17239,26 @@ function netSnapshot(conn){
   let A = null;
   for(const name in SYNC_ARR){ const e = netEnc(SYNC_ARR[name],0), s = JSON.stringify(e); if(c.a[name]!==s){ c.a[name]=s; (A||(A={}))[name]=e; } }
   if(A) m.A = A;
-  { const e = netEnc(activeDomain,0), s = JSON.stringify(e===undefined?null:e); if(c.d!==s){ c.d=s; m.D = e===undefined?null:e; } }
+  { const ad = activeDomain;
+    if(!ad){ if(c.dref!==null){ c.dref = null; c.dk = {}; m.D = null; } }
+    else {
+      const full = c.dref!==ad; if(full){ c.dref = ad; c.dk = {}; }
+      const f = {}; let ch = full;
+      for(const k in ad){ const e = netEnc(ad[k],1), s2 = JSON.stringify(e===undefined ? null : e); if(c.dk[k]!==s2){ c.dk[k] = s2; f[k] = e===undefined ? null : e; ch = true; } }
+      const rm = []; for(const k in c.dk) if(!(k in ad)){ rm.push(k); delete c.dk[k]; ch = true; }
+      if(ch) m.D = {full, f, rm};
+    } }
   // terrain
-  if(conn.terGen!==terGen){
+  if(conn.terGen!==terGen || conn.pendTer.length > 6000){
     conn.terGen = terGen; conn.pendTer = [];
-    let str = ''; for(let i=0;i<terCur.length;i++) str += String.fromCharCode(48+terCur[i]);
-    const br = []; for(const i of terBrokenList) if(!terCur[i]) br.push(i, Math.round(terBroke[i]));
-    m.T = {map:terMap, full:str, br};
+    // run-length encoded "value,count,…": a fully shattered map is a few numbers instead of tens of thousands
+    const rl = []; { let v = terCur[0], n = 0; for(let i=0;i<terCur.length;i++){ if(terCur[i]===v) n++; else { rl.push(v, n); v = terCur[i]; n = 1; } } rl.push(v, n); }
+    // broken cells with a real timestamp are listed one by one; mass-shattered ones (-1e12) as index runs
+    const flag = new Uint8Array(terCur.length), br = [], mass = [];
+    for(const i of terBrokenList){ if(terCur[i] || flag[i]) continue; flag[i] = 1; if(terBroke[i] < -1e11) mass.push(i); else br.push(i, Math.round(terBroke[i])); }
+    mass.sort((a, b) => a - b);
+    const bm = []; for(let k=0;k<mass.length;){ let j = k; while(j+1<mass.length && mass[j+1]===mass[j]+1) j++; bm.push(mass[k], j-k+1); k = j+1; }
+    m.T = {map:terMap, rl, br, bm};
   } else if(conn.pendTer.length){ m.T = {ch:conn.pendTer}; conn.pendTer = []; }
   if(conn.pendFx.length){ m.E = conn.pendFx; conn.pendFx = []; }
   return m;
@@ -17203,11 +17268,11 @@ function netBroadcast(){
   const fx = NET.fx, tl = terLog.splice(0);
   NET.fx = [];
   const now = performance.now();
-  for(const c of NET.conns.slice()) if(now - (c.lastSeen||now) > 6000){ try{ c.close(); }catch(e){} c._drop && c._drop(); }
+  for(const c of NET.conns.slice()) if(now - (c.lastSeen||now) > 15000){ try{ c.close(); }catch(e){} c._drop && c._drop(); }
   for(const conn of NET.conns){
     if(!conn.open) continue;
-    if(fx.length) conn.pendFx.push(...fx);
-    if(tl.length && conn.terGen===terGen) conn.pendTer.push(...tl);
+    if(fx.length){ const pf = conn.pendFx; for(let k=0;k<fx.length;k++) pf.push(fx[k]); if(pf.length > 160) pf.splice(0, pf.length-160); }
+    if(tl.length && conn.terGen===terGen){ const pt = conn.pendTer; for(let k=0;k<tl.length;k++) pt.push(tl[k]); }
     const buf = conn.dataChannel ? conn.dataChannel.bufferedAmount : 0;
     if(buf > (conn.relay ? 128 : 384)*1024) continue;
     if(conn.relay){ if(now - (conn.lastTx||0) < 40) continue; conn.lastTx = now; }   // relay: ~25 updates/s              // congested: skip a frame, deltas catch up next time
@@ -17219,7 +17284,7 @@ function netBroadcast(){
 function netWrapFx(name, fn){
   return function(...a){
     if(NET.role==='host' && NET.conns.length && NET.fxDepth===0)
-      NET.fx.push([name, a.map(v => typeof v==='number' ? Math.round(v*10)/10 : v)]);
+      { if(NET.fx.length < 300) NET.fx.push([name, a.map(v => typeof v==='number' ? Math.round(v*10)/10 : v)]); }
     NET.fxDepth++;
     try{ return fn.apply(this, a); } finally{ NET.fxDepth--; }
   };
@@ -17249,7 +17314,7 @@ function netOnHostData(d){
     return; }
   if(d.t==='pong'){ NET.rtt = performance.now() - d.ts; return; }
   if(d.t==='chat'){ chatRecv(d, null); return; }
-  if(d.t==='s') netApply(d);
+  if(d.t==='s'){ try{ netApply(d); }catch(e){ console.error('snapshot apply failed', e); } }
 }
 function netApply(m){
   if(m.g) for(const k in m.g) if(NET_G[k]) NET_G[k][1](m.g[k]);
@@ -17275,9 +17340,24 @@ function netApply(m){
   if(m.g) for(const k in m.g) if(NET_GREF[k]) NET_GREF[k][1](netRes(m.g[k]));
   if(m.A) for(const name in m.A){ const arr = SYNC_ARR[name]; const sf = arr._screenFlash; arr.length = 0;
     for(const it of (m.A[name]||[])) arr.push(netDec(it)); if(sf!==undefined) arr._screenFlash = sf; }
-  if('D' in m) activeDomain = netDec(m.D);
+  if('D' in m){
+    const D = m.D;
+    if(D===null) activeDomain = null;
+    else if(D.full || activeDomain){
+      if(D.full || !activeDomain) activeDomain = {};
+      for(const k in D.f) activeDomain[k] = netDec(D.f[k]);
+      if(D.rm) for(const k of D.rm) delete activeDomain[k];
+    } else { try{ netSend(NET.host, {t:'rs'}); }catch(e){} }   // missed the start of this domain: ask the host to resend it whole
+  }
   if(m.T){
-    if(m.T.full){
+    if(m.T.rl){
+      if(terMap!==m.T.map || mapIdx!==m.T.map){ mapIdx = m.T.map; buildTerrain(m.T.map); }
+      { let i = 0; const rl = m.T.rl; for(let j=0;j<rl.length;j+=2){ const v = rl[j], n = rl[j+1]; for(let k=0;k<n && i<terCur.length;k++) terCur[i++] = v; } }
+      terBroke.fill(0); terBrokenList = [];
+      const br = m.T.br || []; for(let j=0;j<br.length;j+=2){ terBroke[br[j]] = br[j+1]; terBrokenList.push(br[j]); }
+      const bm = m.T.bm || []; for(let j=0;j<bm.length;j+=2) for(let k=0;k<bm[j+1];k++){ const i = bm[j]+k; terBroke[i] = -1e12; terBrokenList.push(i); }
+      terDirty = true;
+    } else if(m.T.full){
       if(terMap!==m.T.map || mapIdx!==m.T.map){ mapIdx = m.T.map; buildTerrain(m.T.map); }
       const s = m.T.full; for(let i=0;i<terCur.length;i++) terCur[i] = s.charCodeAt(i)-48;
       terBroke.fill(0); terBrokenList = [];
@@ -17301,7 +17381,7 @@ function lbView(v){ document.getElementById('lbMain').hidden = v!=='main'; docum
 function hideLobby(){ document.getElementById('lobby').hidden = true; }
 function showLobby(){ document.getElementById('lobby').hidden = false; }
 function inviteLink(){
-  const u = new URL(location.href); u.searchParams.set('join', NET.code); return u.toString();
+  const u = new URL(location.href); u.hash = ''; u.searchParams.set('join', NET.code); return u.toString();
 }
 function backToLobby(msg, stillHosting){
   phase = 'home'; puppet = null; clearProjectiles(); activeDomain = null; domainClash = null; domainFlash = 0; timeScale = 1;
@@ -17341,17 +17421,21 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   $('btnTrain').onclick = () => { netReset(); NET.role = 'local'; lbStatus(''); hideLobby(); goModeSelect(); gameMode = 'training'; phase = 'mapSelect'; mapSelectIdx = 0; };
   $('btnJoin').onclick = () => netJoin($('joinCode').value);
   $('joinCode').addEventListener('keydown', e => { if(e.key==='Enter') netJoin($('joinCode').value); });
-  $('joinCode').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+  $('joinCode').addEventListener('input', e => { e.target.value = parseJoinCode(e.target.value); });
   $('btnCopy').onclick = async () => {
     // A file:// link only works on this computer — share the code instead
-    const local = location.protocol==='file:';
+    const local = !/^https?:$/.test(location.protocol);
     const text = local ? 'Join my Cursed Clash game! Open the game file, click JOIN, and enter code '+NET.code : inviteLink();
-    try{ await navigator.clipboard.writeText(text); lbStatus(local ? 'Copied! Your friend needs the same game file — they open it and type code '+NET.code+' into JOIN.' : 'Invite link copied — send it to your opponent.', true); }
-    catch(e){ lbStatus(text); }
+    let ok = false;
+    try{ await navigator.clipboard.writeText(text); ok = true; }catch(e){}
+    if(!ok){ try{ const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-999px;top:0;opacity:0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); }catch(e){} }
+    if(ok) lbStatus(local ? 'Copied! Your friend needs the same game file — they open it and type code '+NET.code+' into JOIN.' : 'Invite link copied — send it to your opponent.', true);
+    else lbStatus(local ? text : 'Copy this link: '+text);
   };
   $('btnCancel').onclick = () => { netReset(); lbView('main'); lbStatus(''); };
   const j = new URLSearchParams(location.search).get('join');
-  if(j){ $('joinCode').value = j.toUpperCase(); setTimeout(() => netJoin(j), 300); }
+  if(j){ $('joinCode').value = parseJoinCode(j); setTimeout(() => netJoin(j), 300); }
+  addEventListener('pagehide', () => { try{ for(const c of NET.conns) c.relay && c.close(); NET.host && NET.host.relay && NET.host.close(); }catch(e){} try{ relayStopAll(); }catch(e){} });
 })();
 
 // "YOU" marker + connection line
@@ -17737,16 +17821,23 @@ function updateCamera(dt){
 }
 
 let last=0;
-let _loopErrN = 0;
+// Count save()/restore() so a draw routine that throws can be unwound instead of killing the whole frame loop
+let _cd = 0;
+{ const _sv = ctx.save.bind(ctx), _rs = ctx.restore.bind(ctx); ctx.save = () => { _cd++; _sv(); }; ctx.restore = () => { if(_cd > 0){ _cd--; _rs(); } }; }
+const _errT = {};
+function loopErr(tag, e){ const n = performance.now(); if(n - (_errT[tag]||-1e9) > 3000){ _errT[tag] = n; console.error('[Cursed Clash] '+tag+' error:', e); } }
+function safeDraw(fn, tag){ const d0 = _cd; try{ fn(); }catch(e){ loopErr(tag||'draw', e); while(_cd > d0) ctx.restore(); } }
+let _ftAvg = 16.7, _slowN = 0, _lastTs = 0;
 function loop(ts){
-  try{ loopBody(ts); }
-  catch(e){
-    if(_loopErrN++ < 20) console.error('frame error (game keeps running):', e);
-    try{ if(ctx.reset) ctx.reset(); else { ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }catch(_){}
-    requestAnimationFrame(loop);
-  }
+  if(_lastTs){ const ft = ts - _lastTs; if(ft > 0 && ft < 250) _ftAvg += (ft - _ftAvg) * 0.05;
+    if(!LITE && _ftAvg > 23 && ++_slowN > 150){ LITE = true; console.info('[Cursed Clash] low frame rate — switched to lite effects'); } else if(_ftAvg <= 23) _slowN = 0; }
+  _lastTs = ts;
+  try{ loopFrame(ts); }
+  catch(e){ loopErr('frame', e); try{ canvas.width = canvas.width; _cd = 0; }catch(e2){} }
+  try{ if(NET.role==='host') netBroadcast(); }catch(e){ loopErr('broadcast', e); }
+  requestAnimationFrame(loop);
 }
-function loopBody(ts){
+function loopFrame(ts){
   const dt=Math.min(ts-last,50); last=ts;
   try{ audWatch(); }catch(e){}
   try{ accWatch(); }catch(e){}
@@ -17786,7 +17877,7 @@ function loopBody(ts){
   else if(phase==='charSelect'){ if(sim) logicCharSelect(dt); }
   else if(phase==='fight'){
     if(sim && (MI1.back || MI2.back)) togglePause(MI1.back ? 1 : 2);
-    if(!paused){ if(sim) simFight(dt); else guestFx(dt*timeScale); }
+    if(!paused){ try{ if(sim) simFight(dt); else guestFx(dt*timeScale); }catch(e){ loopErr(sim ? 'simFight' : 'guestFx', e); } }
   }
   else if(phase==='roundend'){ tickParts(); tickRings(); tickExplosions(dt); tickFlameTrails(dt); if(sim) logicRoundEnd(dt); }
   else if(phase==='end'){ tickParts(); tickRings(); if(sim) logicMatchEnd(); }
@@ -17803,7 +17894,7 @@ function loopBody(ts){
     ctx.save();
     ctx.translate(sx,sy); ctx.scale(cam.z,cam.z); ctx.translate(-cam.x,-cam.y);
     drawMapBG(); drawTerrain(); drawFallChunks();
-    if(phase==='fight') drawFight(dt);
+    if(phase==='fight') safeDraw(() => drawFight(dt), 'drawFight');
     else {
       drawParts(); drawRings();
       if(phase==='roundend'){ drawFlameTrails(); drawExplosions(); }
@@ -17813,7 +17904,7 @@ function loopBody(ts){
     ctx.restore();
     withView(() => {
       ctx.save(); ctx.translate(sx,sy);
-      if(phase==='fight'){ drawFightScreen(dt); try{ if(!paused) drawMovesOverlay(dt); }catch(e){} drawPauseMenu(); }
+      if(phase==='fight'){ safeDraw(() => drawFightScreen(dt), 'drawFightScreen'); try{ if(!paused) drawMovesOverlay(dt); }catch(e){} safeDraw(drawPauseMenu, 'drawPauseMenu'); }
       else { drawHUDOverlay(); if(phase==='roundend'){ if(roundWinner) drawRoundEnd(); } else if(winner) drawMatchEnd(); }
       drawNetOverlay();
       ctx.restore();
@@ -17831,8 +17922,6 @@ function loopBody(ts){
     });
   }
   ctx.restore();
-  if(NET.role==='host') netBroadcast();
-  requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 </script>
