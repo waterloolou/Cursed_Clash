@@ -23,7 +23,7 @@ That's it. Everything is in that one file.
 
 ## Newest fighter: Yuki Tsukumo
 
-Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (double damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and then self-destructs, costing her that life. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
+Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (+75% damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and then self-destructs, costing her that life. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
 
 Also recent:
 - **Megumi Fushiguro** — Ten Shadows (Rabbit Escape, the Toads, Divine Dog, Chimera Shadow Garden), and the ¥3000 **Meguna** feat that lets Sukuna take the body.
@@ -31,11 +31,25 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: Zoners
+## Latest: combat overhaul + character batch
+- **Evasive** (like JJS): a meter under your CE bar fills over time and when you're hit. When it's full, press **dash** (online) or **down + jump** (one keyboard) while stunned or knocked down to burst free. Getting up from a knockdown no longer gives invincibility.
+- **Variable stun** (bigger hits and longer combos stun longer), **combo follow** (you drift after the target automatically), **uppercuts** (hold jump on the finisher, keep holding to leap after them) and **downslams** (down + attack in the air). Whiffed air punches no longer stall your fall.
+- **CE**: regular non-melee moves cost a little (3–8); punches and weapon swings stay free; changing your weapon costs CE. Maximum Output moves cost 18.
+- **Domains** now cover the entire map, wherever the fighters are.
+- **Gojo**: new art for Hollow Purple, Reversal Red, Lapse Blue and Infinite Void · Blue nerfed · Maximum Output ultimate = **200% Hollow Purple**.
+- **Dagon**: Water Prison · Water Jet · **Flood** (special) — water piles up and spills over walls; deeper water = slower foes, faster Dagon. Maximum Output = **octopus body** with Death Swarm and Whirlwind.
+- **Higuruma**: **Hammer Size** special (Normal / Long / Large) changes **Hammer Hit**; Gavel Throw is a regular move.
+- **Hakari**: shutter doors you can stand on, a jackpot moveset (Fever Rush, Ball Storm), +1 pachinko ball per jackpot, faster.
+- **Jogo**: Maximum Output ultimate = giant **Maximum: Meteor**; Ember Insects fly straight in a fan of 5.
+- **Sukuna**: Dismantle chain −15% damage and +3s cooldown per link (6s base, max 3 links); Cleave throws them at the end.
+- **Naoya**: frames last 3s (24 FPS stays 5s) and can't be chained. **Yuta**: struggle out of Rika's grab. **Hanami**: Root Grab ↔ Flower Field, heals in her flowers. **Megumi**: stronger rabbits you can run with. **Yuki**: light mass a bit slower, extreme mass a bit weaker.
+- **Zoners**: water + lava = steam cloud; deep water slows falls.
+
+## Zoners
 Jogo, Dagon and Hanami now shape the map, and each counters the next: **Jogo's fire burns Hanami's flowers · Hanami's flowers drink Dagon's water · Dagon's water douses Jogo's lava and mounds.** Their zones stay until a domain opens, their owner dies, or the counter removes them.
 - **Jogo**: Lava Mounds are permanent (can't erupt in water); Flame Dash, Maximum Meteor and fire towers leave cracked lava ground that hurts and burns.
-- **Dagon**: Flood pours real, flowing water that runs off ledges and pools — and covers far more ground.
-- **Hanami**: Flower Fields stay where they're planted.
+- **Dagon**: Flood pours real water that runs off ledges, pools and piles up.
+- **Hanami**: Flower Fields stay where they're planted (and heal her).
 
 ## Latest: Yuta rework
 - **Copy** now depends on your best combo since the last copy: 10+ damage copies the opponent's ability 1, 30+ their ability 2, 50+ their super — works on every fighter.
@@ -67,10 +81,10 @@ Every key can be changed: **⌨ CONTROLS** on the home screen (saved in your bro
 
 ## Cursed energy
 
-Every fighter has a **cursed energy (CE)** bar under their health that refills on its own. **Only Maximum Output spends it.**
+Every fighter has a **cursed energy (CE)** bar under their health that refills on its own.
 
-- **Regular moves are free**: Q / E just have their cooldowns (3/4 of the original). Supers and domains / ultimates only need their hit charge.
-- **Maximum Output** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): ability 1 / 2 fire stronger versions for **up to 10 CE** each, and your super and domain still work. One Maximum Output move per fighter can be blocked; the other, and every super and ultimate, can only be countered with a perfect block. Every fighter's moves are listed on their wiki page.
+- **Regular moves cost a little** (3–8 CE); **melee moves are free** (punches, sword / axe / hammer swings); changing your weapon costs CE (Higuruma's Hammer Size). Supers and domains / ultimates only need their hit charge.
+- **Maximum Output** (online **V**, one keyboard **E** / **I**; your aura lights up while it's on): ability 1 / 2 fire stronger versions for **18 CE** each, and your super and domain still work. One Maximum Output move per fighter can be blocked; the other, and every super and ultimate, can only be countered with a perfect block. Every fighter's moves are listed on their wiki page.
 - A few extras also use CE: anti-domain techniques, Sukuna's Dismantle chain and Spider Web, Mahito's killing form, Yuki's extreme mass, and the Reverse Cursed Technique feat.
 - **Black Flash** makes your CE refill 250% faster for 10s. Hakari's jackpot gives infinite CE.
 - The shop's **Six Eyes** and **Cursed Energy Flow** make it refill faster.
