@@ -4861,7 +4861,7 @@ function getMapPreview(i){
   terBase = new Uint8Array(T_COLS*T_ROWS);
   MAPS[i].build();
   for(let r=0;r<T_ROWS;r++) for(let c=0;c<T_COLS;c++){ const v = terBase[terIdx(c,r)]; if(!v) continue;
-    g.fillStyle = TER_COLORS[v][0]; g.fillRect(c*T_CELL, T_TOP+r*T_CELL, T_CELL, T_CELL); }
+    g.fillStyle = terCol(v); g.fillRect(c*T_CELL, T_TOP+r*T_CELL, T_CELL, T_CELL); }
   [W, H, GND, T_COLS, T_ROWS, T_TOP, terBase] = sv;
   _mapPrev[i] = cv;
   return cv;
@@ -4906,6 +4906,7 @@ function terCeil(x, w, headY){                // bottom of the first solid cell 
 }
 
 // ── Destruction ──
+function terCol(v, k){ const c = TER_COLORS[v]; return c ? c[k||0] : '#777'; }
 const TER_COLORS = {1:['#6a665c','#55524a'], 2:['#7a5a48','#5e4436'], 3:['#8a7356','#6b5841'], 4:['#8d6a3e','#6d5130'],
   5:['#8f97a3','#6c737e'], 6:['#4a4f5c','#373b45'], 7:['#6b4a30','#533824'], 8:['#3f6b38','#2f5229'], 9:['#5c5d63','#46474c'], 10:['#3a3a42','#2c2c33'], 11:['#d9d4c8','#b9b3a6'], 12:['#7d93a8','#5d7186'], 13:['#4a3324','#3a281c'], 14:['#6b4a2a','#4f3520'], 15:['#aab1bc','#8b929e']};
 let _carved = [];
@@ -4913,7 +4914,7 @@ function _terBreak(c, r){
   if(IS_GUEST || c<0||c>=T_COLS||r<0||r>=T_ROWS) return;
   const i = terIdx(c,r), v = terCur[i];
   if(!v) return;
-  terCur[i] = 0; terBroke[i] = terClock; terBrokenList.push(i); _carved.push(i, v); terDirty = true;
+  terCur[i] = 0; terBroke[i] = terClock; if(terBase[i]) terBrokenList.push(i); _carved.push(i, v); terDirty = true;   // temporary cells (shutters, roots) never regrow
   terLog.push(i, 0, Math.round(terClock));
   if(terFallSeeds) terFallSeeds.push(i);
 }
@@ -4925,7 +4926,7 @@ function _terDebris(){
   for(let k=0;k<emit;k++){
     const j = Math.floor(Math.random()*n)*2, i = _carved[j], v = _carved[j+1];
     const cx = (i % T_COLS)*T_CELL + T_CELL/2, cy = T_TOP + Math.floor(i / T_COLS)*T_CELL + T_CELL/2;
-    addParts(cx, cy, TER_COLORS[v][Math.random()<.5?0:1], 1, 3);
+    addParts(cx, cy, terCol(v, Math.random()<.5?0:1), 1, 3);
   }
   _carved = [];
   return n;
@@ -5030,7 +5031,7 @@ function terShatterAll(){
   let n = 0;
   for(let i=0;i<terCur.length;i++){ const v = terCur[i]; if(!v) continue;
     terCur[i] = 0; terBroke[i] = -1e12; terBrokenList.push(i); n++;
-    if(n % 70 === 0){ const cx = (i % T_COLS)*T_CELL + 3, cy = T_TOP + Math.floor(i / T_COLS)*T_CELL + 3; addParts(cx, cy, TER_COLORS[v][0], 2, 5); } }
+    if(n % 70 === 0){ const cx = (i % T_COLS)*T_CELL + 3, cy = T_TOP + Math.floor(i / T_COLS)*T_CELL + 3; addParts(cx, cy, terCol(v), 2, 5); } }
   if(!n) return;
   if(terFallSeeds) terFallSeeds.length = 0; if(typeof fallChunks!=='undefined') fallChunks.length = 0;
   terDirty = true; doShake(18);
@@ -5061,7 +5062,7 @@ function tickTerrain(dt){
     for(const b of boxes) if(cx < b.x+b.w+TER_SAFE && cx+T_CELL > b.x-TER_SAFE && cy < b.y+b.h+TER_SAFE && cy+T_CELL > b.y-TER_SAFE){ blocked = true; break; }
     if(blocked){ keep.push(i); continue; }
     terCur[i] = terBase[i]; restored++; terLog.push(i, terBase[i], 0);
-    if(restored % 9 === 1) addParts(cx+3, cy+3, TER_COLORS[terBase[i]][0], 1, 1);
+    if(restored % 9 === 1) addParts(cx+3, cy+3, terCol(terBase[i]), 1, 1);
   }
   terBrokenList = keep;
   if(restored) terDirty = true;
@@ -5133,9 +5134,9 @@ function drawTerrain(){
     ctx.save();
     for(const i of terBrokenList){
       const left = T_RESPAWN - (terClock - terBroke[i]);
-      if(left > 4000 || terCur[i]) continue;
+      if(left > 4000 || terCur[i] || !terBase[i]) continue;
       ctx.globalAlpha = 0.05 + 0.2*(1-left/4000);
-      ctx.fillStyle = TER_COLORS[terBase[i]][0];
+      ctx.fillStyle = terCol(terBase[i]);
       ctx.fillRect((i % T_COLS)*T_CELL, T_TOP + Math.floor(i / T_COLS)*T_CELL, T_CELL, T_CELL);
     }
     ctx.restore();
@@ -17736,7 +17737,16 @@ function updateCamera(dt){
 }
 
 let last=0;
+let _loopErrN = 0;
 function loop(ts){
+  try{ loopBody(ts); }
+  catch(e){
+    if(_loopErrN++ < 20) console.error('frame error (game keeps running):', e);
+    try{ if(ctx.reset) ctx.reset(); else { ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }catch(_){}
+    requestAnimationFrame(loop);
+  }
+}
+function loopBody(ts){
   const dt=Math.min(ts-last,50); last=ts;
   try{ audWatch(); }catch(e){}
   try{ accWatch(); }catch(e){}
