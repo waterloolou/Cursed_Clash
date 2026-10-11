@@ -10784,7 +10784,8 @@ class Player {
     const f=dt/16.67, px=this.x, py=this.y;
     // swimming: deep water (not your own) slows your fall
     const deep = (this._wFoe||0) >= WATER_DEEP && this.vy > 0;
-    this.vy+=GRAV*f*(this.rayT>0 ? 0 : deep ? 0.45 : 1);   // riding the stingray: no gravity if(deep) this.vy = Math.min(this.vy, 3.4); this.x+=this.vx*f; this.y+=this.vy*f;
+    // riding the stingray: no gravity
+    this.vy+=GRAV*f*(this.rayT>0 ? 0 : deep ? 0.45 : 1); if(deep) this.vy = Math.min(this.vy, 3.4); this.x+=this.vx*f; this.y+=this.vy*f;
     this.x=Math.max(10,Math.min(W-PW-10,this.x));
     this.onGround=this._moveTerrain(px,py);
     if([S.IDLE,S.WALK,S.AIR].includes(this.state))
