@@ -31,7 +31,16 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: performance + online fixes (merged)
+## Newest fighter: Suguru Geto
+Cursed Spirit Manipulation: **Centipedes** (three red centipede curses rush the foe), **Kuchisake-Onna** (point-blank: press the key she shows or get cut by a barrage of scissors), and the **Mirror Curse** super that sends projectiles back. His dash is a **stingray** you ride for 3s in any direction. Maximum Output: **Rainbow Dragon** (aim it, then it charges in a straight line) and **Giant Catfish** (a giant open mouth that deletes anything that falls in and chews on the enemy). Ultimate: **Maximum: Uzumaki** — his whole curse pool (30 to start) swarms the opponent; curses that die are gone, survivors return for next time.
+
+## Latest: new menus
+- **Character select** like a fighting-game roster: a portrait grid with each player's cursor, and a big panel per player with their fighter and a quick summary of the kit (moves, Maximum Output, passive, CE).
+- **Character Bans** (shop, ¥20): each player can ban one fighter on the select screen (feat key: **T**, or Right Shift for local Player 2).
+- New **stage select** with a big preview, a restyled **mode select**, and a new **home screen**.
+- **Your own portraits**: put pictures in the `portraits` folder and list them in `portraits.js` — any character without one uses the in-game drawing.
+
+## Performance + online fixes (merged)
 - **Smoother on slow computers**: the game switches to *lite effects* by itself if the frame rate stays low (no glow blur, half the particles), the canvas no longer renders at full 4K on big screens, and particles / damage numbers are capped.
 - **Can't freeze any more**: if one frame hits an error, the game logs it and keeps running.
 - **Online is sturdier**: paste a whole **invite link** into JOIN, the guest tries every relay server at once, reconnecting/reloading doesn't create a ghost player, keep-alive pings run even in a background tab, the disconnect timeout is 15s, and domains / terrain are sent in much smaller pieces.
