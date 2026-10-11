@@ -27,9 +27,19 @@ Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Gar
 
 Also recent:
 - **Megumi Fushiguro** — Ten Shadows (Rabbit Escape, the Toads, Divine Dog, Chimera Shadow Garden), and the ¥3000 **Meguna** feat that lets Sukuna take the body.
-- **Mahito reworked** — Idle Transfiguration is now his special: the 3rd soul touch kills outright (Yuji and Sukuna are immune). Maximum Output is his true form, Instant Spirit Body of Distorted Killing, with Black Flash and Soul Multiplicity.
+- **Mahito** — see the latest batch above: transfigured humans, Self-Transfiguration, the Body Repel blob, Idle Transfiguration in Maximum Output.
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
+
+## Latest: matchmaking queue + balance batch
+- **Queue for a match**: press **QUEUE · NORMAL** or **QUEUE · ENDLESS** on the home screen. Two people queuing for the same mode are paired automatically and go straight to the stage select. Hosting with a code still works for playing a friend.
+- **Character select** now shows each fighter's **speed, jump height and health**.
+- **Mahito rework**: he carries **5 transfigured humans** (Body Repel, Soul Isomer and his special each use one; killing the opponent restocks them). New special **Self-Transfiguration**: one stat +15%, the others −5% (hold up = jump, down = health, a direction = speed, nothing = damage). **Body Repel** grows a giant blob along the ground that he walks through and the opponent can't (it shoves them for damage). **Idle Transfiguration** moved to Maximum Output.
+- **Geto**: Uzumaki lasts 22s, curses break blocks and take **two hits** to kill; **hold the ultimate key** to sacrifice a curse every second for +3% damage, speed and size on the rest. **Giant Catfish** reworked: it bursts out under Geto and swallows terrain, water, projectiles, puppets and soul isomers; a foe who falls in is stuck 5s for 20 damage (32s cooldown). Rainbow Dragon shows a dashed aim line. Stingray: 11s cooldown and a 200px height limit.
+- **Sukuna**: when a Dismantle chain ends, Dismantle **and** Cleave go on a very long cooldown (~10 / 16 / 22s).
+- **Gojo**: longer cooldowns everywhere; in Maximum Output the ultimate is **Hollow Purple: 200%** — now 4× a normal Purple's size and 170 damage.
+- **Yuta's domain** no longer freezes the opponent; katanas keep appearing, and each one charges Jacob's Ladder and swaps his Copy for a random ability.
+- **Zoners**: every Flood drop can hurt 10 times and then dries up · Water Prison flashes first (block it to splash it) · Flower Fields wilt after 30s untouched or 2.5 minutes · Lava Mounds fade nearly invisible (embers give them away) · Death Swarm: hold to aim, fish home for 1.5s then fly straight.
 
 ## Newest fighter: Suguru Geto
 Cursed Spirit Manipulation: **Centipedes** (three red centipede curses rush the foe), **Kuchisake-Onna** (point-blank: press the key she shows or get cut by a barrage of scissors), and the **Mirror Curse** super that sends projectiles back. His dash is a **stingray** you ride for 3s in any direction. Maximum Output: **Rainbow Dragon** (aim it, then it charges in a straight line) and **Giant Catfish** (a giant open mouth that deletes anything that falls in and chews on the enemy). Ultimate: **Maximum: Uzumaki** — his whole curse pool (30 to start) swarms the opponent; curses that die are gone, survivors return for next time.
