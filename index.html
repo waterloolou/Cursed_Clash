@@ -9163,7 +9163,8 @@ class Player {
     this.vy = 0; this.vx = 0;
     this.x = Math.max(0, Math.min(W-PW, this.x + f*SUKDASH_SPD*k)); this.sdDist += Math.abs(this.x - px);
     const x0 = Math.min(px, this.x) - 14, x1 = Math.max(px, this.x) + PW + 14, y0 = this.y - 14, y1 = this.y + PH + 14;
-    if(!IS_GUEST) carveCapsule(px+PW/2, this.y+PH*0.45, this.x+PW/2, this.y+PH*0.45, 30);
+    if(!IS_GUEST){ carveCapsule(px+PW/2, this.y+PH*0.45, this.x+PW/2, this.y+PH*0.45, 30);
+      carveRect(Math.min(px, this.x), this.y + 0.51 - T_CELL/2, Math.abs(this.x - px) + PW, PH - 1.02 + T_CELL); }   // the 30px capsule left head/feet cells (PH=78) → the wall check undid the whole move
     const inBox = e => e && typeof e.x==='number' && e.x > x0 && e.x < x1 && e.y > y0 && e.y < y1;
     for(const arr of GETO_REFLECT()){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const e = arr[j]; if(e && e.owner!==this && inBox(e)){ addParts(e.x, e.y, '#ff4a4a', 4, 2); arr.splice(j,1); } } }
     for(const arr of [isomers, getoCurses, kenSpirits, shikis, garudas, uiuis]){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const e = arr[j]; if(e && e.owner!==this && inBox(e)){ addParts(e.x, e.y, '#ff4a4a', 6, 3); arr.splice(j,1); } } }

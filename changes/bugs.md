@@ -20,6 +20,14 @@ rotating maps 0/1/2/4), plus targeted scripts listed per entry.
   fighter rockets to y ≈ −7000, invisible for ~5 s (fuzz: Yuji→Sukuna vs Yuki, "P1 far above world y=−1551 vy=−52").
 - **Fix:** `_tickYukiHole`: `d.vy = Math.max(-14, Math.min(d.vy, 0) + dy/(dist||1)*pull*0.8*k);` (−14 ≈ one jump, `JUMP_V` = −13.5).
 
+### 3. Sukuna-in-Yuji's Dismantle dash didn't move when any terrain was in the way (most of the time on real maps)
+- **Bug:** `_tickSukDash` carved only a 30 px capsule around the body's middle; fighters are 78 px tall, so head/feet cells
+  stayed solid and `_moveTerrain` reverted the whole 40 px step every frame. The dash "ran" its full distance counter
+  standing still (trace on Sister School: x stays 1070 while `sdDist` climbs to 1320).
+- **Fix:** `_tickSukDash`: after the capsule, also
+  `carveRect(Math.min(px, this.x), this.y + 0.51 - T_CELL/2, Math.abs(this.x - px) + PW, PH - 1.02 + T_CELL)` (clears exactly the
+  cells the body overlaps along the swept path; floor cells under the feet are untouched).
+
 ## Noticed (not fixed)
 
 ## Balance notes for the lead
