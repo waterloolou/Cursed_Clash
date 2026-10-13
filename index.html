@@ -5171,6 +5171,7 @@ function drawMapBG(){
     bgc._edge = [`rgb(${a[0]},${a[1]},${a[2]})`, `rgb(${b[0]},${b[1]},${b[2]})`]; }catch(e){ bgc._edge = ['#0b0a09','#0b0a09']; } }
   ctx.fillStyle = bgc._edge[0]; ctx.fillRect(-3000, -3000, W+6000, 3000);      // sky beyond the top edge
   ctx.fillStyle = bgc._edge[1]; ctx.fillRect(-3000, H, W+6000, 3000);          // ground beyond the bottom edge
+  if(cam.x < 0 || cam.x + VW/cam.z > W){ ctx.drawImage(bgc, 0, 0, 1, H, -3000, 0, 3000, H); ctx.drawImage(bgc, W-1, 0, 1, H, W, 0, 3000, H); }   // zoomed out past the sides (Shibuya): stretch the edge column instead of black bars
   ctx.drawImage(bgc, 0, 0);
   drawMapAmbient(mapIdx, Date.now());
 }

@@ -66,3 +66,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: one-keyboard match end said "Press F or ; for a rematch", but P2's confirm keys are `Slash` / `Enter` (`readLocalInput(BINDS_L2, 1, ['Slash','Enter'], …)`; char select already says "/ TO LOCK IN"). `;` is P2's ultimate.
 - **Where**: `drawMatchEnd` text line (`'Press F or ; for a rematch'`).
 - **Old → new**: `'Press F or ; for a rematch'` → `'Press F or / for a rematch'`.
+
+### 11. Shibuya: black bars left/right when the camera zooms all the way out
+- **Why**: Shibuya (2000×1150) is taller than the view's aspect, so at the minimum zoom the visible world (≈2123px wide) is wider than the map; `drawMapBG` only extended the sky (top) and ground (bottom), leaving ~60px black strips on both sides (before/mapsheet_0.png, `wide`).
+- **Where**: `drawMapBG()`, after the two edge fills.
+- **New**: only when the camera actually sees past a side (`cam.x < 0 || cam.x + VW/cam.z > W`): `drawImage(bgc, 0,0,1,H, -3000,0,3000,H)` and the same for the right column — the edge column is stretched outward, so the bars become a seamless continuation. Zero cost on the other maps.
