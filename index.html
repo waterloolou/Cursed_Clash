@@ -5137,7 +5137,8 @@ function drawMapAmbient(i, t){
     if(_mapAmb.length < 30) _mapAmb.push({x:Math.random()*W, y:Math.random()*GND, vy:-0.15-Math.random()*0.3, a:Math.random()*6});
     for(const m of _mapAmb){ m.y += m.vy; m.a += 0.03; if(m.y < 0){ m.y = GND; m.x = Math.random()*W; }
       ctx.fillStyle = `rgba(150,210,255,${0.25+0.2*Math.sin(m.a)})`; ctx.fillRect(m.x + Math.sin(m.a)*6, m.y, 2, 2); }
-    ctx.fillStyle = `rgba(120,190,255,${0.03+0.02*Math.sin(t*0.0015)})`; ctx.fillRect(1500, 0, 600, 600);
+    { const sg = ctx.createRadialGradient(1750, 260, 20, 1750, 260, 320); sg.addColorStop(0, `rgba(120,190,255,${0.07+0.04*Math.sin(t*0.0015)})`); sg.addColorStop(1, 'rgba(120,190,255,0)');
+      ctx.fillStyle = sg; ctx.fillRect(1430, -60, 640, 640); }   // soft pulse around the torn sky (was a hard-edged 600×600 rectangle)
   } else if(i===2){
     // rising embers
     if(_mapAmb.length < 40) _mapAmb.push({x:Math.random()*W, y:GND, vx:(Math.random()-.5)*0.4, vy:-(0.4+Math.random()*0.9), life:1});
