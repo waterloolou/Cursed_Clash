@@ -31,7 +31,16 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: matchmaking queue + balance batch
+## Latest: Yuji rework, Sendai, Kamutoke
+- **Yuji is a pure brawler now.** **Divergent Fist** (Q): a punch; if it lands, a ring closes on them — press Q again as it meets the inner ring for a **Black Flash** (18, big launch). **Divergent Combo** (E): a long lunge, two punches and a kick (his mobility). Special: a **guaranteed Black Flash** (28).
+- **Combo meter** on Yuji's side of the screen: only normal punches fill it, and it never drains on its own. **Maximum Output** spends it: **Manji Kick** (counter stance, longer with more meter, uses 10%) and **The Zone** ("Zoned In": more damage, faster cooldowns, an easier Black Flash ring; uses 20%, lasts longer with more meter).
+- **Ultimate**: meter under 75% → **"Enchain"** and **Sukuna takes over** for 15s (Dismantle = a dash across half the map that deletes terrain and slices anyone it touches, an aimable faster/stronger Fuga, the same Cleave). 75%+ → **Modulo**: every Divergent Fist is a Black Flash, more damage and speed.
+- **New map: Sendai** (Culling Game colony): the station, the pedestrian deck, a zelkova avenue and a tower under a torn sky.
+- **New item: Kamutoke**: call lightning on the nearest foe, 3 strikes.
+- **Fits every screen**: the game scales evenly with black bars instead of stretching on tablets, phones and ultrawides.
+- Geto's centipedes are slower. Lots of HUD / menu readability fixes and bug fixes — every change is logged in the `changes/` folder (`lead.md`, `bugs.md`, `performance.md`, `quality.md`) so any of it can be reverted.
+
+## Earlier: matchmaking queue + balance batch
 - **Queue for a match**: press **QUEUE · NORMAL** or **QUEUE · ENDLESS** on the home screen. Two people queuing for the same mode are paired automatically and go straight to the stage select. Hosting with a code still works for playing a friend.
 - **Character select** now shows each fighter's **speed, jump height and health**.
 - **Mahito rework**: he carries **5 transfigured humans** (Body Repel, Soul Isomer and his special each use one; killing the opponent restocks them). New special **Self-Transfiguration**: one stat +15%, the others −5% (hold up = jump, down = health, a direction = speed, nothing = damage). **Body Repel** grows a giant blob along the ground that he walks through and the opponent can't (it shoves them for damage). **Idle Transfiguration** moved to Maximum Output.

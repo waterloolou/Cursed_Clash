@@ -473,6 +473,8 @@ canvas {
         <p>Tokyo Jujutsu High in daylight: the tall main building with stairwells, a stone terrace with a climbable three-storey pagoda, a white-walled hall, the campus wall, a grey stone torii, and a cedar forest you can climb branch to branch.</p>
         <h2>Shinjuku</h2>
         <p>The showdown. On the left, the intact Nishi-Shinjuku street — glass towers with fire-escape ledges and lobbies, and an elevated road with its middle span collapsed. On the right, the rubble field: tilted slabs, sheared tower stumps, and a tall broken tower.</p>
+        <h2>Sendai</h2>
+        <p>The Sendai Colony from the Culling Game, at night under the barrier. On the left, Sendai Station with a concourse you can run through and ledges up to its glass roof; the elevated pedestrian deck with stairs at both ends, shelters and a sign gantry to stand on; the zelkova avenue (trunks are one-way, canopies hold you); and on the right a sheared tower stump under a torn, peeled-back sky, with floating slabs of debris and a lobby at its foot.</p>
         <h2>Terrain rules</h2>
         <ul>
           <li>Almost every technique carves holes that match its shape. Broken terrain returns after <b>30 seconds</b> (it waits if someone is standing there).</li>
@@ -488,6 +490,7 @@ canvas {
           <tr><th>Item</th><th>Lasts</th><th>Effect</th></tr>
           <tr><td><b style="color:#e0533f">Playful Cloud</b></td><td>20s</td><td>Punches swing ~1.7× faster, reach further and deal +3 damage (more on finishers).</td></tr>
           <tr><td><b style="color:#9cc3dc">Inverted Spear of Heaven</b></td><td>20s</td><td>+2 damage per hit. Every hit drains <b>30 cursed energy</b> and adds <b>2.5s</b> to the opponent's cooldowns, and hitting a domain's caster <b>shatters the domain</b>.</td></tr>
+          <tr><td><b style="color:#ffe14a">Kamutoke</b></td><td>3 uses</td><td>A lightning rod. Attack to call lightning on the nearest foe within ~560px: a dashed warning line for 0.38s, then the strike (12 damage, 0.55s stun). Three strikes, then it's gone.</td></tr>
           <tr><td><b style="color:#6fd3c2">Inumaki's Recording</b></td><td>1 use</td><td>Your next attack plays "動くな — don't move!" and stuns the opponent for <b>5 seconds</b> (about half a screen of range). Your first hit ends the stun, so open with your big move. The mech is immune.</td></tr>
         </table>
       </section>
@@ -1091,7 +1094,7 @@ const ITEM_DEFS = {
   kamu:   { name:'KAMUTOKE',                 short:'KAMUTOKE', col:'#ffe14a', dur:25000, desc:'Attack: call lightning down on the nearest foe (3 strikes)' }
 };
 // Kamutoke: a special-grade cursed tool that calls down lightning. 3 strikes, aimed at the nearest foe within range
-const KAMU_N = 3, KAMU_R = 560, KAMU_WARN = 380, KAMU_DMG = 16, KAMU_STUN = 800, KAMU_CD = 900, KAMU_HIT_R = 46;
+const KAMU_N = 3, KAMU_R = 560, KAMU_WARN = 380, KAMU_DMG = 12, KAMU_STUN = 550, KAMU_CD = 1400, KAMU_HIT_R = 46;
 const kamuBolts = [];   // {owner, x, y, t, hit}
 function tickKamu(dt){
   for(let i=kamuBolts.length-1;i>=0;i--){ const b = kamuBolts[i]; b.t += dt;
