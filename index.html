@@ -8978,7 +8978,7 @@ class Player {
         }
       }
       // If lunged far enough or reached wall without hit, cancel
-      if(dist >= BB_LUNGE_DIST || this.x <= 10 || this.x >= W-PW-10){
+      if(dist >= BB_LUNGE_DIST || this.x <= 10 || this.x >= W-PW-10 || this.bbTimer > 600){   // timeout: a terrain wall stops the lunge short of BB_LUNGE_DIST
         this.bbPhase = 5; this.bbTimer = 0;
       }
 
