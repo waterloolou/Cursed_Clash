@@ -37,3 +37,16 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
   - `CHAR_TIPS.yuji`: three new tips (Divergent Fist ring, combo meter, Enchain vs Modulo).
   - Wiki home grid link `<a data-p="yuji">`: "Piercing Blood · …" → "Divergent Fist · Divergent Combo · Black Flash".
   - Wiki `<section data-p="yuji">`: table rewritten (Attack/combo meter, Q Divergent Fist, E Divergent Combo, R Black Flash, F Enchain/Modulo, new Max Output row, Movement), numbers taken from the constants (`DIV_*`, `BB_*`, `YUJI_BF_DMG`, `MANJI_*`, `ZONE_*`, `YUJI_SUK_MS`, `MODULO_*`).
+
+### 6. HUD stacking under each fighter's panel (item line / notices / HITS counter / Yuji combo-meter label)
+- **Why**: below each HUD four things were drawn at the same height: the held-item line (`iy = y+bh+138` → 174), the notice feed (`160 + i*13`), the online combo counter (`N HITS` at `y+bh+142` → 178) and Yuji's rotated "COMBO" label beside his meter (x≈21, right where those texts start). With an item + a couple of hits + a notice they were drawn on top of each other (before/sheet_yuji_ol_1.png "3 HITS" over the meter; feed over item).
+- **Where / old → new**:
+  - new helper `hudItemOff(pl)` (above `drawEffects`) = `(item ? 26 : 0) + (shadowItem ? 18 : 0)`.
+  - `drawEffects()` notice feed: base y `160` → `160 + hudItemOff(pl)`.
+  - `drawOlHud()` combo counter: `y+bh+142` → `y+bh+142 + hudItemOff(pl) + hudFeed[..].length*13` (DAMAGE line keeps its +14 offset).
+  - Yuji HUD combo meter label: rotated "COMBO" beside the bar → 7px "COMBO" under the `%` label (`my+mh+19`, left/right aligned to the screen edge).
+
+### 7. Yuji: The Zone and Modulo had no on-body tell
+- **Why**: both are 5–15s power-up states (damage, speed, Black Flash window) but nothing on Yuji showed them once Maximum Output was toggled off — only a small chip under the HUD (before/yz_sheet.png: `zone2`, `mod2` look like plain idle Yuji). The opponent can't see them at all.
+- **Where**: `drawOlBody(pl)`, new block right before `if(!olOn()) return;` (so it shows in both rule sets).
+- **New**: `zonedT>0` → four short gold streaks (`#ffd36a`) rising past his body; `moduloT>0` → a pulsing gold ellipse at his feet + five small orbiting sparks. Pure drawing, a handful of strokes per frame.

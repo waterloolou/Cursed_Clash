@@ -12863,7 +12863,7 @@ class Player {
       ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(mx-2, my + mh*(1-YUJI_ENCHAIN/100), mw+4, 1.5);   // the 75% Modulo line
       ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(mx, my, mw, mh);
       ctx.save(); ctx.translate(mx + mw/2, my + mh + 10); ctx.fillStyle = '#ffd38a'; ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(`${Math.floor(cm)}%`, 0, 0); ctx.restore();
-      ctx.save(); ctx.translate(mx + mw/2 + (flip ? -10 : 10), my + mh/2); ctx.rotate(flip ? Math.PI/2 : -Math.PI/2); ctx.fillStyle = 'rgba(255,211,138,0.8)'; ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('COMBO', 0, 3); ctx.restore();
+      ctx.save(); ctx.translate(flip ? mx + mw + 2 : mx - 2, my + mh + 19); ctx.fillStyle = 'rgba(255,211,138,0.8)'; ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left'; ctx.fillText('COMBO', 0, 0); ctx.restore();   // under the bar (beside it, it ran into the HITS counter / item label)
     }
 
     // Yuta HUD — panel style matching Gojo/Sukuna
@@ -14513,6 +14513,15 @@ function drawOlBody(pl){
   if(pl.bmT>0){ ctx.save(); ctx.fillStyle = '#5a0010'; ctx.strokeStyle = '#a01020'; ctx.lineWidth = 1.5;
     for(const sx of [-1, 1]){ ctx.beginPath(); ctx.arc(cx + sx*14, pl.y+PH*0.5, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.restore(); }
   if(pl.rctT>0 || pl.rctGlow>0){ ctx.save(); ctx.globalAlpha = 0.25 + 0.15*Math.sin(t*0.015); ctx.fillStyle = '#fff0f0'; ctx.beginPath(); ctx.ellipse(cx, cy, 24, PH*0.6, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+  // Yuji: The Zone (gold focus streaks rising past him) and Modulo (pulsing gold ring at his feet + sparks) — they had no on-body tell
+  if(pl.zonedT>0 || pl.moduloT>0){ ctx.save(); ctx.lineCap = 'round';
+    if(pl.zonedT>0){ ctx.strokeStyle = '#ffd36a'; ctx.lineWidth = 1.6;
+      for(let k=0;k<4;k++){ const ph = ((t*0.0018 + k*0.25) % 1), sx = cx + (k%2 ? 1 : -1)*(15 + (k>>1)*7), sy = pl.y + PH - ph*(PH+16);
+        ctx.globalAlpha = 0.7*Math.sin(ph*Math.PI); ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx, sy - 12); ctx.stroke(); } }
+    if(pl.moduloT>0){ const pu = 0.5 + 0.5*Math.sin(t*0.012);
+      ctx.globalAlpha = 0.45 + 0.35*pu; ctx.strokeStyle = '#ffd36a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(cx, pl.y+PH, 24 + 4*pu, 6 + pu, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.fillStyle = '#fff2b0'; for(let k=0;k<5;k++){ const a = t*0.004 + k*1.256; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc(cx + Math.cos(a)*20, cy + Math.sin(a)*PH*0.55, 1.8, 0, Math.PI*2); ctx.fill(); } }
+    ctx.restore(); }
   if(!olOn()) return;
   if(pl.state===S.BLOCK){
     const g = Math.max(0, (pl.guard||0)/OL.GUARD_MAX);
@@ -14561,8 +14570,9 @@ function drawOlHud(pl, bx, y, bw, bh, flip){
   if(pl.cmbHits>=2 && terClock - (pl.cmbT||0) < 1400){
     const a = Math.min(1, (1400 - (terClock - pl.cmbT))/300), sc = Math.max(0.5, 1 - 0.1*Math.max(0, pl.cmbHits-2));
     ctx.globalAlpha = a; ctx.textAlign = flip ? 'right' : 'left';
-    ctx.font = `700 26px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ffe066'; ctx.fillText(`${pl.cmbHits} HITS`, flip ? bx+bw : bx, y+bh+142);
-    ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(255,230,150,0.8)'; ctx.fillText(`DAMAGE ×${sc.toFixed(1)}`, flip ? bx+bw : bx, y+bh+156);
+    const cy0 = y+bh+142 + hudItemOff(pl) + ((hudFeed[pl===p1 ? 'p1' : 'p2']||[]).length)*13;   // below the held-item line and the notices instead of on top of them
+    ctx.font = `700 26px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ffe066'; ctx.fillText(`${pl.cmbHits} HITS`, flip ? bx+bw : bx, cy0);
+    ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(255,230,150,0.8)'; ctx.fillText(`DAMAGE ×${sc.toFixed(1)}`, flip ? bx+bw : bx, cy0+14);
   }
   ctx.restore();
 }
@@ -17175,6 +17185,7 @@ function playerEffects(pl){
   if(pl.iframes>250 && !(pl.respawnT>0)) add('Invincible', pl.iframes, true);
   return E;
 }
+function hudItemOff(pl){ return pl ? (pl.item ? 26 : 0) + (pl.shadowItem ? 18 : 0) : 0; }   // vertical room the held-item lines take under a HUD
 function drawEffects(pl, x, flip){
   if(!pl) return;
   const E = playerEffects(pl), ref = pl===p1 ? 'p1' : 'p2', now = performance.now();
@@ -17190,9 +17201,10 @@ function drawEffects(pl, x, flip){
   // notices fade out after ~2.2s
   const F = hudFeed[ref]; while(F.length && now - F[0].t > 2600) F.shift();
   ctx.font = `600 10px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left';
+  const fy = 160 + hudItemOff(pl);   // notices go under the held-item line (they used to be drawn over it)
   F.forEach((f, i) => { const a = Math.max(0, Math.min(1, (2600 - (now - f.t))/500));
     ctx.globalAlpha = a; ctx.fillStyle = 'rgba(0,0,0,0.5)'; const w = ctx.measureText(f.text).width + 8;
-    ctx.fillRect(flip ? x - w : x, 160 + i*13 - 6, w, 12); ctx.fillStyle = '#e8e2d6'; ctx.fillText(f.text, flip ? x-4 : x+4, 160 + i*13 + 0.5); });
+    ctx.fillRect(flip ? x - w : x, fy + i*13 - 6, w, 12); ctx.fillStyle = '#e8e2d6'; ctx.fillText(f.text, flip ? x-4 : x+4, fy + i*13 + 0.5); });
   ctx.restore();
 }
 
