@@ -28,6 +28,14 @@ rotating maps 0/1/2/4), plus targeted scripts listed per entry.
   `carveRect(Math.min(px, this.x), this.y + 0.51 - T_CELL/2, Math.abs(this.x - px) + PW, PH - 1.02 + T_CELL)` (clears exactly the
   cells the body overlaps along the swept path; floor cells under the feet are untouched).
 
+### 4. Yuji's move list / HUD names / tips / wiki still described the old kit
+- **Bug:** after the rework, `MOVE_INFO.yuji` (TAB move list + the ability-box names on the CE HUD), `CHAR_TIPS.yuji` (pause page 3)
+  and the wiki section still said Piercing Blood (hold to charge), "3rd hit starts a Black Flash bar", Dismantle ultimate (55).
+  None of that exists any more, so the HUD labelled ability 1 "PIERCING BLOOD".
+- **Fix (text only):** rewrote `MOVE_INFO.yuji`, `CHAR_TIPS.yuji`, the wiki `<section data-p="yuji">` table rows and the wiki
+  sidebar subtitle to the current moves (Divergent Fist ring → Black Flash, Divergent Combo 26, guaranteed Black Flash special,
+  Enchain/Modulo ultimate, Manji Kick / The Zone). Numbers taken from the constants (`DIV_*`, `BB_*`, `YUJI_*`, `MANJI_*`, `ZONE_*`).
+
 ## Noticed (not fixed)
 
 ## Balance notes for the lead

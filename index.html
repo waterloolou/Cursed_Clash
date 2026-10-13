@@ -269,7 +269,7 @@ canvas {
         <div class="wk-cards">
           <a data-p="sukuna" style="--c:#ff6666"><b>Sukuna</b><span>Dismantle · Cleave · Fuga · Malevolent Shrine</span></a>
           <a data-p="gojo" style="--c:#66eeff"><b>Gojo</b><span>Blue · Red · Hollow Purple · Infinite Void</span></a>
-          <a data-p="yuji" style="--c:#f5a623"><b>Yuji</b><span>Piercing Blood · Divergent Combo · Black Flash</span></a>
+          <a data-p="yuji" style="--c:#f5a623"><b>Yuji</b><span>Divergent Fist · Divergent Combo · Black Flash</span></a>
           <a data-p="yuta" style="--c:#ff88cc"><b>Yuta</b><span>Slice &amp; Dice · Cursed Fist · Copy · Mutual Love</span></a>
           <a data-p="mechamaru" style="--c:#aaaaaa"><b>Mechamaru</b><span>Jet flight · Drill · Puppet · Ultimate Mech</span></a>
           <a data-p="todo" style="--c:#d9a441"><b>Todo</b><span>Haymaker · Boogie Woogie · Imaginary Brother · Unlimited Boogie</span></a>
@@ -524,11 +524,12 @@ canvas {
         <p class="lead">Close-range brawler built around Black Flash timing.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>Attack</td><td>Black Flash</td><td>The 3rd combo hit starts a timing bar. Press attack in the centre zone, then again within 0.6s: 24 damage. Miss and Yuji is stunned for 1s.</td></tr>
-          <tr><td>Q</td><td>Piercing Blood</td><td>Hold to charge up to 3s (aim with up / down while charging), release for a long beam: 8 / 15 / 24 damage by charge. 3.2s cooldown.</td></tr>
-          <tr><td>E</td><td>Divergent Combo</td><td>Lunge in, two punches and a finishing kick: 20 total. 4.5s cooldown.</td></tr>
-          <tr><td>R</td><td>Black Flash <em>(special, 40)</em></td><td>Lunge at the opponent. On contact time slows; press R again while the line is in the centre zone for a Black Flash: 28 damage, a black-and-red spark and a huge launch. Miss the timing and it's a 12-damage punch.</td></tr>
-          <tr><td>F</td><td>"Dismantle" <em>(ultimate, 100 damage dealt)</em></td><td>A menacing pause, then a giant Dismantle slash for 55. Needs 75% cursed energy and empties the bar. Yuji has no domain.</td></tr>
+          <tr><td>Attack</td><td>Punch combo</td><td>Normal punches are the only thing that fills his combo meter (0–100).</td></tr>
+          <tr><td>Q</td><td>Divergent Fist</td><td>A short punch (6). If it lands, a ring closes on the target: press Q again as it meets the inner ring for a Black Flash (18 and a big launch); miss and it's a 5-damage shove. 5s cooldown.</td></tr>
+          <tr><td>E</td><td>Divergent Combo</td><td>Lunge in, two punches and a finishing kick: 26 total. 6s cooldown.</td></tr>
+          <tr><td>R</td><td>Black Flash <em>(special, 40)</em></td><td>Lunge at the opponent: on contact it's a guaranteed Black Flash for 28.</td></tr>
+          <tr><td>F</td><td>Enchain / Modulo <em>(ultimate, 100 damage dealt)</em></td><td>Combo meter under 75%: "Enchain" — Sukuna takes over for 15s (Dismantle becomes a dash across half the map, stronger Fuga). 75% or more: Modulo for 15s — every Divergent Fist is a Black Flash, more damage and speed, faster cooldowns. Yuji has no domain.</td></tr>
+          <tr><td>V + Q / E</td><td>Manji Kick / The Zone</td><td>Maximum Output spends the combo meter: Manji Kick is a counter stance (any hit is answered with a launching kick); The Zone gives more damage, faster cooldowns and a much bigger Divergent Fist window.</td></tr>
           <tr><td>Movement</td><td>Superhuman Body</td><td>Runs 8% faster and jumps 12% higher.</td></tr>
         </table>
       </section>
@@ -16913,7 +16914,7 @@ const CHAR_TIPS = {
   geto:     ['Dash (or double-tap {left} / {right}) rides a stingray for 3s (up to 200px above where you got on, 11s cooldown): fly over walls and away from trouble.', 'Kuchisake-Onna only works point-blank — the victim gets one key to press; on one keyboard, watch the prompt.', 'The Mirror Curse sends every projectile back at its owner for 6s: summon it against zoners and Gojo.', 'Maximum: Uzumaki uses your whole curse pool (30 to start). Hold {ult} to sacrifice a curse every second: the rest get +3% damage, speed and size. Dead curses are gone for the match.'],
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, up to 3 links) — but when the chain ends, Dismantle AND Cleave are locked for a long time.', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
   gojo:     ['Lapse Blue and Reversal Red can be steered while they fly — press {ab1} again to burst Blue early.', 'Hollow Purple aims with {jump} / {down} and tunnels through walls.', 'With Maximum Output on, {ult} becomes Hollow Purple: 200% (full ultimate bar + 80 CE): 4× the size, 170 damage.', 'Hold {jump} while falling to float down slowly (Infinity Float).'],
-  yuji:     ['Hold {ab1} to charge Piercing Blood (longer = more damage), aim with {jump} / {down}, release to fire.', 'Black Flash: after the lunge, press when the spark lines up — your timing decides if it lands.', 'His ultimate (Dismantle) charges on its own meter.'],
+  yuji:     ['Divergent Fist ({ab1}): if the punch lands, press {ab1} again as the outer ring meets the inner one for a Black Flash.', 'Only normal punches fill the combo meter. Maximum Output spends it: Manji Kick (counter stance) and The Zone.', 'Ultimate ({ult}): under 75% meter Sukuna takes over for 15s (Dismantle becomes a map-crossing dash); at 75%+ it\'s Modulo — every Divergent Fist is a Black Flash.'],
   yuta:     ['Copy grows with your combos: land a 10 / 30 / 50 damage combo to copy their ability 1 / ability 2 / super.', 'Maximum Output + {ab3} summons Rika: {ab1} Grab, {ab2} Eat (copies their super), {ult} True Love Beam, double-jump for a Rika throw.', 'Inside his domain the foe can still move — grab katanas with {atk}: each one charges Jacob\'s Ladder ({ult}) and swaps your Copy for a random ability.', 'He\'s the fastest runner — use it to pick your fights.'],
   mechamaru:['Hold {jump} on the ground to charge the jets, then fly.', 'Mini Cannon aims with {jump} / {down} while it charges.', 'With the puppet out, press {ab3} again to swap bodies with it.', 'Ultimate Mechamaru ends with your death — save it to finish a fight.'],
   todo:     ['Haymaker in the air becomes a meteor dive.', 'Online, click an item or a fighter first to choose who Boogie Woogie swaps with.', 'With your brother out, hold {down} and press {ab2} to swap with him.', 'Long falls end in a shockwave that stuns anyone close.'],
@@ -17285,8 +17286,8 @@ const MOVE_INFO = {
              ['ab3','Fuga · super','Aim with up / down. Unstoppable after 0.3s. 55 + explosion.'], ['ult','Malevolent Shrine','Domain: constant slashes on the opponent.'], ['move','Spider Web','Dismantle + Cleave together, 70%+ CE: 260px web (24).']],
   gojo:     [['ab1','Lapse Blue','Steerable orb that pulls; press again to burst.'], ['ab2','Reversal Red','Steerable orb that blasts the target away.'],
              ['ab3','Hollow Purple · super','Aimable orb (45) that tunnels through walls.'], ['ult','Infinite Void','Domain: they can\'t move or fight. Max Output: Hollow Purple: 200% (4× size, 170, 80 CE).'], ['move','Infinity Float','Hold jump while falling to glide.']],
-  yuji:     [['atk','Punch combo','3rd hit starts a Black Flash timing bar.'], ['ab1','Piercing Blood','Hold to charge (10–30), aim with up / down.'],
-             ['ab2','Divergent Combo','Lunge + two punches + kick (20).'], ['ab3','Black Flash · super','Lunge, then time the spark: 28 damage.'], ['ult','Dismantle (ultimate)','Giant slash across the screen (55).']],
+  yuji:     [['atk','Punch combo','Fills the combo meter (only normal punches do).'], ['ab1','Divergent Fist','Punch (6); if it lands, press again as the ring closes: Black Flash (18).'],
+             ['ab2','Divergent Combo','Lunge + two punches + kick (26).'], ['ab3','Black Flash · super','Lunge: a guaranteed Black Flash (28).'], ['ult','Enchain / Modulo (ultimate)','Under 75% meter: Sukuna takes over for 15s. 75%+: Modulo for 15s.']],
   yuta:     [['ab1','Slice & Dice','Five slashes that drag the target (20).'], ['ab2','Cursed Fist','Leap, steer, then slam a crater (28).'],
              ['ab3','Copy · super','Best combo 10+/30+/50+ → copy their ability 1 / 2 / super. Max Output: Rika.'], ['ult','Authentic Mutual Love','Domain (no freeze): katanas keep spawning — each = speed, random Copy, Jacob\'s Ladder charge.'], ['move','Special-Grade Speed','Fastest runner.']],
   mechamaru:[['ab1','Drill Drive','Dash through terrain, carry + stun (22).'], ['ab2','Mini Cannon','Short charge, aim, close-range blast (16).'],
