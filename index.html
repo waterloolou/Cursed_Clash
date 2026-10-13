@@ -12338,8 +12338,10 @@ class Player {
     if(this.item){
       const d = ITEM_DEFS[this.item], iy = y+bh+138;
       ctx.save(); ctx.font=`700 11px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left';
+      const itx = `${d.name}  ${Math.ceil(this.itemT/1000)}s`, itw = ctx.measureText(itx).width + 8;   // dark plate: the red / gold item names vanished on bright maps
+      ctx.fillStyle = 'rgba(8,8,14,0.6)'; ctx.fillRect(flip ? bx+bw-itw+4 : bx-4, iy-11, itw, 14);
       ctx.fillStyle = d.col;
-      ctx.fillText(`${d.name}  ${Math.ceil(this.itemT/1000)}s`, flip ? bx+bw : bx, iy);
+      ctx.fillText(itx, flip ? bx+bw : bx, iy);
       ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(flip ? bx+bw-120 : bx, iy+4, 120, 4);
       ctx.fillStyle = d.col; const pw = 120*Math.max(0,this.itemT/d.dur); ctx.fillRect(flip ? bx+bw-pw : bx, iy+4, pw, 4);
       ctx.restore();
@@ -13387,6 +13389,9 @@ function drawBG(){
 }
 
 function drawHUDOverlay(){
+  // soft dark scrim behind both HUD blocks, so dimmed labels stay readable on the bright maps (Sister School, Shinjuku)
+  if(!drawHUDOverlay._g || drawHUDOverlay._w!==W){ const g = ctx.createLinearGradient(0, 0, 0, 150); g.addColorStop(0, 'rgba(8,8,14,0.6)'); g.addColorStop(0.75, 'rgba(8,8,14,0.36)'); g.addColorStop(1, 'rgba(8,8,14,0)'); drawHUDOverlay._g = g; drawHUDOverlay._w = W; }
+  ctx.fillStyle = drawHUDOverlay._g; ctx.fillRect(0, 0, W, 150);
   ctx.textAlign='center'; ctx.font=`700 14px 'Rajdhani',sans-serif`;
   ctx.fillStyle='rgba(200,195,185,.2)'; ctx.fillText('CURSED CLASH',W/2,30);
   p1.drawHUD(22,false); if(!isTraining()) p2.drawHUD(W-22,true);
@@ -14005,9 +14010,9 @@ function drawCeHud(pl, x, flip){
   { const e = Math.max(0, Math.min(1, (pl.eva||0)/EVA_MAX)), ey = cy+ch+2, full = e>=1, hw = bw*0.5, x0 = flip ? bx+hw : bx;
     ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(x0, ey, hw, 4);
     ctx.fillStyle = full ? `rgba(255,255,255,${0.75+0.25*Math.sin(Date.now()*0.012)})` : '#8fa8c0'; ctx.fillRect(flip ? x0+hw*(1-e) : x0, ey, hw*e, 4);
-    if(full){ ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left'; ctx.fillStyle = '#fff';
+    if(full){ ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left'; ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle';
       const k = olOn() ? keyLbl(pl,'dash') : `${keyLbl(pl,'down')}+${keyLbl(pl,'jump')}`;
-      ctx.fillText(`EVASIVE READY [${k}]`, flip ? x0-4 : x0+hw+4, ey+5); } }
+      ctx.fillText(`EVASIVE READY [${k}]`, flip ? x0-4 : x0+hw+4, ey+2.5); ctx.textBaseline = 'alphabetic'; } }   // centred on the bar (it used to sit on the ability boxes' top edge)
   // thresholds: special (50%) and ultimate (75%) — domains need it all
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
   for(const t of CE_DOMAIN.has(pl.type) ? [CE_SPECIAL] : [CE_SPECIAL, CE_ULT]){ const tx = flip ? bx+bw-bw*t : bx+bw*t; ctx.fillRect(tx-0.5, cy, 1, ch); }
