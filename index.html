@@ -1614,6 +1614,15 @@ function pushFeed(x, y, text, col){
   if(f.length && f[f.length-1].text===txt){ f[f.length-1].t = performance.now(); return; }
   f.push({text:txt, col:col||'#ddd', t:performance.now()}); if(f.length > 3) f.shift();
 }
+const _bubL = {};
+function bubbleLight(c){   // true when a CSS colour is too light to read on the white speech bubble
+  if(c in _bubL) return _bubL[c];
+  let r = 0, g = 0, b = 0, m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c||'');
+  if(m){ let h = m[1]; if(h.length===3) h = h.replace(/./g, '$&$&'); r = parseInt(h.slice(0,2),16); g = parseInt(h.slice(2,4),16); b = parseInt(h.slice(4,6),16); }
+  else if((m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(c||''))){ r = +m[1]; g = +m[2]; b = +m[3]; }
+  else return (_bubL[c] = false);
+  return (_bubL[c] = (0.299*r + 0.587*g + 0.114*b) > 150);
+}
 function addSpeech(x, y, text, col, ms){ const _T = String(text); if(QUIET_DROP.test(_T)) return; if(QUIET_FEED.test(_T)){ pushFeed(x, y, _T, col); return; } try{ bubbleSound(x, text); }catch(e){}
   speechFx.push({x, y, text, col:col||'#fff', life:ms||1400, max:ms||1400}); }
 
@@ -1690,7 +1699,8 @@ function drawItems(){
     const a = Math.min(1, s.life/300), rise = (1 - s.life/s.max)*16;
     ctx.save(); ctx.globalAlpha = a; ctx.font=`700 14px 'Rajdhani',sans-serif`; ctx.textAlign='center';
     const tw = ctx.measureText(s.text).width + 16, bx = s.x - tw/2, by = s.y - 26 - rise;
-    ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.strokeStyle='#111'; ctx.lineWidth=2;
+    const dk = s.col!=='#fff' && bubbleLight(s.col);   // light text (yellow, peach, pale blue…) is unreadable on white: use a dark bubble for it
+    ctx.fillStyle = dk ? 'rgba(18,16,26,0.94)' : 'rgba(255,255,255,0.95)'; ctx.strokeStyle = dk ? s.col : '#111'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.rect(bx, by, tw, 22); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(s.x-5, by+22); ctx.lineTo(s.x, by+30); ctx.lineTo(s.x+5, by+22); ctx.fill(); ctx.stroke();
     ctx.fillStyle = s.col==='#fff' ? '#111' : s.col; ctx.fillText(s.text, s.x, by+16); ctx.restore();
