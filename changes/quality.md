@@ -81,3 +81,25 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: online rules, page 2 ended with "HEALTH & RESPAWNS" cut off mid-sentence at the bottom edge; on page 3 (one keyboard, two columns) fighters with long kits (Hakari, Naoya, Geto…) ran their TIPS / anti-domain rows past the bottom (before: pause_yuji_ol_1, pause_hakari_ol_2).
 - **Where**: `drawCombatGuide()` now `return`s the y below its last block (was no return); new helper `fitGuide(draw, x, y, w, maxB)` right after it; `drawPauseMenu()` page 1 and page 2 calls wrapped in `fitGuide(..., H-10)`.
 - **How**: `fitGuide` runs the page once with `fillText`/`stroke` stubbed to measure its bottom, then, if it doesn't fit, draws it scaled around its top-left by `k = max(0.72, available/needed)` with the width divided by `k` (so text re-wraps to the same on-screen width). Pages that fit are drawn exactly as before. Only runs while paused.
+
+## Checked and fine (no change)
+- All 19 fighters idle / walk / jump / attack (classic + online): nothing invisible, off-screen or mis-coloured; normal-attack hitboxes (debug overlay) sit in front of the arm and reach the opponent's body box.
+- Every fighter's 1 / 2 / 3 / ultimate / domain and both Maximum Output moves fire and draw (training room, Sendai): domains (Shrine, Infinite Void, Yuta's, court, Idle Death Gamble…), Ultimate Mechamaru, Mahito's Body Repel blob (grows, stops on walls, readable faces/stitches), Geto's Giant Catfish, Naoya's 24 FPS panel.
+- Yuji: Divergent Fist ring (window highlight turns white at the right moment, "PRESS [1]" label), dash combo, guaranteed Black Flash special, combo meter only rises from punches, Manji Kick counter triggers on a hit, Zone, Enchain (Sukuna dash crosses the map, Cleave, Fuga, reverts at 0), Modulo. All numbers match MOVE_INFO / OL_VARS text.
+- Items: all four icons readable on dark (Sendai) and bright (Sister School) maps; Cloud/ISOH swing, Recorder stun ring, Kamutoke 3 charges → strike lands (16 + stun) at the target, item removed after the 3rd.
+- Maps: drop-and-escape scan every 30px on Shibuya / Sister School / Shinjuku / Sendai finds no trap; all spawns are clear (Shibuya/Shinjuku-P2 spawns start 2px inside a slab and settle on it in the first frame — harmless).
+- Letterbox at 390×844: menus, HUD and fight all scale uniformly, nothing cut off (tiny text, as expected at that size).
+
+## Noticed (not fixed)
+- Geto Giant Catfish: only items / projectiles / water / curses / puppet are dragged in; fighters are not pulled — a foe standing on the drawn green lip (body is drawn ±96px, catch zone is the mouth ±`GETO_CAT_W`=60) is never swallowed. Matches the code, but the description ("swallows everything around it") suggests fighters near it should slide in. Design call for the lead.
+- `_startBlackFlashMinigame` / `BF_*` constants (old Yuji punch-3 Black Flash bar) look unused after the rework — dead code.
+- `mvall.js`: Mechamaru shows `dy 0` on the jump test in both modes — holding jump on the ground charges his jets (by design), not a bug.
+
+## Balance notes (for the lead — not changed)
+- Kamutoke: 3 × 16 damage + 0.8s stun, auto-aimed within 560px with a 0.38s warning — 48 guaranteed-ish damage from an item is a lot next to the others (Cloud/ISOH are buffs). The ground ring warns, but at 900ms cooldown the stuns nearly chain.
+- Yuji Modulo (+35% dmg, +20% speed, faster cooldowns, every Divergent Fist = Black Flash 18) for 15s on a 100-damage charge feels very strong vs Enchain; players will always aim for 75% meter.
+
+## Final checks (on the final file, commit at the end of this log)
+- Load check: no page errors / console errors in any run (all survey scripts report "no errors").
+- `mvall.js`: every fighter moves right (+72…+112px) and jumps in local and online rules; only the known −126 ledge artifact (and Mechamaru's jet-charge jump) in the "bad" list. PASS.
+- `stress.js` seeds 1 (classic) and 7 (online) on Shibuya, plus seeds 3 (classic) and 11 (online) forced onto Sendai: 0 errors in all 20 matches. PASS.
