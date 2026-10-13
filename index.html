@@ -1108,9 +1108,14 @@ function drawKamu(){
       ctx.beginPath(); ctx.ellipse(b.x, b.y-2, KAMU_HIT_R*(1.4-0.4*q), 8, 0, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
       if(Math.random()<0.5){ ctx.strokeStyle = 'rgba(255,247,176,0.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(b.x + (Math.random()-0.5)*60, b.y-4); ctx.lineTo(b.x + (Math.random()-0.5)*20, b.y - 20 - Math.random()*20); ctx.stroke(); } }
     else { const a = Math.max(0, 1 - (b.t - KAMU_WARN)/320), top = b.y - 900;
-      ctx.globalAlpha = a; ctx.strokeStyle = '#fffbe0'; ctx.shadowColor = '#ffe14a'; ctx.shadowBlur = 18;
-      for(const w of [7, 3]){ ctx.lineWidth = w; ctx.strokeStyle = w===7 ? 'rgba(255,225,74,0.7)' : '#ffffff'; ctx.beginPath(); ctx.moveTo(b.x, top);
-        let y = top, x = b.x; while(y < b.y){ y += 40 + _hh(Math.floor(y), b.x)*50; x = b.x + (_hh(Math.floor(y), 7)-0.5)*44; ctx.lineTo(x, Math.min(y, b.y)); } ctx.stroke(); }
+      ctx.globalAlpha = a; ctx.strokeStyle = '#fffbe0'; ctx.shadowColor = '#ffe14a'; ctx.shadowBlur = LITE ? 0 : 18;
+      // same jagged path as before, drawn as a wide glow + body + white core, with a few short forks and an impact flash (it read as a thin pale line)
+      const pts = [[b.x, top]]; { let y = top; while(y < b.y){ y += 40 + _hh(Math.floor(y), b.x)*50; pts.push([b.x + (_hh(Math.floor(y), 7)-0.5)*44, Math.min(y, b.y)]); } }
+      for(const [w, c] of [[16, 'rgba(255,214,60,0.3)'], [7, 'rgba(255,232,110,0.9)'], [2.6, '#ffffff']]){ ctx.lineWidth = w; ctx.strokeStyle = c; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,245,190,0.9)';
+      for(let k=2; k<pts.length-1; k+=3){ const [x, y] = pts[k], d = _hh(k, b.x) < 0.5 ? -1 : 1; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + d*(18 + _hh(k, 3)*22), y + 18 + _hh(k, 5)*18); ctx.stroke(); }
+      ctx.shadowBlur = 0;
+      const fl = ctx.createRadialGradient(b.x, b.y-12, 4, b.x, b.y-12, 95); fl.addColorStop(0, 'rgba(255,255,235,0.85)'); fl.addColorStop(1, 'rgba(255,230,120,0)'); ctx.fillStyle = fl; ctx.fillRect(b.x-95, b.y-107, 190, 190);
       ctx.fillStyle = `rgba(255,250,210,${0.35*a})`; ctx.beginPath(); ctx.ellipse(b.x, b.y-6, 70, 22, 0, 0, Math.PI*2); ctx.fill(); }
     ctx.restore(); }
 }

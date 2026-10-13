@@ -56,3 +56,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Where**: `buildSendai()`, the `tree` helper.
 - **Old**: `terFill(MAT_WOOD, x-6, G-h, 12, h)` → **New**: `terFill(MAT_BEAM, x-6, G-h, 12, h)` (one-way trunk, the same material the Sister School cedar trunks use; canopies stay `MAT_LEAF`, drawn look stays brown). Comment on its own line above the helper.
 - **After**: all three test fighters cross the avenue both ways (Gojo 1640→2362 and 1800→352, Naoya 1640→42 and →2362). Re-checked on Sendai: west stairs walkable onto the deck (x 250 → 425, +150), east stairs walkable from the right, station ledges → roof (+360) reachable, deck shelters + sign gantry reachable, tower ledges → top (+517) reachable, lobby walk-out works, drop-and-escape scan every 30px finds no trap, both spawns clear and on the floor.
+
+### 9. Kamutoke: the lightning strike read as a thin pale line
+- **Why**: the strike (320ms) was two strokes (7px 70% yellow + 3px white) with nothing at the impact point; frozen at t=400ms it's barely visible against the Sendai night (before/kamuT_sheet.png). It's the new item's whole payoff.
+- **Where**: `drawKamu()`, the `else` (strike) branch only. Hit logic / timings untouched.
+- **New**: same jagged path (`_hh` points, now built once into `pts`), drawn as 16px glow `rgba(255,214,60,0.3)` + 7px body + 2.6px white core; short forks every 3rd point; a radial impact flash (r 95) at the ground point; `shadowBlur` 0 in LITE mode. All of it fades with the existing `a`.
