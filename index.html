@@ -873,6 +873,10 @@ function resize() {
 }
 resize();
 window.addEventListener('resize', resize);
+// The game is drawn at a fixed 960×520 and scaled UNIFORMLY to fit any screen (letterboxed), so nothing gets stretched
+// on 4:3 tablets, phones, ultrawide monitors or a resized window.
+function viewFit(cw, ch){ const s = Math.min(cw/VW, ch/VH); return {s, ox:(cw - VW*s)/2, oy:(ch - VH*s)/2}; }
+function cssToView(e){ const f = viewFit(canvas.clientWidth, canvas.clientHeight); return {x:(e.offsetX - f.ox)/f.s, y:(e.offsetY - f.oy)/f.s}; }
 
 let GND      = 430;
 const GRAV   = 0.52;
@@ -912,7 +916,7 @@ const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             DIVE:'dive', STUN:'stun', RAGD:'ragd', SLAM:'slam', DEAD:'dead',
             CLEAVE:'cleave', DISMANTLE:'dismantle', FUGA:'fuga', LAPSE:'lapse',
             REVERSAL:'reversal', HOLLOW:'hollow', DOMAIN:'domain',
-            BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult',
+            BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult', YUJIDIV:'yujidiv', YUJIMANJI:'yujimanji', YUJISDASH:'yujisdash',
             YUTASLICE:'yutaslice', YUTAFIST:'yutafist',
             MECHADRILL:'mechadrill', MECHULT:'mechult', TODOPUNCH:'todopunch', CHOSOPB:'chosopb',
             HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', HAKRUSH:'hakrush', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', DAGONWHIRL:'dagonwhirl', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', YUTABEAM:'yutabeam', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs', YUKIGRAP:'yukigrap', YUKIHOLE:'yukihole', GETODRAGON:'getodragon' };
@@ -1007,18 +1011,56 @@ const YUJI_ULT_CLEAVE_W  = 3.8;  // size multiplier vs normal cleave
 const YUJI_ULT_COOLDOWN  = 10000;
 
 // Black Blur constants
-const BB_LUNGE_DIST  = 10 * 9.6;  // 10 blocks (1 block = BLOCK px)
+const BB_LUNGE_DIST  = 240;        // a long dash: it's his mobility
 const BB_LUNGE_SPD   = 18;         // px per frame during lunge
 const BB_PUNCH1_DUR  = 420;        // ms first punch (longer wind-up)
 const BB_PUNCH2_DUR  = 420;        // ms second punch
 const BB_SLOW_DUR    = 600;        // ms of slow motion before kick (shorter = tighter window)
 const BB_KICK_DUR    = 320;        // ms kick animation
-const BB_DMG_HIT     = 6;          // each punch
-const BB_DMG_KICK    = 8;          // kick without BF (total ~25)
+const BB_DMG_HIT     = 7;          // each punch
+const BB_DMG_KICK    = 12;         // the launching kick
 const BB_DMG_BF_KICK = 18;         // kick with BF (total ~40)
 const BB_COOLDOWN    = 6000;
 const YUJI_BF_REQ    = 40;         // special: damage dealt to unlock Black Flash
 const YUJI_BF_DMG    = 28, YUJI_BF_MISS_DMG = 12;
+// ── Yuji rework: a pure brawler. Divergent Fist (timing ring → Black Flash), Divergent Combo dash, guaranteed Black Flash special.
+//    A combo meter (0-100) that only goes up from his normal punches; Maximum Output (Manji Kick counter, The Zone) spends it.
+//    Ultimate: under 75% meter → "Enchain", Sukuna takes over; 75%+ → Modulo.
+const YUJI_DIV_CD = 5000, DIV_REACH = 80, DIV_DMG = 6, DIV_BF_DMG = 18, DIV_MISS_DMG = 5, DIV_RING_MS = 900, DIV_HIT_AT = 0.75, DIV_WIN = 85, DIV_WIN_ZONE = 170;
+const YUJI_CM_GAIN = 1.25;                       // combo meter per point of normal-punch damage
+const MANJI_BASE = 450, MANJI_PER = 900, MANJI_COST = 10, MANJI_DMG = 10, MANJI_DMG_PER = 12;
+const ZONE_COST = 20, ZONE_BASE = 5000, ZONE_PER = 10000, ZONE_CD_SPEED = 0.75;
+const YUJI_SUK_MS = 15000, YUJI_MOD_MS = 15000, YUJI_ENCHAIN = 75, MODULO_DMG = 1.35, MODULO_SPD = 1.2;
+const SUKDASH_SPD = 40, SUKDASH_DMG = 18, SUKDASH_CD = 6000;
+function yujiCmAdd(pl, d){ if(!pl || pl.type!=='yuji' || pl.isPuppet || !(d>0)) return; const was = pl.yujiCM||0; pl.yujiCM = Math.min(100, was + d*YUJI_CM_GAIN);
+  if(was < YUJI_ENCHAIN && pl.yujiCM >= YUJI_ENCHAIN) addSpeech(pl.x+PW/2, pl.y-34, 'COMBO METER 75% — MODULO READY', '#ffd36a', 1000); }
+function zoneMul(pl){ return 1.15 + 0.2*((pl.zoneCm||0)/100); }
+function manjiCounter(pl, att){
+  const cm = pl.manjiCm||0; pl.manjiT = 0; pl.iframes = Math.max(pl.iframes||0, 500); pl.sTimer = Math.max(pl.sTimer, pl.sDur - 100);
+  addSpeech(pl.x+PW/2, pl.y-28, 'MANJI KICK', '#ff9a3a', 900); addRing(pl.x+PW/2, pl.y+PH/2, '#ff9a3a', 80); addParts(pl.x+PW/2, pl.y+PH/2, '#ffd08a', 18, 6); snd('parry', pl.x); doShake(10); sayFor(pl, 'Manji Kick!');
+  if(att && att!==pl && att.state!==S.DEAD && Math.abs(att.x-pl.x) < 260 && Math.abs(att.y-pl.y) < 160 && !att.mechUltPhase){
+    const dir = Math.sign(att.x - pl.x) || pl.facing; pl.facing = dir;
+    olHit(pl, att, MANJI_DMG + MANJI_DMG_PER*cm/100, {any:true, ubk:true, rag:[13 + 4*cm/100, -11, RAGD_MS*1.2], dir, col:'#ff9a3a'}); }
+}
+function yujiSukStart(pl){
+  const c = CHARACTERS.find(q => q.type==='sukuna');
+  pl.baseType = 'yuji'; pl.type = 'sukuna'; pl.sukT = YUJI_SUK_MS; pl.name = 'SUKUNA'; if(c){ pl.charColor = c.color; pl.charDimColor = c.dimColor; }
+  pl.fugaCharge = FUGA_CHARGE_REQ; pl.cleaveCooldown = 0; pl.dismantleCooldown = 0; pl.cleaveChainN = 0; pl.cleaveChainT = 0; pl.zonedT = 0; pl.manjiT = 0;
+  addRing(pl.x+PW/2, pl.y+PH/2, '#ff3a3a', 130); addParts(pl.x+PW/2, pl.y+PH/2, '#3a0a10', 30, 8); doShake(14);
+  showTxt('SUKUNA TAKES OVER', 1500); sayFor(pl, 'Finally... a little freedom.');
+}
+function yujiSukEnd(pl){
+  const c = CHARACTERS.find(q => q.type==='yuji'); if(pl.baseType!=='yuji') return;
+  if([S.CLEAVE,S.DISMANTLE,S.FUGA,S.SUKAIR,S.YUJISDASH].includes(pl.state)) pl.ss(pl.onGround ? S.IDLE : S.AIR);
+  pl.type = 'yuji'; pl.baseType = null; pl.sukT = 0; if(c){ pl.name = c.name; pl.charColor = c.color; pl.charDimColor = c.dimColor; }
+  addParts(pl.x+PW/2, pl.y+PH/2, '#ff9a3a', 20, 6); addSpeech(pl.x+PW/2, pl.y-30, 'YUJI IS BACK', '#ffb070', 1000);
+}
+function tickYuji(dt){
+  for(const pl of [p1, p2]){ if(!pl) continue;
+    for(const k of ['zonedT','moduloT','manjiT']) if(pl[k]>0) pl[k] = Math.max(0, pl[k]-dt);
+    if(pl.baseType==='yuji' && pl.sukT>0){ pl.sukT = Math.max(0, pl.sukT - dt); if(pl.sukT<=0 || pl.state===S.DEAD) yujiSukEnd(pl); }
+  }
+}
 const BB_LINE_SPEED  = 3.8;        // px/ms factor — one pass across 140px bar in ~330ms real time
 
 const BF_MINIGAME_DUR  = 2500;  // ms minigame is active
@@ -1044,8 +1086,33 @@ const PB_COOLDOWN      = 4200;
 const ITEM_DEFS = {
   cloud:  { name:'PLAYFUL CLOUD',            short:'CLOUD',    col:'#e0533f', dur:20000, desc:'Faster, harder M1s · longer reach' },
   isoh:   { name:'INVERTED SPEAR OF HEAVEN', short:'ISOH',     col:'#9cc3dc', dur:20000, desc:'Hits drain CE + add cooldown · shatters domains' },
-  speech: { name:"INUMAKI'S RECORDING",      short:'RECORDER', col:'#6fd3c2', dur:30000, desc:'Attack to play: "Don\'t move!" (5s stun)' }
+  speech: { name:"INUMAKI'S RECORDING",      short:'RECORDER', col:'#6fd3c2', dur:30000, desc:'Attack to play: "Don\'t move!" (5s stun)' },
+  kamu:   { name:'KAMUTOKE',                 short:'KAMUTOKE', col:'#ffe14a', dur:25000, desc:'Attack: call lightning down on the nearest foe (3 strikes)' }
 };
+// Kamutoke: a special-grade cursed tool that calls down lightning. 3 strikes, aimed at the nearest foe within range
+const KAMU_N = 3, KAMU_R = 560, KAMU_WARN = 380, KAMU_DMG = 16, KAMU_STUN = 800, KAMU_CD = 900, KAMU_HIT_R = 46;
+const kamuBolts = [];   // {owner, x, y, t, hit}
+function tickKamu(dt){
+  for(let i=kamuBolts.length-1;i>=0;i--){ const b = kamuBolts[i]; b.t += dt;
+    if(!b.hit && b.t >= KAMU_WARN){ b.hit = true; doShake(10); snd('boom', b.x); addParts(b.x, b.y-6, '#fff7b0', 18, 6); addRing(b.x, b.y-10, '#ffe14a', 70);
+      if(!IS_GUEST) carveCircle(b.x, b.y, 18);
+      for(const d of olFoes(b.owner)){ if(!d.hittable) continue; const bb = d.bodyBox(); if(b.x > bb.x - KAMU_HIT_R && b.x < bb.x+bb.w + KAMU_HIT_R && b.y > bb.y - 30 && b.y - 260 < bb.y+bb.h){
+        olHit(b.owner, d, KAMU_DMG, {any:true, stun:KAMU_STUN, col:'#ffe14a'}); addSpeech(d.x+PW/2, d.y-28, 'ZAP', '#ffe14a', 600); } } }
+    if(b.t > KAMU_WARN + 320 || !b.owner || b.owner.state===undefined) kamuBolts.splice(i,1);
+  }
+}
+function drawKamu(){
+  for(const b of kamuBolts){ ctx.save();
+    if(b.t < KAMU_WARN){ const q = b.t/KAMU_WARN; ctx.strokeStyle = `rgba(255,225,74,${0.4+0.5*q})`; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.ellipse(b.x, b.y-2, KAMU_HIT_R*(1.4-0.4*q), 8, 0, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+      if(Math.random()<0.5){ ctx.strokeStyle = 'rgba(255,247,176,0.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(b.x + (Math.random()-0.5)*60, b.y-4); ctx.lineTo(b.x + (Math.random()-0.5)*20, b.y - 20 - Math.random()*20); ctx.stroke(); } }
+    else { const a = Math.max(0, 1 - (b.t - KAMU_WARN)/320), top = b.y - 900;
+      ctx.globalAlpha = a; ctx.strokeStyle = '#fffbe0'; ctx.shadowColor = '#ffe14a'; ctx.shadowBlur = 18;
+      for(const w of [7, 3]){ ctx.lineWidth = w; ctx.strokeStyle = w===7 ? 'rgba(255,225,74,0.7)' : '#ffffff'; ctx.beginPath(); ctx.moveTo(b.x, top);
+        let y = top, x = b.x; while(y < b.y){ y += 40 + _hh(Math.floor(y), b.x)*50; x = b.x + (_hh(Math.floor(y), 7)-0.5)*44; ctx.lineTo(x, Math.min(y, b.y)); } ctx.stroke(); }
+      ctx.fillStyle = `rgba(255,250,210,${0.35*a})`; ctx.beginPath(); ctx.ellipse(b.x, b.y-6, 70, 22, 0, 0, Math.PI*2); ctx.fill(); }
+    ctx.restore(); }
+}
 const ITEM_KINDS = Object.keys(ITEM_DEFS);
 const worldItems = [];      // {kind, x, y, t}
 const speechFx = [];        // floating speech bubbles {x, y, text, col, life, max}
@@ -1561,6 +1628,7 @@ function spawnItem(){
   }
 }
 function tickItems(dt){
+  tickKamu(dt);
   itemSpawnT -= dt;
   const maxItems = 1;
   if(itemSpawnT <= 0){ itemSpawnT = ITEM_SPAWN_MS; if(worldItems.length < maxItems) spawnItem(); }
@@ -1587,6 +1655,13 @@ function drawItemIcon(kind, x, y, s, ang){
     // Inverted Spear of Heaven — art by ThEndNite (256×96), drawn at the old icon's size and tilt
     const im = isohImg();
     if(im.complete && im.naturalWidth){ ctx.save(); ctx.translate(4, -5); ctx.rotate(-0.38); const k = 56/252; ctx.drawImage(im, -128*k, -48*k, 256*k, 96*k); ctx.restore(); }
+  } else if(kind==='kamu'){
+    // Kamutoke: a gilded ritual rod with forked prongs, crackling
+    ctx.strokeStyle = '#3a2a08'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-22, 8); ctx.lineTo(16, -8); ctx.stroke();
+    ctx.strokeStyle = '#e8b830'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-22, 8); ctx.lineTo(16, -8); ctx.stroke();
+    ctx.fillStyle = '#ffe14a'; ctx.beginPath(); ctx.arc(-22, 8, 4, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#ffe14a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(14, -7); ctx.lineTo(26, -20); ctx.moveTo(14, -7); ctx.lineTo(30, -8); ctx.moveTo(14, -7); ctx.lineTo(22, -24); ctx.stroke();
+    ctx.strokeStyle = '#fffbe0'; ctx.lineWidth = 1; const t = Date.now()*0.02; ctx.beginPath(); ctx.moveTo(24, -16); ctx.lineTo(28 + Math.sin(t)*3, -22); ctx.lineTo(25, -27 + Math.cos(t)*2); ctx.stroke();
   } else {
     // pocket recorder
     ctx.fillStyle = '#2b3138'; ctx.fillRect(-12,-16,24,30);
@@ -1596,6 +1671,7 @@ function drawItemIcon(kind, x, y, s, ang){
   ctx.restore();
 }
 function drawItems(){
+  drawKamu();
   for(const it of worldItems){
     const d = ITEM_DEFS[it.kind], bob = Math.sin(it.t*0.004)*4, y = it.y - 22 + bob;
     ctx.save();
@@ -3271,7 +3347,7 @@ const hanaRootHit = {};               // host only: per-target re-hit timers for
 // Mouse position in world space (the rampage's root follows it)
 const mouseW = {x:0, y:0, in:false, t:0};
 canvas.addEventListener('mousemove', e => {
-  const vx = e.offsetX * VW / canvas.clientWidth, vy = e.offsetY * VH / canvas.clientHeight;
+  const { x:vx, y:vy } = cssToView(e);
   mouseW.x = cam.x + vx/cam.z; mouseW.y = cam.y + vy/cam.z; mouseW.in = true; mouseW.t = performance.now();
 });
 canvas.addEventListener('mouseleave', () => { mouseW.in = false; });
@@ -4710,6 +4786,67 @@ function paintSisterBig(g, R){
 }
 
 // ══ SHINJUKU — Nishi-Shinjuku street on the left, flattened rubble field to the right ══
+// ── SENDAI COLONY (Culling Game): station + pedestrian deck, zelkova avenue, a tower Uro has peeled the sky off of ──
+const SND = { W:2400, H:1100, GND:1020 };
+function buildSendai(){
+  const G = SND.GND;
+  const ledges = (x, w, ys) => { for(const y of ys) terFill(MAT_SLAB, x, y, w, 8); };
+  // Sendai Station (left): a solid block with a run-through concourse and ledges up its face
+  terFill(MAT_PLASTER, 0, G-330, 230, 330);
+  terClear(40, G-112, 190, 112);                                         // concourse you can run through
+  terFill(MAT_GLASS, 0, G-360, 250, 30);                                 // glass canopy roof
+  ledges(230, 56, [G-110, G-210, G-310]);
+  // Pedestrian deck: the famous elevated walkway, stairs at both ends (walk up), pillars under it
+  terFill(MAT_STONE, 420, G-150, 900, 16);
+  terFillPoly(MAT_STONE, [[300,G],[420,G-150],[420,G-134],[330,G]]);   // west stairs
+  terFillPoly(MAT_STONE, [[1320,G-150],[1440,G],[1410,G],[1320,G-134]]);// east stairs
+  for(const x of [520, 720, 920, 1120]) terFill(MAT_PILLAR, x, G-134, 20, 134);
+  terFill(MAT_METAL, 640, G-196, 120, 10); terFill(MAT_METAL, 990, G-196, 120, 10);   // deck shelters (stand on top)
+  ledges(820, 90, [G-280]);                                              // a sign gantry above the deck
+  // Zelkova avenue (Jozenji-dori): trunks and canopies you can stand in
+  const tree = (x, h) => { terFill(MAT_WOOD, x-6, G-h, 12, h); terFillPoly(MAT_LEAF, [[x-60, G-h+10],[x-40, G-h-50],[x, G-h-70],[x+42, G-h-48],[x+62, G-h+12],[x, G-h+24]]); };
+  tree(1560, 170); tree(1720, 200); tree(1880, 160);
+  // the tower Uro tore apart: a sheared stump, floating slabs of "sky" debris, a rubble slope
+  terFillPoly(MAT_STONE, [[1960,G],[2040,G-50],[2140,G-70],[2200,G]]);
+  terFillPoly(MAT_GLASS, [[2210,G],[2210,G-480],[2260,G-520],[2310,G-470],[2360,G-510],[2400,G-500],[2400,G]]);
+  terClear(2210, G-112, 190, 112);                                       // lobby
+  ledges(2154, 56, [G-130, G-240, G-350, G-460]);
+  terFill(MAT_SLAB, 2010, G-230, 110, 10); terFill(MAT_SLAB, 1980, G-360, 90, 10); terFill(MAT_SLAB, 1700, G-330, 100, 10);   // floating debris
+}
+function paintSendai(g, R){
+  const G = SND.GND;
+  // night sky over the colony, with the barrier dome and Uro's cracked "peeled" sky
+  let gr = g.createLinearGradient(0,0,0,G); gr.addColorStop(0,'#060814'); gr.addColorStop(0.6,'#141a33'); gr.addColorStop(1,'#2a2238');
+  g.fillStyle = gr; g.fillRect(0,0,W,G);
+  for(let i=0;i<140;i++){ g.fillStyle=`rgba(255,255,255,${0.2+R()*0.6})`; g.fillRect(R()*W, R()*G*0.6, 1.4, 1.4); }
+  g.strokeStyle='rgba(120,200,255,0.18)'; g.lineWidth=3; g.beginPath(); g.ellipse(W/2, G+200, W*0.75, G*0.95, 0, Math.PI, 2*Math.PI); g.stroke();   // colony barrier
+  g.strokeStyle='rgba(120,200,255,0.07)'; g.lineWidth=14; g.stroke();
+  // sky fracture (Thin Ice Breaker): jagged shards of sky, displaced
+  g.save(); g.translate(1750, 260);
+  for(let k=0;k<9;k++){ const a = k*0.7 + R()*0.3, r1 = 40 + R()*30, r2 = 160 + R()*140;
+    g.fillStyle = `rgba(${90+R()*60|0},${120+R()*60|0},${200+R()*55|0},${0.12+R()*0.18})`;
+    g.beginPath(); g.moveTo(Math.cos(a)*r1, Math.sin(a)*r1); g.lineTo(Math.cos(a+0.25)*r2, Math.sin(a+0.25)*r2); g.lineTo(Math.cos(a+0.5)*r1*1.4, Math.sin(a+0.5)*r1*1.4); g.closePath(); g.fill(); }
+  g.strokeStyle='rgba(200,230,255,0.55)'; g.lineWidth=1.5;
+  for(let k=0;k<14;k++){ let x=0, y=0; g.beginPath(); g.moveTo(0,0); const a = R()*Math.PI*2; for(let j=0;j<5;j++){ x += Math.cos(a + (R()-0.5)*0.8)*(30+R()*40); y += Math.sin(a + (R()-0.5)*0.8)*(30+R()*40); g.lineTo(x,y); } g.stroke(); }
+  g.restore();
+  // city skyline: Sendai mid-rises, AER tower, lit windows
+  const bld = (x, w, h, col) => { const top = G-90-h; g.fillStyle = col; g.fillRect(x, top, w, h+90);
+    for(let wy=top+10; wy<G-96; wy+=14) for(let wx=x+6; wx<x+w-6; wx+=12) if(R()<0.42){ g.fillStyle = R()<0.8 ? 'rgba(255,214,140,0.55)' : 'rgba(170,210,255,0.5)'; g.fillRect(wx, wy, 6, 7); } };
+  for(let i=0;i<22;i++){ const x = i*112 + R()*40; bld(x, 70+R()*60, 120+R()*260, `rgb(${22+R()*18|0},${24+R()*18|0},${40+R()*24|0})`); }
+  g.fillStyle='#1d2238'; g.fillRect(600, G-90-560, 120, 650);                          // SS30 / AER-style tower
+  for(let wy=G-640; wy<G-100; wy+=16) for(let wx=608; wx<712; wx+=13) if(R()<0.5){ g.fillStyle='rgba(255,214,140,0.5)'; g.fillRect(wx, wy, 7, 8); }
+  g.fillStyle='#e85a5a'; g.fillRect(656, G-660, 8, 14);
+  // station facade sign + deck lamps
+  g.fillStyle='#e9e4d8'; g.fillRect(20, G-300, 190, 34); g.fillStyle='#1f6b3a'; g.font='700 24px Rajdhani, sans-serif'; g.textAlign='center'; g.fillText('仙台駅  SENDAI', 115, G-275);
+  for(let x=440; x<1300; x+=110){ g.fillStyle='rgba(255,226,160,0.16)'; g.beginPath(); g.arc(x, G-170, 34, 0, Math.PI*2); g.fill(); g.fillStyle='#3a3a44'; g.fillRect(x-2, G-196, 4, 46); g.fillStyle='#ffe2a0'; g.fillRect(x-5, G-200, 10, 5); }
+  g.fillStyle='#2c3d6a'; g.fillRect(824, G-306, 82, 22); g.fillStyle='#e9eefc'; g.font='700 12px Rajdhani, sans-serif'; g.fillText('CULLING GAME', 865, G-290);
+  // street, crosswalks, rubble on the right
+  g.fillStyle='#22232b'; g.fillRect(0, G, W, H-G);
+  g.fillStyle='rgba(235,235,230,0.55)'; for(let x=460; x<1300; x+=26) g.fillRect(x, G+26, 14, 30);
+  g.fillStyle='rgba(235,200,80,0.6)'; for(let x=20; x<W; x+=90) g.fillRect(x, G+70, 44, 3);
+  for(let i=0;i<220;i++){ g.fillStyle=`rgba(${70+R()*50|0},${70+R()*45|0},${80+R()*40|0},0.6)`; g.fillRect(1940+R()*460, G+2+R()*(H-G-4), 3+R()*7, 2+R()*5); }
+  g.strokeStyle='rgba(180,190,220,.3)'; g.lineWidth=1.5; g.beginPath(); g.moveTo(0,G); g.lineTo(W,G); g.stroke();
+}
 const SJK = { W:2600, H:1200, GND:1120 };
 function buildShinjukuBig(){
   const G = SJK.GND;
@@ -4794,10 +4931,12 @@ const MAPS = [
   { name:'SHINJUKU', sub:'Nishi-Shinjuku · street to rubble field', w:SJK.W, h:SJK.H, gnd:SJK.GND,
     spawns:[[400, SJK.GND], [1750, SJK.GND]], build(){ buildShinjukuBig(); } },
   { name:'TRAINING ROOM', sub:'Flat floor · distance markers · training only', w:1600, h:640, gnd:560, training:true,
-    spawns:[[640, 560], [900, 560]], build(){ /* nothing: a perfectly flat floor */ } }
+    spawns:[[640, 560], [900, 560]], build(){ /* nothing: a perfectly flat floor */ } },
+  { name:'SENDAI', sub:'Sendai Colony · station deck, zelkova avenue, a torn sky', w:SND.W, h:SND.H, gnd:SND.GND,
+    spawns:[[560, SND.GND], [1640, SND.GND]], build(){ buildSendai(); } }
 ];
 const TRAINING_MAP = 3;
-function mapChoices(){ return (typeof gameMode!=='undefined' && gameMode==='training') ? [TRAINING_MAP, 0, 1, 2] : MAPS.map((m, i) => i).filter(i => !MAPS[i].training); }
+function mapChoices(){ return (typeof gameMode!=='undefined' && gameMode==='training') ? [TRAINING_MAP, 0, 1, 2, 4] : MAPS.map((m, i) => i).filter(i => !MAPS[i].training); }
 function paintTrainingRoom(g){
   const w = W, h = H, gnd = GND;
   const bg = g.createLinearGradient(0, 0, 0, gnd); bg.addColorStop(0, '#1b1f26'); bg.addColorStop(1, '#2a303a');
@@ -4844,7 +4983,7 @@ function getMapBG(i){
   const [mw, mh, mg] = mapDims(i);
   const cv = document.createElement('canvas'); cv.width = mw; cv.height = mh;
   const g = cv.getContext('2d');
-  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom][i](g, _rng(1337+i*101)));
+  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom, paintSendai][i](g, _rng(1337+i*101)));
   _mapBG[i] = cv;
   return cv;
 }
@@ -4992,6 +5131,12 @@ function drawMapAmbient(i, t){
     for(const l of _mapAmb){ l.x+=l.vx+Math.sin(l.a)*0.4; l.y+=l.vy; l.a+=0.05; if(l.y>GND){ l.y=-10; l.x=Math.random()*W; }
       ctx.save(); ctx.translate(l.x,l.y); ctx.rotate(l.a); ctx.fillStyle=l.c; ctx.globalAlpha=0.75;
       ctx.beginPath(); ctx.ellipse(0,0,4,2,0,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+  } else if(i===4){
+    // shimmer from the colony barrier + drifting motes under the torn sky
+    if(_mapAmb.length < 30) _mapAmb.push({x:Math.random()*W, y:Math.random()*GND, vy:-0.15-Math.random()*0.3, a:Math.random()*6});
+    for(const m of _mapAmb){ m.y += m.vy; m.a += 0.03; if(m.y < 0){ m.y = GND; m.x = Math.random()*W; }
+      ctx.fillStyle = `rgba(150,210,255,${0.25+0.2*Math.sin(m.a)})`; ctx.fillRect(m.x + Math.sin(m.a)*6, m.y, 2, 2); }
+    ctx.fillStyle = `rgba(120,190,255,${0.03+0.02*Math.sin(t*0.0015)})`; ctx.fillRect(1500, 0, 600, 600);
   } else if(i===2){
     // rising embers
     if(_mapAmb.length < 40) _mapAmb.push({x:Math.random()*W, y:GND, vx:(Math.random()-.5)*0.4, vy:-(0.4+Math.random()*0.9), life:1});
@@ -5533,7 +5678,8 @@ function drawExplosions(){
 // Fuga projectiles
 const fugaShots = [];
 function addFugaShot(x,y,dir,owner){ snd('fuga', x);
-  fugaShots.push({x,y,dir,owner,hit:false,trailTimer:0});
+  const yb = owner && owner.baseType==='yuji';   // Sukuna in Yuji's body: a faster, stronger arrow
+  fugaShots.push({x,y,dir,owner,hit:false,trailTimer:0, spd: yb ? 1.6 : 1, dm: yb ? 1.35 : 1});
 }
 function triggerFugaExplosion(x,y){
   carveCircle(x, y, 70);
@@ -5544,8 +5690,8 @@ function triggerFugaExplosion(x,y){
 function tickFugaShots(dt){
   for(let i=fugaShots.length-1;i>=0;i--){
     const s=fugaShots[i], a = s.ang||0;
-    s.x += s.dir * Math.cos(a) * FUGA_SPEED * (dt/16.67);
-    s.y += Math.sin(a) * FUGA_SPEED * (dt/16.67);
+    s.x += s.dir * Math.cos(a) * FUGA_SPEED * (s.spd||1) * (dt/16.67);
+    s.y += Math.sin(a) * FUGA_SPEED * (s.spd||1) * (dt/16.67);
     // Spawn flame trail
     s.trailTimer+=dt;
     if(s.trailTimer>10){ s.trailTimer=0; spawnFlameTrail(s.x,s.y); spawnFlameTrail(s.x,s.y); }
@@ -7075,7 +7221,7 @@ canvas.addEventListener('mousedown', e => {
   if(!(phase==='fight')) return;
   const me = NET.role==='host' ? p1 : p2;
   if(!me || me.type!=='todo') return;
-  const vx = e.offsetX * VW / canvas.clientWidth, vy = e.offsetY * VH / canvas.clientHeight;
+  const { x:vx, y:vy } = cssToView(e);
   const wx = cam.x + vx/cam.z, wy = cam.y + vy/cam.z;
   let sel = null;
   for(const it of worldItems) if(Math.abs(it.x-wx) < 30 && Math.abs(it.y-22-wy) < 32){ sel = {k:'item', id:it.id}; break; }
@@ -7564,9 +7710,10 @@ class Player {
     this.bbGotBF=false; this.bbStartX=0;
     // Yuji Piercing Blood
     this.pbChargeTime=0; this.pbCooldown=0; this.pbDown=false;
+    this.yujiDivCd=0; this.zonedT=0; this.moduloT=0; this.manjiT=0; if(this.yujiCM===undefined) this.yujiCM=0;
   }
 
-  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem, vm = this.varMode; if(this.yCopy) this._yutaEndCopy(); if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = !!vm; }
+  reset(){ const pr = this.pendingRefund||0, shd = this.shadowItem, vm = this.varMode; if(this.yCopy) this._yutaEndCopy(); if(this.baseType==='yuji') yujiSukEnd(this); if(this.type==='meguna') megunaRevert(this); this._init(); this.shadowItem = shd||null; this.pendingRefund = 0; if(pr) this.domainCharge = pr; this.ce = undefined; this.varMode = !!vm; }
 
   get hittable(){
     if(this.mechUltPhase===1 || this.mechUltPhase===2) return false; // underground
@@ -7850,40 +7997,20 @@ class Player {
       }
     }
 
-    // ── YUJI: 1=Piercing Blood(hold), 2=Black Blur, Q=Dismantle Ult ──
+    // ── YUJI: 1 = Divergent Fist, 2 = Divergent Combo (dash), 3 = Black Flash (special), F = Enchain / Modulo ──
     if(this.type==='yuji'){
-      if(this.pbCooldown>0) this.pbCooldown=Math.max(0,this.pbCooldown-dt);
-      if(this.bbCooldown>0) this.bbCooldown=Math.max(0,this.bbCooldown-dt);
+      const cdSpeed = 1 + (this.zonedT>0 ? ZONE_CD_SPEED : 0) + (this.moduloT>0 ? 1 : 0);   // the Zone and Modulo shorten his cooldowns
+      if(this.yujiDivCd>0) this.yujiDivCd=Math.max(0,this.yujiDivCd-dt*cdSpeed);
+      if(this.bbCooldown>0) this.bbCooldown=Math.max(0,this.bbCooldown-dt*cdSpeed);
       if(this.yujiUltCooldown>0) this.yujiUltCooldown=Math.max(0,this.yujiUltCooldown-dt);
-      // 1 = Piercing Blood (hold)
-      const pbKey = keys[ab1Key] && !this._supAb1;
-      const canCharge = !abilityBlocked && ![S.BLACKFLASH,S.BLACKBLUR,S.YUJIULT].includes(this.state) && this.pbCooldown<=0;
-      if(pbKey && canCharge){
-        this.pbChargeTime = Math.min(PB_CHARGE_MAX, this.pbChargeTime + dt);
-        this.aimAng = Math.max(-1.2, Math.min(1.2, (this.aimAng||0) + ((keys[this.ctrl.down]?1:0)-(keys[this.ctrl.jmp]?1:0))*0.0024*dt));
-        this.vx = (keys[this.ctrl.left] ? -1 : keys[this.ctrl.right] ? 1 : 0) * SPD*0.4;   // slow walk while charging
-      } else if(!pbKey && this.pbChargeTime > 0 && canCharge){
-        const dmg = this.pbChargeTime >= 2000 ? PB_DMG_3 : this.pbChargeTime >= 1000 ? PB_DMG_2 : PB_DMG_1;
-        const sx = this.x + (this.facing===1 ? PW+4 : -4);
-        const sy = this.y + PH*0.32;
-        addPiercingBeam(sx, sy, this.facing, this, dmg); piercingBeams[piercingBeams.length-1].ang = this.aimAng||0; this.aimAng = 0;
-        addParts(sx, sy, '#8b0000', 8, 4); doShake(4);
-        this.pbCooldown = PB_COOLDOWN; this.pbChargeTime = 0;
-      }
-      // 2 = Black Blur
-      // 2 = Divergent Combo (lunge, two punches, kick)
-      if(ab2Edge && this.bbCooldown<=0 && !abilityBlocked && ![S.BLACKFLASH,S.BLACKBLUR,S.YUJIULT].includes(this.state)){
-        this._startBlackBlur(other); this.bbMode = 'combo';
-      }
-      // 3 = Black Flash (special): lunge, then time the spark in slow motion
-      if(ab3Edge && (this.yujiBfCharge||0)>=YUJI_BF_REQ && !abilityBlocked && ![S.BLACKFLASH,S.BLACKBLUR,S.YUJIULT].includes(this.state)){
+      const busy = [S.BLACKFLASH,S.BLACKBLUR,S.YUJIULT,S.YUJIDIV,S.YUJIMANJI].includes(this.state), free = !abilityBlocked && !busy && [S.IDLE,S.WALK,S.AIR].includes(this.state);
+      if(ab1Edge && free && this.yujiDivCd<=0) this._startDivFist();
+      if(ab2Edge && this.bbCooldown<=0 && !abilityBlocked && !busy){ this._startBlackBlur(other); this.bbMode = 'combo'; }
+      if(ab3Edge && (this.yujiBfCharge||0)>=YUJI_BF_REQ && !abilityBlocked && !busy){
         this.yujiBfCharge = 0; this._startBlackBlur(other); this.bbMode = 'bf';
         addSpeech(this.x+PW/2, this.y-10, 'BLACK FLASH', '#ff3030', 800);
       }
-      // Q = Dismantle Ult
-      if(domEdge && this.yujiUltCharge>=YUJI_ULT_COST && this.yujiUltCooldown<=0 && !abilityBlocked && ![S.BLACKFLASH,S.BLACKBLUR,S.YUJIULT].includes(this.state)){
-        this._startYujiUlt();
-      }
+      if(domEdge && this.yujiUltCharge>=YUJI_ULT_COST && this.yujiUltCooldown<=0 && !abilityBlocked && !busy) this._startYujiUlt();
     }
 
     // ── YUTA: 1=Slice&Dice, 2=Cursed Fist, 3=Copy, Q=Domain/Jacob's Ladder ──
@@ -8327,6 +8454,11 @@ class Player {
 
     // ── SUKUNA: 1=Cleave, 2=Dismantle, 3=Fuga(charged), Q=Domain ──
     if(this.type==='sukuna'){
+      if(this.baseType==='yuji'){   // Sukuna in Yuji's body: Dismantle is a map-crossing dash; Cleave and Fuga as usual
+        domEdge = false;
+        if(ab1Edge && !abilityBlocked && !(this.cleaveCooldown>0) && [S.IDLE,S.WALK,S.AIR].includes(this.state)) this._startSukDash();
+        ab1Edge = false;
+      }
       if(this.cleaveCooldown>0)    this.cleaveCooldown=Math.max(0,this.cleaveCooldown-dt);
       if(this.dismantleCooldown>0) this.dismantleCooldown=Math.max(0,this.dismantleCooldown-dt);
       // Dismantle chain window runs out → the cooldown comes back, longer for every link
@@ -8499,7 +8631,7 @@ class Player {
           }
           this._movePassive(dt, c);
         }
-        if(atkEdge){this.atkDown=true; if(this.item==='speech') this._useRecording(other); else this._doAttack();}
+        if(atkEdge){this.atkDown=true; if(this.item==='speech') this._useRecording(other); else if(this.item==='kamu') this._useKamutoke(); else this._doAttack();}
         if(this.type!=='mechamaru'){
           const wasAir = !this.onGround, vyIn = this.vy;
           this._phys(dt);
@@ -8584,6 +8716,9 @@ class Player {
       case S.BLACKFLASH: this._tickBlackFlash(dt, other); this._phys(dt); break;
       case S.BLACKBLUR:  this._tickBlackBlur(dt, other); break;
       case S.YUJIULT:    this._tickYujiUlt(dt, other); break;
+      case S.YUJIDIV:    this._tickDivFist(dt); break;
+      case S.YUJISDASH:  this._tickSukDash(dt); break;
+      case S.YUJIMANJI:  this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.manjiT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.YUTASLICE:  this._tickYutaSlice(dt, other); break;
       case S.YUTAFIST:   this._tickYutaFist(dt, other); break;
     }
@@ -8760,7 +8895,7 @@ class Player {
   _startFuga(){
     if([S.ATCK,S.DIVE,S.STUN,S.RAGD,S.SLAM,S.DEAD,S.CLEAVE,S.DISMANTLE,S.FUGA,S.SUKAIR].includes(this.state)) return;
     this.ss(S.FUGA); this.aimAng = 0; snd('charge', this.x); sayFor(this, 'Fuga.');
-    this.fugaWindup = FUGA_WINDUP;
+    this.fugaWindup = FUGA_WINDUP * (this.baseType==='yuji' ? 0.6 : 1);
     this.fugaArm = 0;
     this.vx = 0;
   }
@@ -8772,7 +8907,7 @@ class Player {
       if(keys[this.ctrl.left]) this.facing = -1; else if(keys[this.ctrl.right]) this.facing = 1; }   // turn around while drawing
     if(this.fugaWindup>0){
       this.fugaWindup -= dt;
-      this.fugaArm = Math.min(1, 1 - this.fugaWindup/FUGA_WINDUP);
+      this.fugaArm = Math.min(1, 1 - this.fugaWindup/(FUGA_WINDUP * (this.baseType==='yuji' ? 0.6 : 1)));
     } else {
       // Fire
       const a = this.aimAng||0;
@@ -8837,7 +8972,7 @@ class Player {
           def.ss(S.STUN, BB_PUNCH1_DUR + BB_PUNCH2_DUR + BB_SLOW_DUR + BB_KICK_DUR + 300);
           addParts(def.x+PW/2, def.y+PH/2, '#f5a623', 10, 5);
           doShake(5);
-          if(this.bbMode==='bf'){ this._bbEnterSlow(def); return; }
+          if(this.bbMode==='bf'){ this.bbGotBF = true; this._executeBBKick(def); return; }   // the special is a guaranteed Black Flash
           this.bbPhase = 1; this.bbTimer = 0;
           return;
         }
@@ -8931,44 +9066,116 @@ class Player {
     this.vx=0; this.vy=0;
     this.yujiUltPhase=0; this.yujiUltTimer=0; this.yujiUltCleavesFired=0;
     this.yujiUltCharge=0; // consumed on use
+    this.yujiUltMode = (this.yujiCM||0) >= YUJI_ENCHAIN ? 'modulo' : 'enchain';
     addParts(this.x+PW/2, this.y+PH/2, '#f5a623', 14, 6);
     doShake(6);
   }
 
   _tickYujiUlt(dt, other){
-    if([S.STUN,S.RAGD,S.DEAD].includes(this.state) && this.state!==S.YUJIULT){ this.ss(S.IDLE); return; }
     this.vx=0;
     if(this.onGround) this.vy=0;
     this.yujiUltTimer += dt;
-
-    // Phase 0: hood pull animation (stand still menacingly)
     if(this.yujiUltPhase===0){
-      if(this.yujiUltTimer >= YUJI_ULT_HOOD_DUR){
-        this.yujiUltPhase=1; this.yujiUltTimer=0; sayFor(this, 'Dismantle.');
+      if(this.yujiUltTimer >= 500){
+        this.yujiUltPhase=1; this.yujiUltTimer=0;
+        if(this.yujiUltMode==='enchain'){ addSpeech(this.x+PW/2, this.y-34, 'Enchain.', '#ff4a4a', 1100); sayFor(this, 'Enchain.'); }
+        else { addSpeech(this.x+PW/2, this.y-34, 'MODULO', '#ffd36a', 1100); sayFor(this, 'I\'m not done yet.'); }
       }
-    }
-    // Phase 1: speech bubble "Dismantle."
-    else if(this.yujiUltPhase===1){
-      if(this.yujiUltTimer >= YUJI_ULT_BUBBLE_DUR){
-        this.yujiUltPhase=2; this.yujiUltTimer=0;
-      }
-    }
-    // Phase 2: fire 1 giant cleave
-    else if(this.yujiUltPhase===2){
-      if(this.yujiUltCleavesFired===0 && this.yujiUltTimer >= 100){
-        const sx = this.x + (this.facing===1 ? PW+10 : -10);
-        const sy = this.y + PH*0.35;
-        addGiantCleave(sx, sy, this.facing, this);
-        addParts(sx, sy, '#fff', 18, 8);
-        addRing(sx, sy, '#fff', 90);
-        doShake(16);
-        this.yujiUltCleavesFired=1;
-      }
-      if(this.yujiUltCleavesFired>=1 && this.yujiUltTimer >= 600){
+    } else if(this.yujiUltPhase===1){
+      if(this.yujiUltTimer >= 900){
         this.yujiUltCooldown = YUJI_ULT_COOLDOWN;
-        this.ss(S.IDLE);
+        if(this.yujiUltMode==='enchain'){ this.ss(S.IDLE); yujiSukStart(this); }
+        else { this.moduloT = YUJI_MOD_MS; this.ss(S.IDLE); showTxt('MODULO', 1300); addRing(this.x+PW/2, this.y+PH/2, '#ffd36a', 140); addParts(this.x+PW/2, this.y+PH/2, '#ffe9a0', 30, 8); doShake(12); snd('domain', this.x); }
       }
     }
+  }
+
+  // ── Divergent Fist: a punch; if it lands, a ring closes on them — press ability 1 as it meets the inner ring for a Black Flash ──
+  _startDivFist(){
+    this.ss(S.YUJIDIV, 3000); this.divPhase = 0; this.divT = 0; this.divRef = null; this.divKeyDown = true; this.vx = this.facing*7;
+    this.yujiDivCd = YUJI_DIV_CD; snd('swing', this.x); sayFor(this, 'Divergent Fist!');
+  }
+  _tickDivFist(dt){
+    const f = this.facing, real = dt/(timeScale||1);
+    if(this.divPhase===0){
+      this.divT += dt; this.vx *= 0.86; this._phys(dt);
+      if(this.divT >= 160){
+        const [x,y,w,h] = olFront(this, DIV_REACH), d = olArea(this, x, y, w, h)[0];
+        if(!d){ this.divPhase = 2; this.divT = 0; return; }
+        d.hp = Math.max(0, d.hp - DIV_DMG); d.flash = 200; addDmg(d.x+PW/2, d.y-14, DIV_DMG, '#ff9a3a'); addParts(d.x+PW/2, d.y+PH/2, '#ff9a3a', 8, 3); snd('hit2', d.x);
+        this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge + DIV_DMG); this.yujiUltCharge = Math.min(YUJI_ULT_COST, this.yujiUltCharge + DIV_DMG);
+        if(d.state===S.DEAD || d.hp<=0){ this.divPhase = 2; this.divT = 0; return; }
+        d.vx = 0; d.ss(S.STUN, DIV_RING_MS + 500); this.divRef = netRef(d) || d; this.divPhase = 1; this.divT = 0; this.vx = 0;
+        if(this.moduloT>0){ this._divResolve(d, true); return; }   // Modulo: every Divergent Fist is a Black Flash
+      }
+      return;
+    }
+    if(this.divPhase===1){
+      const d = typeof this.divRef==='string' ? netRes(this.divRef) : this.divRef;
+      this.vx = 0; this._phys(dt);
+      if(!d || d.state===S.DEAD){ this.divPhase = 2; this.divT = 0; return; }
+      if(d.state===S.STUN){ d.sTimer = 0; d.vx = 0; }
+      this.divT += real;
+      const k = keys[this.ab1Key], edge = k && !this.divKeyDown; this.divKeyDown = !!k;
+      const win = this.zonedT>0 ? DIV_WIN_ZONE : DIV_WIN, at = DIV_RING_MS*DIV_HIT_AT;
+      if(edge){ this._divResolve(d, Math.abs(this.divT - at) <= win); return; }
+      if(this.divT >= DIV_RING_MS) this._divResolve(d, false);
+      return;
+    }
+    this.divT += dt; this.vx *= 0.8; this._phys(dt);
+    if(this.divT >= 260) this.ss(this.onGround ? S.IDLE : S.AIR);
+  }
+  _divResolve(d, good){
+    const f = this.facing; this.divPhase = 2; this.divT = 0; this.divRef = null;
+    if(good){
+      const dmg = DIV_BF_DMG; d.hp = Math.max(0, d.hp - dmg); d.flash = 500;
+      addBlackFlash(d.x+PW/2, d.y+PH/2); ceBlackFlash(this); addDmg(d.x+PW/2, d.y-20, dmg, '#111'); doShake(16); carveCircle(d.x+PW/2, d.y+PH/2, 24);
+      addSpeech(d.x+PW/2, d.y-30, 'BLACK FLASH', '#ff3030', 900);
+      if(d.state!==S.DEAD){ d._initRd(f*15, -9, .15*f); d.ss(d.hp<=0 ? S.DEAD : S.RAGD, RAGD_MS*1.5); }
+      this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge + dmg + 15); this.yujiUltCharge = Math.min(YUJI_ULT_COST, this.yujiUltCharge + dmg);
+    } else {
+      d.hp = Math.max(0, d.hp - DIV_MISS_DMG); d.flash = 250; addRing(d.x+PW/2, d.y+PH/2, '#ff9a3a', 46); addDmg(d.x+PW/2, d.y-16, DIV_MISS_DMG, '#ffb070'); snd('hit2', d.x);
+      if(d.state!==S.DEAD){ d._initRd(f*7, -4, .08*f); d.ss(d.hp<=0 ? S.DEAD : S.RAGD, RAGD_MS*0.8); }
+    }
+  }
+  _drawDivRing(){
+    if(this.state!==S.YUJIDIV || this.divPhase!==1) return;
+    const d = typeof this.divRef==='string' ? netRes(this.divRef) : this.divRef; if(!d) return;
+    const cx = d.x+PW/2, cy = d.y+PH/2, q = Math.min(1, this.divT/DIV_RING_MS), at = DIV_HIT_AT, inner = 26;
+    const win = (this.zonedT>0 ? DIV_WIN_ZONE : DIV_WIN)/DIV_RING_MS, r = inner + 90*(at - q)/at;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,60,60,0.35)'; ctx.lineWidth = Math.max(2, 90*win/at*2); ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2); ctx.stroke();   // the window
+    ctx.strokeStyle = '#ff3030'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2); ctx.stroke();
+    const near = Math.abs(q - at) <= win;
+    ctx.strokeStyle = near ? '#ffffff' : '#ffb070'; ctx.lineWidth = near ? 4 : 3; ctx.beginPath(); ctx.arc(cx, cy, Math.max(4, r), 0, Math.PI*2); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = `700 11px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(`PRESS [${keyLbl(this,'ab1')}]`, cx, cy - inner - 34);
+    ctx.restore();
+  }
+
+  // ── Sukuna (in Yuji's body): Dismantle = a dash across half the map that deletes whatever it touches ──
+  _startSukDash(){
+    this.ss(S.YUJISDASH, 1500); this.sdDist = 0; this.sdHit = {}; this.cleaveCooldown = SUKDASH_CD; this.vy = 0;
+    if(keys[this.ctrl.left]) this.facing = -1; else if(keys[this.ctrl.right]) this.facing = 1;
+    snd('dash', this.x); sayFor(this, 'Dismantle.'); addSpeech(this.x+PW/2, this.y-24, 'DISMANTLE', '#ff4a4a', 700);
+  }
+  _tickSukDash(dt){
+    const k = dt/16.67, f = this.facing, px = this.x;
+    this.vy = 0; this.vx = 0;
+    this.x = Math.max(0, Math.min(W-PW, this.x + f*SUKDASH_SPD*k)); this.sdDist += Math.abs(this.x - px);
+    const x0 = Math.min(px, this.x) - 14, x1 = Math.max(px, this.x) + PW + 14, y0 = this.y - 14, y1 = this.y + PH + 14;
+    if(!IS_GUEST) carveCapsule(px+PW/2, this.y+PH*0.45, this.x+PW/2, this.y+PH*0.45, 30);
+    const inBox = e => e && typeof e.x==='number' && e.x > x0 && e.x < x1 && e.y > y0 && e.y < y1;
+    for(const arr of GETO_REFLECT()){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const e = arr[j]; if(e && e.owner!==this && inBox(e)){ addParts(e.x, e.y, '#ff4a4a', 4, 2); arr.splice(j,1); } } }
+    for(const arr of [isomers, getoCurses, kenSpirits, shikis, garudas, uiuis]){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const e = arr[j]; if(e && e.owner!==this && inBox(e)){ addParts(e.x, e.y, '#ff4a4a', 6, 3); arr.splice(j,1); } } }
+    for(let j=mahiBlobs.length-1;j>=0;j--){ const b = mahiBlobs[j], bx0 = b.dir>0 ? b.x : b.x-b.len; if(b.owner!==this && bx0 < x1 && bx0+b.len > x0 && b.y > y0 && b.y-BLOB_H < y1){ addParts(b.x + b.dir*b.len/2, b.y-30, '#9aa8b8', 16, 5); mahiBlobs.splice(j,1); } }
+    for(const d of olFoes(this)){ const key = d===p1 ? 'p1' : d===p2 ? 'p2' : 'pup'; if(this.sdHit[key] || !d.hittable) continue;
+      const b = d.bodyBox(); if(b.x+b.w < x0 || b.x > x1 || b.y+b.h < y0 || b.y > y1) continue;
+      this.sdHit[key] = true;
+      for(let m=0;m<3;m++) addSlashMark(d.x+PW/2 + (Math.random()-0.5)*24, d.y+PH*(0.2+Math.random()*0.6), (Math.random()-0.5)*1.4);
+      olHit(this, d, SUKDASH_DMG, {rag:[8, -5, RAGD_MS], dir:f, col:'#ff4a4a'}); snd('slash', d.x); doShake(8);
+      this.fugaCharge = Math.min(FUGA_CHARGE_REQ, (this.fugaCharge||0) + SUKDASH_DMG); }
+    if(Math.random()<0.6) addParts(this.x+PW/2 - f*20, this.y+PH*0.5, '#ff4a4a', 2, 2);
+    if(this.sdDist >= W*0.5 || this.x <= 0 || this.x >= W-PW){ this.vx = f*3; this.ss(this.onGround ? S.IDLE : S.AIR); }
   }
 
   _drawYujiUlt(){
@@ -9795,7 +10002,7 @@ class Player {
       if(dx < 48 && dy < 70 && dx+dy < bd){ bd = dx+dy; best = i; } });
     if(best < 0) return;
     const it = worldItems.splice(best, 1)[0], d = ITEM_DEFS[it.kind];
-    this.item = it.kind; this.itemT = d.dur;
+    this.item = it.kind; this.itemT = d.dur; if(it.kind==='kamu'){ this.kamuN = KAMU_N; this.kamuCd = 0; }
     addSpeech(cx, this.y-8, d.name, d.col, 1300);
     addRing(cx, this.y+PH/2, d.col, 40); addParts(cx, this.y+PH/2, d.col, 10, 3);
   }
@@ -9821,6 +10028,17 @@ class Player {
       }
     }
     if(def.hp<=0 && def.state!==S.DEAD){ def._initRd(this.facing*6,-5,.1*this.facing); def.ss(S.DEAD); }
+  }
+  _useKamutoke(){
+    if(terClock - (this.kamuT||-1e9) < KAMU_CD) return;
+    const cx = this.x+PW/2, cy = this.y+PH/2;
+    let best = null, bd = KAMU_R;
+    for(const d of olFoes(this)){ const dd = Math.hypot(d.x+PW/2 - cx, d.y+PH/2 - cy); if(dd < bd){ bd = dd; best = d; } }
+    if(!best){ addSpeech(cx, this.y-20, 'NO ONE IN RANGE', '#999', 600); this.kamuT = terClock - KAMU_CD + 250; return; }
+    this.kamuT = terClock; this.kamuN = (this.kamuN||KAMU_N) - 1;
+    kamuBolts.push({owner:this, x:best.x+PW/2, y:terGroundTop(best.x, PW, best.y+PH-1, true), t:0, hit:false});
+    addParts(cx, this.y+4, '#ffe14a', 8, 4); snd('charge', this.x); addSpeech(cx, this.y-22, `KAMUTOKE ${this.kamuN}/${KAMU_N}`, '#ffe14a', 600);
+    if(this.kamuN <= 0){ this.item = null; this.itemT = 0; }
   }
   _useRecording(other){
     const cx = this.x+PW/2;
@@ -10040,7 +10258,7 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
   _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
@@ -10362,6 +10580,7 @@ class Player {
     if(this.reshapeT>0) spd *= 0.7;
     if(this.bmT>0) spd *= 0.8;
     if(this.mahiFormT>0) spd *= 1.2;
+    if(this.moduloT>0) spd *= MODULO_SPD;
     if(this.mahiTf){ spd *= mahiMul(this, 'spd'); jmp *= mahiMul(this, 'jmp'); }
     if(this.frsT>0) spd *= 1.25;
     if(this.adT>0 && this.type==='sukuna') spd *= 0.6;
@@ -11002,7 +11221,7 @@ class Player {
       addDmg(mx,def.y-14,DMG_SLAM,'#ccc'); doShake(14); this.vy=-8;
       if(this.type==='sukuna') this.fugaCharge=Math.min(FUGA_CHARGE_REQ,this.fugaCharge+DMG_SLAM);
       if(this.type==='gojo')   this.hollowCharge=Math.min(HOLLOW_CHARGE_REQ,this.hollowCharge+DMG_SLAM);
-      if(this.type==='yuji')   this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_SLAM);
+      if(this.type==='yuji'){  this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_SLAM); yujiCmAdd(this, DMG_SLAM); }
       this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+DMG_SLAM);
     } else if(isFinisher && this._lUpper){
       // uppercut finisher: pops them straight up — jump after them
@@ -11017,7 +11236,7 @@ class Player {
       addDmg(mx,def.y-14,DMG_KB,'#ccc'); doShake(8);
       if(this.type==='sukuna') this.fugaCharge=Math.min(FUGA_CHARGE_REQ,this.fugaCharge+DMG_KB);
       if(this.type==='gojo')   this.hollowCharge=Math.min(HOLLOW_CHARGE_REQ,this.hollowCharge+DMG_KB);
-      if(this.type==='yuji')   this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_KB);
+      if(this.type==='yuji'){  this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_KB); yujiCmAdd(this, DMG_KB); }
       this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+DMG_KB);
     } else {
       this.combo++; def.getStun(this); this._itemOnHit(def, 1);
@@ -11025,11 +11244,8 @@ class Player {
       addDmg(mx,def.y-14,DMG_HIT,'#ccc'); doShake(3);
       if(this.type==='sukuna') this.fugaCharge=Math.min(FUGA_CHARGE_REQ,this.fugaCharge+DMG_HIT);
       if(this.type==='gojo')   this.hollowCharge=Math.min(HOLLOW_CHARGE_REQ,this.hollowCharge+DMG_HIT);
-      if(this.type==='yuji')   this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_HIT);
+      if(this.type==='yuji'){  this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_HIT); yujiCmAdd(this, DMG_HIT); }
       this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+DMG_HIT);
-      if(this.type==='yuji' && this.combo===3){
-        this._startBlackFlashMinigame(def);
-      }
     }
   }
 
@@ -11500,8 +11716,9 @@ class Player {
     }
     // Yuji Black Flash minigame overlay
     if(this.type==='yuji') this._drawBlackFlashMinigame();
+    if(this.type==='yuji') this._drawDivRing();
     // Yuji Ultimate overlay
-    if(this.type==='yuji') this._drawYujiUlt();
+    if(this.type==='yuji' && this.state===S.YUJIULT && this.yujiUltMode===undefined) this._drawYujiUlt();
 
     // Yuta Cursed Fist — glowing fist + aim indicator
     if(this.type==='yuta' && this.state===S.YUTAFIST){
@@ -12575,14 +12792,13 @@ class Player {
       }
     }
 
-    // Yuji HUD (3 boxes + full-width Dismantle bar, same layout as the others)
+    // Yuji HUD: 3 boxes, the ultimate bar, and the combo meter on the side
     if(this.type==='yuji'){
-      const charging = this.pbChargeTime > 0, bfOn = this.state===S.BLACKBLUR && this.bbMode==='bf', combo = this.state===S.BLACKBLUR && this.bbMode!=='bf';
-      const names = [charging ? `CHARGING ${Math.round(Math.min(1,this.pbChargeTime/PB_CHARGE_MAX)*100)}%` : `PIERCING BLOOD [${keyLbl(this,'ab1')}]`,
-                     combo ? 'COMBO!' : `DIVERGENT COMBO [${keyLbl(this,'ab2')}]`,
-                     bfOn ? 'TIME IT!' : `BLACK FLASH [${keyLbl(this,'ab3')}]`];
-      const fills = [charging ? Math.min(1,this.pbChargeTime/PB_CHARGE_MAX) : Math.max(0,1-this.pbCooldown/PB_COOLDOWN),
-                     combo ? 1 : Math.max(0,1-this.bbCooldown/BB_COOLDOWN), bfOn ? 1 : Math.min(1,(this.yujiBfCharge||0)/YUJI_BF_REQ)];
+      const divOn = this.state===S.YUJIDIV, bfOn = this.state===S.BLACKBLUR && this.bbMode==='bf', combo = this.state===S.BLACKBLUR && this.bbMode!=='bf';
+      const names = [divOn ? (this.divPhase===1 ? 'TIME IT!' : 'PUNCH!') : `DIVERGENT FIST [${keyLbl(this,'ab1')}]`,
+                     combo ? 'COMBO!' : `DASH COMBO [${keyLbl(this,'ab2')}]`,
+                     bfOn ? 'BLACK FLASH!' : `BLACK FLASH [${keyLbl(this,'ab3')}]`];
+      const fills = [divOn ? 1 : Math.max(0,1-this.yujiDivCd/YUJI_DIV_CD), combo ? 1 : Math.max(0,1-this.bbCooldown/BB_COOLDOWN), bfOn ? 1 : Math.min(1,(this.yujiBfCharge||0)/YUJI_BF_REQ)];
       const abY = y+bh+38;
       for(let i=0;i<3;i++){
         const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
@@ -12594,15 +12810,26 @@ class Player {
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ff6060' : '#ffd38a';
         ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
       }
+      const cm = this.yujiCM||0, modulo = cm >= YUJI_ENCHAIN;
       const ultY = abY+30, ultPct = Math.min(1, this.yujiUltCharge/YUJI_ULT_COST), cd = this.yujiUltCooldown>0;
-      const ultReady = ultPct>=1 && !cd, active = this.state===S.YUJIULT;
+      const ultReady = ultPct>=1 && !cd, active = this.state===S.YUJIULT || this.moduloT>0;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,ultY,bw,14);
-      const pct = active ? 1 : cd ? 1-this.yujiUltCooldown/YUJI_ULT_COOLDOWN : ultPct;
-      ctx.fillStyle = active ? '#fff' : cd ? '#2a2a2a' : ultReady ? `rgba(245,200,50,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.006))})` : 'rgba(180,160,40,0.6)';
+      const pct = this.moduloT>0 ? this.moduloT/YUJI_MOD_MS : active ? 1 : cd ? 1-this.yujiUltCooldown/YUJI_ULT_COOLDOWN : ultPct;
+      ctx.fillStyle = active ? (modulo ? '#ffd36a' : '#ff5050') : cd ? '#2a2a2a' : ultReady ? `rgba(245,200,50,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.006))})` : 'rgba(180,160,40,0.6)';
       ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, ultY, Math.floor(bw*pct), 14);
       ctx.strokeStyle = ultReady ? 'rgba(245,200,50,0.7)' : 'rgba(100,90,20,0.3)'; ctx.lineWidth=1; ctx.strokeRect(bx,ultY,bw,14);
+      const uname = modulo ? 'MODULO' : 'ENCHAIN';
       ctx.fillStyle = active ? '#111' : ultReady ? '#2a2000' : '#998855'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-      ctx.fillText(active ? '▸▸▸ DISMANTLE ▸▸▸' : cd ? `DISMANTLE CD ${(this.yujiUltCooldown/1000).toFixed(1)}s` : ultReady ? `DISMANTLE [${keyLbl(this,'ult')}]` : `DISMANTLE ${Math.floor(ultPct*100)}%`, bx+bw/2, ultY+10);
+      ctx.fillText(this.moduloT>0 ? `MODULO ${(this.moduloT/1000).toFixed(0)}s` : cd ? `ULT CD ${(this.yujiUltCooldown/1000).toFixed(1)}s` : ultReady ? `${uname} [${keyLbl(this,'ult')}]` : `${uname} ${Math.floor(ultPct*100)}%`, bx+bw/2, ultY+10);
+      // combo meter: a vertical bar on the outside edge of the screen
+      const mh = 120, mw = 10, mx = flip ? VW - mw - 6 : 6, my = ultY + 50;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(mx, my, mw, mh);
+      const fh = Math.floor(mh*cm/100); const g = ctx.createLinearGradient(0, my+mh, 0, my); g.addColorStop(0, '#f5a623'); g.addColorStop(0.75, '#ff6a3a'); g.addColorStop(1, '#ffd36a');
+      ctx.fillStyle = g; ctx.fillRect(mx, my+mh-fh, mw, fh);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(mx-2, my + mh*(1-YUJI_ENCHAIN/100), mw+4, 1.5);   // the 75% Modulo line
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(mx, my, mw, mh);
+      ctx.save(); ctx.translate(mx + mw/2, my + mh + 10); ctx.fillStyle = '#ffd38a'; ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(`${Math.floor(cm)}%`, 0, 0); ctx.restore();
+      ctx.save(); ctx.translate(mx + mw/2 + (flip ? -10 : 10), my + mh/2); ctx.rotate(flip ? Math.PI/2 : -Math.PI/2); ctx.fillStyle = 'rgba(255,211,138,0.8)'; ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('COMBO', 0, 3); ctx.restore();
     }
 
     // Yuta HUD — panel style matching Gojo/Sukuna
@@ -13301,15 +13528,14 @@ const OL_VARS = {
       p.infT = 1500; addRing(p.x+PW/2, p.y+PH/2, '#bfefff', 60); snd('orb', p.x); }},
   },
   yuji: {
-    1:{block:true, name:'Divergent Fist', desc:'A punch whose cursed energy lands a beat late: 4, then a second impact of 6.', lock:340, run(p){
-      const [x,y,w,h] = olFront(p, 84); snd('swing', p.x);
-      for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 4, {stun:420, push:1.5, col:'#ff9a3a'});
-        olAfter(240, () => { if(d.state===S.DEAD) return; addRing(d.x+PW/2, d.y+PH/2, '#ff9a3a', 46); snd('hit2', d.x); olHit(p, d, 6, {any:true, rag:[9,-5,RAGD_MS*0.9], col:'#ffb070'}); }); } }},
-    2:{name:'Soul Punch', desc:'After fighting Mahito, Yuji can hit the soul itself: 6 damage that goes through blocks, rips out 25 cursed energy and stops their CE from refilling for 3s.', lock:320, run(p){
-      const [x,y,w,h] = olFront(p, 78); snd('heavy', p.x);
-      for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 6, {ubk:true, stun:420, push:2, col:'#bfe3ff'});
-        if(d.ceMax && !ceInfinite(d)) d.ce = Math.max(0, d.ce - 25); d.soulT = 3000;
-        olShot(p, {kind:'soul', x:d.x+PW/2, y:d.y+PH*0.4, life:500, dmg:0}); addSpeech(d.x+PW/2, d.y-30, '-25 CE', '#bfe3ff', 700); } }},
+    1:{block:true, name:'Manji Kick', desc:'A counter stance: any hit in it does no damage and he answers with a launching kick (10 + up to 12 more with a full combo meter). The stance lasts longer the fuller his combo meter is (0.45s → 1.35s). Uses 10% of the meter.', lock:300, run(p){
+      const cm = p.yujiCM||0; p.yujiCM = Math.max(0, cm - MANJI_COST); p.manjiCm = cm;
+      const dur = MANJI_BASE + MANJI_PER*cm/100; p.manjiT = dur; p.vx = 0; p.ss(S.YUJIMANJI, dur);
+      addRing(p.x+PW/2, p.y+PH/2, '#ff9a3a', 50); addSpeech(p.x+PW/2, p.y-24, 'MANJI KICK', '#ffb070', 600); snd('tick', p.x); }},
+    2:{name:'The Zone', desc:'Zoned in: more damage (+15%, up to +35% with a full meter), faster cooldowns and a much bigger Black Flash window on Divergent Fist. Lasts 5s + up to 10s more with a full combo meter. Uses 20% of the meter.', lock:260, run(p){
+      const cm = p.yujiCM||0; p.yujiCM = Math.max(0, cm - ZONE_COST); p.zoneCm = cm;
+      p.zonedT = ZONE_BASE + ZONE_PER*cm/100; addRing(p.x+PW/2, p.y+PH/2, '#ffd36a', 90); addParts(p.x+PW/2, p.y+PH/2, '#ffe9a0', 18, 5);
+      addSpeech(p.x+PW/2, p.y-26, 'ZONED IN', '#ffd36a', 900); snd('charge', p.x); sayFor(p, 'I\'m in the zone.'); }},
   },
   yuta: {
     1:{name:'Rika: Grab', req:p => p.rikaOnT>0, reqTxt:'SUMMON RIKA FIRST', desc:'Rika seizes the nearest foe within 320px and holds them for up to 7s (every hit they take does +125% damage). They can struggle: each fresh key press shaves 0.38s off.', lock:360, run(p){
@@ -13556,7 +13782,7 @@ const CE_LORE = {
 const CE_SLOTS = {
   sukuna:{ab1:['cleaveCooldown','CLEAVE_COOLDOWN'], ab2:['dismantleCooldown','DISMANTLE_COOLDOWN']},
   gojo:{ab1:['lapseCooldown','LAPSE_COOLDOWN'], ab2:['reversalCooldown','REVERSAL_COOLDOWN']},
-  yuji:{ab1:['pbCooldown','PB_COOLDOWN'], ab2:['bbCooldown','BB_COOLDOWN'], ult:['yujiUltCooldown','YUJI_ULT_COOLDOWN']},
+  yuji:{ab1:['yujiDivCd','YUJI_DIV_CD'], ab2:['bbCooldown','BB_COOLDOWN'], ult:['yujiUltCooldown','YUJI_ULT_COOLDOWN']},
   yuta:{ab1:['yutaSliceCooldown','YUTA_SLICE_COOLDOWN'], ab2:['yutaFistCooldown','YUTAFIST_COOLDOWN']},
   mechamaru:{ab1:['drillCooldown','DRILL_COOLDOWN'], ab2:['miniUcCd','MUC_CD']},
   todo:{ab1:['todoPunchCd','TODO_PUNCH_CD'], ab2:['todoBwCd','TODO_BW_CD']},
@@ -14006,7 +14232,7 @@ Player.prototype._olLandHit = function(def){
   addDmg(mx, def.y-14, dmg, tag==='BLACK FLASH' ? '#ff2a2a' : tag ? '#ffe066' : '#ccc');
   if(this.type==='sukuna') this.fugaCharge = Math.min(FUGA_CHARGE_REQ, this.fugaCharge+dmg);
   if(this.type==='gojo')   this.hollowCharge = Math.min(HOLLOW_CHARGE_REQ, this.hollowCharge+dmg);
-  if(this.type==='yuji')   this.yujiUltCharge = Math.min(YUJI_ULT_COST, this.yujiUltCharge+dmg);
+  if(this.type==='yuji'){  this.yujiUltCharge = Math.min(YUJI_ULT_COST, this.yujiUltCharge+dmg); yujiCmAdd(this, dmg); }
   this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge + dmg + (tag==='BLACK FLASH' ? 20 : 0));
   this._itemOnHit(def, K.fin ? 1.6 : 1);
   if(tag==='BLACK FLASH'){
@@ -14051,6 +14277,7 @@ function guardFilter(pl, d, oppM){
     if(pl._gagT!==now && Math.random() < TAKA_GAG){ pl._gagT = now; pl._guardStamp = now;
       addSpeech(pl.x+PW/2, pl.y-22, ['BONK!','*SLIDE WHISTLE*','JUST KIDDING!','NOT FUNNY.'][Math.floor(Math.random()*4)], '#ffe066', 700); snd('bwomp', pl.x); return 0; }
   }
+  if(pl.manjiT>0 && !pl.isPuppet){ manjiCounter(pl, oppM); pl._guardStamp = now; return 0; }
   if(pl.rikaT>0){ pl.rikaT = 0; rikaCatch(pl, oppM); pl._guardStamp = now; return 0; }
   if(pl.pleaT>0 && oppM && oppM!==pl && oppM.state!==S.DEAD && Math.hypot(oppM.x-pl.x, oppM.y-pl.y) < 320){
     const back = Math.round(d*10)/10; oppM._rawDmg = true; oppM.hp = Math.max(0, oppM.hp - back); oppM._rawDmg = false; oppM.flash = 300;
@@ -15594,7 +15821,7 @@ function drawMegumiBody(pl){
 //  Q Centipedes · E Kuchisake-Onna (QTE) · R Mirror Curse (super) · F Maximum: Uzumaki (curse swarm)
 //  Movement: dash = ride a stingray curse for 3s · Maximum Output: Rainbow Dragon · Giant Catfish
 // ═══════════════════════════════════════════════════════════════════
-const GETO_CENT_CD = 6000, GETO_CENT_N = 3, GETO_CENT_DMG = 5, GETO_CENT_SPD = 6.5, GETO_CENT_LIFE = 3200;
+const GETO_CENT_CD = 6000, GETO_CENT_N = 3, GETO_CENT_DMG = 5, GETO_CENT_SPD = 4.2, GETO_CENT_LIFE = 4600;   // slower (was 6.5), so they live a bit longer to still cross the screen
 const GETO_KUCHI_CD = 8000, GETO_KUCHI_R = 96, GETO_KUCHI_QTE = 1100, GETO_KUCHI_CUTS = 6, GETO_KUCHI_DMG = 3;
 const GETO_MIRROR_REQ = 40, GETO_MIRROR_MS = 6000;
 const GETO_RAY_MS = 3000, GETO_RAY_CD = 11000, GETO_RAY_MAXH = 200;   // the stingray can't climb more than 200px above where he mounted it
@@ -15759,7 +15986,7 @@ function tickGeto(dt){
       const px = q.x, py = q.y; q.x += q.vx*k; q.y += q.vy*k;
       if(!IS_GUEST) carveCapsule(px, py, q.x, q.y, 22);
       for(const d of olFoes(o)){ const key = d===p1 ? 'p1' : d===p2 ? 'p2' : 'pup'; if(q.hits[key] || !d.hittable) continue;
-        if(Math.hypot(d.x+PW/2 - q.x, d.y+PH/2 - q.y) < GETO_DRAGON_R + 14){ q.hits[key] = true; olHit(o, d, GETO_DRAGON_DMG, {rag:[Math.sign(q.vx||1)*13, -8, RAGD_MS*1.2], dir:Math.sign(q.vx)||1, col:'#ffd27a'}); doShake(10); addRing(q.x, q.y, '#ffd27a', 60); } }
+        if(Math.hypot(d.x+PW/2 - q.x, d.y+PH/2 - q.y) < GETO_DRAGON_R + 14){ q.hits[key] = true; olHit(o, d, GETO_DRAGON_DMG, {rag:[13, -8, RAGD_MS*1.2], dir:Math.sign(q.vx)||1, col:'#ffd27a'}); doShake(10); addRing(q.x, q.y, '#ffd27a', 60); } }
       if(q.x < -200 || q.x > W+200 || q.y < T_TOP-300 || q.y > H+200) q.dead = true;
     } else if(q.kind==='catfish'){
       if(gone || q.t > q.end){
@@ -16073,7 +16300,7 @@ Player.prototype._tickYukiHole = function(dt){
   if(this.holeT <= 0){
     // the mass collapses — Star Rage this heavy costs her own body
     this.iframes = 0; addRing(cx, cy, '#7a4aff', 200); addParts(cx, cy, '#1a0a30', 40, 10); doShake(20); snd('boom', cx);
-    for(const d of olFoes(this)) if(Math.hypot(cx - (d.x+PW/2), cy - (d.y+PH/2)) < yukiHoleRadius(this) + 160) olHit(this, d, 8, {any:true, rag:[Math.sign(d.x+PW/2-cx||1)*16, -10, RAGD_MS*1.3], col:'#7a4aff'});
+    for(const d of olFoes(this)) if(Math.hypot(cx - (d.x+PW/2), cy - (d.y+PH/2)) < yukiHoleRadius(this) + 160) olHit(this, d, 8, {any:true, rag:[16, -10, RAGD_MS*1.3], dir:Math.sign(d.x+PW/2-cx)||1, col:'#7a4aff'});
     // like her last stand against Kenjaku, the black hole takes Yuki with it
     const lost = this.hp; this._rawDmg = true; this.jackpotT = 0; this.hp = 0; this._rawDmg = false; this._hp = 0; addDmg(cx, cy-30, Math.ceil(lost), '#c0182a');
     addSpeech(cx, cy-50, 'SELF-DESTRUCTED', '#c9b0ff', 1400); showTxt('YUKI COLLAPSES INTO HER OWN BLACK HOLE', 1400);
@@ -16256,7 +16483,7 @@ Player.prototype._tickYutaBeam = function(dt){
     yutaBeams.push({owner:this, x:x0, y:y0, x2:x1, t:0, life:900});
     if(!IS_GUEST) carveRect(Math.min(x0, x1), y0 - YUTA_BEAM_H/2, Math.abs(x1-x0), YUTA_BEAM_H);
     for(const d of olArea(this, Math.min(x0, x1), y0 - YUTA_BEAM_H/2 - PH*0.4, Math.abs(x1-x0), YUTA_BEAM_H + PH*0.4))
-      olHit(this, d, YUTA_BEAM_DMG, {ubk:true, any:true, rag:[f*18, -9, RAGD_MS*1.5], dir:f, col:'#ff88cc'});
+      olHit(this, d, YUTA_BEAM_DMG, {ubk:true, any:true, rag:[18, -9, RAGD_MS*1.5], dir:f, col:'#ff88cc'});
     doShake(26); snd('beam', this.x); snd('boom', this.x); showTxt('PURE LOVE', 1200);
   }
   if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
@@ -16895,6 +17122,10 @@ function playerEffects(pl){
   if(pl.jackpotT>0) add('Jackpot', pl.jackpotT, true);
   if(pl.higuSwordT>0) add('Executioner\'s Sword', pl.higuSwordT, true);
   if(pl.counterT>0) add('Counter stance', pl.counterT, true);
+  if(pl.manjiT>0) add('Manji stance', pl.manjiT, true);
+  if(pl.zonedT>0) add('Zoned in', pl.zonedT, true);
+  if(pl.moduloT>0) add('Modulo', pl.moduloT, true);
+  if(pl.baseType==='yuji' && pl.sukT>0) add('Sukuna', pl.sukT, true);
   if(pl.varMode) add('Maximum Output', null, true);
   if(pl.rctT>0) add('Reverse Cursed Technique', pl.rctT, true);
   if(pl.infT>0) add('Infinity', pl.infT, true);
@@ -16939,7 +17170,7 @@ function clearProjectiles(){
   piercingBeams.length=0;
   mechLasers.length=0; mechFx.length=0;
   chosoBeams.length=0; bloodOrbs.length=0; bloodRings.length=0; chosoBursts.length=0;
-  gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
+  gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
   despawnPuppet();
 }
 
@@ -17834,7 +18065,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -18434,8 +18665,8 @@ function simFight(dt){
         const mx=def.x+PW/2, my=def.y+PH/2;
         triggerFugaExplosion(mx, my);
         addParts(mx,my,'#f80',22,7);
-        def.hp=Math.max(0,def.hp-FUGA_DMG); def.flash=600;
-        addDmg(mx,def.y-20,FUGA_DMG,'#f80'); doShake(18);
+        const fdm = Math.round(FUGA_DMG*(fs.dm||1)); def.hp=Math.max(0,def.hp-fdm); def.flash=600;
+        addDmg(mx,def.y-20,fdm,'#f80'); doShake(18);
         fs.owner.domainCharge=Math.min(DOMAIN_CHARGE_REQ,fs.owner.domainCharge+FUGA_DMG);
         if(def.hp<=0){ def._initRd(fs.dir*12,-8,.15*fs.dir); def.ss(S.DEAD); }
         else { def._initRd(fs.dir*14,-9,.16*fs.dir); def.ss(S.RAGD,RAGD_MS*1.5); }
@@ -18450,7 +18681,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -18622,7 +18853,9 @@ function loopFrame(ts){
 
   // ── Rendering ──
   ctx.save();
-  ctx.scale(canvas.width/VW, canvas.height/VH);
+  { const f = viewFit(canvas.width, canvas.height);
+    if(f.ox > 0.5 || f.oy > 0.5){ ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    ctx.translate(f.ox, f.oy); ctx.scale(f.s, f.s); ctx.beginPath(); ctx.rect(0, 0, VW, VH); ctx.clip(); }
   if(inArena()){
     updateCamera(dt);
     ctx.fillStyle='#0b0a09'; ctx.fillRect(0,0,VW,VH);
