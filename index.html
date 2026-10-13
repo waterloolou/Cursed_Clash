@@ -16289,7 +16289,7 @@ Player.prototype._tickYukiHole = function(dt){
     if(dist > PR) continue;
     const pull = (1.6 + 3.6*(1 - Math.min(1, dist/PR)))*grow;
     if([S.RAGD,S.SLAM].includes(d.state)){ d.rdVx += dx/dist*pull*0.4*k; d.rdVy += dy/dist*pull*0.4*k; }
-    else { d.vx = dx/(dist||1)*pull*2.2; d.vy = Math.min(d.vy, 0) + dy/(dist||1)*pull*0.8*k; }
+    else { d.vx = dx/(dist||1)*pull*2.2; d.vy = Math.max(-14, Math.min(d.vy, 0) + dy/(dist||1)*pull*0.8*k); }   // capped: states that skip _phys (Fuga, casts) would bank it into a huge launch
   }
   this.holeTick = (this.holeTick||0) + dt;
   if(this.holeTick >= YUKI_HOLE_TICK){ this.holeTick = 0;
