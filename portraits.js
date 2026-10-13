@@ -29,4 +29,5 @@ window.CC_PORTRAITS = {
   // megumi:    'portraits/megumi.png',
   // yuki:      'portraits/yuki.png',
   // geto:      'portraits/geto.png',
+  // ryu:       'portraits/ryu.png',
 };

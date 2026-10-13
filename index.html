@@ -250,6 +250,7 @@ canvas {
       <a data-p="megumi"><i style="background:#6f8fd6"></i>Megumi</a>
       <a data-p="yuki"><i style="background:#f2d36b"></i>Yuki</a>
       <a data-p="geto"><i style="background:#9a86d6"></i>Geto</a>
+      <a data-p="ryu"><i style="background:#c98a4b"></i>Ryu</a>
       <a data-p="online"><i style="background:#ffe066"></i>Online Combat</a>
     </nav>
     <main class="wk-main">
@@ -286,6 +287,7 @@ canvas {
           <a data-p="megumi" style="--c:#6f8fd6"><b>Megumi</b><span>Ten Shadows · Divine Dogs · Shadow Garden</span></a>
           <a data-p="yuki" style="--c:#f2d36b"><b>Yuki</b><span>Star Rage · Garuda · Black Hole</span></a>
           <a data-p="geto" style="--c:#9a86d6"><b>Geto</b><span>Centipedes · Kuchisake-Onna · Mirror · Maximum: Uzumaki</span></a>
+          <a data-p="ryu" style="--c:#c98a4b"><b>Ryu</b><span>Granite Punch · Granite Blast · Output · Maximum Granite Blast</span></a>
         </div>
         <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
       </section>
@@ -755,6 +757,19 @@ canvas {
           <tr><td>Anti-domain</td><td>Simple Domain: New Shadow Style</td><td>Hold attack + F: 8s of protection from domain sure-hits.</td></tr>
         </table>
       </section>
+      <section data-p="ryu">
+        <h1 style="--c:#c98a4b">Ryu Ishigori</h1>
+        <p class="lead">A past-era sorcerer with the largest cursed energy output in the Culling Game. He fires it as Granite Blast — and the more he pours in, the harder he hits and the harder he gets hit.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>Q</td><td>Granite Punch</td><td>A short lunging punch. If it lands he holds them, steps back while his fist charges, then blasts them point-blank: 25 damage and a huge launch. If it whiffs he's stuck in a long recovery (0.75s). 4.5s cooldown.</td></tr>
+          <tr><td>E</td><td>Granite Blast</td><td>A 0.42s wind-up (aim with up / down along the dashed line), then a beam 900px long: 14 damage and a knockdown, and it bores through terrain. The beam gets <b>wider</b> with his Output bar. 5.2s cooldown.</td></tr>
+          <tr><td>R <em>(hold)</em></td><td>Cursed Energy Output</td><td>Hold the key to pour cursed energy into his <b>Output bar</b> (30% a second, 15 CE a second; he stands still). It stays for the rest of this life. At 100% everything he does hits <b>80% harder</b> and his beams are far bigger — but he also <b>takes 50% more damage</b>.</td></tr>
+          <tr><td>F</td><td>Maximum Granite Blast <em>(ultimate, 150)</em></td><td>A 0.9s charge (aimable), then a colossal beam across the entire map: 30 damage plus up to 30 more with a full Output bar, and up to twice as wide.</td></tr>
+          <tr><td>Max Output</td><td>Output Burst · Granite Barrage</td><td><b>Output Burst</b> (blockable): everything within 120px takes 8 and is knocked away. <b>Granite Barrage</b>: three quick beams in a fan, 6 each.</td></tr>
+          <tr><td>Movement</td><td>Cursed Energy Output</td><td>The biggest cursed energy pool in the game (320). Slightly slower runner.</td></tr>
+        </table>
+      </section>
       <section data-p="geto">
         <h1 style="--c:#9a86d6">Suguru Geto</h1>
         <p class="lead">A special-grade sorcerer with <b>Cursed Spirit Manipulation</b>: every curse he has defeated and swallowed is his to summon. He fights through his curses.</p>
@@ -923,7 +938,7 @@ const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             BLACKFLASH:'blackflash', BLACKBLUR:'blackblur', YUJIULT:'yujiult', YUJIDIV:'yujidiv', YUJIMANJI:'yujimanji', YUJISDASH:'yujisdash',
             YUTASLICE:'yutaslice', YUTAFIST:'yutafist',
             MECHADRILL:'mechadrill', MECHULT:'mechult', TODOPUNCH:'todopunch', CHOSOPB:'chosopb',
-            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', HAKRUSH:'hakrush', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', DAGONWHIRL:'dagonwhirl', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', YUTABEAM:'yutabeam', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs', YUKIGRAP:'yukigrap', YUKIHOLE:'yukihole', GETODRAGON:'getodragon' };
+            HIGUGAVEL:'higugavel', HIGUTHROW:'higuthrow', HIGUDASH:'higudash', SUKAIR:'sukair', MECHCANNON:'mechcannon', HAKPUNCH:'hakpunch', HAKLEAP:'hakleap', HAKRUSH:'hakrush', KENUZU:'kenuzu', MEICHOP:'meichop', MEISPIN:'meispin', MEICROW:'meicrow', JOGODASH:'jogodash', DAGONJET:'dagonjet', DAGONSWARM:'dagonswarm', DAGONWHIRL:'dagonwhirl', HANAGRAB:'hanagrab', MAHIPALM:'mahipalm', BLOCK:'block', DASH:'dash', OVAR:'ovar', TAKAKAN:'takakan', TAKACTR:'takactr', NAODASH:'naodash', NAOCOMBO:'naocombo', NAOROCKET:'naorocket', YUTABEAM:'yutabeam', FRAMED:'framed', MEGCAST:'megcast', MEGWCS:'megwcs', YUKIGRAP:'yukigrap', YUKIHOLE:'yukihole', GETODRAGON:'getodragon', RYUPUNCH:'ryupunch', RYUBEAM:'ryubeam', RYUCHARGE:'ryucharge' };
 
 const YUTAFIST_SHEATHE_DUR = 400;   // ms sword disappears
 const YUTAFIST_AIM_DUR     = 1200;  // ms to aim arc
@@ -1272,7 +1287,7 @@ function snd(name, x){ sfxLocal(name, x); }
 
 // ── VOICE LINES (text-to-speech) ──
 const VOICE = {
-  geto:{pitch:0.85, rate:0.95}, sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
+  geto:{pitch:0.85, rate:0.95}, ryu:{pitch:0.8, rate:1.05}, sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
   mechamaru:{pitch:0.2, rate:0.9}, todo:{pitch:0.55, rate:0.95}, choso:{pitch:0.7, rate:0.9}, higuruma:{pitch:0.75, rate:0.9},
   hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, naoya:{pitch:1.0, rate:1.2}, naoyac:{pitch:0.45, rate:0.95}, megumi:{pitch:0.95, rate:1.0}, yuki:{pitch:1.15, rate:1.05}, meguna:{pitch:0.6, rate:0.95}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
 };
@@ -1440,13 +1455,14 @@ const VL_LINES = [
   ['jogo','Ember Insects.'], ['jogo','Domain Expansion. Coffin of the Iron Mountain.'],
   ['meimei','Ui Ui!'], ['meimei','Bird Strike!'],
   ['naoya','Keep up!'], ['naoya','Can you keep up? Twenty-four frames a second.'], ['naoya','Too slow.'], ['naoyac','I came back to kill you myself.'], ['naoyac','Faster. Faster!'], ['naoyac','Domain Expansion. Time Cell Moon Palace.'],
+  ['ryu','Granite Blast!'], ['ryu','Maximum… Granite Blast!'], ['ryu','Let\'s see your output.'],
   ['geto','Go.'], ['geto','Kuchisake-Onna.'], ['geto','Maximum: Uzumaki.'], ['geto','Rainbow Dragon.'],
   ['yuki','Garuda!'], ['yuki','Garuda — go!'], ['yuki','Star Rage.'], ['yuki','Lighter.'], ['yuki','Back to normal.'], ['yuki','I\'ll take you with me.'],
   ['megumi','Rabbit Escape.'], ['megumi','Bottomless Well.'], ['megumi','Divine Dog: Totality.'], ['megumi','Domain Expansion. Chimera Shadow Garden.'], ['megumi','Max Elephant.'], ['megumi','Nue.'],
   ['meguna','This body is mine now.'], ['meguna','Nue.'], ['meguna','Agito.'], ['meguna','Dismantle.'], ['meguna','With this treasure I summon. Eight-Handled Sword Divergent Sila Divine General Mahoraga.'],
   ['kenjaku','Maximum. Uzumaki.'], ['kenjaku','Anti-Gravity System.'], ['kenjaku','Domain Expansion. Womb Profusion.']
 ];
-const VL_NAMES = {geto:'Geto', sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', megumi:'Megumi', meguna:'Meguna (feat)', yuki:'Yuki', kenjaku:'Kenjaku (feat)'};
+const VL_NAMES = {ryu:'Ryu', geto:'Geto', sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', megumi:'Megumi', meguna:'Meguna (feat)', yuki:'Yuki', kenjaku:'Kenjaku (feat)'};
 const vlId = (who, text) => who+'|'+text;
 const VL = { blobs:{}, bufs:{}, db:null, rec:null, recId:'', stream:null, playing:null };
 
@@ -1892,6 +1908,7 @@ const MOVE_PASSIVES = {
   todo:     {spd:0.94, jmp:1.06, name:'Heavyweight Landing',   desc:'A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).'},
   choso:    {spd:1.00, jmp:1.00, name:'Blood Rush',            desc:'Below half health his blood boils: 20% faster.'},
   naoya:    {spd:1.28, jmp:0.90, name:'Projection Sorcery',    desc:'The fastest fighter (28% faster, up to 50% after a second of running) but jumps 10% lower. Every 3rd hit of a quick string freezes the foe in a frame for 0.6s.'},
+  ryu:      {spd:0.98, jmp:1.00, name:'Cursed Energy Output', desc:'Hold his special to pour cursed energy into his Output bar (0–100%): up to +80% damage on everything and bigger Granite Blasts — but he also takes up to 50% more damage.'},
   geto:     {spd:1.02, jmp:1.00, name:'Stingray',              desc:'He has no dash: dash (or double-tap left / right) mounts a stingray curse for 3s — fly in any direction with the movement keys (6s cooldown).'},
   yuki:     {spd:1.04, jmp:1.04, name:'Star Rage',             desc:'Her mass shift (special) changes how she moves: extreme mass is 28% slower and jumps lower, light mass is 45% faster and jumps 25% higher.'},
   megumi:   {spd:1.06, jmp:1.04, name:'Ten Shadows',           desc:'Light on his feet (6% faster). Inside Chimera Shadow Garden he moves 15% faster.'},
@@ -7535,7 +7552,7 @@ const AURA_SRC = {
 };
 const AURA_OF = { sukuna:'red', choso:'red', gojo:'cyan', hakari:'green', yuta:'magenta',
   mahito:'purple', jogo:'purple', dagon:'purple', hanami:'purple', naoyac:'purple',          // curses
-  yuji:'teal', mechamaru:'teal', todo:'teal', higuruma:'teal', meimei:'teal', takaba:'teal', naoya:'teal', kenjaku:'magenta', megumi:'shadow', meguna:'red', yuki:'teal', geto:'purple' };
+  yuji:'teal', mechamaru:'teal', todo:'teal', higuruma:'teal', meimei:'teal', takaba:'teal', naoya:'teal', kenjaku:'magenta', megumi:'shadow', meguna:'red', yuki:'teal', geto:'purple', ryu:'teal' };
 const AURA_FW = 256, AURA_FH = 320, AURA_N = 6, AURA_FPS = 10;
 const _auraImg = {};
 function auraImg(k){ if(!_auraImg[k]){ const im = new Image(); im.src = AURA_SRC[k]; _auraImg[k] = im; } return _auraImg[k]; }
@@ -7640,7 +7657,7 @@ class Player {
     if(isNaoya(this)){ this._hp = NAO_HP; this.maxHp = NAO_HP; }
     this.naoDashCd=0; this.naoComboCd=0; this.naoRocketCd=0; this.naoFieldCd=0; this.naoCharge=0; this.naoTrail=[]; this.framedT=0; this.frameMax=0; this.naoRunT=0; this.naoAng=0; this.naoHitN=0;
     this.megRabCd=0; this.megWellCd=0; this.megNueCd=0; this.megAgiCd=0; this.megCharge=0; this.gardenT=0; this.rabbitT=0; this.wellT=0; this.mahoTurns=0; this.wcsDone=false;
-    this.getoCentCd=0; this.getoKuchiCd=0; this.getoCharge=0; this.rayT=0; this.rayCd=0; this.swarmT=0; if(this.getoPool===undefined) this.getoPool=30;   // GETO_POOL (defined later in the file)
+    this.ryuPunchCd=0; this.ryuBeamCd=0; this.ryuOut=0; this.getoCentCd=0; this.getoKuchiCd=0; this.getoCharge=0; this.rayT=0; this.rayCd=0; this.swarmT=0; if(this.getoPool===undefined) this.getoPool=30;   // GETO_POOL (defined later in the file)
     this.yukiGrapCd=0; this.yukiThrowCd=0; this.yukiMass=0; this.holeT=0; this.grapHit=false;
     this.takRpsCd=0; this.takKanCd=0; this.takCharge=0; this.counterT=0; this.kanHit=false; this.lastCombatT=0; this.swapCd=0;
     this.guard=undefined; this.oaKind=null; this.oaChain=0; this.oaHitAt=null; this.hitsTaken=0; this.cmbHits=0; this.frsT=0; this.adT=0; this.adName=null; this.confiscT=0;
@@ -8226,6 +8243,7 @@ class Player {
     if(isYuki(this) && !this.isPuppet) this._yukiAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── GETO ──
     if(isGeto(this) && !this.isPuppet) this._getoAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
+    if(this.type==='ryu') this._ryuAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── MEGUMI / MEGUNA ──
     if(isMeg(this) && !this.isPuppet) this._megAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── TAKABA: 1 = Rock Paper Scissors, 2 = 1000 Years of Death, 3 = Counter, F = The Truck ──
@@ -8735,6 +8753,9 @@ class Player {
       case S.YUTABEAM:   this._tickYutaBeam(dt); break;
       case S.YUKIHOLE:   this._tickYukiHole(dt); break;
       case S.GETODRAGON: this._tickGetoDragon(dt); break;
+      case S.RYUPUNCH:   this._tickRyuPunch(dt); break;
+      case S.RYUBEAM:    this._tickRyuBeam(dt); break;
+      case S.RYUCHARGE:  this._tickRyuCharge(dt); break;
       case S.FRAMED:     this.vx = 0; this.vy = 0; if(!(this.framedT>0)) this.ss(this.onGround ? S.IDLE : S.AIR); break;
       case S.TAKACTR:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.counterT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.DAGONSWARM: this._tickDagonSwarm(dt); break;
@@ -10300,8 +10321,8 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgIn(){ let m = 1; if(this.type==='ryu') m *= 1 + RYU_OUT_TAKEN*(this.ryuOut||0); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -11473,6 +11494,7 @@ class Player {
     if(isMeg(this)) drawMegumiBody(this);
     if(isYuki(this)) drawYukiBody(this);
     if(isGeto(this)) drawGetoBody(this);
+    if(this.type==='ryu') drawRyuBody(this);
     if(this.state===S.FUGA && !this.isPuppet){
       // Fuga aim guide: where the arrow will fly
       const a = this.aimAng||0, f = this.facing, sx = this.x+PW/2, sy = this.y+PH*0.28;
@@ -12457,6 +12479,29 @@ class Player {
       ctx.fillStyle = ready||on ? '#f4f6ff' : '#8a94b0'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
       ctx.fillText(txt, bx+bw/2, domY+10);
     }
+    // Ryu HUD
+    if(this.type==='ryu'){
+      const out = this.ryuOut||0;
+      const names = [`GRANITE PUNCH [${keyLbl(this,'ab1')}]`, `GRANITE BLAST [${keyLbl(this,'ab2')}]`, `OUTPUT ${Math.round(out*100)}% [${keyLbl(this,'ab3')}]`];
+      const fills = [Math.max(0,1-(this.ryuPunchCd||0)/RYU_PUNCH_CD), Math.max(0,1-(this.ryuBeamCd||0)/RYU_BEAM_CD), out];
+      const abY = y+bh+38;
+      for(let i=0;i<3;i++){
+        const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
+        const ready = i===2 ? true : fills[i]>=1;
+        ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(ax,abY,aw,22);
+        ctx.fillStyle = i===2 ? '#bfe6ff' : (ready?'#c98a4b':'#3a2614');
+        ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
+        ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
+        ctx.fillStyle = !ready ? '#555' : '#fff3e0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+      }
+      const domY = abY+30, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
+      ctx.fillStyle = ready ? `rgba(191,230,255,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.005))})` : '#1a2a3a';
+      ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, domY, Math.floor(bw*pct), 14);
+      ctx.strokeStyle='rgba(191,230,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+      ctx.fillStyle = ready ? '#0c1620' : '#8fb0c8'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
+      ctx.fillText(ready ? `MAXIMUM GRANITE BLAST [${keyLbl(this,'ult')}]` : `ULTIMATE ${Math.floor(pct*100)}%`, bx+bw/2, domY+10);
+    }
     // Geto HUD
     if(isGeto(this)){
       const names = [`CENTIPEDES [${keyLbl(this,'ab1')}]`, `KUCHISAKE [${keyLbl(this,'ab2')}]`, `MIRROR CURSE [${keyLbl(this,'ab3')}]`];
@@ -13339,6 +13384,13 @@ const CHARACTERS = [
     color: '#9a86d6',
     dimColor: '#2a2240',
     description: 'Cursed Spirit Manipulation · Maximum: Uzumaki'
+  },
+  {
+    name: 'RYU',
+    type: 'ryu',
+    color: '#c98a4b',
+    dimColor: '#3a2614',
+    description: 'Cursed Energy Output · Granite Blast'
   }
   // ── ADD YOUR CHARACTER HERE ──────────────────────────────
   // {
@@ -13753,6 +13805,13 @@ const OL_VARS = {
       const [x,y,w,h] = olFront(p, 80); snd('slash', p.x);
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 11, {rag:[11,-6,RAGD_MS], col:'#ff4a5a'}); addParts(d.x+PW/2, d.y+PH/2, '#a00010', 14, 6); } }},
   },
+  ryu: {
+    1:{block:true, name:'Output Burst', desc:'Releases his output all at once around him: 8 damage and a shove to everyone within 120px (more with a higher Output bar).', lock:300, run(p){
+      const cx = p.x+PW/2, cy = p.y+PH/2; addRing(cx, cy, '#bfe6ff', 120); addRing(cx, cy, '#ffffff', 70); addParts(cx, cy, '#bfe6ff', 22, 7); snd('heavy', p.x); doShake(8);
+      for(const d of olFoes(p)) if(Math.hypot(d.x+PW/2 - cx, d.y+PH/2 - cy) < 120 + PW/2) olHit(p, d, 8, {rag:[11,-6,RAGD_MS*0.9], col:'#bfe6ff'}); }},
+    2:{name:'Granite Barrage', desc:'Three quick Granite Blasts in a fan (6 each). Their size grows with his Output bar.', lock:420, run(p){
+      for(const a of [-0.22, 0, 0.22]) ryuFire(p, a, {dmg:6, h:ryuBeamH(p)*0.6, len:700, rag:[8,-4,RAGD_MS*0.7]}); }},
+  },
   geto: {
     1:{block:true, name:'Rainbow Dragon', desc:'Summons the Rainbow Dragon and aims it (up / down, attack to let go early); released, it charges in a straight line at huge speed — no homing, but a huge hitbox: 16 damage and a big knockback, and it tunnels through terrain.', lock:1150, run(p){
       p.aimAng = 0; p.dragonFired = false; p.ss(S.GETODRAGON, GETO_DRAGON_AIM+300); p.vx = 0; sayFor(p, 'Rainbow Dragon.'); snd('charge', p.x); }},
@@ -13814,7 +13873,7 @@ const CE_CD_MULT = 0.75, CE_VAR_CD = 6000, CE_AD_COST = 10, CE_SPECIAL = 0.5, CE
 const CE_PROFILE = {
   // special grades (sorcerers and curses) get bigger pools; Gojo + Sukuna refill far faster; Yuta + Mechamaru dwarf everyone
   gojo:[220,26], sukuna:[230,24], yuta:[480,14], mechamaru:[420,12], kenjaku:[220,9], jogo:[200,8], dagon:[190,7], hanami:[190,7], mahito:[180,8],
-  naoya:[130,6], naoyac:[220,8], megumi:[150,7], meguna:[240,22], yuki:[260,13], geto:[250,12],
+  naoya:[130,6], naoyac:[220,8], megumi:[150,7], meguna:[240,22], yuki:[260,13], geto:[250,12], ryu:[320,10],
   yuji:[110,5], choso:[110,5], higuruma:[110,5], hakari:[120,5], meimei:[110,5], todo:[100,5], takaba:[90,4]
 };
 const CE_LORE = {
@@ -13829,6 +13888,7 @@ const CE_LORE = {
   takaba:'The smallest pool in the game. He\'s a comedian, not a sorcerer.',
   naoya:'Special grade 1 of the Zen\'in clan: a solid pool, average refill.', naoyac:'As a vengeful cursed spirit his pool swells to special-grade size.',
   geto:'A special-grade sorcerer holding thousands of curses: a big pool and a good refill.',
+  ryu:'The biggest cursed energy output in the Culling Game: a huge pool.',
   yuki:'One of the few special-grade sorcerers: a huge pool. Extreme mass costs 50% more per move and burns 6 CE a second; light mass costs 70% less.',
   megumi:'Grade 2 with special-grade potential: an above-average pool.', meguna:'Sukuna in Megumi\'s body: a special-grade pool and the King of Curses\' fast refill.'
 };
@@ -13854,6 +13914,7 @@ const CE_SLOTS = {
   megumi:{ab1:['megRabCd','MEG_RAB_CD'], ab2:['megWellCd','MEG_WELL_CD']},
   yuki:{ab1:['yukiGrapCd','YUKI_GRAP_CD'], ab2:['yukiThrowCd','YUKI_THROW_CD']},
   geto:{ab1:['getoCentCd','GETO_CENT_CD'], ab2:['getoKuchiCd','GETO_KUCHI_CD']},
+  ryu:{ab1:['ryuPunchCd','RYU_PUNCH_CD'], ab2:['ryuBeamCd','RYU_BEAM_CD']},
   meguna:{ab1:['megNueCd','MEG_NUE_CD'], ab2:['megAgiCd','MEG_AGI_CD']},
   kenjaku:{ab1:['kenUzuCd','KEN_UZU_CD'], ab2:['kenSpiritCd','KEN_SPIRIT_CD']},
 };
@@ -16251,6 +16312,159 @@ function drawGetoBody(pl){
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// RYU ISHIGORI — Cursed Energy Output: the biggest raw output in the Culling Game, fired as Granite Blast
+//  Q Granite Punch (lands → he steps back, charges, and blasts them point-blank; whiff = long end lag)
+//  E Granite Blast (aimable beam) · R hold = pump CE into his OUTPUT bar (everything hits harder, beams get bigger,
+//  but he takes more damage too) · F Maximum Granite Blast (a beam across the whole map)
+//  Maximum Output: Output Burst (blockable) · Granite Barrage (three beams in a fan)
+// ═══════════════════════════════════════════════════════════════════
+const RYU_PUNCH_CD = 6000, RYU_PUNCH_REACH = 74, RYU_PUNCH_DMG = 25, RYU_PUNCH_LUNGE = 160, RYU_PUNCH_HOLD = 420, RYU_PUNCH_MISS = 750;
+const RYU_BEAM_CD = 7000, RYU_BEAM_WIND = 420, RYU_BEAM_DMG = 14, RYU_BEAM_LEN = 900, RYU_BEAM_H = 22, RYU_BEAM_H_OUT = 50;
+const RYU_ULT_WIND = 900, RYU_ULT_DMG = 30, RYU_ULT_DMG_OUT = 30, RYU_ULT_H = 90, RYU_ULT_H_OUT = 90;
+const RYU_OUT_RATE = 0.30, RYU_OUT_CE = 15, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.5;   // per second while charging · +80% damage dealt and +50% taken at 100%
+const ryuBeams = [];   // synced: {owner, x, y, ang, len, h, dmg, t, life, done, big}
+function ryuBeamH(p, big){ const o = (p && p.ryuOut)||0; return big ? RYU_ULT_H + RYU_ULT_H_OUT*o : RYU_BEAM_H + RYU_BEAM_H_OUT*o; }
+function ryuFire(p, ang, o){
+  o = o || {}; const f = p.facing, ux = f*Math.cos(ang), uy = Math.sin(ang);
+  const x = p.x+PW/2 + ux*20, y = p.y+PH*0.4 + uy*20;
+  ryuBeams.push({owner:p, x, y, ang, f, ux, uy, len:o.len||RYU_BEAM_LEN, h:o.h||ryuBeamH(p, o.big), dmg:o.dmg||RYU_BEAM_DMG, t:0, life:o.big ? 700 : 360, done:false, big:!!o.big, rag:o.rag||[12,-6,RAGD_MS]});
+  snd(o.big ? 'hollow' : 'beam', p.x); doShake(o.big ? 18 : 7);
+}
+function tickRyu(dt){
+  for(let i=ryuBeams.length-1;i>=0;i--){
+    const b = ryuBeams[i]; b.t += dt;
+    if(!b.done){ b.done = true; const o = b.owner, x2 = b.x + b.ux*b.len, y2 = b.y + b.uy*b.len;
+      if(!IS_GUEST) carveCapsule(b.x, b.y, x2, y2, b.h*0.42);
+      for(const d of olFoes(o)){ const cx = d.x+PW/2, cy = d.y+PH/2, px = cx - b.x, py = cy - b.y, along = px*b.ux + py*b.uy;
+        if(along < -20 || along > b.len) continue; const perp = Math.abs(px*b.uy - py*b.ux);
+        if(perp > b.h/2 + 20) continue;
+        if(olHit(o, d, b.dmg, {rag:b.rag, dir:b.f, col:'#bfe6ff'})){ addRing(cx, cy, '#bfe6ff', b.big ? 90 : 50); addParts(cx, cy, '#ffffff', b.big ? 24 : 12, 6); } }
+    }
+    if(b.t >= b.life || (b.owner!==p1 && b.owner!==p2 && b.owner!==puppet)) ryuBeams.splice(i,1);
+  }
+}
+function drawRyu(){
+  for(const b of ryuBeams){
+    const a = Math.max(0, 1 - b.t/b.life), x2 = b.x + b.ux*b.len, y2 = b.y + b.uy*b.len, w = b.h*(0.75 + 0.25*a);
+    ctx.save(); ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.35*a; ctx.strokeStyle = '#6fb8ff'; ctx.lineWidth = w*1.5; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.globalAlpha = 0.85*a; ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.globalAlpha = a; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(2, w*0.35); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
+    // muzzle flare
+    ctx.globalAlpha = 0.9*a; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(b.x, b.y, Math.min(26, w*0.45), 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+Player.prototype._ryuAbilities = function(dt, e1, e2, e3, eD, blocked){
+  for(const k of ['ryuPunchCd','ryuBeamCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+  const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), f = this.facing;
+  // ── 1: Granite Punch ──
+  if(e1 && free && !(this.ryuPunchCd>0)){
+    this.ryuPunchCd = RYU_PUNCH_CD; this.rpPh = 'lunge'; this.rpRef = null; this.vx = 0; this.ss(S.RYUPUNCH, 3000); snd('swing', this.x);
+  }
+  // ── 2: Granite Blast (aim with up / down during the wind-up) ──
+  if(e2 && free && !(this.ryuBeamCd>0)){
+    this.ryuBeamCd = RYU_BEAM_CD; this.rbBig = false; this.rbFired = false; this.aimAng = 0; this.vx = 0; this.ss(S.RYUBEAM, RYU_BEAM_WIND + 280); snd('charge', this.x); sayFor(this, 'Granite Blast!');
+  }
+  // ── 3 (hold): pump cursed energy into his output ──
+  if(e3 && free && !this.isPuppet){ this.vx = 0; this.ss(S.RYUCHARGE, 60000); addSpeech(this.x+PW/2, this.y-18, 'OUTPUT UP', '#bfe6ff', 500); snd('charge', this.x); }
+  // ── F: Maximum Granite Blast ──
+  if(eD && free && this.domainCharge>=DOMAIN_CHARGE_REQ){
+    this.domainCharge = 0; this.rbBig = true; this.rbFired = false; this.aimAng = 0; this.vx = 0; this.ss(S.RYUBEAM, RYU_ULT_WIND + 500);
+    this._ubUntil = Math.max(this._ubUntil||0, terClock + 2400); showTxt('MAXIMUM GRANITE BLAST', 1300); sayFor(this, 'Maximum… Granite Blast!'); snd('charge', this.x); doShake(8);
+  }
+};
+Player.prototype._tickRyuCharge = function(dt){
+  this.vx *= 0.6; this._phys(dt);
+  const held = !!this.ab3Down, room = (this.ryuOut||0) < 1, ceOk = ceInfinite(this) || !this.ceMax || (this.ce||0) > 0.5;
+  if(!held || !room || !ceOk || this.isPuppet){ if(!room) addSpeech(this.x+PW/2, this.y-22, 'OUTPUT 100%', '#ffffff', 700); else if(!ceOk) addSpeech(this.x+PW/2, this.y-22, 'OUT OF CE', '#6fb8ff', 700); this.ss(this.onGround ? S.IDLE : S.AIR); return; }
+  this.ryuOut = Math.min(1, (this.ryuOut||0) + RYU_OUT_RATE*dt/1000);
+  if(!ceInfinite(this) && this.ceMax) this.ce = Math.max(0, (this.ce||0) - RYU_OUT_CE*dt/1000);
+  if(Math.random() < 0.5) addParts(this.x+PW/2 + (Math.random()-0.5)*30, this.y+PH*(0.2+Math.random()*0.7), '#bfe6ff', 1, 2);
+};
+Player.prototype._tickRyuPunch = function(dt){
+  const f = this.facing;
+  if(this.rpPh==='lunge'){
+    this.vx = this.sTimer < RYU_PUNCH_LUNGE ? f*5.5 : 0; this._phys(dt);
+    if(this.sTimer >= RYU_PUNCH_LUNGE){
+      const [x,y,w,h] = olFront(this, RYU_PUNCH_REACH), d = olArea(this, x, y, w, h)[0];
+      if(d && olHit(this, d, 3, {stun:RYU_PUNCH_HOLD+400, col:'#bfe6ff'}) && d.state!==S.DEAD){ this.rpPh = 'hold'; this.rpRef = netRef(d) || d; this.rpT0 = this.sTimer; addSpeech(d.x+PW/2, d.y-24, 'CAUGHT', '#bfe6ff', 600); }
+      else { this.rpPh = 'miss'; this.rpT0 = this.sTimer; addSpeech(this.x+PW/2, this.y-20, 'WHIFF', '#999', 700); }
+    }
+    return;
+  }
+  if(this.rpPh==='miss'){ this.vx *= 0.7; this._phys(dt); if(this.sTimer - this.rpT0 >= RYU_PUNCH_MISS) this.ss(this.onGround ? S.IDLE : S.AIR); return; }
+  const d = typeof this.rpRef==='string' ? netRes(this.rpRef) : this.rpRef;
+  if(this.rpPh==='hold'){
+    // he steps back and gathers his output in his fist while they reel
+    this.vx = -f*1.6; this._phys(dt);
+    if(d && d.state===S.STUN){ d.vx = 0; d.sTimer = Math.min(d.sTimer, 100); }
+    if(Math.random()<0.6) addParts(this.x+PW/2 + f*16, this.y+PH*0.45, '#bfe6ff', 2, 3);
+    if(this.sTimer - this.rpT0 >= RYU_PUNCH_HOLD){
+      this.rpPh = 'blast'; this.rpT0 = this.sTimer; this.vx = 0;
+      if(d && d.state!==S.DEAD){ const reach = Math.abs((d.x) - this.x) + PW;
+        olHit(this, d, RYU_PUNCH_DMG - 3, {any:true, rag:[17,-9,RAGD_MS*1.3], dir:f, col:'#ffffff'});
+        const mx = d.x+PW/2, my = d.y+PH/2; addRing(mx, my, '#bfe6ff', 90); addRing(mx, my, '#ffffff', 50); addParts(mx, my, '#ffffff', 24, 8); doShake(14); snd('heavy', mx);
+        ryuBeams.push({owner:this, x:this.x+PW/2 + f*14, y:this.y+PH*0.42, ang:0, f, ux:f, uy:0, len:Math.min(260, reach+60), h:28 + 20*(this.ryuOut||0), dmg:0, t:0, life:260, done:true, big:false, rag:[0,0,0]});
+        addSpeech(mx, d.y-30, 'GRANITE BLAST', '#bfe6ff', 800); }
+    }
+    return;
+  }
+  // blast recovery
+  this.vx = 0; this._phys(dt); if(this.sTimer - this.rpT0 >= 260) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+Player.prototype._tickRyuBeam = function(dt){
+  this.vx = 0; this.vy = Math.min(this.vy||0, 1.5); this._phys(dt);
+  const wind = this.rbBig ? RYU_ULT_WIND : RYU_BEAM_WIND;
+  if(!this.rbFired && !this.isPuppet) this.aimAng = Math.max(-0.9, Math.min(0.9, (this.aimAng||0) + ((keys[this.ctrl.down]?1:0)-(keys[this.ctrl.jmp]?1:0))*0.0024*dt));
+  if(!this.rbFired && Math.random()<0.7) addParts(this.x+PW/2 + this.facing*16, this.y+PH*0.4, '#bfe6ff', this.rbBig ? 3 : 1, 3);
+  if(!this.rbFired && this.sTimer >= wind){
+    this.rbFired = true;
+    if(this.rbBig) ryuFire(this, this.aimAng||0, {big:true, len:W*1.6, dmg:RYU_ULT_DMG + RYU_ULT_DMG_OUT*(this.ryuOut||0), rag:[18,-10,RAGD_MS*1.4]});
+    else ryuFire(this, this.aimAng||0);
+    this.vx = -this.facing*2;
+  }
+  if(this.rbFired && this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+function drawRyuBody(pl){
+  if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
+  const cx = pl.x+PW/2, hy = pl.y+HEAD_R+2, f = pl.facing, t = Date.now(), out = pl.ryuOut||0;
+  ctx.save();
+  // output crackle around him (more the higher his output)
+  if(out > 0.05 || pl.state===S.RYUCHARGE){
+    const k = Math.max(out, pl.state===S.RYUCHARGE ? 0.4 : 0);
+    ctx.globalAlpha = 0.18 + 0.3*k; const g = ctx.createRadialGradient(cx, pl.y+PH/2, 6, cx, pl.y+PH/2, 30 + 30*k); g.addColorStop(0, 'rgba(191,230,255,0.9)'); g.addColorStop(1, 'rgba(111,184,255,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, pl.y+PH/2, 30 + 30*k, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 0.5 + 0.5*k; ctx.strokeStyle = '#e6f6ff'; ctx.lineWidth = 1.2;
+    for(let i=0;i<2+Math.round(4*k);i++){ const a = t*0.01 + i*1.7, r = 18 + 16*k; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a)*r, pl.y+PH/2 + Math.sin(a)*r*1.3);
+      ctx.lineTo(cx + Math.cos(a+0.3)*(r+8), pl.y+PH/2 + Math.sin(a+0.5)*(r+4)); ctx.lineTo(cx + Math.cos(a+0.55)*r, pl.y+PH/2 + Math.sin(a+0.8)*r*1.2); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
+  // the famous pompadour: a tall black quiff rising off his head and curling forward
+  ctx.fillStyle = '#121216';
+  ctx.beginPath(); ctx.ellipse(cx, hy - HEAD_R*0.45, HEAD_R*1.02, HEAD_R*0.6, 0, Math.PI, Math.PI*2); ctx.fill();   // short sides
+  ctx.beginPath(); ctx.moveTo(cx - f*HEAD_R*0.95, hy - HEAD_R*0.5);
+  ctx.bezierCurveTo(cx - f*HEAD_R*1.0, hy - HEAD_R*1.7, cx - f*HEAD_R*0.1, hy - HEAD_R*2.35, cx + f*HEAD_R*1.1, hy - HEAD_R*2.15);
+  ctx.quadraticCurveTo(cx + f*HEAD_R*2.0, hy - HEAD_R*2.0, cx + f*HEAD_R*1.85, hy - HEAD_R*1.35);
+  ctx.quadraticCurveTo(cx + f*HEAD_R*1.6, hy - HEAD_R*1.05, cx + f*HEAD_R*0.85, hy - HEAD_R*0.75);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#44445a'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx - f*HEAD_R*0.5, hy - HEAD_R*1.2);
+  ctx.quadraticCurveTo(cx + f*HEAD_R*0.4, hy - HEAD_R*2.05, cx + f*HEAD_R*1.6, hy - HEAD_R*1.7); ctx.stroke();
+  // long dark coat with a high collar
+  ctx.fillStyle = '#1e2430'; ctx.globalAlpha = 0.9;
+  ctx.beginPath(); ctx.moveTo(cx-9, pl.y+HEAD_R*2+3); ctx.lineTo(cx+9, pl.y+HEAD_R*2+3); ctx.lineTo(cx+13, pl.y+PH*0.78); ctx.lineTo(cx-13, pl.y+PH*0.78); ctx.closePath(); ctx.fill();
+  ctx.globalAlpha = 1; ctx.strokeStyle = '#c98a4b'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx, pl.y+HEAD_R*2+4); ctx.lineTo(cx, pl.y+PH*0.76); ctx.stroke();
+  // charging fist / beam wind-up glow + dashed aim line
+  if((pl.state===S.RYUBEAM && !pl.rbFired) || (pl.state===S.RYUPUNCH && pl.rpPh==='hold')){
+    const hx = cx + f*16, hy2 = pl.y+PH*0.42, r = (pl.rbBig ? 14 : 8) + 4*Math.sin(t*0.03);
+    ctx.globalAlpha = 0.85; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(hx, hy2, r, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 0.4; ctx.fillStyle = '#6fb8ff'; ctx.beginPath(); ctx.arc(hx, hy2, r*1.8, 0, Math.PI*2); ctx.fill();
+    if(pl.state===S.RYUBEAM){ const a = pl.aimAng||0; ctx.globalAlpha = 0.7; ctx.setLineDash([10, 8]); ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(hx, hy2); ctx.lineTo(hx + f*Math.cos(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN), hy2 + Math.sin(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN)); ctx.stroke(); ctx.setLineDash([]); }
+  }
+  ctx.restore();
+}
+// ═══════════════════════════════════════════════════════════════════
 // YUKI TSUKUMO — Star Rage (virtual mass) + her shikigami Garuda
 //  Q Garuda Grapple · E Garuda Throw · R Mass shift (Regular / Extreme / Light) · F Black hole
 //  Maximum Output: Star Rage Rush (punch string) · Uppercut + Garuda Dive · Anti-domain: Simple Domain (New Shadow Style)
@@ -16973,6 +17187,7 @@ function guideBlock(title, body, x, y, w, col){
   return wrapText(body, x, y+14, w, 13) + 6;
 }
 const CHAR_TIPS = {
+  ryu:      ['Hold {ab3} to pour CE into your Output bar: everything hits harder and Granite Blasts get bigger — but you take more damage too.', 'Granite Punch ({ab1}) whiffs are punished hard: only throw it point-blank.', 'Aim Granite Blast with {jump} / {down} during the wind-up. Maximum Granite Blast ({ult}) crosses the whole map.'],
   geto:     ['Dash (or double-tap {left} / {right}) rides a stingray for 3s (up to 200px above where you got on, 11s cooldown): fly over walls and away from trouble.', 'Kuchisake-Onna only works point-blank — the victim gets one key to press; on one keyboard, watch the prompt.', 'The Mirror Curse sends every projectile back at its owner for 6s: summon it against zoners and Gojo.', 'Maximum: Uzumaki uses your whole curse pool (30 to start). Hold {ult} to sacrifice a curse every second: the rest get +3% damage, speed and size. Dead curses are gone for the match.'],
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, up to 3 links) — but when the chain ends, Dismantle AND Cleave are locked for a long time.', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
   gojo:     ['Lapse Blue and Reversal Red can be steered while they fly — press {ab1} again to burst Blue early.', 'Hollow Purple aims with {jump} / {down} and tunnels through walls.', 'With Maximum Output on, {ult} becomes Hollow Purple: 200% (full ultimate bar + 80 CE): 4× the size, 170 damage.', 'Hold {jump} while falling to float down slowly (Infinity Float).'],
@@ -17246,7 +17461,7 @@ function clearProjectiles(){
   piercingBeams.length=0;
   mechLasers.length=0; mechFx.length=0;
   chosoBeams.length=0; bloodOrbs.length=0; bloodRings.length=0; chosoBursts.length=0;
-  gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
+  gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; ryuBeams.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
   despawnPuppet();
 }
 
@@ -17396,6 +17611,8 @@ const MOVE_INFO = {
              ['ab3','Lava Mound · super','A trap that fades nearly invisible: step on it = fire tower (26). Not in water.'], ['ult','Coffin of the Iron Mountain','Domain: burning + lava geysers. Max Output: giant Maximum: Meteor (38, 70 CE).'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
   meimei:   [['ab1','Axe Chop','Overhead chop (16) floors them; spikes them out of the air.'], ['ab2','Axe Spin','Spinning axe, 3 hits around you (18 total).'],
              ['ab3','Ui Ui','Place him, then teleport to him. Down + this key moves him.'], ['ult','Bird Strike','Steer a crow, press again: it dives and explodes (90).'], ['move','Axe Momentum','Full speed while swinging.']],
+  ryu:      [['ab1','Granite Punch','A lunging punch. Lands = he steps back, charges, and blasts them (25). Whiff = long end lag.'], ['ab2','Granite Blast','Aimable beam (14), bigger with more Output.'],
+             ['ab3','Output · special (hold)','Hold to pump CE into Output: up to +80% damage dealt, +50% taken.'], ['ult','Maximum Granite Blast','A beam across the whole map (30 + up to 30 with Output).'], ['move','Cursed Energy Output','Biggest CE pool. Max Output: Output Burst, Granite Barrage.']],
   geto:     [['ab1','Centipedes','3 red centipedes rush the foe (5 each).'], ['ab2','Kuchisake-Onna','Close range: trapped in her simple domain — press the shown key or get cut (18).'],
              ['ab3','Mirror Curse · super','A mirror at your side for 6s that sends projectiles back.'], ['ult','Maximum: Uzumaki','Curse pool swarms 22s (7.5, breaks blocks, 2 hits to kill). Hold = sacrifice for +3%.'], ['move','Stingray','No dash: ride a stingray for 3s (max 200px up). 11s cooldown.']],
   kenjaku:  [['ab1','Maximum: Uzumaki','Aimable piercing spiral (22).'], ['ab2','Cursed Spirit','Minion hunts the foe and bites (10).'],
@@ -17476,7 +17693,7 @@ const CHAR_ROLE = { sukuna:'Ranged slashes · deadly domain', gojo:'Space contro
   mechamaru:'Lasers · puppet · mech', todo:'Brawler · place swaps', choso:'Blood beams · blood pools', higuruma:'Hammer sizes · trial domain',
   hakari:'Gambler · jackpot fever', meimei:'Axe · teleport · crows', jogo:'Zoner · fire & lava', dagon:'Zoner · flood water', hanami:'Zoner · flowers & roots',
   mahito:'Humans · self-transfiguration', takaba:'Comedian · counters', naoya:'Fastest · frames · 4 lives', megumi:'Shikigami summoner', yuki:'Mass shifts · black hole',
-  geto:'Curse summoner · swarm' };
+  geto:'Curse summoner · swarm', ryu:'Output beams · glass cannon' };
 let charBans = {1:null, 2:null};      // synced: the character type each player has banned (Character Bans unlock)
 function bansEnabled(){ if(isTraining()) return false; const has = s => { const l = loadoutFor(s); return !!(l && l.feats && l.feats.includes('bans')); }; return has(1) || has(2); }
 function isBanned(type){ return charBans[1]===type || charBans[2]===type; }
@@ -18141,7 +18358,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
+                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, ryuBeams, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -18759,7 +18976,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickRyu(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -18799,7 +19016,7 @@ function simFight(dt){
 function drawFight(dt){
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawDomain(); drawLoveKatanas();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet(); drawSteam();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();

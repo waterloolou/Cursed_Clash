@@ -31,6 +31,9 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
+## Newest fighter: Ryu Ishigori
+The biggest cursed energy output in the Culling Game. **Granite Punch** (Q): if it lands he steps back, charges and blasts them point-blank (25); whiff it and you're wide open. **Granite Blast** (E): an aimable beam. **Hold R** to pour cursed energy into his **Output** bar — up to +80% damage and much bigger beams, but he takes up to 50% more damage too. Ultimate: **Maximum Granite Blast**, a beam across the whole map. Maximum Output: Output Burst, Granite Barrage.
+
 ## Latest: Yuji rework, Sendai, Kamutoke
 - **Yuji is a pure brawler now.** **Divergent Fist** (Q): a punch; if it lands, a ring closes on them — press Q again as it meets the inner ring for a **Black Flash** (18, big launch). **Divergent Combo** (E): a long lunge, two punches and a kick (his mobility). Special: a **guaranteed Black Flash** (28).
 - **Combo meter** on Yuji's side of the screen: only normal punches fill it, and it never drains on its own. **Maximum Output** spends it: **Manji Kick** (counter stance, longer with more meter, uses 10%) and **The Zone** ("Zoned In": more damage, faster cooldowns, an easier Black Flash ring; uses 20%, lasts longer with more meter).

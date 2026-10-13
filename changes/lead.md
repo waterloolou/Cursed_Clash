@@ -69,3 +69,28 @@ Commit `3b72130` (everything below), then the three agent branches were cherry-p
   positions agree); one apparent desync (Mei Mei vs Mei Mei, Ui Ui teleport between the two reads) did not reproduce. No errors on
   either page.
 - `mvall` (every fighter walks and jumps, both rule sets) and `stress` (classic + online seeds): pass.
+
+## New fighter: Ryu Ishigori (from the voice message, Oct 13)
+Transcribed from the voice note: two base moves (a punch that, when it hits, has Ryu stay put, step back a little and then blast
+them — big end lag on a whiff, ~25 damage and a launch on a hit; and Granite Blast), a special you **hold** to fill a bar to 100%
+that makes his moves stronger but makes him take more damage, and Granite Blast getting larger and stronger with that bar.
+- **Module** (inserted before the Yuki section): `RYU_*` constants, `ryuBeams` (synced, cleared with projectiles), `ryuFire`,
+  `tickRyu`, `drawRyu`, `Player.prototype._ryuAbilities / _tickRyuPunch / _tickRyuBeam / _tickRyuCharge`, `drawRyuBody`.
+  States `S.RYUPUNCH`, `S.RYUBEAM`, `S.RYUCHARGE` (+ dispatch cases).
+- **Q Granite Punch**: lunge 160ms, reach 74px. Hit → 3 + they're held while he steps back charging (0.42s) → point-blank blast
+  for 22 more (25 total) and a big launch. Whiff → 0.75s end lag. 6s cooldown (4.5s after the CE cut).
+- **E Granite Blast**: 0.42s aimable wind-up (up / down, dashed line), then a 900px beam, 14 damage, carves terrain.
+  Beam height 22px + 50px × Output. 7s cooldown (5.2s).
+- **R (hold) Output**: `ryuOut` 0→1 at 30%/s, costs 15 CE/s, he stands still. Stays for the life (reset on death).
+  `_dmgOut` × (1 + 0.8 × Output), `_dmgIn` × (1 + 0.5 × Output).
+- **F Maximum Granite Blast** (ultimate bar): 0.9s aimable charge, beam ~1.6× map width, 30 + 30 × Output damage, height 90 + 90 × Output.
+  I picked this ultimate (the voice note didn't name one; Ryu has no domain in the story).
+- **Maximum Output** (`OL_VARS.ryu`, also my pick): 1 Output Burst (blockable, 8 + shove within 120px), 2 Granite Barrage (three
+  beams in a fan, 6 each).
+- Registries: `CHARACTERS` (color `#c98a4b`), `MOVE_PASSIVES`, `CE_PROFILE [320, 10]`, CE pool text, `CE_SLOTS`, aura `teal`,
+  `CHAR_ROLE`, `CHAR_TIPS`, `MOVE_INFO`, voice pitch + 3 voice lines, `VL_NAMES`, wiki sidebar/home grid/section, `portraits.js` line.
+- Hooks in shared code: `_dmgOut` / `_dmgIn` (Ryu only), the ability call next to Geto's, `drawRyuBody` next to `drawGetoBody`,
+  Ryu HUD block before the Geto HUD, `tickRyu` / `drawRyu` in the main loop.
+- **Revert**: remove the Ryu module and every line containing `ryu` / `RYU_` / `S.RYU` (the CHARACTERS entry last).
+- **Tested**: kit checks (punch 25, whiff lag, Output to 60% in 2s, beam 25.2 at 100% Output, ult 63 at 50%, both Max Output moves),
+  all-pairs fuzz Ryu vs all 20 fighters in both rule sets (78 runs, 0 issues), two-device host/guest with Ryu on each side.
