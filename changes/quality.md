@@ -71,3 +71,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: Shibuya (2000×1150) is taller than the view's aspect, so at the minimum zoom the visible world (≈2123px wide) is wider than the map; `drawMapBG` only extended the sky (top) and ground (bottom), leaving ~60px black strips on both sides (before/mapsheet_0.png, `wide`).
 - **Where**: `drawMapBG()`, after the two edge fills.
 - **New**: only when the camera actually sees past a side (`cam.x < 0 || cam.x + VW/cam.z > W`): `drawImage(bgc, 0,0,1,H, -3000,0,3000,H)` and the same for the right column — the edge column is stretched outward, so the bars become a seamless continuation. Zero cost on the other maps.
+
+### 12. Yuji's Sukuna takeover showed a domain bar that can't be used
+- **Why**: during Enchain (`type='sukuna', baseType='yuji'`) the Sukuna HUD kept drawing "DOMAIN 12%" / "MALEVOLENT SHRINE [Q]", but `domEdge` is forced off in that body — pressing Q does nothing. Confusing, and the 15s takeover timer was only a tiny chip.
+- **Where**: `Player.drawHUD`, Sukuna block, "Domain charge bar" section: wrapped the old bar in `else { … }` and added a `baseType==='yuji'` branch before it.
+- **New**: red bar = `sukT / YUJI_SUK_MS`, text `SUKUNA IN CONTROL 15s · NO DOMAIN`. Normal Sukuna unchanged.

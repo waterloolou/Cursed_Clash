@@ -12324,6 +12324,12 @@ class Player {
 
       // Domain charge bar
       const domY = abY+30;
+      if(this.baseType==='yuji'){   // Sukuna in Yuji's body has no domain: show how long the takeover lasts instead of a domain bar that does nothing
+        const k = Math.max(0, Math.min(1, (this.sukT||0)/YUJI_SUK_MS));
+        ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14); ctx.fillStyle='#8a1a1a'; ctx.fillRect(flip?bx+bw-Math.floor(bw*k):bx, domY, Math.floor(bw*k), 14);
+        ctx.strokeStyle='rgba(255,80,80,0.5)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+        ctx.fillStyle='#ffb0b0'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(`SUKUNA IN CONTROL ${Math.ceil((this.sukT||0)/1000)}s · NO DOMAIN`, bx+bw/2, domY+10);
+      } else {
       const domPct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ);
       const domReady = domPct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -12338,6 +12344,7 @@ class Player {
       ctx.fillText(domReady ? `MALEVOLENT SHRINE [${kQ}]` : `DOMAIN ${Math.floor(domPct*100)}%`, bx+bw/2, domY+10);
       if(activeDomain && activeDomain.owner===this){
         ctx.fillStyle='#f80'; ctx.fillText('DOMAIN ACTIVE', bx+bw/2, domY+10);
+      }
       }
     }
 
