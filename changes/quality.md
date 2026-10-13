@@ -24,3 +24,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
   - `drawHUDOverlay()` first lines: added a cached vertical gradient scrim `fillRect(0,0,W,150)`: `rgba(8,8,14,0.6)` → `0.36` at 75% → `0` (no hard edges, ~invisible on the dark maps).
   - `drawCeHud()` evasive label: font `8px` → `7px`, `textBaseline='middle'` at `ey+2.5` (was alphabetic at `ey+5`), baseline reset after.
   - `Player.drawHUD()` held item: dark plate `rgba(8,8,14,0.6)` behind the `NAME  12s` text (text/colour unchanged).
+
+### 4. Stage select: long stage names spilled out of their card; char select: stat labels overlapped their bars
+- **Why**: "SISTER SCHOOL EXCHANGE" at 11px is wider than the 150px card (before/ui_map4.png). On the fighter panels the `SPEED / JUMP / HEALTH` labels were drawn at `ry+5`, touching the 5px bars right above them (before/charpanels_0.png).
+- **Where**: `drawMapSelect()` card label; `drawCharSelect()` → `stat()` helper.
+- **Old → new**: card label font fixed `700 11px` → starts at 11px and shrinks (min 8px) until it fits `cw-8`. Stat label baseline `ry+5` → `ry+8`.

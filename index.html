@@ -17536,7 +17536,7 @@ function drawCharSelect(){
     // speed / jump height / health at a glance
     { const M = pas || {spd:1, jmp:1}, hp = ch.type==='naoya' ? NAO_HP : 100, lives = ch.type==='naoya' ? NAO_LIVES : 3;
       const stat = (lbl, v, k, c, dx) => { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(tx+dx, ry-6, 70, 5); ctx.fillStyle = c; ctx.fillRect(tx+dx, ry-6, 70*Math.max(0.05, Math.min(1, k)), 5);
-        ctx.fillStyle = 'rgba(230,225,215,0.8)'; ctx.font = `600 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'left'; ctx.fillText(`${lbl} ${v}`, tx+dx, ry+5); };
+        ctx.fillStyle = 'rgba(230,225,215,0.8)'; ctx.font = `600 9px 'Rajdhani',sans-serif`; ctx.textAlign = 'left'; ctx.fillText(`${lbl} ${v}`, tx+dx, ry+8); };   // label under the bar (at ry+5 it touched / overlapped the bar)
       stat('SPEED', Math.round(M.spd*100)+'%', (M.spd-0.7)/0.6, '#7fd36a', 0);
       stat('JUMP', Math.round(M.jmp*100)+'%', (M.jmp-0.7)/0.6, '#e8c45a', 84);
       stat('HEALTH', hp + (lives!==3 ? ` ×${lives}` : ''), hp/100, '#e05a5a', 168); ry += 16; }
@@ -18577,8 +18577,10 @@ function drawMapSelect(){
     }
     ctx.strokeStyle = sel ? '#d6b64a' : 'rgba(255,255,255,0.18)'; ctx.lineWidth = sel ? 2.5 : 1;
     ctx.strokeRect(x, y0, cw, ch);
-    ctx.font=`700 11px 'Rajdhani',sans-serif`; ctx.fillStyle = sel ? '#d6b64a' : 'rgba(200,195,185,0.7)';
-    ctx.fillText(i < list.length ? MAPS[mi].name : 'RANDOM', x+cw/2, y0+ch-6);
+    const lbl = i < list.length ? MAPS[mi].name : 'RANDOM'; let fs = 11;
+    do { ctx.font=`700 ${fs}px 'Rajdhani',sans-serif`; } while(ctx.measureText(lbl).width > cw-8 && --fs > 7);   // long names ("SISTER SCHOOL EXCHANGE") spilled out of the card
+    ctx.fillStyle = sel ? '#d6b64a' : 'rgba(200,195,185,0.7)';
+    ctx.fillText(lbl, x+cw/2, y0+ch-6);
   }
   ctx.restore();
   drawWaitingFor();
