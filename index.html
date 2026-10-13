@@ -17016,7 +17016,17 @@ function drawCombatGuide(pl, x, y, w){
   const yb = Math.max(yl, yr) + 2;
   ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.moveTo(x, yb-8); ctx.lineTo(x+w, yb-8); ctx.stroke();
   let y2 = guideBlock('DOMAINS', kfill(pl, 'Casting a domain ({ult}) spends its charge right away. For the first third of the hand sign you can be interrupted (you get 50% back); after that you\'re untouchable until it opens. Inside your domain you can be hit as normal (except Higuruma during his trial). Lost clash, shattered or killed mid-domain = 50% back. Casting while their domain is open starts a DOMAIN CLASH key race.'), x, yb, w);
-  guideBlock('HEALTH & RESPAWNS', 'No damage dealt or taken for 15s = regenerate 2 HP every 3s. Long falls cost a little health. When you\'re KO\'d in Normal mode you drop back in from the sky after 5s with 5s of invincibility; your opponent keeps their health.', x, y2, w);
+  return guideBlock('HEALTH & RESPAWNS', 'No damage dealt or taken for 15s = regenerate 2 HP every 3s. Long falls cost a little health. When you\'re KO\'d in Normal mode you drop back in from the sky after 5s with 5s of invincibility; your opponent keeps their health.', x, y2, w);
+}
+// draw a pause-guide page shrunk just enough to end above maxB (the online guide and long fighter pages ran off the bottom of the screen)
+function fitGuide(draw, x, y, w, maxB){
+  const ft = ctx.fillText, st = ctx.stroke; let b = y;
+  ctx.fillText = () => {}; ctx.stroke = () => {};
+  try{ b = draw(w) || y; } finally { ctx.fillText = ft; ctx.stroke = st; }
+  const k = b > maxB ? Math.max(0.72, (maxB - y)/(b - y)) : 1;
+  if(k < 1){ ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.translate(-x, -y); }
+  draw(k < 1 ? w/k : w);
+  if(k < 1) ctx.restore();
 }
 function drawFighterGuide(pl, x, y, w, twoCol){
   const online = olOn(), colW = twoCol ? (w-30)/2 : w;
@@ -17062,10 +17072,10 @@ function drawPauseMenu(){
   const meN = local || isTraining() ? 1 : NET.spectator ? 1 : NET.role==='host' ? 1 : 2, mePl = meN===2 ? p2 : p1;
   if(pausePage===1){
     const w = Math.min(980, W-80);
-    drawCombatGuide(mePl, W/2 - w/2, 148, w);
+    fitGuide(w2 => drawCombatGuide(mePl, W/2 - w/2, 148, w2), W/2 - w/2, 148, w, H-10);
   } else if(pausePage===2){
-    if(local){ const w = W/2 - 70; drawFighterGuide(p1, 50, 150, w, false); drawFighterGuide(p2, W/2 + 30, 150, w, false); }
-    else { const w = Math.min(980, W-80); drawFighterGuide(mePl, W/2 - w/2, 150, w, true); }
+    if(local){ const w = W/2 - 70; fitGuide(w2 => drawFighterGuide(p1, 50, 150, w2, false), 50, 150, w, H-10); fitGuide(w2 => drawFighterGuide(p2, W/2 + 30, 150, w2, false), W/2 + 30, 150, w, H-10); }
+    else { const w = Math.min(980, W-80); fitGuide(w2 => drawFighterGuide(mePl, W/2 - w/2, 150, w2, true), W/2 - w/2, 150, w, H-10); }
   } else if(local){
     const w = W/2 - 70;
     drawPauseColumn(p1, 1, BINDS_L1, 50, 146, w, 'PLAYER 1 · LEFT SIDE');

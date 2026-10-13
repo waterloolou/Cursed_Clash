@@ -76,3 +76,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: during Enchain (`type='sukuna', baseType='yuji'`) the Sukuna HUD kept drawing "DOMAIN 12%" / "MALEVOLENT SHRINE [Q]", but `domEdge` is forced off in that body — pressing Q does nothing. Confusing, and the 15s takeover timer was only a tiny chip.
 - **Where**: `Player.drawHUD`, Sukuna block, "Domain charge bar" section: wrapped the old bar in `else { … }` and added a `baseType==='yuji'` branch before it.
 - **New**: red bar = `sukT / YUJI_SUK_MS`, text `SUKUNA IN CONTROL 15s · NO DOMAIN`. Normal Sukuna unchanged.
+
+### 13. Pause menu: the online Combat Guide and long "Your fighter" pages ran off the bottom of the screen
+- **Why**: online rules, page 2 ended with "HEALTH & RESPAWNS" cut off mid-sentence at the bottom edge; on page 3 (one keyboard, two columns) fighters with long kits (Hakari, Naoya, Geto…) ran their TIPS / anti-domain rows past the bottom (before: pause_yuji_ol_1, pause_hakari_ol_2).
+- **Where**: `drawCombatGuide()` now `return`s the y below its last block (was no return); new helper `fitGuide(draw, x, y, w, maxB)` right after it; `drawPauseMenu()` page 1 and page 2 calls wrapped in `fitGuide(..., H-10)`.
+- **How**: `fitGuide` runs the page once with `fillText`/`stroke` stubbed to measure its bottom, then, if it doesn't fit, draws it scaled around its top-left by `k = max(0.72, available/needed)` with the width divided by `k` (so text re-wraps to the same on-screen width). Pages that fit are drawn exactly as before. Only runs while paused.
