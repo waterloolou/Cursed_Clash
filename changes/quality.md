@@ -29,3 +29,11 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: "SISTER SCHOOL EXCHANGE" at 11px is wider than the 150px card (before/ui_map4.png). On the fighter panels the `SPEED / JUMP / HEALTH` labels were drawn at `ry+5`, touching the 5px bars right above them (before/charpanels_0.png).
 - **Where**: `drawMapSelect()` card label; `drawCharSelect()` → `stat()` helper.
 - **Old → new**: card label font fixed `700 11px` → starts at 11px and shrinks (min 8px) until it fits `cw-8`. Stat label baseline `ry+5` → `ry+8`.
+
+### 5. Yuji: move names / descriptions still described the old kit
+- **Why**: after the rework the char-select panel, the TAB move list, the in-fight tips and the wiki still said ability 1 = "Piercing Blood (hold to charge)", punch 3 = Black Flash bar, ult = "Dismantle (55)". None of that exists any more (`_startBlackFlashMinigame` is never called; ab1 is `_startDivFist`; ult is Enchain/Modulo) — players would press 1 expecting a beam (before/charpanels_0.png).
+- **Where** (text only, no logic):
+  - `MOVE_INFO.yuji` (all five rows): atk "Normal punches fill his combo meter", ab1 "Divergent Fist", ab2 "Divergent Combo … (26) … Black Flash kick", ab3 "guaranteed Black Flash (28)", ult "Enchain / Modulo".
+  - `CHAR_TIPS.yuji`: three new tips (Divergent Fist ring, combo meter, Enchain vs Modulo).
+  - Wiki home grid link `<a data-p="yuji">`: "Piercing Blood · …" → "Divergent Fist · Divergent Combo · Black Flash".
+  - Wiki `<section data-p="yuji">`: table rewritten (Attack/combo meter, Q Divergent Fist, E Divergent Combo, R Black Flash, F Enchain/Modulo, new Max Output row, Movement), numbers taken from the constants (`DIV_*`, `BB_*`, `YUJI_BF_DMG`, `MANJI_*`, `ZONE_*`, `YUJI_SUK_MS`, `MODULO_*`).
