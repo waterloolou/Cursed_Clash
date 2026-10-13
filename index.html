@@ -4815,7 +4815,8 @@ function buildSendai(){
   terFill(MAT_METAL, 640, G-196, 120, 10); terFill(MAT_METAL, 990, G-196, 120, 10);   // deck shelters (stand on top)
   ledges(820, 90, [G-280]);                                              // a sign gantry above the deck
   // Zelkova avenue (Jozenji-dori): trunks and canopies you can stand in
-  const tree = (x, h) => { terFill(MAT_WOOD, x-6, G-h, 12, h); terFillPoly(MAT_LEAF, [[x-60, G-h+10],[x-40, G-h-50],[x, G-h-70],[x+42, G-h-48],[x+62, G-h+12],[x, G-h+24]]); };
+  // trunks are one-way MAT_BEAM like the Sister School cedars (solid MAT_WOOD trunks 160–200px tall walled the avenue off and trapped low jumpers at spawn 2)
+  const tree = (x, h) => { terFill(MAT_BEAM, x-6, G-h, 12, h); terFillPoly(MAT_LEAF, [[x-60, G-h+10],[x-40, G-h-50],[x, G-h-70],[x+42, G-h-48],[x+62, G-h+12],[x, G-h+24]]); };
   tree(1560, 170); tree(1720, 200); tree(1880, 160);
   // the tower Uro tore apart: a sheared stump, floating slabs of "sky" debris, a rubble slope
   terFillPoly(MAT_STONE, [[1960,G],[2040,G-50],[2140,G-70],[2200,G]]);
