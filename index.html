@@ -17597,7 +17597,7 @@ function drawMatchEnd(){
   ctx.strokeText(winner.name+' WINS!',W/2,H/2-30);
   ctx.fillStyle='#d8d4cc'; ctx.fillText(winner.name+' WINS!',W/2,H/2-30);
   ctx.font=`500 17px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(170,165,155,.55)';
-  ctx.fillText(NET.role==='local' ? 'Press F or ; for a rematch' : 'Press SPACE / ENTER / CLICK for a rematch',W/2,H/2+22);
+  ctx.fillText(NET.role==='local' ? 'Press F or / for a rematch' : 'Press SPACE / ENTER / CLICK for a rematch',W/2,H/2+22);
   if(ACC.lastAward && ACC.lastAward.local){
     ctx.font=`700 16px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(220,210,180,.75)';
     ctx.fillText('Local matches don\'t earn coins — play online to earn ¥', W/2, H/2+60);

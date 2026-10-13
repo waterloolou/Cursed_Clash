@@ -61,3 +61,8 @@ Screenshots: `before/` and `after/` folders in `/tmp/claude-0/-home-claude-curse
 - **Why**: the strike (320ms) was two strokes (7px 70% yellow + 3px white) with nothing at the impact point; frozen at t=400ms it's barely visible against the Sendai night (before/kamuT_sheet.png). It's the new item's whole payoff.
 - **Where**: `drawKamu()`, the `else` (strike) branch only. Hit logic / timings untouched.
 - **New**: same jagged path (`_hh` points, now built once into `pts`), drawn as 16px glow `rgba(255,214,60,0.3)` + 7px body + 2.6px white core; short forks every 3rd point; a radial impact flash (r 95) at the ground point; `shadowBlur` 0 in LITE mode. All of it fades with the existing `a`.
+
+### 10. Match-end screen named the wrong rematch key for player 2
+- **Why**: one-keyboard match end said "Press F or ; for a rematch", but P2's confirm keys are `Slash` / `Enter` (`readLocalInput(BINDS_L2, 1, ['Slash','Enter'], …)`; char select already says "/ TO LOCK IN"). `;` is P2's ultimate.
+- **Where**: `drawMatchEnd` text line (`'Press F or ; for a rematch'`).
+- **Old → new**: `'Press F or ; for a rematch'` → `'Press F or / for a rematch'`.
