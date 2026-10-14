@@ -13661,28 +13661,21 @@ const OL_VARS = {
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:260, dmg:0, col:'#9fc4ff'});
       for(const d of olArea(p, Math.min(x0, p.x), p.y, Math.abs(p.x-x0)+PW, PH)) olHit(p, d, 9, {rag:[7,-5,RAGD_MS*0.8], col:'#9fc4ff'});
       snd('slash', p.x); }},
-    2:{name:'Puppet Decoy', desc:'Leaves a puppet of himself where he stands and jets 180px back. 1.2s later the decoy self-destructs: 9 damage around it.', lock:240, run(p){
-      const dx = p.x, dy = p.y, df = p.facing;
-      olShot(p, {kind:'decoy', x:dx+PW/2, y:dy+PH, dir:df, life:1250, dmg:0});
-      safeTeleport(p, p.x - p.facing*180, p.y); addParts(p.x+PW/2, p.y+PH*0.7, '#9fc4ff', 10, 4); snd('dash', p.x);
-      olAfter(1200, () => { addRing(dx+PW/2, dy+PH/2, '#ffb347', 90); addParts(dx+PW/2, dy+PH/2, '#ffb347', 24, 8); snd('boom', dx); doShake(9);
-        if(!IS_GUEST) carveCircle(dx+PW/2, dy+PH/2, 36);
-        for(const d of olArea(p, dx-60, dy-40, PW+120, PH+60)) olHit(p, d, 9, {rag:[10,-7,RAGD_MS], dir:Math.sign(d.x-dx)||1, col:'#ffb347'}); }); }},
+    2:{name:'Rocket Punch', desc:'His forearm fires off like a rocket: a fast straight shot that bursts through thin terrain, 12 damage and a big knockback.', lock:280, run(p){
+      olShot(p, {kind:'fist', x:p.x+PW/2+p.facing*18, y:p.y+PH*0.42, vx:p.facing*15, vy:0, r:11, life:1300, dmg:12, col:'#ff9a3a', o:{rag:[12,-6,RAGD_MS]}});
+      if(!IS_GUEST) carveCircle(p.x+PW/2+p.facing*30, p.y+PH*0.42, 10);
+      addParts(p.x+PW/2+p.facing*18, p.y+PH*0.42, '#ff9a3a', 12, 4); snd('boom', p.x); doShake(4); }},
   },
   todo: {
     1:{name:'Feint Clap', desc:'Claps without swapping. The opponent (within 600px) flinches for the swap that never comes: turned around and frozen for 0.4s.', lock:200, run(p){
       const d = olNearest(p, 600); snd('clap', p.x); addSpeech(p.x+PW/2, p.y-8, 'CLAP!', '#b07a1e', 700); addRing(p.x+PW/2, p.y+PH/2, '#d9a441', 36);
       if(d){ d.facing = -d.facing; olHit(p, d, 0.01, {ubk:true, stun:400, col:'#ffcf6a'}); addSpeech(d.x+PW/2, d.y-20, '?!', '#ddd', 600); } }},
-    2:{block:true, name:'Stone Swap', desc:'Tosses a pebble in an arc, then claps: Todo swaps places with the stone. Anyone right next to where he lands is dazed (4, stunned 0.6s).', lock:260, run(p){
-      const st = olShot(p, {kind:'stone', x:p.x+PW/2+p.facing*16, y:p.y+PH*0.35, vx:p.facing*9, vy:-7.5, grav:0.45, r:6, life:2000, dmg:0, col:'#9a8c7a'});
-      snd('swing', p.x);
-      olAfter(560, () => { if(p.state===S.DEAD) return;
-        const ox = p.x+PW/2, oy = p.y+PH/2;
-        snd('clap', p.x); addSpeech(ox, p.y-8, 'CLAP!', '#b07a1e', 600); addRing(ox, oy, '#d9a441', 36);
-        if(!tpInArena(st.x-PW/2, st.y-PH)) return;
-        safeTeleport(p, st.x-PW/2, st.y-PH+8, true); st.life = 0;
-        addRing(p.x+PW/2, p.y+PH/2, '#ffe08a', 46); addParts(p.x+PW/2, p.y+PH/2, '#ffe08a', 10, 3);
-        for(const d of olArea(p, p.x-50, p.y-10, PW+100, PH+20)) olHit(p, d, 4, {stun:600, col:'#ffe08a'}); }); }},
+    2:{block:true, name:'Shoulder Tackle', desc:'Todo lowers his shoulder and charges up to 230px: the first foe in his path takes 10 and is sent flying (blockable).', lock:320, run(p){
+      const f = p.facing, x0 = p.x;
+      const d = olArea(p, f>0 ? p.x+PW-4 : p.x-230, p.y+4, 234, PH-8).sort((a, b) => Math.abs(a.x-p.x) - Math.abs(b.x-p.x))[0];
+      safeTeleport(p, d ? d.x - f*(PW+4) : p.x + f*230, p.y);
+      olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.5, x2:p.x+PW/2, life:240, dmg:0, col:'#d9a441'}); snd('dash', p.x); doShake(6);
+      if(d && olHit(p, d, 10, {rag:[15,-8,RAGD_MS*1.1], dir:f, col:'#ffcf6a'})){ addRing(d.x+PW/2, d.y+PH/2, '#ffcf6a', 60); addParts(d.x+PW/2, d.y+PH/2, '#d9a441', 18, 6); snd('heavy', d.x); addSpeech(d.x+PW/2, d.y-24, 'TACKLE!', '#b07a1e', 700); } }},
   },
   choso: {
     1:{name:'Blood Meteorite', desc:'Clots blood in his fists until they\'re hard as rock: for 6s he hits 35% harder and his hits smash straight through blocks — but the clotting slows him by 20%.', lock:300, run(p){
@@ -13709,13 +13702,9 @@ const OL_VARS = {
       snd('honk', p.x); }},
   },
   meimei: {
-    1:{name:'Ui Ui: Exchange', desc:'Ui Ui\'s teleportation works on other people too: the opponent is swapped to wherever Ui Ui is standing and stunned for 0.5s. Needs Ui Ui placed.', lock:260, run(p){
-      const u = uiuis.find(q => q.owner===p), d = olNearest(p, 2000);
-      if(!u){ olTag(p, 'NEEDS UI UI', '#888', 600); if(p.ceMax) p.ce = Math.min(p.ceMax, p.ce + ceVarCost(p, 1)); p.varCd[1] = 0; return; }
-      if(!d || !tpInArena(u.x-PW/2, u.y-PH)) return;
-      addRing(d.x+PW/2, d.y+PH/2, '#c9c2e6', 46); addParts(d.x+PW/2, d.y+PH/2, '#c9c2e6', 12, 4);
-      safeTeleport(d, u.x-PW/2, u.y-PH); d.ss(S.STUN, 500);
-      addRing(d.x+PW/2, d.y+PH/2, '#ffffff', 50); snd('orb', d.x); }},
+    1:{name:'Axe Boomerang', desc:'She hurls her axe: it spins out about 300px through everything in its path (8 each) and comes back, hitting again on the way home.', lock:280, run(p){
+      olShot(p, {kind:'axe', x:p.x+PW/2+p.facing*20, y:p.y+PH*0.4, vx:p.facing*13, vy:0, r:20, life:2400, dmg:8, back:true, pierce:true, col:'#e8e3ff', o:{stun:320, push:2}});
+      snd('swing', p.x); addParts(p.x+PW/2+p.facing*20, p.y+PH*0.4, '#e8e3ff', 8, 3); }},
     2:{block:true, name:'Crow Murder', desc:'Five crows dive at the opponent (3 each, they home in).', lock:300, run(p){
       for(let k=0;k<5;k++) olShot(p, {kind:'crow', x:p.x+PW/2, y:p.y+PH*0.2-k*8, vx:p.facing*(6+k), vy:-3+k*0.8, r:9, life:2200, dmg:3, home:0.35, col:'#222', o:{stun:240, push:2}});
       snd('swing', p.x); }},

@@ -45,3 +45,14 @@ No JavaScript errors, no fighters leaving the map, no other stuck states in 1,82
 - **Maps**: Shibuya and Sendai had more 90s time-outs (30 and 26 of 200 vs 3–5 on the others) because fighters end up on different
   floors; no traps, no falls off the map, no spawn problems (0 self-KOs in 1,822 matches).
 - Ultimates: Gojo's Infinite Void was cast only once in 80 matches (he rarely fills the bar) — the damage buff should help.
+
+## Move reworks (redundant Maximum Output moves)
+Picked from the playtest: moves that did ~0% of their fighter's damage *and* duplicated another move in the same kit.
+| Fighter | Old (why it went) | New |
+|---|---|---|
+| Todo (Max Output 2, blockable) | Stone Swap — a second place-swap next to Boogie Woogie, 0% of his damage | **Shoulder Tackle**: charges up to 230px, the first foe in his path takes 10 and is sent flying |
+| Mei Mei (Max Output 1) | Ui Ui: Exchange — needed Ui Ui placed, the same trick as her super, 0% | **Axe Boomerang**: the axe spins out ~300px through everything (8) and hits again on the way back |
+| Mechamaru (Max Output 2) | Puppet Decoy — a weaker second puppet next to his super, 1% | **Rocket Punch**: a fast straight forearm rocket, 12 damage and a big knockback |
+Revert: restore the three `OL_VARS` entries from commit `98619ca` (`todo[2]`, `meimei[1]`, `mechamaru[2]`).
+Tested: each fires and hits under both rule sets (Tackle 10, Boomerang 8 out + 8 back, Rocket Punch 12), no errors.
+Yuta's Cursed Fist was also flagged (1% of his damage, overlaps Slice & Dice) but left alone — another developer is working on Yuta.
