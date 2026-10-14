@@ -1884,9 +1884,9 @@ function drawChoso(){
 // ═══════════════════════════════════════════════════════════════════
 // HIGURUMA — the gavel and the courtroom (Deadly Sentencing)
 // ═══════════════════════════════════════════════════════════════════
-const HIGU_LONG_CD   = 4500, HIGU_LONG_LEN = 300, HIGU_LONG_DMG = 14;
+const HIGU_LONG_CD   = 4500, HIGU_LONG_LEN = 300, HIGU_LONG_DMG = 16;
 const HIGU_LONG_W = 220, HIGU_LONG_A = 170, HIGU_LONG_R = 260;
-const HIGU_BIG_CD    = 7000, HIGU_BIG_DMG = 20;
+const HIGU_BIG_CD    = 6500, HIGU_BIG_DMG = 23;
 const HIGU_BIG_W = 360, HIGU_BIG_A = 150, HIGU_BIG_R = 360, HIGU_BIG_HEAD = 4.2;
 const HIGU_THROW_REQ = 40;      // damage dealt to unlock the gavel throw
 const HIGU_THROW_SPD = 17, HIGU_THROW_DMG = 8, HIGU_DASH_DMG = 16, HIGU_DASH_SPD = 24;
@@ -2457,7 +2457,7 @@ const HAK_WALL_MS = 3500, HAK_FRAME_MS = 2600, HAK_WALL_W = 56, HAK_WALL_H = 62;
 // jackpot moveset (replaces 1 and 2 while the fever lasts) and the pachinko bonus (+1 ball per jackpot, up to +6)
 const HAK_J1_CD = 2200, HAK_J1_HITS = 5, HAK_J1_DMG = 3, HAK_J1_FIN = 7, HAK_J2_CD = 3800, HAK_J2_N = 12, HAK_J2_DMG = 4, HAK_BALL_BONUS_MAX = 6;
 const HAK_PUNCH_REQ = 40, HAK_PUNCH_DMG = 35, HAK_PUNCH_WIND = 320, HAK_PUNCH_TOTAL = 700;
-const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.25, GAMBLE_ODDS_UP = 0.10;   // each miss raises the next roll's odds (Increased Probability)
+const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.2, GAMBLE_ODDS_UP = 0.08;   // each miss raises the next roll's odds (Increased Probability)
 const JACKPOT_CONT_ODDS = 0.5, JACKPOT_CONT_DUR = 15000, JACKPOT_CONT_MAX = 3;   // Continuation: when a jackpot runs out, the reels spin again
 const JACKPOT_DUR = 30000, JACKPOT_LEAPS = 2, JACKPOT_LEAP_DMG = 45, JACKPOT_LEAP_R = 170;
 const pachinkoBalls = [];   // {owner, x, y, vx, vy, bounces, life, hits:{}}
@@ -2785,8 +2785,8 @@ function drawKenjaku(){
 // ═══════════════════════════════════════════════════════════════════
 // MEI MEI — battle axe, Ui Ui's teleport and Bird Strike
 // ═══════════════════════════════════════════════════════════════════
-const MEI_CHOP_CD = 4500, MEI_CHOP_DMG = 18, MEI_CHOP_W = 200, MEI_CHOP_A = 130, MEI_CHOP_R = 220;
-const MEI_SPIN_CD = 6000, MEI_SPIN_DUR = 650, MEI_SPIN_HITS = 3, MEI_SPIN_DMG = 6, MEI_SPIN_R = 74;
+const MEI_CHOP_CD = 4500, MEI_CHOP_DMG = 20, MEI_CHOP_W = 200, MEI_CHOP_A = 130, MEI_CHOP_R = 220;
+const MEI_SPIN_CD = 6000, MEI_SPIN_DUR = 650, MEI_SPIN_HITS = 3, MEI_SPIN_DMG = 7, MEI_SPIN_R = 74;
 const UIUI_RESUMMON = 12000;   // only after Ui Ui is hit
 const CROW_SPD = 7.5, CROW_DASH = 19, CROW_LIFE = 6000, CROW_DMG = 90, CROW_R = 80;
 const uiuis = [];   // {owner, x, y, t}
@@ -2949,7 +2949,7 @@ function drawMeiMei(){
 const JOGO_METEOR_CE = 70, JOGO_METEOR_DMG = 38;   // Maximum Output ultimate
 const JOGO_BUG_N = 5, JOGO_BUG_SPREAD = 0.18;   // a straight fan of insects (no homing)
 const JOGO_BUG_CD = 6000, JOGO_BUG_DMG = 3, JOGO_BUG_SPD = 7.5, EMBER_DUR = 10000, EMBER_CD_ADD = 1000;
-const JOGO_DASH_CD = 7000, JOGO_DASH_DUR = 260, JOGO_DASH_SPD = 17, JOGO_DASH_DMG = 8;
+const JOGO_DASH_CD = 8000, JOGO_DASH_DUR = 260, JOGO_DASH_SPD = 17, JOGO_DASH_DMG = 6;
 const BURN_TICK = 500, BURN_DMG = 3, JOGO_BURN = 3000;
 const JOGO_MOUND_REQ = 40, MOUND_LIFE = Infinity, MOUND_MAX = 3, TOWER_H = 280, TOWER_DMG = 26;
 const VOLC_BURN = 4, VOLC_GEYSER_EVERY = 1100, VOLC_GEYSER_WARN = 650, VOLC_GEYSER_DMG = 10;
@@ -3367,7 +3367,7 @@ function drawDagon(){
 // ═══════════════════════════════════════════════════════════════════
 // HANAMI — Cursed Buds · Flower Field · Root Grab · Root Rampage
 // ═══════════════════════════════════════════════════════════════════
-const HANA_BUD_CD = 7000, BUD_N = 3, BUD_SPD = 8.5, BUD_DMG = 6, BUD_DRAIN = 25;
+const HANA_BUD_CD = 7000, BUD_N = 3, BUD_SPD = 8.5, BUD_DMG = 7, BUD_DRAIN = 12;
 const FIELD_IDLE = 30000, FIELD_MAXLIFE = 150000;   // a field wilts after 30s with nobody in it, or after 2.5 minutes
 const HANA_FIELD_CD = 9000, FIELD_W = 200, FIELD_LIFE = Infinity, FIELD_GROW = 350, FIELD_DMG = 5, FIELD_STUN = 450, FIELD_REHIT = 2000;
 const HANA_GRAB_CD = 8000, FLOWER_HEAL = 1, FLOWER_HEAL_MS = 700;   // Root Grab is a regular move now; Hanami heals in her own flowers
@@ -5845,12 +5845,12 @@ const ORB_DURATION     = 3000;        // 3 seconds control time
 const ORB_EFFECT_RAD   = 20 * BLOCK;  // 20 block effect radius
 const ORB_MOVE_SPD     = 5.5;         // px per frame while moving orb
 const ORB_DMG          = 17;   // Reversal Red burst
-const BLUE_DMG         = 18;   // Lapse Blue burst (a little lower than Red)
-const LAPSE_COOLDOWN   = 10000;
+const BLUE_DMG         = 20;   // Lapse Blue burst (a little lower than Red)
+const LAPSE_COOLDOWN   = 9000;
 const REVERSAL_COOLDOWN= 8500;
 const REVERSAL_WINDUP  = 380;
 const REVERSAL_SPEED   = 42;  // matches cleave speed
-const REVERSAL_DMG     = 17;
+const REVERSAL_DMG     = 19;
 const REVERSAL_KB      = 13;
 const LAPSE_SPAWN_DIST = 2 * BLOCK;   // keep for hollow nuke compatibility
 
@@ -6937,7 +6937,7 @@ const DISMANTLE_SLASH_INT = 130;    // ms between slash marks
 const DISMANTLE_DELAY     = 550;    // ms before first slash mark appears
 const DISMANTLE_CAST      = DISMANTLE_DELAY + DISMANTLE_SLASH_N * DISMANTLE_SLASH_INT + 200; // arm stays raised through all slashes
 const DISMANTLE_STUN      = DISMANTLE_CAST + 100; // enemy stunned for full cast duration
-const DISMANTLE_SLASH_DMG = 3.5;    // 3.5 × 6 = 21 total damage (was 24)
+const DISMANTLE_SLASH_DMG = 3;      // 3.5 × 6 = 21 total damage (was 24)
 const DISMANTLE_COOLDOWN  = 7000;
 
 // Slash marks (body hits for Dismantle)
@@ -7081,7 +7081,7 @@ function tickDismantleEvents(dt){
 const cleaves = [];
 const CLEAVE_WINDUP   = 260;   // ms before slice fires
 const CLEAVE_SPEED    = 42;
-const CLEAVE_DMG      = 16;
+const CLEAVE_DMG      = 14;
 // Dismantle chain: land it and you can fire it again straight away for CE — each link does a bit less and the final cooldown grows
 // each link: 15% less damage and +3s on the cooldown it comes back with; at most 3 extra links, so it can't loop forever
 const SUK_CHAIN_WIN = 1500, SUK_CHAIN_CE = 10, SUK_CHAIN_FALL = 0.15, SUK_CHAIN_CD_ADD = 8000, SUK_CHAIN_MAX = 3;
@@ -7812,6 +7812,7 @@ class Player {
           opp.mahiCharge = Math.min(MAHI_FORM_REQ, (opp.mahiCharge||0) + d);
         if(opp && opp.type==='hanami')
           opp.hanaCharge = Math.min(HANA_FIELD_REQ, (opp.hanaCharge||0) + d);
+        if(opp && (opp.type==='dagon' || opp.type==='ryu')) opp.domainCharge = Math.min(DOMAIN_CHARGE_REQ, (opp.domainCharge||0) + d*0.3);
         if(opp && opp.type==='geto')
           opp.getoCharge = Math.min(GETO_MIRROR_REQ, (opp.getoCharge||0) + d);
         if(opp && isNaoya(opp)){
@@ -7832,6 +7833,7 @@ class Player {
           opp.kenCharge = Math.min(KEN_AG_REQ, (opp.kenCharge||0) + d);
         if(opp && opp.type==='hakari')
           opp.hakCharge = Math.min(HAK_PUNCH_REQ, (opp.hakCharge||0) + d);
+        if(opp && opp.type==='yuji' && !opp._yujiUltSrc) opp.yujiUltCharge = Math.min(YUJI_ULT_COST, (opp.yujiUltCharge||0) + d*0.6);
         if(opp && opp.type==='yuji')
           opp.yujiBfCharge = Math.min(YUJI_BF_REQ, (opp.yujiBfCharge||0) + d);
         if(opp && opp.type==='higuruma')
@@ -13710,9 +13712,9 @@ const OL_VARS = {
       snd('swing', p.x); }},
   },
   jogo: {
-    1:{block:true, cd:9000, name:'Flame Burst', desc:'A ring of fire bursts out around Jogo (9s cooldown): 6 damage, sets everyone within 110px on fire and blasts them away.', lock:320, run(p){
+    1:{block:true, cd:9000, name:'Flame Burst', desc:'A ring of fire bursts out around Jogo (9s cooldown): 4 damage, a short burn and a shove to everyone within 110px.', lock:320, run(p){
       const cx = p.x+PW/2, cy = p.y+PH/2; addRing(cx, cy, '#ff7a3a', 110); addRing(cx, cy, '#ffd27a', 60); addParts(cx, cy, '#ff7a2a', 30, 8); snd('boom', p.x); doShake(7);
-      for(const d of olArea(p, cx-110, cy-90, 220, 180)) olHit(p, d, 6, {rag:[9, -7, RAGD_MS*0.8], burn:1500, col:'#ff9a4a'});
+      for(const d of olArea(p, cx-110, cy-90, 220, 180)) olHit(p, d, 4, {stun:300, push:5, burn:800, col:'#ff9a4a'});
       burnFlowersAt(cx, p.y+PH, 110); }},
     2:{block:true, name:'Head Eruption', desc:'The volcano on his head blows: three lava bombs arc out in front of him (5 each) and set anyone they hit on fire.', lock:320, run(p){
       for(const [vx, vy] of [[3,-5.5],[6,-8],[9,-9]]) olShot(p, {kind:'lava', x:p.x+PW/2, y:p.y+4, vx:p.facing*vx, vy, grav:0.42, r:9, life:1800, dmg:5, col:'#ff7a2a', o:{burn:2500, stun:240}});
@@ -15047,7 +15049,7 @@ function drawTruck(tr){
 const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9, NAO_CURSE_MS = 60000;   // the vengeful curse only lasts a minute
 const NAO_DASH_CD = 5000, NAO_DASH_SPD = 21, NAO_DASH_MS = 420, NAO_DASH_DMG = 14;
 const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 420], NAO_COMBO_FIN = 600, NAO_COMBO_JAB = 3, NAO_COMBO_KICK = 9;
-const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 3000, NAO_ATK_FRAME_MS = 3000, NAO_SPECIAL_FRAME_MS = 5000, NAO_FRAME_IMMUNE = 4000, NAO_FRAME_DMG_IN = 1.14;
+const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 3000, NAO_ATK_FRAME_MS = 2200, NAO_SPECIAL_FRAME_MS = 5000, NAO_FRAME_IMMUNE = 4000, NAO_FRAME_DMG_IN = 1.14;
 const NAO_ROCKET_CD = 8000, NAO_ROCKET_MS = 2400, NAO_ROCKET_SPD = 19, NAO_ROCKET_DMG = 20, NAO_ROCKET_TURN = 0.0055;
 const NAO_FIELD_CD = 7000, NAO_FIELD_N = 5, NAO_FIELD_LIFE = 6000, NAO_FIELD_HOLD = 3000, NAO_FIELD_DMG = 10, NAO_FIELD_TRAP_DMG = 22;
 const NAO_MISS_MS = 3000, NAO_CMB_SOFT = 25, NAO_CMB_HARD = 40, NAO_PASSIVE_CD = 3000;   // whiffing a move breaks his own 24 fps rule: he's frozen in a frame
@@ -15706,7 +15708,7 @@ function tickMegumi(dt){
     } else if(s.kind==='elephant'){
       if(!s.landed && s.t >= 520){ s.landed = true; doShake(16); snd('boom', s.x); addRing(s.x, s.y, '#8fd0ff', 160); addParts(s.x, s.y-20, '#bfe6ff', 30, 9);
         if(!IS_GUEST) carveCircle(s.x, s.y, 34);
-        for(const d of olArea(o, s.x-70, s.y-PH-30, 140, PH+40)) olHit(o, d, 12, {rag:[10,-9,RAGD_MS*1.1], dir:Math.sign(d.x+PW/2-s.x)||1, col:'#ffb3d1'});
+        for(const d of olArea(o, s.x-70, s.y-PH-30, 140, PH+40)) olHit(o, d, 10, {rag:[10,-9,RAGD_MS*1.1], dir:Math.sign(d.x+PW/2-s.x)||1, col:'#ffb3d1'});
         for(const d of foes){ const dx = d.x+PW/2 - s.x; if(Math.abs(dx) < 200 && Math.abs(dx) > 50 && Math.abs(d.y+PH-s.y) < 80 && d.hittable){ d.vx = Math.sign(dx)*9; addParts(d.x+PW/2, d.y+PH-6, '#8fd0ff', 6, 3); } } }
     } else if(s.kind==='nue'){
       s.x += s.dir*15*k; s.y += 2.2*k*(s.t < 260 ? 1 : -0.6);
@@ -15936,7 +15938,7 @@ function drawMegumiBody(pl){
 //  Movement: dash = ride a stingray curse for 3s · Maximum Output: Rainbow Dragon · Giant Catfish
 // ═══════════════════════════════════════════════════════════════════
 const GETO_CENT_CD = 7000, GETO_CENT_N = 3, GETO_CENT_DMG = 4, GETO_CENT_SPD = 4.2, GETO_CENT_LIFE = 4600;   // slower (was 6.5), so they live a bit longer to still cross the screen
-const GETO_KUCHI_CD = 8000, GETO_KUCHI_R = 96, GETO_KUCHI_QTE = 1100, GETO_KUCHI_CUTS = 6, GETO_KUCHI_DMG = 3;
+const GETO_KUCHI_CD = 8000, GETO_KUCHI_R = 96, GETO_KUCHI_QTE = 1100, GETO_KUCHI_CUTS = 6, GETO_KUCHI_DMG = 2.5;
 const GETO_MIRROR_REQ = 40, GETO_MIRROR_MS = 6000;
 const GETO_RAY_MS = 3000, GETO_RAY_CD = 11000, GETO_RAY_MAXH = 200;   // the stingray can't climb more than 200px above where he mounted it
 const GETO_RAY_SPD = 1.8, GETO_TAP_MS = 230;
@@ -16308,9 +16310,9 @@ function drawGetoBody(pl){
 //  Maximum Output: Output Burst (blockable) · Granite Barrage (three beams in a fan)
 // ═══════════════════════════════════════════════════════════════════
 const RYU_PUNCH_CD = 6000, RYU_PUNCH_REACH = 90, RYU_PUNCH_DMG = 25, RYU_PUNCH_LUNGE = 160, RYU_PUNCH_HOLD = 420, RYU_PUNCH_MISS = 750;
-const RYU_BEAM_CD = 6000, RYU_BEAM_WIND = 420, RYU_BEAM_DMG = 16, RYU_BEAM_LEN = 900, RYU_BEAM_H = 22, RYU_BEAM_H_OUT = 50;
+const RYU_BEAM_CD = 6000, RYU_BEAM_WIND = 420, RYU_BEAM_DMG = 18, RYU_BEAM_LEN = 900, RYU_BEAM_H = 22, RYU_BEAM_H_OUT = 50;
 const RYU_ULT_WIND = 900, RYU_ULT_DMG = 30, RYU_ULT_DMG_OUT = 30, RYU_ULT_H = 90, RYU_ULT_H_OUT = 90;
-const RYU_OUT_RATE = 0.45, RYU_OUT_CE = 15, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.3;   // per second while charging · +80% damage dealt and +50% taken at 100%
+const RYU_OUT_RATE = 0.45, RYU_OUT_CE = 15, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.2;   // per second while charging · +80% damage dealt and +50% taken at 100%
 const ryuBeams = [];   // synced: {owner, x, y, ang, len, h, dmg, t, life, done, big}
 function ryuBeamH(p, big){ const o = (p && p.ryuOut)||0; return big ? RYU_ULT_H + RYU_ULT_H_OUT*o : RYU_BEAM_H + RYU_BEAM_H_OUT*o; }
 function ryuFire(p, ang, o){
