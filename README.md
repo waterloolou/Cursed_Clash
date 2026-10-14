@@ -21,7 +21,7 @@ That's it. Everything is in that one file.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
 
-## Newest fighter: Yuki Tsukumo
+## Earlier fighter: Yuki Tsukumo
 
 Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (+75% damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and then self-destructs, costing her that life. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
 
@@ -30,6 +30,13 @@ Also recent:
 - **Mahito** — see the latest batch above: transfigured humans, Self-Transfiguration, the Body Repel blob, Idle Transfiguration in Maximum Output.
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
+
+## Latest: playtest balance patch (Oct 14)
+Two brand-new players fought every matchup (400 pairings × online and one-keyboard rules = 800 matches) and the outliers were tuned. Full list with old → new values in [`changes/review-oct14.md`](changes/review-oct14.md).
+- **Nerfs**: Geto (Centipedes 4 dmg, 7s, no longer break blocks; Kuchisake-Onna 15), Jogo (Flame Burst 4 dmg + shove, 9s; Flame Dash 6), Megumi (Divine Dog 5, Nue 6, Max Elephant 10), Sukuna (Dismantle 14, Cleave 18), Hakari (jackpot 20%, +8% per miss), Yuta (Rika's Grab 5s), Naoya (frames from hits last 2.2s, 4s immunity after a frame).
+- **Buffs**: Gojo (Lapse Blue 20 with a shorter cooldown, Reversal Red 19, Hollow Purple charges faster), Ryu (Granite Blast 18, +20% damage taken at full Output, faster Output, longer punch), Todo (takes 10% less, Haymaker 15), Higuruma (Hammer sweep 16, Large hammer 23), Mei Mei (Axe Chop 20, Axe Spin 7), Hanami (Cursed Buds 7, ult drain halved). Dagon and Ryu fill their ultimate 30% faster from damage they deal, Yuji 60% faster.
+- **New Maximum Output moves** replacing redundant ones: Todo **Shoulder Tackle**, Mei Mei **Axe Boomerang**, Mechamaru **Rocket Punch**.
+- **Bug fix**: Higuruma's Executioner's Sword on a blocking fighter left them "dead" with HP and the round could never end.
 
 ## Newest fighter: Ryu Ishigori
 The biggest cursed energy output in the Culling Game. **Granite Punch** (Q): if it lands he steps back, charges and blasts them point-blank (25); whiff it and you're wide open. **Granite Blast** (E): an aimable beam. **Hold R** to pour cursed energy into his **Output** bar — up to +80% damage and much bigger beams, but he takes up to 50% more damage too. Ultimate: **Maximum Granite Blast**, a beam across the whole map. Maximum Output: Output Burst, Granite Barrage.
