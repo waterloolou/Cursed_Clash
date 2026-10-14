@@ -56,3 +56,24 @@ Picked from the playtest: moves that did ~0% of their fighter's damage *and* dup
 Revert: restore the three `OL_VARS` entries from commit `98619ca` (`todo[2]`, `meimei[1]`, `mechamaru[2]`).
 Tested: each fires and hits under both rule sets (Tackle 10, Boomerang 8 out + 8 back, Rocket Punch 12), no errors.
 Yuta's Cursed Fist was also flagged (1% of his damage, overlaps Slice & Dice) but left alone — another developer is working on Yuta.
+
+## Second balance pass (found in the working tree, merged as-is) + text sync
+Constants changed outside this session, kept and documented here (old → new):
+Higuruma sweep 14→16, Large hammer 20→23, its cooldown 7s→6.5s · Hakari jackpot 25%→20%, +10%→+8% per miss · Mei Mei Axe Chop 18→20,
+Axe Spin 6→7 · Jogo Flame Dash 8→6 dmg, 7s→8s; Flame Burst 6→4 dmg with a short stun + shove instead of a ragdoll, burn 0.8s ·
+Hanami Cursed Buds 6→7, ult drain 25→12 · Gojo Lapse Blue 18→20, cooldown 10s→9s, Reversal Red 17→19 · Sukuna Cleave slash 3.5→3 (18 total),
+Dismantle 16→14 · Naoya frame from hits 3s→2.2s · Megumi Max Elephant 12→10 · Geto Kuchisake-Onna cut 3→2.5 (15 total) ·
+Ryu Granite Blast 16→18, Output damage taken +30%→+20% · new: Dagon and Ryu get +30% ultimate charge from damage they deal; Yuji +60%.
+Wiki, move list, tips and Max Output descriptions updated to these numbers.
+
+## Bug fix found in the final tournament
+- **Ultimate Mechamaru frozen for good**: Naoya's frames ignored the mech's super armour; when the frame ended the mech couldn't leave the
+  framed state (super armour refused the change), so it stayed frozen until the mech ran out. Fix: `framePlayer` skips a fighter in
+  Ultimate Mechamaru, and a frame that ends during the mech returns it to `MECHULT`. Revert: remove the `mechUltPhase` checks in
+  `framePlayer`, `tickFramed` and the `case S.FRAMED` line.
+
+## Final check (all changes together)
+800-match tournament on the merged build: 0 errors, 0 stuck states after the fix above. Average win % (before → final):
+Geto 84→80 · Sukuna 71→76 · Megumi 71→75 · Jogo 75→72 · Hakari 69→59 · Dagon 49→52 · Mahito 50→50 · Todo 36→49 · Choso 52→49 ·
+Yuki 46→45 · Takaba 44→45 · Yuta 51→43 · Hanami 38→43 · Mechamaru 46→41 · Yuji 43→39 · Higuruma 36→39 · Ryu 28→39 · Gojo 27→38 ·
+Naoya 42→35 · Mei Mei 38→32. Geto, Sukuna and Megumi are still the top three and Mei Mei / Naoya the bottom — next pass.
