@@ -31,7 +31,15 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: playtest balance patch (Oct 14)
+## Latest: Modulo Yuji, Rika as a fighter, easier maps (Oct 14b)
+Full list with old → new values and revert notes in [`changes/oct14b.md`](changes/oct14b.md).
+- **Modulo Yuji** lasts a whole minute (shown by the ultimate bar) with a new moveset: **Piercing Blood** (tap: a fast blockable beam for 10 · hold: 5 homing beams, 15 each), an aimed **Cleave** that explodes on contact (22), and a **Dismantle** that chases them down and grabs (35). Cooldowns scale with damage, 6s max. Enchain Sukuna's **Cleave** is now 5 aimed slashes and his **Fuga** is faster with a bigger blast.
+- **Yuta**: **Metal Arm** replaces Cursed Fist (choke + throw up close, parry from range). **Summon Rika** is his special: she follows him as her own fighter (75 HP) with **Offensive / Defensive / Support** modes. **Copy** and **True Love Beam** are his Maximum Output moves (Copy also needs a Rika hit; the beam needs Rika out).
+- **Domains** are drawn behind everything, so you can see projectiles and effects inside them.
+- **Hanami's Wooden Wall** is unbreakable; it goes after 4s, on her death or when a domain opens.
+- **Maps**: Sendai's deck and stairs are one-way (no more getting stuck under the deck at spawn), the deck shelters are higher, and **Mechamaru** can tap jump for a short hop. Every fighter can now get from every spawn to every other spawn on every map.
+
+## Earlier: playtest balance patch (Oct 14)
 Two brand-new players fought every matchup (400 pairings × online and one-keyboard rules = 800 matches) and the outliers were tuned. Full list with old → new values in [`changes/review-oct14.md`](changes/review-oct14.md).
 - **Nerfs**: Geto (Centipedes 4 dmg, 7s, no longer break blocks; Kuchisake-Onna 15), Jogo (Flame Burst 4 dmg + shove, 9s; Flame Dash 6), Megumi (Divine Dog 5, Nue 6, Max Elephant 10), Sukuna (Dismantle 14, Cleave 18), Hakari (jackpot 20%, +8% per miss), Yuta (Rika's Grab 5s), Naoya (frames from hits last 2.2s, 4s immunity after a frame).
 - **Buffs**: Gojo (Lapse Blue 20 with a shorter cooldown, Reversal Red 19, Hollow Purple charges faster), Ryu (Granite Blast 18, +20% damage taken at full Output, faster Output, longer punch), Todo (takes 10% less, Haymaker 15), Higuruma (Hammer sweep 16, Large hammer 23), Mei Mei (Axe Chop 20, Axe Spin 7), Hanami (Cursed Buds 7, ult drain halved). Dagon and Ryu fill their ultimate 30% faster from damage they deal, Yuji 60% faster.
