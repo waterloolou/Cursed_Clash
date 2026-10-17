@@ -934,7 +934,7 @@ const DMG_HIT  = 2;
 const DMG_KB   = 5;
 const DMG_SLAM = 15;
 
-const S = { IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
+const S = { MAHICURSE:'mahicurse', MAHIIBDK:'mahiibdk', IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             DIVE:'dive', STUN:'stun', RAGD:'ragd', SLAM:'slam', DEAD:'dead',
             CLEAVE:'cleave', DISMANTLE:'dismantle', FUGA:'fuga', LAPSE:'lapse',
             REVERSAL:'reversal', HOLLOW:'hollow', DOMAIN:'domain',
@@ -3686,11 +3686,11 @@ function drawHanamiBody(pl){
 // MAHITO — Idle Transfiguration · Soul Isomer · Distorted Killing · Self-Embodiment of Perfection
 // ═══════════════════════════════════════════════════════════════════
 const MAHI_PALM_CD = 7000, PALM_WIND = 180, PALM_REC = 260, PALM_REACH = 72, PALM_DMG = 12, RESHAPE_MS = 5000;
-const MAHI_ISO_CD = 8000, ISO_SPD = 4.2, ISO_LIFE = 4200, ISO_R = 72, ISO_DMG = 16;
+const MAHI_ISO_CD = 8000, ISO_SPD = 4.2, ISO_LIFE = 4200, ISO_R = 72, ISO_DMG = 26;   // Oct 17: 16 → 26 (Polymorphic Soul Isomer hits hard, dies to anything)
 const MAHI_FORM_REQ = 14, MAHI_FORM_MS = 8000;   // MAHI_FORM_REQ = the charge for the Self-Transfiguration special
 // transfigured humans: Soul Isomer, Body Repel and Self-Transfiguration each use one; killing the opponent restocks them
-const MAHI_HUMANS = 5, MAHI_TF_UP = 3, MAHI_TF_DOWN = 1, MAHI_TF_STEP = 0.05, MAHI_TF_MAX = 9, MAHI_TF_MIN = -6;
-const BLOB_LEN = 560, BLOB_H = 84, BLOB_GROW_MS = 900, BLOB_LIFE = 6000, BLOB_PUSH_DMG = 4, BLOB_PUSH_EVERY = 280;
+const MAHI_HUMANS = 10, MAHI_TF_UP = 3, MAHI_TF_DOWN = 1, MAHI_TF_STEP = 0.05, MAHI_TF_MAX = 9, MAHI_TF_MIN = -6;
+const BLOB_LEN = 560, BLOB_H = 84, BLOB_GROW_MS = 900, BLOB_LIFE = 45000, BLOB_HP = 40, BLOB_PUSH_DMG = 4, BLOB_PUSH_EVERY = 280;
 const MAHI_TF_NAMES = {spd:'SPEED', dmg:'DAMAGE', hp:'HEALTH', jmp:'JUMP'};
 function mahiMul(pl, k){ return pl && pl.mahiTf ? 1 + MAHI_TF_STEP*(pl.mahiTf[k]||0) : 1; }
 function mahiRefill(pl){ if(!pl || pl.type!=='mahito') return; pl.mahiHumans = MAHI_HUMANS; addSpeech(pl.x+PW/2, pl.y-34, 'HUMANS RESTOCKED', '#c9a0ff', 1000); addParts(pl.x+PW/2, pl.y+PH/2, '#9aa8b8', 14, 4); }
@@ -3711,8 +3711,9 @@ const SOUL_TICK = 1100, SOUL_DMG = 6;
 const isomers = [];   // {owner, x, y, dir, t, vy, step}
 const mahiBlobs = [];  // Body Repel: {owner, x, y, dir, len, t, stop, h1, h2, h3}
 function spawnMahiBlob(pl){
+  const mine = mahiBlobs.filter(b => b.owner===pl); if(mine.length >= 2){ mine[0].t = BLOB_LIFE + 1; }   // at most 2 standing
   const x = Math.max(4, Math.min(W-4, pl.x+PW/2 - pl.facing*18));
-  mahiBlobs.push({owner:pl, x, y:terGroundTop(x-10, 20, pl.y+PH-1, true), dir:pl.facing, len:0, t:0, stop:false, h1:0, h2:0, h3:0});
+  mahiBlobs.push({owner:pl, x, y:terGroundTop(x-10, 20, pl.y+PH-1, true), dir:pl.facing, len:0, t:0, stop:false, h1:0, h2:0, h3:0, hp:BLOB_HP});
   addParts(x, pl.y+PH-8, '#9aa8b8', 20, 6); addRing(x, pl.y+PH-20, '#c9a0ff', 70); doShake(8); snd('heavy', x);
 }
 function blobH(b){ return BLOB_H * Math.min(1, b.t/260) * (b.t > BLOB_LIFE-500 ? Math.max(0, (BLOB_LIFE-b.t)/500) : 1); }
@@ -3725,8 +3726,9 @@ function tickMahiBlobs(dt){
     let grew = false;
     if(!b.stop && b.t < BLOB_GROW_MS){
       const q = b.t/BLOB_GROW_MS, want = BLOB_LEN*(1 - (1-q)*(1-q)), tip = b.x + b.dir*want;
-      if(tip < 4 || tip > W-4 || terSolid(tip-4, b.y-Math.max(20, h)+8, 8, Math.max(12, h-16))) b.stop = true;
-      else { grew = want > b.len; b.len = want; }
+      if(tip < 4 || tip > W-4) b.stop = true;
+      else { if(!IS_GUEST && terSolid(tip-4, b.y-Math.max(20, h)+8, 8, Math.max(12, h-16))) carveCircle(tip, b.y - h/2, Math.max(24, h*0.6));   // Oct 17: it breaks terrain
+        grew = want > b.len; b.len = want; }
     } else if(b.t >= BLOB_GROW_MS) b.stop = true;
     if(h < 6 || b.len < 4) continue;
     const x0 = b.dir>0 ? b.x : b.x-b.len, x1 = x0 + b.len, tipX = b.x + b.dir*b.len;
@@ -3791,7 +3793,7 @@ function isoBoom(o){
 }
 function tickMahito(dt){
   const f = dt/16.67;
-  tickMahiBlobs(dt);
+  tickMahiBlobs(dt); tickMahiRework(dt);
   for(let i=isomers.length-1;i>=0;i--){
     const o = isomers[i]; o.t += dt; o.step += dt;
     const opp = o.owner===p1 ? p2 : p1;
@@ -3812,21 +3814,157 @@ function tickMahito(dt){
     if(boom){ isoBoom(o); isomers.splice(i,1); }
   }
 }
+
+// ═══ MAHITO REWORK (Oct 17) ═══════════════════════════════════════════
+// Soul: when Mahito is in the match his opponent gets a SOUL bar = max HP + half their CE pool. It never regenerates (it carries over
+// between lives), it caps their cursed energy (CE can't go over pool × soul left), and if it hits 0 they die on the spot.
+// Mahito's HP damage is reduced, and more after every life the opponent loses — his real damage is to the soul.
+const SOUL_CE_K = 0.5, MAHI_HP_MUL = [0.6, 0.45, 0.32, 0.25], MAHI_MELEE_SOUL = 2.5, MAHI_SOUL_KILL_TH = 6, MAHI_TH_MAX = 16;
+const DEP_NAMES = ['3 HUMANS', 'BODY REPEL', 'SOUL ISOMER'], DEP_COST = [1, 2, 2], DEP_CD = [5000, 9000, 8000];
+const MINI_N = 3, MINI_SPD = 3.6, MINI_DMG = 3, MINI_EVERY = 700, MINI_LIFE = 7000;
+const KISS_WIND = 280, KISS_RANGE = 520, KISS_SPD = 34, KISS_DMG = 30, KISS_CD = 7000;
+const CURSE_CD = 6000, CURSE_DASH_MS = 230, CURSE_SPD = 22, CURSE_HP = 6, CURSE_SOUL = 10, CURSE_BF_DMG = 24, CURSE_BF_SOUL = 12, CURSE_RING_MS = 900, CURSE_WIN = 90;
+const MAHI_IDLE_REQ = 40, MAHI_IDLE_SOUL = 50, MAHI_IDLE_REACH = 80;
+const SPIKE_COST = 2, SPIKE_MS = 8000, SPIKE_W = 26, SPIKE_DMG = 6, SPIKE_EVERY = 500, OMNI_COST = 4, OMNI_R = 230, OMNI_DMG = 18;
+const MAHI_ST_SPD = 1.25, MAHI_ST_JMP = 1.2, MAHI_ST_DRAIN = 6;
+const MAHI_HANDSIGN = 2400;   // his domain takes more than twice as long to cast, and he isn't protected until the very end
+const IBDK_MS = 60000, IBDK_SPD = 1.5, IBDK_HP = 1.25, IBDK_BF = 2, IBDK_ULT = 0.75;
+const IBDK_CTR_MS = 420, IBDK_CTR_CD = 15000, IBDK_TEN_RANGE = 420, IBDK_TEN_DMG = 14, IBDK_TEN_CD = 5000, IBDK_SLAM_REACH = 100, IBDK_SLAM_DMG = 32, IBDK_SLAM_CD = 8000;
+const SOUL_NON_CE = new Set(['axe', 'crow', 'gavel', 'pach']);   // olShot kinds that aren't cursed energy: Spiky Wall bounces these
+const mahiMinis = [];   // synced: small transfigured humans {owner, x, y, dir, t, vy, hitT}
+const mahiWalls = [];   // synced: Spiky Walls {owner, x, top, bot, t, hits:{}}
+const mahiLips = [];    // synced: the kiss {owner, x, y, dir, len, t, hit}
+function isMahiOpp(pl){ const o = pl===p1 ? p2 : pl===p2 ? p1 : null; return !!o && (o.baseType||o.type)==='mahito'; }
+function soulInit(pl){ if(!pl || pl.soulMax) return; pl.soulMax = Math.round((pl.maxHp||100) + (pl.ceMax||100)*SOUL_CE_K); pl.soul = pl.soulMax; }
+function soulHit(att, def, amt, col){
+  if(!def || def.state===S.DEAD || !(amt>0) || IS_GUEST) return;
+  if(soulImmune(def)){ if(terClock - (def._soulImmT||-1e9) > 900){ def._soulImmT = terClock; addSpeech(def.x+PW/2, def.y-30, 'HIS SOUL WON\'T CHANGE', '#999', 800); } return; }
+  soulInit(def); def.soul = Math.max(0, def.soul - amt); def.reshapeT = Math.max(def.reshapeT||0, 900);
+  addDmg(def.x+PW/2 + 14, def.y-26, 'SOUL ' + Math.round(amt), col||'#c9a0ff');
+  if(def.soul <= 0 && def.hp > 0){
+    def._soulKill = true; def._rawDmg = true; def.hp = 0; def._rawDmg = false; def._initRd(0,-3,.05); def.ss(S.DEAD);
+    addSpeech(def.x+PW/2, def.y-34, 'SOUL SHATTERED', '#c9a0ff', 1400); showTxt('TRANSFIGURED', 1200); if(att) sayFor(att, 'Your soul has a new shape now.');
+    addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 40, 9); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 120); doShake(16);
+  }
+}
+function mahiHpMul(pl){ return MAHI_HP_MUL[Math.min(MAHI_HP_MUL.length-1, pl.mahiOppDeaths||0)]; }
+function mahiSoulOK(pl){ return !(pl.ibdkT>0) && !pl.mahiSTOn; }
+// Body Repel blobs can now be destroyed: the opponent's attacks chip their HP
+function blobHurt(b, dmg){ b.hp = (b.hp==null ? BLOB_HP : b.hp) - dmg; addDmg(b.x + b.dir*b.len/2, b.y - blobH(b) - 8, Math.round(dmg), '#9aa8b8'); addParts(b.x + b.dir*b.len/2, b.y-30, '#9aa8b8', 6, 3);
+  if(b.hp <= 0){ b.t = BLOB_LIFE + 1; addSpeech(b.x + b.dir*b.len/2, b.y - 60, 'BODY REPEL BROKEN', '#bbb', 700); } }
+function spawnMahiMinis(pl){
+  for(let k=0;k<MINI_N;k++){ const x = Math.max(10, Math.min(W-10, pl.x+PW/2 + pl.facing*(14 + k*18)));
+    mahiMinis.push({owner:pl, x, y:terGroundTop(x-5, 10, pl.y+PH-1, true), dir:pl.facing, t:-k*120, vy:0, hitT:-1e9}); }
+  addParts(pl.x+PW/2, pl.y+PH-10, '#9aa8b8', 14, 4); snd('swing', pl.x);
+}
+function spawnSpikeWall(pl){
+  const x = Math.max(SPIKE_W, Math.min(W-SPIKE_W, pl.x+PW/2)), bot = terGroundTop(x-SPIKE_W/2, SPIKE_W, pl.y+PH-1, true);
+  let top = pl.y - 4; while(top > T_TOP + 6 && !terSolid(x-SPIKE_W/2, top-6, SPIKE_W, 6)) top -= 6;   // up to the ceiling, or the top of the map
+  mahiWalls.push({owner:pl, x, top, bot, t:0, hits:{}});
+  addRing(x, (top+bot)/2, '#c9a0ff', 80); addParts(x, bot-20, '#9aa8b8', 24, 7); doShake(9); snd('heavy', x); sayFor(pl, 'Body Repel.');
+}
+function mahiOmniRepel(pl){
+  const cx = pl.x+PW/2, cy = pl.y+PH/2;
+  addRing(cx, cy, '#9aa8b8', OMNI_R); addRing(cx, cy, '#c9a0ff', OMNI_R*0.6); addParts(cx, cy, '#9aa8b8', 46, 11); doShake(18); snd('boom', cx);
+  if(!IS_GUEST) carveCircle(cx, cy, OMNI_R*0.5);
+  for(const d of olFoes(pl)) if(Math.hypot(d.x+PW/2 - cx, d.y+PH/2 - cy) < OMNI_R + PW/2) olHit(pl, d, OMNI_DMG, {rag:[15,-11,RAGD_MS*1.2], dir:Math.sign(d.x - pl.x) || pl.facing, col:'#c9a0ff'});
+  sayFor(pl, 'Body Repel!');
+}
+function tickMahiRework(dt){
+  const f = dt/16.67;
+  // soul bookkeeping (host): give the opponent a soul bar, cap their CE by it
+  for(const pl of [p1, p2]){ if(!pl) continue;
+    if(isMahiOpp(pl)){ soulInit(pl); if(pl.ceMax && !ceInfinite(pl)){ const cap = pl.ceMax * pl.soul / pl.soulMax; if(pl.ce > cap) pl.ce = cap; } } }
+  // small transfigured humans: chase, nip (3 + a flinch), die to any hit
+  for(let i=mahiMinis.length-1;i>=0;i--){
+    const m = mahiMinis[i]; m.t += dt; const opp = m.owner===p1 ? p2 : p1;
+    if(m.t < 0) continue;
+    let dead = m.t > MINI_LIFE || m.owner.state===S.DEAD && m.t > 300;
+    if(opp && opp.state!==S.DEAD) m.dir = Math.sign(opp.x+PW/2 - m.x) || m.dir;
+    const nx = m.x + m.dir*MINI_SPD*f, top = terGroundTop(nx-5, 10, m.y+1, true);
+    if(top >= m.y - 14) m.x = nx; else if(!terSolid(nx-5, m.y-14, 10, 12)) m.x = nx; else m.vy = -6;   // hop at walls
+    m.vy = Math.min(12, (m.vy||0) + GRAV*f); const g = terGroundTop(m.x-5, 10, m.y-14, true); m.y = Math.min(g, m.y + m.vy*f); if(m.y >= g) m.vy = 0;
+    if(m.y > H+40 || m.x < 0 || m.x > W) dead = true;
+    if(opp && opp.state!==S.DEAD && !dead){
+      const b = opp.bodyBox();
+      if(m.x > b.x-6 && m.x < b.x+b.w+6 && m.y > b.y && m.y-22 < b.y+b.h && terClock - m.hitT > MINI_EVERY){ m.hitT = terClock; olHit(m.owner, opp, MINI_DMG, {stun:280, push:2, dir:m.dir, col:'#9aa8b8'}); }
+      if(opp.hitboxOn && opp.atkBox){ const ab = opp.atkBox(); if(ab && m.x > ab.x-6 && m.x < ab.x+ab.w+6 && m.y > ab.y && m.y-22 < ab.y+ab.h+10) dead = true; }
+      for(const sh of olShots) if(sh.owner===opp && Math.hypot((sh.x||0)-m.x, (sh.y||0)-(m.y-12)) < (sh.r||12)+10){ dead = true; break; }
+    }
+    if(dead){ addParts(m.x, m.y-10, '#9aa8b8', 8, 3); mahiMinis.splice(i,1); }
+  }
+  // Body Repel blobs: the opponent can break them with attacks
+  for(const b of mahiBlobs){ const opp = b.owner===p1 ? p2 : p1; if(!opp || !opp.hitboxOn || !opp.atkBox) continue;
+    const ab = opp.atkBox(), h = blobH(b), x0 = b.dir>0 ? b.x : b.x-b.len; if(!ab || h < 6) continue;
+    if(ab.x < x0+b.len && ab.x+ab.w > x0 && ab.y < b.y && ab.y+ab.h > b.y-h && terClock - (b.hurtT||-1e9) > 300){ b.hurtT = terClock; blobHurt(b, 7); } }
+  // Spiky Walls: spikes hurt the opponent, they can't walk through it (Mahito can), non-CE projectiles bounce off
+  for(let i=mahiWalls.length-1;i>=0;i--){
+    const w = mahiWalls[i]; w.t += dt;
+    if(w.t > SPIKE_MS || w.owner.state===S.DEAD && w.t > 300 || activeDomain){ addParts(w.x, (w.top+w.bot)/2, '#9aa8b8', 20, 5); mahiWalls.splice(i,1); continue; }
+    const x0 = w.x - SPIKE_W/2, x1 = w.x + SPIKE_W/2;
+    for(const def of olFoes(w.owner)){
+      if(def.state===S.DEAD || [S.RAGD,S.SLAM].includes(def.state)) continue;
+      if(def.x+PW <= x0 || def.x >= x1 || def.y+PH <= w.top || def.y >= w.bot) continue;
+      const side = (def.x+PW/2 < w.x) ? -1 : 1, nx = side < 0 ? x0 - PW - 1 : x1 + 1;
+      if(!terSolid(nx, def.y+2, PW, PH-6) && nx > 0 && nx < W-PW) def.x = nx; def.vx = side*3;
+      const key = def===p1 ? 'p1' : 'p2';
+      if(terClock - (w.hits[key]||-1e9) > SPIKE_EVERY){ w.hits[key] = terClock; olHit(w.owner, def, SPIKE_DMG, {stun:300, push:5, dir:side, col:'#c9a0ff'}); }
+    }
+    for(const sh of olShots){ if(sh.owner===w.owner || !SOUL_NON_CE.has(sh.kind) || sh.vx===undefined) continue;
+      if(sh.x > x0-8 && sh.x < x1+8 && sh.y > w.top && sh.y < w.bot && Math.sign(sh.vx) === Math.sign(w.x - (sh.x - sh.vx))){ sh.vx = -sh.vx; addParts(sh.x, sh.y, '#ddd', 5, 3); } }
+    if(typeof gavelThrows!=='undefined') for(const g of gavelThrows){ if(g.owner===w.owner || g.vx===undefined) continue;
+      if(g.x > x0-10 && g.x < x1+10 && g.y > w.top && g.y < w.bot && Math.sign(g.vx) === Math.sign(w.x - (g.x - g.vx))){ g.vx = -g.vx; } }
+  }
+  // the kiss: lips shoot out along the ground line
+  for(let i=mahiLips.length-1;i>=0;i--){
+    const L = mahiLips[i]; L.t += dt;
+    if(!L.hit && L.len < KISS_RANGE){ L.len = Math.min(KISS_RANGE, L.len + KISS_SPD*f);
+      const tipX = L.x + L.dir*L.len;
+      for(const def of olFoes(L.owner)){ const b = def.bodyBox(); if(tipX > b.x-6 && tipX < b.x+b.w+6 && L.y > b.y-10 && L.y < b.y+b.h+10){ L.hit = true;
+          if(olHit(L.owner, def, KISS_DMG / mahiHpMul(L.owner), {ubk:true, rag:[12,-7,RAGD_MS], dir:L.dir, col:'#ff6a9a'}) && def._guardStamp!==terClock){ addSpeech(def.x+PW/2, def.y-28, 'MWAH', '#ff6a9a', 900); doShake(12); snd('heavy', def.x); }
+          break; } }
+      if(terSolid(tipX-4, L.y-4, 8, 8)) L.hit = true; }
+    if(L.t > 900 || L.owner.state===S.DEAD) mahiLips.splice(i,1);
+  }
+}
+function drawMahiRework(){
+  for(const m of mahiMinis){ if(m.t < 0) continue; const x = m.x, y = m.y, bob = Math.sin(m.t*0.02)*2;
+    ctx.save(); ctx.fillStyle = '#8f9aa8'; ctx.strokeStyle = '#4a5260'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(x, y-10+bob, 7, 10, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + m.dir*2, y-24+bob, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#2a2430'; ctx.fillRect(x + m.dir*4 - 1, y-26+bob, 2, 2); ctx.restore(); }
+  for(const w of mahiWalls){ const a = Math.min(1, w.t/200) * (w.t > SPIKE_MS-500 ? (SPIKE_MS-w.t)/500 : 1), x0 = w.x - SPIKE_W/2;
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#7f8a98'; ctx.fillRect(x0, w.top, SPIKE_W, w.bot - w.top);
+    ctx.fillStyle = '#5b6573'; for(let y=w.top+8; y<w.bot; y+=22){ ctx.beginPath(); ctx.ellipse(w.x, y, SPIKE_W/2-3, 6, 0, 0, Math.PI*2); ctx.fill(); }
+    ctx.fillStyle = '#d8dce4'; for(let y=w.top+10; y<w.bot-4; y+=18) for(const sd of [-1,1]){ ctx.beginPath(); ctx.moveTo(w.x + sd*SPIKE_W/2, y-5); ctx.lineTo(w.x + sd*(SPIKE_W/2+14), y); ctx.lineTo(w.x + sd*SPIKE_W/2, y+5); ctx.fill(); }
+    ctx.restore(); }
+  for(const L of mahiLips){ const tipX = L.x + L.dir*L.len, a = L.t > 700 ? (900-L.t)/200 : 1;
+    ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = '#b8485e'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(L.x, L.y); ctx.lineTo(tipX, L.y); ctx.stroke();
+    ctx.strokeStyle = '#e07890'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(L.x, L.y-2); ctx.lineTo(tipX, L.y-2); ctx.stroke();
+    ctx.fillStyle = '#e04a6a'; ctx.beginPath(); ctx.ellipse(tipX, L.y-4, 12, 6, 0, Math.PI, 0); ctx.fill(); ctx.beginPath(); ctx.ellipse(tipX, L.y+4, 12, 6, 0, 0, Math.PI); ctx.fill(); ctx.restore(); }
+}
+// Black Flash timing ring shared by I Really am a Curse! (press ability 2 or attack as the ring meets the inner circle)
+function drawCurseRing(pl){
+  if(pl.state!==S.MAHICURSE || pl.mcPh!=='ring') return; const d = typeof pl.mcRef==='string' ? netRes(pl.mcRef) : pl.mcRef; if(!d) return;
+  const k = Math.min(1, (pl.sTimer - pl.mcT0)/CURSE_RING_MS), cx = d.x+PW/2, cy = d.y+PH/2, r = 70 - 52*k;
+  ctx.save(); ctx.strokeStyle = '#ff2a2a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, Math.max(4, r), 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI*2); ctx.stroke(); ctx.restore();
+}
 // Self-Embodiment of Perfection: hands close in, and every touch reshapes the soul
+// Self-Embodiment of Perfection (Oct 17): under 50% soul they explode on the spot; otherwise one touch from Mahito kills
 function tickSoul(d, dt){
   d.soulRise = Math.min(1, (d.soulRise||0) + dt/1200);
-  d.touchT = (d.touchT||0) + dt;
-  const def = d.owner===p1 ? p2 : p1;
-  if(def && d.touchT >= SOUL_TICK){
-    d.touchT = 0;
-    if(def.hittable && !(def.sdT>0)){
-      def.hp = Math.max(0, def.hp-SOUL_DMG); def.flash = 250; def.reshapeT = Math.max(def.reshapeT||0, 1600);
-      addDmg(def.x+PW/2, def.y-14, SOUL_DMG, '#c9a0ff'); addParts(def.x+PW/2, def.y+PH/2, '#b07cff', 12, 4);
-      addRing(def.x+PW/2, def.y+PH/2, '#8fa3b8', 40);
-      if(def.hp<=0){ def._initRd(0,-3,.05); def.ss(S.DEAD); }
-      snd('hit2', def.x);
-    }
-  }
+  const def = d.owner===p1 ? p2 : p1, own = d.owner;
+  if(!def || def.state===S.DEAD || IS_GUEST) return;
+  if(def.sdT>0) return;   // anti-domain holds it off
+  soulInit(def);
+  if(soulImmune(def)){ d.touchT = (d.touchT||0) + dt; if(d.touchT >= SOUL_TICK){ d.touchT = 0; if(def.hittable){ def.hp = Math.max(0, def.hp-SOUL_DMG); addDmg(def.x+PW/2, def.y-14, SOUL_DMG, '#c9a0ff'); if(def.hp<=0){ def._initRd(0,-3,.05); def.ss(S.DEAD); } } } return; }
+  if(def.soul < def.soulMax*0.5){ if(!d.boomed){ d.boomed = true; addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 60, 12); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 160); doShake(22); snd('boom', def.x);
+      def._soulKill = true; def._rawDmg = true; def.hp = 0; def._rawDmg = false; def._initRd(0,-6,.1); def.ss(S.DEAD); showTxt('SOUL BURST', 1200); sayFor(own, 'Your soul has a new shape now.'); } return; }
+  const ob = own.bodyBox(), db = def.bodyBox();
+  if(ob.x < db.x+db.w+6 && ob.x+ob.w > db.x-6 && ob.y < db.y+db.h && ob.y+ob.h > db.y){
+    def._soulKill = true; def._rawDmg = true; def.hp = 0; def._rawDmg = false; def._initRd(Math.sign(def.x-own.x)*6,-5,.1); def.ss(S.DEAD);
+    addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 50, 10); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 130); doShake(18); showTxt('TRANSFIGURED', 1200); sayFor(own, 'Your soul has a new shape now.'); }
 }
 function _hh(k, n){ const v = Math.sin(k*127.1 + n*311.7)*43758.5453; return v - Math.floor(v); }
 function drawBigHand(x, y, ang, s, fill, line, hi, curl){
@@ -3919,7 +4057,7 @@ function drawIsomer(o){
   if(pulse){ ctx.fillStyle = `rgba(201,160,255,${0.5*pulse})`; ctx.beginPath(); ctx.arc(0, -18, 16, 0, Math.PI*2); ctx.fill(); }
   ctx.restore();
 }
-function drawMahito(){ for(const b of mahiBlobs) drawMahiBlob(b); for(const o of isomers) drawIsomer(o); }
+function drawMahito(){ for(const b of mahiBlobs) drawMahiBlob(b); for(const o of isomers) drawIsomer(o); drawMahiRework(); }
 // drawn over a fighter: Mahito's stitches + Distorted Killing blades; anyone "reshaped" gets warped stitches
 function drawMahitoBody(pl){
   if(pl.state===S.DEAD) return;
@@ -7739,7 +7877,7 @@ class Player {
     this.yukiGrapCd=0; this.yukiThrowCd=0; this.yukiMass=0; this.holeT=0; this.grapHit=false;
     this.takRpsCd=0; this.takKanCd=0; this.takCharge=0; this.counterT=0; this.kanHit=false; this.lastCombatT=0; this.swapCd=0;
     this.guard=undefined; this.oaKind=null; this.oaChain=0; this.oaHitAt=null; this.hitsTaken=0; this.cmbHits=0; this.frsT=0; this.adT=0; this.adName=null; this.confiscT=0;
-    this.mahiPalmCd=0; this.mahiIsoCd=0; this.mahiCharge=0; if(this.mahiHumans===undefined) this.mahiHumans=5; this.mahiTf={spd:0,dmg:0,hp:0,jmp:0}; this.mahiFormT=0; this.reshapeT=0; this.palmHit=false; this.soulMarks=0; this.soulMarkT=0; this.lastHurt=0;
+    this.mahiPalmCd=0; this.mahiIsoCd=0; this.mahiCharge=0; if(this.mahiHumans===undefined) this.mahiHumans=MAHI_HUMANS; this.mahiTf={spd:0,dmg:0,hp:0,jmp:0}; this.mahiFormT=0; this.reshapeT=0; this.palmHit=false; this.soulMarks=0; this.soulMarkT=0; this.lastHurt=0;
     this.hanaBudCd=0; this.hanaFieldCd=0; this.hanaGrabCd=0; this.hanaCharge=0; this.rampT=0; this.rootX=0; this.rootY=0; this.rootLX=0; this.rootLY=0; this.rootAng=0; this.rootWither=0;
     this.grabLen=0; this.grabAng=0; this.grabRef=null; this.grabT=0; this.grabPhase=0; this.grabSX=0; this.grabSY=0;
     this.dagonFloodCd=0; this.dagonJetCd=0; this.dagonPrisonCd=0; this.dagonCharge=0; this.swarmN=0; this.jetFired=false;
@@ -7886,8 +8024,10 @@ class Player {
           opp.puppetCharge = Math.min(PUPPET_REQ, opp.puppetCharge + d);
         if(opp && opp.type==='takaba')
           opp.takCharge = Math.min(TAKA_CTR_REQ, (opp.takCharge||0) + d);
-        if(opp && opp.type==='mahito')
-          opp.mahiCharge = Math.min(MAHI_FORM_REQ, (opp.mahiCharge||0) + d);
+        if(opp && opp.type==='mahito'){
+          opp.mahiCharge = Math.min(MAHI_IDLE_REQ, (opp.mahiCharge||0) + d);
+          if(mahiSoulOK(opp) && [S.ATCK,S.DIVE].includes(opp.state) && !this._rawDmg) soulHit(opp, this, d*MAHI_MELEE_SOUL);   // his melee damages the soul
+        }
         if(opp && opp.type==='hanami')
           opp.hanaCharge = Math.min(HANA_FIELD_REQ, (opp.hanaCharge||0) + d);
         if(opp && (opp.type==='dagon' || opp.type==='ryu')) opp.domainCharge = Math.min(DOMAIN_CHARGE_REQ, (opp.domainCharge||0) + d*0.3);
@@ -7944,6 +8084,7 @@ class Player {
     if(this.state===S.FUGA && this.sTimer > FUGA_ARMOR && (s===S.STUN || s===S.RAGD || s===S.SLAM)){   // Fuga can only be interrupted at the very start
       if(terClock - (this._fugaArmT||-1e9) > 500){ this._fugaArmT = terClock; addSpeech(this.x+PW/2, this.y-24, 'UNSTOPPABLE', '#ff9a3a', 500); } return; }
     if(this._guardStamp===terClock && (s===S.STUN || s===S.RAGD || s===S.SLAM)) return;
+    if(this.ibdkT>0 && (s===S.STUN || s===S.RAGD || s===S.SLAM)) return;   // Instant Spirit Body of Distorted Killing: no knockback, no stun
     if(s!==S.ATCK) this.oaKind = null;
     if(this.state===S.DOMAIN && s!==S.DOMAIN && this.castSpent){
       this.castSpent = false; this.domainCharge = Math.max(this.domainCharge, DOMAIN_CHARGE_REQ*DOMAIN_REFUND);
@@ -8345,38 +8486,48 @@ class Player {
       if(domEdge && this.domainCharge>=DOMAIN_CHARGE_REQ && free && !trucks.some(t => t.owner===this)){ this.domainCharge = 0; spawnTruck(this); }
     }
 
-    // ── MAHITO: 1 = Idle Transfiguration, 2 = Soul Isomer, 3 = Distorted Killing, F = Self-Embodiment of Perfection ──
+    // ── MAHITO (Oct 17): 1 = Transfigured Human Deployment (hold down to cycle) / the kiss, 2 = I Really am a Curse!, 3 = Idle Transfiguration,
+    //    F = Self-Embodiment of Perfection — or Instant Spirit Body of Distorted Killing (2 Black Flashes this life + 75% ultimate) ──
     if(this.type==='mahito'){
-      if(this.mahiPalmCd>0) this.mahiPalmCd=Math.max(0,this.mahiPalmCd-dt);
-      if(this.mahiIsoCd>0) this.mahiIsoCd=Math.max(0,this.mahiIsoCd-dt);
-      // Maximum Output = Instant Spirit Body of Distorted Killing, held as long as it's toggled on (it drains CE)
-      if(this.varMode && !this.isPuppet){
-        if(!(this.mahiFormT>0)){ sayFor(this, 'Instant Spirit Body of Distorted Killing!'); addSpeech(this.x+PW/2, this.y-10, 'DISTORTED KILLING', '#c9a0ff', 1000);
-          addRing(this.x+PW/2, this.y+PH/2, '#c9a0ff', 90); addParts(this.x+PW/2, this.y+PH/2, '#5a6574', 24, 6); doShake(10); snd('heavy', this.x); }
-        this.mahiFormT = 300;
-        if(!ceInfinite(this) && this.ceMax){ this.ce = Math.max(0, (this.ce||0) - MAHI_FORM_DRAIN*dt/1000); if(this.ce <= 0){ this.varMode = false; addSpeech(this.x+PW/2, this.y-20, 'FORM COLLAPSES', '#999', 800); } }
+      for(const k of ['mahiPalmCd','mahiIsoCd','ibdkTenCd','ibdkSlamCd','ibdkCtrCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+      if(this.mahiCtrT>0) this.mahiCtrT = Math.max(0, this.mahiCtrT - dt);
+      if(this.mahiSTOn && !this.isPuppet){
+        if(!ceInfinite(this) && this.ceMax){ this.ce = Math.max(0, (this.ce||0) - MAHI_ST_DRAIN*dt/1000); if(this.ce <= 0){ this.mahiSTOn = false; addSpeech(this.x+PW/2, this.y-20, 'TRANSFIGURATION FADES', '#999', 800); } }
+        if(Math.random()<0.25) addParts(this.x+PW/2, this.y+PH*Math.random(), '#9aa8b8', 1, 2); }
+      if(this.ibdkT>0){ this.ibdkT = Math.max(0, this.ibdkT - dt); this.mahiFormT = 300; this.varMode = false;
+        if(this.ibdkT<=0){ this.maxHp = 100; this._hp = Math.min(this._hp, this.maxHp); addSpeech(this.x+PW/2, this.y-20, 'TRUE FORM ENDS', '#999', 900); addParts(this.x+PW/2, this.y+PH/2, '#5a6574', 20, 5); } }
+      if(this.mahiFormT>0 && !(this.ibdkT>0)) this.mahiFormT = Math.max(0, this.mahiFormT - dt);
+      const free = !abilityBlocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), f = this.facing, c = this.ctrl;
+      if(this.mahiDep==null) this.mahiDep = 0;
+      if(this.ibdkT>0){
+        // Instant Spirit Body of Distorted Killing: Tendril Grab, Sky Crash, Counter
+        if(ab1Edge && free && !(this.ibdkTenCd>0)){ this.ibdkTenCd = IBDK_TEN_CD; this.mkPh = 'ten'; this.mkRef = null; this.vx = 0; this.ss(S.MAHIIBDK, 900); snd('swing', this.x); sayFor(this, 'Got you!'); }
+        if(ab2Edge && free && !(this.ibdkSlamCd>0)){ const [x,y,w,h] = olFront(this, IBDK_SLAM_REACH), d = olArea(this, x, y, w, h)[0];
+          this.ibdkSlamCd = IBDK_SLAM_CD;
+          if(d){ this.mkPh = 'fly'; this.mkRef = netRef(d) || d; this.vx = 0; this.vy = -16; this.onGround = false; this.ss(S.MAHIIBDK, 1600); olHit(this, d, 2, {any:true, stun:1600, col:'#c9a0ff'}); addSpeech(d.x+PW/2, d.y-24, 'GRABBED', '#c9a0ff', 700); snd('heavy', this.x); }
+          else { addSpeech(this.x+PW/2, this.y-20, 'MISSED', '#999', 600); } }
+        if(ab3Edge && free && !(this.ibdkCtrCd>0)){ this.ibdkCtrCd = IBDK_CTR_CD; this.mahiCtrT = IBDK_CTR_MS; this.mkPh = 'ctr'; this.vx = 0; this.ss(S.MAHIIBDK, IBDK_CTR_MS + 500); addSpeech(this.x+PW/2, this.y-24, 'COUNTER', '#c9a0ff', 600); snd('tick', this.x); }
+      } else {
+        if(ab1Edge && free && keys[c.down]){ this.mahiDep = (this.mahiDep + 1) % 3; addSpeech(this.x+PW/2, this.y-22, DEP_NAMES[this.mahiDep] + ` (${DEP_COST[this.mahiDep]})`, '#c9a0ff', 700); snd('tick', this.x); }
+        else if(ab1Edge && free && this.mahiPalmCd<=0){
+          const k = this.mahiDep, cost = DEP_COST[k];
+          if((this.mahiHumans||0) <= 0){   // out of humans: the kiss
+            this.mahiPalmCd = KISS_CD; this.mkPh = 'kiss'; this.vx = 0; this.ss(S.MAHIIBDK, KISS_WIND + 600); addSpeech(this.x+PW/2, this.y-24, '♥', '#ff6a9a', 600); snd('charge', this.x);
+          } else if((this.mahiHumans||0) < cost){ addSpeech(this.x+PW/2, this.y-20, `NEEDS ${cost} HUMANS`, '#999', 800); }
+          else { this.mahiHumans -= cost; this.mahiPalmCd = DEP_CD[k]; this.vx = 0; this.ss(S.OVAR, 300);
+            if(k===0){ spawnMahiMinis(this); sayFor(this, 'Go on, then.'); }
+            else if(k===1){ spawnMahiBlob(this); sayFor(this, 'Body Repel.'); }
+            else { const ix = Math.max(12, Math.min(W-12, this.x+PW/2+f*22)); isomers.push({owner:this, x:ix, y:terGroundTop(ix-6, 12, this.y+PH-1, true), dir:f, t:0, vy:0, step:0});
+              addParts(ix, this.y+PH-10, '#9aa8b8', 12, 4); snd('swing', this.x); sayFor(this, 'Polymorphic Soul Isomer.'); } }
+        }
+        if(ab2Edge && free && this.mahiIsoCd<=0){ this.mahiIsoCd = CURSE_CD; this.mcPh = 'dash'; this.mcRef = null; this.mcHitSet = false; this.vx = 0; this.ss(S.MAHICURSE, CURSE_DASH_MS + 1400); snd('dash', this.x); sayFor(this, 'I really am a curse!'); }
+        if(ab3Edge && free && (this.mahiCharge||0) >= MAHI_IDLE_REQ){ this.mahiCharge = 0; this.palmHit = false; this.palmKind = 'soul'; this.vx = 0; this.ss(S.MAHIPALM, PALM_WIND+PALM_REC); snd('charge', this.x); sayFor(this, 'Idle Transfiguration.'); }
       }
-      if(this.mahiFormT>0){ this.mahiFormT=Math.max(0,this.mahiFormT-dt); if(this.mahiFormT<=0){ addParts(this.x+PW/2, this.y+PH/2, '#5a6574', 16, 4); } }
-      const free = !abilityBlocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), f = this.facing;
-      const noHumans = () => { addSpeech(this.x+PW/2, this.y-20, 'NO HUMANS LEFT', '#999', 800); };
-      if(ab1Edge && free && this.mahiPalmCd<=0){
-        // Body Repel: a transfigured human swells into a giant blob that grows along the ground. He walks through it; they can't
-        if(!(this.mahiHumans>0)) noHumans();
-        else { this.mahiHumans--; this.mahiPalmCd = MAHI_PALM_CD; this.vx = 0; this.ss(S.OVAR, 320); spawnMahiBlob(this); sayFor(this, 'Body Repel.'); }
+      if(domEdge && free && !(this.ibdkT>0) && (this.bfLife||0) >= IBDK_BF && this.domainCharge >= DOMAIN_CHARGE_REQ*IBDK_ULT){
+        this.domainCharge = 0; this.ibdkT = IBDK_MS; this.mahiSTOn = false; this.varMode = false; this.maxHp = Math.round(100*IBDK_HP); this._hp = Math.min(this.maxHp, this._hp + (this.maxHp - 100));
+        showTxt('INSTANT SPIRIT BODY OF DISTORTED KILLING', 1500); sayFor(this, 'Instant Spirit Body of Distorted Killing!'); addRing(this.x+PW/2, this.y+PH/2, '#c9a0ff', 140); addParts(this.x+PW/2, this.y+PH/2, '#5a6574', 40, 9); doShake(16); snd('domain', this.x);
       }
-      if(ab2Edge && free && this.mahiIsoCd<=0 && !(this.mahiHumans>0)) noHumans();
-      else if(ab2Edge && free && this.mahiIsoCd<=0){
-        this.mahiHumans--; this.mahiIsoCd = MAHI_ISO_CD; const ix = Math.max(12, Math.min(W-12, this.x+PW/2+f*22));
-        isomers.push({owner:this, x:ix, y:terGroundTop(ix-6, 12, this.y+PH-1, true), dir:f, t:0, vy:0, step:0});
-        addParts(ix, this.y+PH-10, '#9aa8b8', 12, 4); snd('swing', this.x); sayFor(this, 'Polymorphic Soul Isomer.');
-      }
-      if(ab3Edge && free && this.mahiCharge>=MAHI_FORM_REQ){
-        // Self-Transfiguration: he reshapes his own body with a stocked human. Up = jump, down = health, a direction = speed, nothing = damage
-        if(!(this.mahiHumans>0)) noHumans();
-        else { const c = this.ctrl, k = keys[c.jmp] ? 'jmp' : keys[c.down] ? 'hp' : (keys[c.left] || keys[c.right]) ? 'spd' : 'dmg';
-          this.mahiCharge = 0; this.mahiHumans--; this.vx = 0; this.ss(S.OVAR, 300); mahiTransfig(this, k); sayFor(this, 'Self-Transfiguration.'); }
-      }
-      if(domEdge && this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain && free) this._startDomain();
+      else if(domEdge && this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain && free && !(this.ibdkT>0)) this._startDomain();
     }
 
     // ── HANAMI: 1 = Cursed Buds, 2 = Root Grab, 3 = Flower Field (special), F = Root Rampage ──
@@ -8825,6 +8976,8 @@ class Player {
       case S.DAGONJET:   this._tickDagonJet(dt); break;
       case S.HANAGRAB:   this._tickHanaGrab(dt); break;
       case S.MAHIPALM:   this._tickMahiPalm(dt); break;
+      case S.MAHICURSE:  this._tickMahiCurse(dt); break;
+      case S.MAHIIBDK:   this._tickMahiIbdk(dt); break;
       case S.BLOCK: case S.DASH: case S.OVAR: this._olTickCustom(dt); break;
       case S.TAKAKAN:    this._tickTakaKan(dt); break;
       case S.NAODASH:    this._tickNaoDash(dt); break;
@@ -8886,8 +9039,8 @@ class Player {
     if(this.state===S.STUN){ this.domainHandsign=0; return; }
     this.vx=0;
     if(this.onGround) this.vy=0;
-    this.domainHandsign = Math.min(1, this.domainHandsign + dt/DOMAIN_HANDSIGN);
-    if(this.domainHandsign >= 1/3) this.iframes = Math.max(this.iframes||0, 80);
+    this.domainHandsign = Math.min(1, this.domainHandsign + dt/(this.type==='mahito' ? MAHI_HANDSIGN : DOMAIN_HANDSIGN));
+    if(this.domainHandsign >= (this.type==='mahito' ? 0.92 : 1/3)) this.iframes = Math.max(this.iframes||0, 80);
     if(this.domainHandsign >= 1 && activeDomain && activeDomain.owner!==this && canClash(this)){ startClash(this); return; }
     if(this.domainHandsign >= 1 && activeDomain && activeDomain.owner!==this){ this.ss(this.onGround ? S.IDLE : S.AIR); return; }   // can't open or clash: cancelled
     if(this.domainHandsign >= 1 && !activeDomain && this.type==='hakari'){
@@ -10480,7 +10633,7 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.type==='mahito' && !(this.ibdkT>0)) m *= mahiHpMul(this); if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
   _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
@@ -10540,36 +10693,79 @@ class Player {
   }
 
   // ═══ MAHITO ═══
+  // I Really am a Curse!: a dash; on contact a Black Flash ring closes on them — hit ability 2 / attack on the inner circle for a Black Flash,
+  // otherwise he barrels through, knocking them down with a soul hit
+  _tickMahiCurse(dt){
+    const f = this.facing;
+    if(this.mcPh==='dash'){
+      this.vx = f*CURSE_SPD; this.vy = 0; this._phys(dt);
+      if(Math.random()<0.6) addParts(this.x+PW/2 - f*14, this.y+PH*0.5, '#9aa8b8', 2, 3);
+      const d = olArea(this, this.x-4, this.y+4, PW+8, PH-8)[0];
+      if(d){ this.mcPh = 'ring'; this.mcRef = netRef(d) || d; this.mcT0 = this.sTimer; this.vx = 0; this.mcPressed = false; this.mcAb2Prev = !!keys[this.ab2Key]; this.mcAtkDown = !!keys[this.ctrl.atk];
+        olHit(this, d, 2, {any:true, stun:CURSE_RING_MS+300, col:'#9aa8b8'}); addSpeech(this.x+PW/2, this.y-24, '!', '#ff3030', 500); return; }
+      if(this.sTimer >= CURSE_DASH_MS){ this.ss(this.onGround ? S.IDLE : S.AIR); }
+      return;
+    }
+    const d = typeof this.mcRef==='string' ? netRes(this.mcRef) : this.mcRef;
+    if(this.mcPh==='ring'){
+      this.vx = 0; this._phys(dt); if(d && d.state===S.STUN){ d.vx = 0; d.sTimer = Math.min(d.sTimer, 100); }
+      const k = (this.sTimer - this.mcT0), hitT = CURSE_RING_MS*0.88, win = CURSE_WIN * (this.zonedT>0 ? 2 : 1);
+      const k2 = !!keys[this.ab2Key], ka = !!keys[this.ctrl.atk];
+      const press = !this.isPuppet && ((k2 && !this.mcAb2Prev) || (ka && !this.mcAtkDown));
+      this.mcAb2Prev = k2; this.mcAtkDown = ka;
+      if(press && !this.mcPressed){ this.mcPressed = true; this._curseResolve(d, Math.abs(k - hitT) <= win); return; }
+      if(k >= CURSE_RING_MS){ this._curseResolve(d, false); return; }
+      return;
+    }
+    this.vx *= 0.8; this._phys(dt); if(this.sTimer >= this.sDur || this.sTimer - this.mcT0 > 420) this.ss(this.onGround ? S.IDLE : S.AIR);
+  }
+  _curseResolve(d, bf){
+    const f = this.facing; this.mcPh = 'done'; this.mcT0 = this.sTimer;
+    if(!d || d.state===S.DEAD) return;
+    const mx = d.x+PW/2, my = d.y+PH/2;
+    if(bf){ olHit(this, d, CURSE_BF_DMG, {any:true, rag:[17,-10,RAGD_MS*1.3], dir:f, col:'#ff2a2a'}); if(mahiSoulOK(this)) soulHit(this, d, CURSE_BF_SOUL);
+      addBlackFlash(mx, my); ceBlackFlash(this); addSpeech(mx, d.y-30, 'BLACK FLASH', '#ff3030', 900); snd('blackflash', mx); doShake(16); }
+    else { safeTeleport(this, d.x + f*(PW+20), this.y); olHit(this, d, CURSE_HP, {any:true, rag:[6,-5,RAGD_MS], dir:f, col:'#9aa8b8'}); if(mahiSoulOK(this)) soulHit(this, d, CURSE_SOUL);
+      addParts(mx, my, '#9aa8b8', 14, 5); snd('heavy', mx); }
+  }
+  // the kiss, and the true form's moves
+  _tickMahiIbdk(dt){
+    const f = this.facing, d = typeof this.mkRef==='string' ? netRes(this.mkRef) : this.mkRef;
+    if(this.mkPh==='kiss'){ this.vx = 0; this._phys(dt);
+      if(!this.mkFired && this.sTimer >= KISS_WIND){ this.mkFired = true; mahiLips.push({owner:this, x:this.x+PW/2 + f*10, y:this.y+PH*0.3, dir:f, len:0, t:0, hit:false}); snd('swing', this.x); }
+      if(this.sTimer >= this.sDur){ this.mkFired = false; this.ss(this.onGround ? S.IDLE : S.AIR); } return; }
+    if(this.mkPh==='ctr'){ this.vx = 0; this._phys(dt); if(this.sTimer >= this.sDur){ this.mahiCtrT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } return; }
+    if(this.mkPh==='ten'){ this.vx = 0; this._phys(dt);
+      if(!this.mkRef && this.sTimer > 160){ const opp = olNearest(this, IBDK_TEN_RANGE);
+        if(opp && Math.sign(opp.x - this.x) === f && Math.abs(opp.y - this.y) < 160){ this.mkRef = netRef(opp) || opp; olHit(this, opp, 2, {any:true, stun:900, col:'#9aa8b8'}); addSpeech(opp.x+PW/2, opp.y-24, 'CAUGHT', '#9aa8b8', 600); }
+        else { this.mkRef = 'miss'; } }
+      if(d && d.state!==S.DEAD && typeof d==='object'){ const tx = this.x + f*(PW+8); d.x += (tx - d.x)*0.25; d.y += (this.y - d.y)*0.25; d.vx = 0; d.vy = 0; d.sTimer = 0;
+        if(Math.abs(d.x - tx) < 10 && !this.mkPunched){ this.mkPunched = true; olHit(this, d, IBDK_TEN_DMG, {any:true, rag:[22,-12,RAGD_MS*1.5], dir:f, col:'#c9a0ff'}); addRing(d.x+PW/2, d.y+PH/2, '#c9a0ff', 80); doShake(14); snd('heavy', d.x); this.mkRef = null; } }
+      if(this.sTimer >= this.sDur){ this.mkPunched = false; this.mkRef = null; this.ss(this.onGround ? S.IDLE : S.AIR); } return; }
+    if(this.mkPh==='fly'){
+      this._phys(dt); if(d && typeof d==='object' && d.state!==S.DEAD){ d.x = this.x + f*(PW-6); d.y = this.y - 10; d.vx = 0; d.vy = 0; d.sTimer = 0; }
+      if(this.vy > 0) this.vy = Math.min(26, this.vy + 1.2);   // dives back down
+      if(this.onGround && this.sTimer > 250){ this.mkPh = 'crash'; this.mkT0 = this.sTimer;
+        if(d && typeof d==='object' && d.state!==S.DEAD) olHit(this, d, IBDK_SLAM_DMG, {any:true, rag:[10,-14,RAGD_MS*1.4], dir:f, col:'#c9a0ff'});
+        addRing(this.x+PW/2, this.y+PH, '#c9a0ff', 120); addParts(this.x+PW/2, this.y+PH, '#9aa8b8', 30, 9); doShake(20); snd('boom', this.x); if(!IS_GUEST) carveCircle(this.x+PW/2, this.y+PH, 46); }
+      else if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+      return; }
+    this.vx *= 0.7; this._phys(dt); if(this.sTimer - (this.mkT0||0) > 380 || this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+  }
   _tickMahiPalm(dt){
     const f = this.facing;
     this.vx = this.sTimer < PALM_WIND ? f*1.5 : 0;
     if(!this.palmHit && this.sTimer >= PALM_WIND){
       this.palmHit = true;
-      const soul = this.palmKind==='soul', reach = soul ? PALM_REACH : MAHI_BLADE_REACH, dmg = soul ? MAHI_SOUL_DMG : MAHI_BLADE_DMG;
-      const hx = f>0 ? this.x+PW-4 : this.x+4-reach, hy = this.y+4;
+      const reach = MAHI_IDLE_REACH, hx = f>0 ? this.x+PW-4 : this.x+4-reach, hy = this.y+4;
       addParts(this.x+PW/2+f*40, this.y+PH*0.42, '#c9a0ff', 10, 4); snd('swing', this.x);
-      if(!soul) olShot(this, {kind:'spear', x:this.x+PW/2, y:this.y+PH*0.42, dir:f, life:220, dmg:0});
       for(const def of dagonFoes(this)){
         if(!def.hittable) continue; const b = def.bodyBox();
         if(b.x+b.w < hx || b.x > hx+reach || b.y+b.h < hy || b.y > hy+PH) continue;
-        def.hp = Math.max(0, def.hp-dmg); def.flash = 450;
-        addDmg(def.x+PW/2, def.y-16, dmg, '#c9a0ff'); addParts(def.x+PW/2, def.y+PH/2, '#b07cff', 16, 5); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 50); doShake(7);
-        if(soul && def.hp > 0){
-          if(soulImmune(def)){ addSpeech(def.x+PW/2, def.y-26, 'HIS SOUL WON\'T CHANGE', '#999', 900); }
-          else {
-            def.reshapeT = RESHAPE_MS;
-            if(terClock - (def.soulMarkT||-1e9) > MAHI_SOUL_DECAY) def.soulMarks = 0;
-            def.soulMarks = (def.soulMarks||0) + 1; def.soulMarkT = terClock;
-            if(def.soulMarks >= MAHI_SOUL_KILL){
-              def.soulMarks = 0; def._rawDmg = true; def.hp = 0; def._rawDmg = false;
-              addSpeech(def.x+PW/2, def.y-30, 'TRANSFIGURED', '#c9a0ff', 1400); showTxt('IDLE TRANSFIGURATION', 1200); sayFor(this, 'Your soul has a new shape now.');
-              addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 40, 9); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 120); doShake(16);
-            } else addSpeech(def.x+PW/2, def.y-26, `SOUL TOUCHED ${def.soulMarks}/${MAHI_SOUL_KILL}`, '#c9a0ff', 900);
-          }
-        }
-        this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge+dmg);
+        def.flash = 450; addParts(def.x+PW/2, def.y+PH/2, '#b07cff', 16, 5); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 50); doShake(7);
+        def.reshapeT = RESHAPE_MS; soulHit(this, def, MAHI_IDLE_SOUL);
         if(def.state===S.CLEAVE) def.cleaveArm = 0;
-        if(def.hp<=0){ def._initRd(f*5,-4,.1); def.ss(S.DEAD); } else { def.vx = f*3; def.ss(S.STUN, 350); }
+        if(def.state!==S.DEAD){ def.vx = f*3; def.ss(S.STUN, 450); }
         snd('hit2', def.x);
       }
     }
@@ -10801,7 +10997,8 @@ class Player {
     if(this._vow('iron')) spd *= 0.85;
     if(this.reshapeT>0) spd *= 0.7;
     if(this.bmT>0) spd *= 0.8;
-    if(this.mahiFormT>0) spd *= 1.2;
+    if(this.ibdkT>0) spd *= IBDK_SPD; else if(this.mahiFormT>0) spd *= 1.2;
+    if(this.mahiSTOn){ spd *= MAHI_ST_SPD; jmp *= MAHI_ST_JMP; }
     if(this.moduloT>0) spd *= MODULO_SPD;
     if(this.mahiTf){ spd *= mahiMul(this, 'spd'); jmp *= mahiMul(this, 'jmp'); }
     if(this.frsT>0) spd *= 1.25;
@@ -11665,6 +11862,7 @@ class Player {
     drawOlBody(this);
     drawFramedOverlay(this);
     if(this.type==='mahito' || this.reshapeT>0 || this.soulMarks>0) drawMahitoBody(this);
+    if(this.type==='mahito') drawCurseRing(this);
     // Mei Mei: the battle axe
     if(this.type==='meimei' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state) && !(itemWeapon(this) && ![S.MEISPIN,S.MEICHOP].includes(this.state))){
       const h = this._hand, f = this.facing;
@@ -12445,6 +12643,9 @@ class Player {
     const col=pct>.5?'#888':pct>.25?'#666':'#444';
     ctx.fillStyle=col; ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx,y,Math.floor(bw*pct),bh);
     ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.lineWidth=1; ctx.strokeRect(bx,y,bw,bh);
+    if(this.soulMax){ const sp = Math.max(0, this.soul/this.soulMax); ctx.fillStyle = 'rgba(20,10,36,0.9)'; ctx.fillRect(bx, y+bh-5, bw, 5);
+      ctx.fillStyle = sp < 0.5 ? '#ff5aa8' : '#b07cff'; ctx.fillRect(flip?bx+bw-Math.floor(bw*sp):bx, y+bh-5, Math.floor(bw*sp), 5);
+      ctx.save(); ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.fillStyle = '#e8dcff'; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillText(`SOUL ${Math.ceil(this.soul)}/${this.soulMax}`, flip ? bx+4 : bx+bw-4, y+bh-7); ctx.restore(); }
     ctx.fillStyle='#ccc'; ctx.font=`700 13px 'Rajdhani',sans-serif`;
     ctx.textAlign=flip?'right':'left'; ctx.fillText(this.name,flip?bx+bw-5:bx+5,y+14);
     // Account name + equipped feats / vows
@@ -12731,9 +12932,11 @@ class Player {
     }
     // Mahito HUD
     if(this.type==='mahito'){
-      const formOn = this.mahiFormT>0;
-      const names = [`BODY REPEL [${keyLbl(this,'ab1')}]`, `SOUL ISOMER [${keyLbl(this,'ab2')}]`, `SELF-TRANSFIG [${keyLbl(this,'ab3')}]`];
-      const fills = [Math.max(0,1-this.mahiPalmCd/MAHI_PALM_CD), Math.max(0,1-this.mahiIsoCd/MAHI_ISO_CD), Math.min(1,(this.mahiCharge||0)/MAHI_FORM_REQ)];
+      const tf = this.ibdkT>0, H = this.mahiHumans||0, dk = this.mahiDep||0;
+      const names = tf ? [`TENDRIL GRAB [${keyLbl(this,'ab1')}]`, `SKY CRASH [${keyLbl(this,'ab2')}]`, `COUNTER [${keyLbl(this,'ab3')}]`]
+        : [H<=0 ? `KISS [${keyLbl(this,'ab1')}]` : `${DEP_NAMES[dk]} ·${DEP_COST[dk]} [${keyLbl(this,'ab1')}]`, `CURSE! [${keyLbl(this,'ab2')}]`, `IDLE TRANSFIG [${keyLbl(this,'ab3')}]`];
+      const fills = tf ? [Math.max(0,1-(this.ibdkTenCd||0)/IBDK_TEN_CD), Math.max(0,1-(this.ibdkSlamCd||0)/IBDK_SLAM_CD), Math.max(0,1-(this.ibdkCtrCd||0)/IBDK_CTR_CD)]
+        : [Math.max(0,1-this.mahiPalmCd/(H<=0 ? KISS_CD : DEP_CD[dk])), Math.max(0,1-this.mahiIsoCd/CURSE_CD), Math.min(1,(this.mahiCharge||0)/MAHI_IDLE_REQ)];
       const abY = y+bh+38;
       for(let i=0;i<3;i++){
         const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
@@ -12750,7 +12953,8 @@ class Player {
       ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, domY, Math.floor(bw*pct), 14);
       ctx.strokeStyle='rgba(201,160,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
       ctx.fillStyle = ready||on ? '#140a24' : '#a8a0c0'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-      ctx.fillText((on ? 'SELF-EMBODIMENT OF PERFECTION' : ready ? `PERFECTION [${keyLbl(this,'ult')}]` : `DOMAIN ${Math.floor(pct*100)}%`) + ` · HUMANS ×${this.mahiHumans||0}`, bx+bw/2, domY+10);
+      const ibReady = !(this.ibdkT>0) && (this.bfLife||0) >= IBDK_BF && pct >= IBDK_ULT;
+      ctx.fillText((this.ibdkT>0 ? `TRUE FORM ${Math.ceil(this.ibdkT/1000)}s` : ibReady ? `DISTORTED KILLING [${keyLbl(this,'ult')}]` : on ? 'SELF-EMBODIMENT OF PERFECTION' : ready ? `PERFECTION [${keyLbl(this,'ult')}]` : `DOMAIN ${Math.floor(pct*100)}%`) + ` · HUMANS ×${this.mahiHumans||0} · BF ${Math.min(IBDK_BF, this.bfLife||0)}/${IBDK_BF}`, bx+bw/2, domY+10);
     }
     // Hanami HUD
     if(this.type==='hanami'){
@@ -13898,17 +14102,12 @@ const OL_VARS = {
       addParts(x, gy-40, '#6b4a2a', 16, 5); snd('heavy', x); }},
   },
   mahito: {
-    1:{name:'Black Flash', desc:'In his true form Mahito lands the Black Flash he learned from Yuji: lunges 120px, 14 damage, a huge launch, and +250% CE refill for 10s.', lock:340, run(p){
-      const f = p.facing, x0 = p.x, d = olArea(p, f>0 ? p.x+PW-4 : p.x-120, p.y+4, 124, PH-8).sort((a, b) => Math.abs(a.x-p.x) - Math.abs(b.x-p.x))[0];
-      safeTeleport(p, d ? d.x - f*(PW+6) : p.x + f*120, p.y);
-      olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.45, x2:p.x+PW/2, life:200, dmg:0, col:'#c9a0ff'}); snd('swing', p.x);
-      if(d && olHit(p, d, 14, {rag:[15,-9,RAGD_MS*1.2], col:'#ff2a2a'})){
-        const mx = d.x+PW/2, my = d.y+PH/2;
-        addParts(mx, my, '#000', 22, 8); addParts(mx, my, '#ff1a1a', 16, 7); addRing(mx, my, '#ff2a2a', 80); addRing(mx, my, '#111', 54);
-        addSpeech(mx, d.y-30, 'BLACK FLASH', '#ff3030', 900); snd('blackflash', mx); doShake(14); ceBlackFlash(p);
-      } }},
-    2:{block:true, name:'Idle Transfiguration', desc:'A touch on the soul (8 damage, reshapes them). The 3rd touch within 30s kills outright — Yuji and Sukuna are immune.', lock:440, run(p){
-      p.palmHit = false; p.palmKind = 'soul'; p.vx = 0; p.ss(S.MAHIPALM, PALM_WIND+PALM_REC); snd('charge', p.x); sayFor(p, 'Idle Transfiguration.'); }},
+    1:{block:true, name:'Spiky Wall', req:p => !(p.ibdkT>0) && (p.mahiHumans||0) >= SPIKE_COST, reqTxt:'NEEDS 2 HUMANS', desc:'2 humans: a spiked wall of flesh rises where he stands, from the floor to the ceiling (or the top of the map). Touching it hurts (6) and nobody but Mahito can pass; non-cursed-energy projectiles bounce off it. Lasts 8s. Hold down with 4+ humans for an omnidirectional Body Repel instead: 4 humans, an 18-damage blast all around him that breaks terrain.', lock:360, run(p){
+      if(keys[p.ctrl.down] && (p.mahiHumans||0) >= OMNI_COST){ p.mahiHumans -= OMNI_COST; mahiOmniRepel(p); }
+      else { p.mahiHumans -= SPIKE_COST; spawnSpikeWall(p); } }},
+    2:{name:'Self-Transfiguration', cd:800, req:p => !(p.ibdkT>0), reqTxt:'NOT IN TRUE FORM', desc:'Toggle: reshapes his own body — 25% faster and 20% higher jumps, but he can\'t do soul damage while it\'s on. Slowly drains CE (6/s). Use again to turn it off.', lock:200, run(p){
+      p.mahiSTOn = !p.mahiSTOn; addSpeech(p.x+PW/2, p.y-26, p.mahiSTOn ? 'SELF-TRANSFIGURATION' : 'BACK TO NORMAL', '#c9a0ff', 800); addParts(p.x+PW/2, p.y+PH/2, '#9aa8b8', 18, 5); snd('charge', p.x);
+      if(p.mahiSTOn) sayFor(p, 'Self-Transfiguration.'); }},
   },
   naoya: {
     1:{name:'Frame Skip', desc:'Skips the frames in between: blinks 220px forward, and anyone he passes takes 6 and is frozen in a frame for 2.2s.', lock:260, run(p){
@@ -14103,7 +14302,7 @@ function ceInfinite(p){ return p.jackpotT>0 || p.gardenT>0 || (isTraining() && t
 function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1) * (p.bfCeT>0 ? 3.5 : 1); }
 // Black Flash: for a while afterwards your cursed energy refills 250% faster
 const CE_BF_MS = 10000;
-function ceBlackFlash(p){ if(!p || p.isPuppet) return; p.bfCeT = CE_BF_MS; addSpeech(p.x+PW/2, p.y-34, 'CE REGEN +250%', '#ff4a4a', 900); }
+function ceBlackFlash(p){ if(!p || p.isPuppet) return; p.bfLife = (p.bfLife||0) + 1; p.bfCeT = CE_BF_MS; addSpeech(p.x+PW/2, p.y-34, 'CE REGEN +250%', '#ff4a4a', 900); }
 // Choso: when out of cursed energy he pays with blood (1 HP = 3 CE) and leaves a pool
 const CE_BLOOD = 3;
 function ceCanPay(p, need){
@@ -14548,6 +14747,10 @@ function guardFilter(pl, d, oppM){
   if(pl.manjiT>0 && !pl.isPuppet){ manjiCounter(pl, oppM); pl._guardStamp = now; return 0; }
   if(pl.rikaT>0){ pl.rikaT = 0; rikaCatch(pl, oppM); pl._guardStamp = now; return 0; }
   if(pl.yParryT>0 && !pl.isPuppet){ yutaParry(pl, oppM); pl._guardStamp = now; return 0; }
+  if(pl.mahiCtrT>0 && !pl.isPuppet && oppM && oppM!==pl){ pl.mahiCtrT = 0; pl._guardStamp = now;
+    addSpeech(pl.x+PW/2, pl.y-30, 'COUNTER', '#c9a0ff', 900); addRing(oppM.x+PW/2, oppM.y+PH/2, '#c9a0ff', 110); doShake(18); snd('blackflash', oppM.x);
+    if(Math.abs(oppM.x - pl.x) < 320 && oppM.state!==S.DEAD){ oppM._rawDmg = true; oppM.hp = 0; oppM._rawDmg = false; oppM._initRd(Math.sign(oppM.x-pl.x)*10, -8, .15); oppM.ss(S.DEAD); showTxt('DISTORTED KILLING', 1200); }
+    return 0; }
   if(pl.pleaT>0 && oppM && oppM!==pl && oppM.state!==S.DEAD && Math.hypot(oppM.x-pl.x, oppM.y-pl.y) < 320){
     const back = Math.round(d*10)/10; oppM._rawDmg = true; oppM.hp = Math.max(0, oppM.hp - back); oppM._rawDmg = false; oppM.flash = 300;
     addDmg(oppM.x+PW/2, oppM.y-16, back, '#f1d27a'); addSpeech(pl.x+PW/2, pl.y-26, 'SUSTAINED!', '#f1d27a', 700); snd('gavel', pl.x);
@@ -17735,7 +17938,7 @@ function clearProjectiles(){
   piercingBeams.length=0;
   mechLasers.length=0; mechFx.length=0;
   chosoBeams.length=0; bloodOrbs.length=0; bloodRings.length=0; chosoBursts.length=0;
-  gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; ryuBeams.length=0; yujiBloods.length=0; yujiCleaves.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
+  mahiMinis.length=0; mahiWalls.length=0; mahiLips.length=0; gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; ryuBeams.length=0; yujiBloods.length=0; yujiCleaves.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
   despawnPuppet();
 }
 
@@ -18632,7 +18835,7 @@ function netDec(v){
 
 const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
-                   chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, ryuBeams, yujiBloods, yujiCleaves, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
+                   mahiMinis, mahiWalls, mahiLips, chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, ryuBeams, yujiBloods, yujiCleaves, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
@@ -19264,8 +19467,10 @@ function simFight(dt){
       if(dn1 && !dn2){ roundWinner=p2; p1lives--; }
       else if(dn2 && !dn1){ roundWinner=p1; p2lives--; }
       else if(dn1 && dn2){ roundWinner=p1; p1lives--; p2lives--; }
-      if(dn2 && p1.type==='mahito') mahiRefill(p1);
-      if(dn1 && p2.type==='mahito') mahiRefill(p2);
+      // Mahito (Oct 17): a soul kill gives him 6 humans; every life the opponent loses cuts his HP damage further; his Black Flash count resets when he dies
+      for(const [m, dn, v] of [[p1, dn2, p2], [p2, dn1, p1]]) if(dn && m.type==='mahito'){ m.mahiOppDeaths = (m.mahiOppDeaths||0) + 1;
+        if(v._soulKill){ m.mahiHumans = Math.min(MAHI_TH_MAX, (m.mahiHumans||0) + MAHI_SOUL_KILL_TH); addSpeech(m.x+PW/2, m.y-34, `+${MAHI_SOUL_KILL_TH} HUMANS`, '#c9a0ff', 1100); } v._soulKill = false; }
+      for(const [pl, dn] of [[p1, dn1], [p2, dn2]]) if(dn){ pl.bfLife = 0; if(pl.type==='mahito'){ pl.ibdkT = 0; pl.mahiSTOn = false; pl.maxHp = 100; } }
       if(roundWinner){
         timeScale=1;
         if(gameMode==='endless'){
