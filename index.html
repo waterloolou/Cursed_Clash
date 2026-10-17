@@ -950,7 +950,7 @@ const YUTAFIST_AIM_SPD     = 4.5;  // horizontal aim px/ms
 const YUTAFIST_DMG         = 28;    // explosion damage
 const YUTAFIST_RADIUS      = 80;    // blast radius px (~8 blocks)
 const YUTAFIST_COOLDOWN    = 6500;
-const YUTA_COPY_ULT_REQ   = 40;   // damage charge needed (like hollow purple)
+const YUTA_COPY_ULT_REQ   = 30;   // damage dealt to summon Rika (Oct 17: 40 → 30, and every hit counts, not just Slice & Dice)
 const YUTA_COPY_ULT_RANGE = 90;   // close-range touch distance px
 const YUTA_COPY_ULT_DMG   = 8;    // touch damage
 
@@ -6238,8 +6238,8 @@ const LOVE_KATANA_EVERY = 2500;   // a new katana appears in Yuta's domain this 
 function yutaRandomCopy(p){
   const types = CHARACTERS.map(c => c.type).filter(t => t!=='yuta' && MOVE_INFO[t]);
   const type = types[Math.floor(Math.random()*types.length)], slot = ['ab1','ab2','ab3'][Math.floor(Math.random()*3)];
-  p.yCopyReady = {type, slot};
-  addSpeech(p.x+PW/2, p.y-36, `COPY → ${copySlotName(type, slot).toUpperCase()} [${keyLbl(p,'ab3')}]`, '#ffccee', 1200);
+  p.yKatanaCopy = {type, slot};   // fired by his next punch (Oct 17; it used to wait for Maximum Output Copy)
+  addSpeech(p.x+PW/2, p.y-36, `PUNCH → ${copySlotName(type, slot).toUpperCase()} [${keyLbl(p,'atk')}]`, '#ffccee', 1200);
 }    // 4 katana charges to fill Jacob's Ladder
 const JACOB_LADDER_DMG_FRAC = 0.8; // 4/5 of opponent max HP
 const DOMAIN_SLASH_DMG  = 5;    // damage per second (applied continuously)
@@ -7891,6 +7891,8 @@ class Player {
         if(opp && opp.type==='hanami')
           opp.hanaCharge = Math.min(HANA_FIELD_REQ, (opp.hanaCharge||0) + d);
         if(opp && (opp.type==='dagon' || opp.type==='ryu')) opp.domainCharge = Math.min(DOMAIN_CHARGE_REQ, (opp.domainCharge||0) + d*0.3);
+        if(opp && isYutaP(opp) && !(opp.rikaOnT>0) && !opp.yutaCopiedUlt)
+          opp.yutaCopyUltCharge = Math.min(YUTA_COPY_ULT_REQ, (opp.yutaCopyUltCharge||0) + d);   // Oct 17: Rika charges from all damage he deals
         if(opp && opp.type==='geto')
           opp.getoCharge = Math.min(GETO_MIRROR_REQ, (opp.getoCharge||0) + d);
         if(opp && isNaoya(opp)){
@@ -8644,7 +8646,7 @@ class Player {
       }
     }
 
-    const atkEdge=keys[c.atk]&&!this.atkDown;
+    let atkEdge=keys[c.atk]&&!this.atkDown;
     let jmpEdge=keys[c.jmp]&&!this.jmpDown;
     // Deadly Sentencing: the court confiscates the defendant's ability to jump
     const _jOpp = this===p1 ? p2 : this===p2 ? p1 : null;
@@ -8682,7 +8684,12 @@ class Player {
         }
       }
       // If grabbed, skip the normal punch this frame
-      if(grabbed) { this.atkDown=true; }
+      if(grabbed) { this.atkDown=true; atkEdge=false; }
+    }
+    // Oct 17: a katana from his domain loads a random copied move into Yuta's next punch
+    if(atkEdge && !abilityBlocked && this.yKatanaCopy && isYutaP(this) && !this.isPuppet && [S.IDLE,S.WALK,S.AIR,S.ATCK].includes(this.state)){
+      const r = this.yKatanaCopy; this.yKatanaCopy = null; this.atkDown = true; atkEdge = false;
+      addSpeech(this.x+PW/2, this.y-30, copySlotName(r.type, r.slot).toUpperCase(), '#ffccee', 800); this._yutaStartCopy(r.type, r.slot);
     }
     switch(this.state){
       case S.IDLE: case S.WALK: case S.AIR:
@@ -9487,28 +9494,23 @@ class Player {
     }
   }
 
+  // Oct 17: Metal Arm → Cursed Energy Discharge — a short wind-up, then a burst of raw cursed energy all around him
   _startMetalArm(other){
-    const [x,y,w,h] = olFront(this, METAL_RANGE), d = olArea(this, x, y, w, h)[0];
-    this.yutaFistCooldown = YUTA_METAL_CD; this.vx = 0; this.mtT = 0;
-    if(d && d.state!==S.DEAD){ this.mtMode = 'choke'; this.mtRef = netRef(d) || d; this.mtTick = 0; this.ss(S.YUTAMETAL, METAL_CHOKE_MS + 300);
-      olHit(this, d, 2, {any:true, stun:METAL_CHOKE_MS+200, col:'#c0c8d8'}); addSpeech(d.x+PW/2, d.y-26, 'CHOKED', '#c0c8d8', 900); sayFor(this, 'Got you.'); snd('heavy', this.x); }
-    else { this.mtMode = 'parry'; this.yParryT = METAL_PARRY_MS; this.ss(S.YUTAMETAL, METAL_PARRY_MS + 120); addSpeech(this.x+PW/2, this.y-20, 'PARRY STANCE', '#c0c8d8', 600); snd('tick', this.x); }
+    if(!ceInfinite(this) && this.ceMax && (this.ce||0) < YUTA_DISCH_CE){ addSpeech(this.x+PW/2, this.y-20, 'NOT ENOUGH CE', '#6fb8ff', 700); return; }
+    this.yutaFistCooldown = YUTA_METAL_CD; this.vx = 0; this.mtFired = false; this.ss(S.YUTAMETAL, YUTA_DISCH_WIND + 280);
+    if(!ceInfinite(this) && this.ceMax) this.ce = Math.max(0, this.ce - YUTA_DISCH_CE);
+    addSpeech(this.x+PW/2, this.y-22, 'DISCHARGE', '#e7b6ff', 600); snd('charge', this.x);
   }
   _tickMetalArm(dt){
-    this.vx *= 0.6; this._phys(dt); this.mtT += dt;
-    if(this.mtMode==='parry'){ if(this.yParryT>0) this.yParryT = Math.max(0, this.yParryT - dt); if(this.sTimer >= this.sDur){ this.yParryT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } return; }
-    const d = typeof this.mtRef==='string' ? netRes(this.mtRef) : this.mtRef;
-    if(!d || d.state===S.DEAD){ this.ss(this.onGround ? S.IDLE : S.AIR); return; }
-    if(this.mtT < METAL_CHOKE_MS){
-      // held up by the throat at the end of the metal arm
-      const hx = this.x + this.facing*(PW + 14), hy = this.y - 22;
-      d.x += (hx - d.x)*0.3; d.y += (hy - d.y)*0.3; d.vx = 0; d.vy = 0; if(d.state!==S.STUN) d.ss(S.STUN, 400); d.sTimer = 0;
-      this.mtTick += dt; if(this.mtTick >= 500){ this.mtTick = 0; olHit(this, d, 2, {any:true, stun:400, col:'#c0c8d8'}); }
-    } else if(!this.mtThrown){
-      this.mtThrown = true; olHit(this, d, METAL_THROW_DMG, {any:true, rag:[14,-9,RAGD_MS*1.1], dir:this.facing, col:'#c0c8d8'});
-      addRing(d.x+PW/2, d.y+PH/2, '#c0c8d8', 60); doShake(9); snd('heavy', d.x); addSpeech(d.x+PW/2, d.y-24, 'THROWN', '#c0c8d8', 700);
-    }
-    if(this.sTimer >= this.sDur){ this.mtThrown = false; this.ss(this.onGround ? S.IDLE : S.AIR); }
+    this.vx *= 0.6; this.vy = Math.min(this.vy||0, 2); this._phys(dt);
+    const cx = this.x+PW/2, cy = this.y+PH/2;
+    if(!this.mtFired){ if(Math.random()<0.8) addParts(cx + (Math.random()-0.5)*60, cy + (Math.random()-0.5)*70, '#d9a6ff', 1, 2);
+      if(this.sTimer >= YUTA_DISCH_WIND){ this.mtFired = true;
+        addRing(cx, cy, '#d9a6ff', YUTA_DISCH_R); addRing(cx, cy, '#ffffff', YUTA_DISCH_R*0.55); addParts(cx, cy, '#e7b6ff', 34, 9); doShake(12); snd('boom', this.x);
+        if(!IS_GUEST) carveCircle(cx, cy, 34);
+        for(const d of olFoes(this)) if(Math.hypot(d.x+PW/2 - cx, d.y+PH/2 - cy) < YUTA_DISCH_R + PW/2)
+          olHit(this, d, YUTA_DISCH_DMG, {rag:[13,-9,RAGD_MS], dir:Math.sign(d.x - this.x) || this.facing, col:'#e7b6ff'}); } }
+    if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
   }
   _startYutaFist(){
     sayFor(this, 'Rika!');
@@ -9595,7 +9597,7 @@ class Player {
         def.hp=Math.max(0,def.hp-YUTAFIST_DMG); def.flash=450;
         addDmg(ex,def.y-20,YUTAFIST_DMG,'#ff88cc'); doShake(18);
         this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+YUTAFIST_DMG);
-          if(!this.yutaCopiedUlt) this.yutaCopyUltCharge=Math.min(YUTA_COPY_ULT_REQ,this.yutaCopyUltCharge+YUTAFIST_DMG);
+
         if(def.hp<=0){ def._initRd((dx>0?1:-1)*8,-6,.12); def.ss(S.DEAD); }
         else { def._initRd((dx>0?1:-1)*10,-7,.13); def.ss(S.RAGD,RAGD_MS*1.5); }
       }
@@ -9658,7 +9660,7 @@ class Player {
           addParts(def.x+PW/2, def.y+PH*0.4, '#ff88cc', 6, 4);
           doShake(4);
           this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge+YUTA_SLICE_DMG);
-          if(!this.yutaCopiedUlt) this.yutaCopyUltCharge=Math.min(YUTA_COPY_ULT_REQ,this.yutaCopyUltCharge+YUTA_SLICE_DMG);
+
           if(def.hp<=0){
             def._initRd(this.facing*6,-4,.09*this.facing); def.ss(S.DEAD);
             this.yutaComboTarget = null;
@@ -10479,7 +10481,7 @@ class Player {
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
   _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.mahiFormT>0) m *= 1.2; if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= 1 + RYU_OUT_TAKEN*(this.ryuOut||0); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -13136,7 +13138,7 @@ class Player {
         // Key+name label inside box — matches Gojo/Sukuna style
         let label;
         if(i===0)      label = `SLICE [${k1}]`;
-        else if(i===1) label = `METAL ARM [${k2}]`;
+        else if(i===1) label = `DISCHARGE [${k2}]`;
         else label = this.rikaOnT>0 && this.rk ? `RIKA ${Math.ceil(this.rikaOnT/1000)}s · MODE [${k3}]` : `SUMMON RIKA [${k3}]`;
         ctx.fillText(label, ax+aw/2, abY+13);
       }
@@ -13956,9 +13958,10 @@ const OL_VARS = {
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 11, {rag:[11,-6,RAGD_MS], col:'#ff4a5a'}); addParts(d.x+PW/2, d.y+PH/2, '#a00010', 14, 6); } }},
   },
   ryu: {
-    1:{block:true, name:'Output Burst', desc:'Releases his output all at once around him: 8 damage and a shove to everyone within 120px (more with a higher Output bar).', lock:300, run(p){
-      const cx = p.x+PW/2, cy = p.y+PH/2; addRing(cx, cy, '#bfe6ff', 120); addRing(cx, cy, '#ffffff', 70); addParts(cx, cy, '#bfe6ff', 22, 7); snd('heavy', p.x); doShake(8);
-      for(const d of olFoes(p)) if(Math.hypot(d.x+PW/2 - cx, d.y+PH/2 - cy) < 120 + PW/2) olHit(p, d, 8, {rag:[11,-6,RAGD_MS*0.9], col:'#bfe6ff'}); }},
+    1:{block:true, name:'Output Burst', desc:'Releases his output as 5 homing lasers that curve after the opponent (5 each, more with a higher Output bar).', lock:300, run(p){
+      const cx = p.x+PW/2, cy = p.y+PH*0.4, o = p.ryuOut||0; addRing(cx, cy, '#bfe6ff', 70); addParts(cx, cy, '#bfe6ff', 16, 6); snd('beam', p.x); doShake(5);
+      for(let k=0;k<RYU_LASER_N;k++){ const a = -Math.PI/2 + (k-(RYU_LASER_N-1)/2)*0.5 + (p.facing>0 ? 0.35 : -0.35);
+        olShot(p, {kind:'ryulaser', x:cx, y:cy, vx:Math.cos(a)*RYU_LASER_SPD, vy:Math.sin(a)*RYU_LASER_SPD, r:12, life:2600, dmg:RYU_LASER_DMG, home:0.9 + 0.3*k/RYU_LASER_N, pierce:true, col:'#bfe6ff', o:{stun:260, push:3}}); } }},
     2:{name:'Granite Barrage', desc:'Three quick Granite Blasts in a fan (6 each). Their size grows with his Output bar.', lock:420, run(p){
       for(const a of [-0.22, 0, 0.22]) ryuFire(p, a, {dmg:6, h:ryuBeamH(p)*0.6, len:700, rag:[8,-4,RAGD_MS*0.7]}); }},
   },
@@ -14668,6 +14671,10 @@ function drawOlShots(){
         ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(-10, -9, 20, 18, 5); else ctx.rect(-10,-9,20,18); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#ff9a3a'; ctx.beginPath(); ctx.moveTo(-10, -5); ctx.lineTo(-24 - Math.random()*8, 0); ctx.lineTo(-10, 5); ctx.fill(); break;
       case 'ball': ctx.fillStyle = '#d8dde6'; ctx.strokeStyle = '#7a8090'; ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(s.x-1.5, s.y-1.5, 1.6, 0, Math.PI*2); ctx.fill(); break;
+      case 'ryulaser': { const a = Math.atan2(s.vy, s.vx); ctx.translate(s.x, s.y); ctx.rotate(a); ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(80,150,255,0.55)'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(-46, 0); ctx.lineTo(0, 0); ctx.stroke();
+        ctx.strokeStyle = '#bff4ff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(0, 0); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.fill(); break; }
       case 'pblood': { const a = Math.atan2(s.vy, s.vx); ctx.translate(s.x, s.y); ctx.rotate(a); ctx.strokeStyle = '#8a0010'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-60, 0); ctx.lineTo(0, 0); ctx.stroke();
         ctx.strokeStyle = '#ff5a6a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-50, 0); ctx.lineTo(0, 0); ctx.stroke(); break; }
       case 'sslash': { const a = Math.atan2(s.vy, s.vx); ctx.translate(s.x, s.y); ctx.rotate(a); ctx.strokeStyle = 'rgba(255,40,40,0.5)'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(-8, 0, 20, -1.2, 1.2); ctx.stroke();
@@ -16474,10 +16481,13 @@ function drawGetoBody(pl){
 //  but he takes more damage too) · F Maximum Granite Blast (a beam across the whole map)
 //  Maximum Output: Output Burst (blockable) · Granite Barrage (three beams in a fan)
 // ═══════════════════════════════════════════════════════════════════
-const RYU_PUNCH_CD = 6000, RYU_PUNCH_REACH = 90, RYU_PUNCH_DMG = 25, RYU_PUNCH_LUNGE = 160, RYU_PUNCH_HOLD = 420, RYU_PUNCH_MISS = 750;
+const RYU_PUNCH_CD = 6000, RYU_PUNCH_REACH = 90, RYU_PUNCH_DMG = 18,   // Oct 17: 25 → 18
+ RYU_PUNCH_LUNGE = 160, RYU_PUNCH_HOLD = 420, RYU_PUNCH_MISS = 750;
 const RYU_BEAM_CD = 6000, RYU_BEAM_WIND = 420, RYU_BEAM_DMG = 18, RYU_BEAM_LEN = 900, RYU_BEAM_H = 22, RYU_BEAM_H_OUT = 50;
-const RYU_ULT_WIND = 900, RYU_ULT_DMG = 30, RYU_ULT_DMG_OUT = 30, RYU_ULT_H = 90, RYU_ULT_H_OUT = 90;
-const RYU_OUT_RATE = 0.45, RYU_OUT_CE = 15, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.2;   // per second while charging · +80% damage dealt and +50% taken at 100%
+const RYU_ULT_WIND = 900, RYU_ULT_DMG = 30, RYU_ULT_DMG_OUT = 30, RYU_ULT_H = 180, RYU_ULT_H_OUT = 180;   // Oct 17: twice as big (90 + 90×Output before)
+const RYU_AIM_MAX = 1.35;   // aim range (rad) for Granite Blast and the ultimate (was 0.9)
+const RYU_OUT_STEP = 0.10, RYU_OUT_CAST = 320, RYU_OUT_CD = 1200, RYU_OUT_CE = 12, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.2, RYU_DMG_IN = 1.2;   // Oct 17: each use of his special = +10% Output (was hold to fill 45%/s); he always takes 20% more
+const RYU_LASER_N = 5, RYU_LASER_DMG = 5, RYU_LASER_SPD = 9;   // Output Burst: homing lasers   // per second while charging · +80% damage dealt and +50% taken at 100%
 const RYU_ART_SRC = { charge:'data:image/webp;base64,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', beam:'data:image/webp;base64,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' };
 // Ryu art (Oct 17): 6-frame 128×128 Granite Blast start-up (orb at (13,64), beam opens to the right) + 5-frame 256×128 beam tile
 // (the beam's core band is ~40px tall, centred at y 64)
@@ -16492,7 +16502,15 @@ function ryuDrawBeamTile(len, h, f, alpha){
 }
 // Granite Blast start-up animation at his hand while he winds up
 function ryuDrawCharge(pl){
-  if(pl.state!==S.RYUBEAM || pl.rbFired || !ryuArtOk('charge')) return;
+  if(pl.state!==S.RYUBEAM || pl.rbFired) return;
+  { // aim guide: where the blast will go
+    const f = pl.facing, a = pl.aimAng||0, sx = pl.x+PW/2 + f*14, sy = pl.y+PH*0.4, L = pl.rbBig ? 900 : RYU_BEAM_LEN*0.8;
+    ctx.save(); ctx.globalAlpha = 0.55; ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = pl.rbBig ? 3 : 2; ctx.setLineDash([10, 8]);
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + f*Math.cos(a)*L, sy + Math.sin(a)*L); ctx.stroke();
+    if(pl.rbBig){ const hh = ryuBeamH(pl, true)/2, nx = -Math.sin(a)*f, ny = Math.cos(a); ctx.globalAlpha = 0.25; ctx.lineWidth = 1.5;
+      for(const k of [-1,1]){ ctx.beginPath(); ctx.moveTo(sx + nx*hh*k*f, sy + ny*hh*k); ctx.lineTo(sx + f*Math.cos(a)*L + nx*hh*k*f, sy + Math.sin(a)*L + ny*hh*k); ctx.stroke(); } }
+    ctx.restore(); }
+  if(!ryuArtOk('charge')) return;
   const wind = pl.rbBig ? RYU_ULT_WIND : RYU_BEAM_WIND, fr = Math.min(RYU_CHG_N-1, Math.floor(pl.sTimer / wind * RYU_CHG_N));
   const sc = (pl.rbBig ? 1.5 : 0.75) * (1 + 0.5*(pl.ryuOut||0)), f = pl.facing;
   ctx.save(); ctx.translate(pl.x+PW/2 + f*14, pl.y+PH*0.4); ctx.scale(f, 1); ctx.rotate(pl.aimAng||0); ctx.imageSmoothingEnabled = false;
@@ -16538,7 +16556,7 @@ function drawRyu(){
   }
 }
 Player.prototype._ryuAbilities = function(dt, e1, e2, e3, eD, blocked){
-  for(const k of ['ryuPunchCd','ryuBeamCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+  for(const k of ['ryuPunchCd','ryuBeamCd','ryuOutCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
   const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), f = this.facing;
   // ── 1: Granite Punch ──
   if(e1 && free && !(this.ryuPunchCd>0)){
@@ -16549,7 +16567,10 @@ Player.prototype._ryuAbilities = function(dt, e1, e2, e3, eD, blocked){
     this.ryuBeamCd = RYU_BEAM_CD; this.rbBig = false; this.rbFired = false; this.aimAng = 0; this.vx = 0; this.ss(S.RYUBEAM, RYU_BEAM_WIND + 280); snd('charge', this.x); sayFor(this, 'Granite Blast!');
   }
   // ── 3 (hold): pump cursed energy into his output ──
-  if(e3 && free && !this.isPuppet){ this.vx = 0; this.ss(S.RYUCHARGE, 60000); addSpeech(this.x+PW/2, this.y-18, 'OUTPUT UP', '#bfe6ff', 500); snd('charge', this.x); }
+  if(e3 && free && !this.isPuppet && !(this.ryuOutCd>0)){
+    if((this.ryuOut||0) >= 1){ addSpeech(this.x+PW/2, this.y-22, 'OUTPUT 100%', '#ffffff', 700); }
+    else if(!ceInfinite(this) && this.ceMax && (this.ce||0) < RYU_OUT_CE){ addSpeech(this.x+PW/2, this.y-22, 'NOT ENOUGH CE', '#6fb8ff', 700); }
+    else { this.vx = 0; this.ryuOutCd = RYU_OUT_CD; this.roDone = false; this.ss(S.RYUCHARGE, RYU_OUT_CAST); snd('charge', this.x); } }
   // ── F: Maximum Granite Blast ──
   if(eD && free && this.domainCharge>=DOMAIN_CHARGE_REQ){
     this.domainCharge = 0; this.rbBig = true; this.rbFired = false; this.aimAng = 0; this.vx = 0; this.ss(S.RYUBEAM, RYU_ULT_WIND + 500);
@@ -16558,11 +16579,12 @@ Player.prototype._ryuAbilities = function(dt, e1, e2, e3, eD, blocked){
 };
 Player.prototype._tickRyuCharge = function(dt){
   this.vx *= 0.6; this._phys(dt);
-  const held = !!this.ab3Down, room = (this.ryuOut||0) < 1, ceOk = ceInfinite(this) || !this.ceMax || (this.ce||0) > 0.5;
-  if(!held || !room || !ceOk || this.isPuppet){ if(!room) addSpeech(this.x+PW/2, this.y-22, 'OUTPUT 100%', '#ffffff', 700); else if(!ceOk) addSpeech(this.x+PW/2, this.y-22, 'OUT OF CE', '#6fb8ff', 700); this.ss(this.onGround ? S.IDLE : S.AIR); return; }
-  this.ryuOut = Math.min(1, (this.ryuOut||0) + RYU_OUT_RATE*dt/1000);
-  if(!ceInfinite(this) && this.ceMax) this.ce = Math.max(0, (this.ce||0) - RYU_OUT_CE*dt/1000);
-  if(Math.random() < 0.5) addParts(this.x+PW/2 + (Math.random()-0.5)*30, this.y+PH*(0.2+Math.random()*0.7), '#bfe6ff', 1, 2);
+  if(Math.random() < 0.6) addParts(this.x+PW/2 + (Math.random()-0.5)*30, this.y+PH*(0.2+Math.random()*0.7), '#bfe6ff', 1, 2);
+  if(!this.roDone && this.sTimer >= RYU_OUT_CAST*0.7){
+    this.roDone = true; this.ryuOut = Math.min(1, (this.ryuOut||0) + RYU_OUT_STEP);
+    if(!ceInfinite(this) && this.ceMax) this.ce = Math.max(0, (this.ce||0) - RYU_OUT_CE);
+    addRing(this.x+PW/2, this.y+PH/2, '#bfe6ff', 46); addSpeech(this.x+PW/2, this.y-20, 'OUTPUT ' + Math.round(this.ryuOut*100) + '%', '#bfe6ff', 600); }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
 };
 Player.prototype._tickRyuPunch = function(dt){
   const f = this.facing;
@@ -16598,7 +16620,9 @@ Player.prototype._tickRyuPunch = function(dt){
 Player.prototype._tickRyuBeam = function(dt){
   this.vx = 0; this.vy = Math.min(this.vy||0, 1.5); this._phys(dt);
   const wind = this.rbBig ? RYU_ULT_WIND : RYU_BEAM_WIND;
-  if(!this.rbFired && !this.isPuppet) this.aimAng = Math.max(-0.9, Math.min(0.9, (this.aimAng||0) + ((keys[this.ctrl.down]?1:0)-(keys[this.ctrl.jmp]?1:0))*0.0024*dt));
+  if(!this.rbFired && !this.isPuppet){
+    this.aimAng = Math.max(-RYU_AIM_MAX, Math.min(RYU_AIM_MAX, (this.aimAng||0) + ((keys[this.ctrl.down]?1:0)-(keys[this.ctrl.jmp]?1:0))*0.0024*dt));
+    if(keys[this.ctrl.left] && this.facing>0) this.facing = -1; else if(keys[this.ctrl.right] && this.facing<0) this.facing = 1; }   // left / right turns him around
   if(!this.rbFired && Math.random()<0.7) addParts(this.x+PW/2 + this.facing*16, this.y+PH*0.4, '#bfe6ff', this.rbBig ? 3 : 1, 3);
   if(!this.rbFired && this.sTimer >= wind){
     this.rbFired = true;
@@ -16915,6 +16939,7 @@ const RIKA_NPC_MS = 45000, RIKA_HP = 75, RIKA_SLAM_DMG = 10, RIKA_SLAM_CD = 3200
 const RIKA_SUP_GRAB_MS = 2500, RIKA_SUP_GRAB_CD = 9000, RIKA_JUMP_CD = 3000, RIKA_PUSH_CD = 700, RIKA_LEASH = 900;
 const RIKA_MODE_NAMES = {off:'OFFENSIVE', def:'DEFENSIVE', sup:'SUPPORT'}, RIKA_MODE_COL = {off:'#ff6a8a', def:'#8ac8ff', sup:'#9fe0a0'};
 const METAL_RANGE = 86, METAL_CHOKE_MS = 2000, METAL_THROW_DMG = 10, METAL_PARRY_MS = 450, YUTA_METAL_CD = 6000;
+const YUTA_DISCH_WIND = 260, YUTA_DISCH_R = 150, YUTA_DISCH_DMG = 15, YUTA_DISCH_CE = 25;   // Cursed Energy Discharge (Oct 17, replaces Metal Arm)
 function rikaSummon(p){
   p.rikaOnT = RIKA_NPC_MS; p.rk = {x:p.x+PW/2 - p.facing*40, y:p.y-10, hp:RIKA_HP, mode:(p.rk && p.rk.mode) || 'off', slamCd:600, biteCd:0, grabCd:0, jumpCd:0, pushCd:0, hitT:0, act:null, actT:0};
   addRing(p.x+PW/2, p.y+PH/2, '#cc88ff', 140); addParts(p.x+PW/2, p.y, '#e8e4ec', 30, 7); doShake(14); snd('domain', p.x); showTxt('RIKA', 1200); sayFor(p, 'Come, Rika.');
