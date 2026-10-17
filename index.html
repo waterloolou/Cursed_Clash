@@ -62,6 +62,7 @@ canvas {
 .lb-audio .wide { flex-basis:100%; }
 .lb-or { text-align:center; color:rgba(200,195,185,0.5); font-size:13px; letter-spacing:2px; margin:16px 0 10px; }
 .lb-join { display:flex; gap:8px; }
+.lb-cpu { display:flex; gap:6px; align-items:center; } .lb-cpu span { font:700 14px 'Rajdhani',sans-serif; letter-spacing:.06em; color:#cfd6e4; white-space:nowrap; padding-right:4px; } .lb-cpu .lb-btn { flex:1; padding-left:4px; padding-right:4px; }
 .lb-queue { display:flex; gap:8px; } .lb-queue .lb-btn { flex:1; background:#3a2a5c; border-color:#6a52a0; font-size:16px; } .lb-queue .lb-btn:hover { background:#4a3870; }
 #lbQMode { font:700 34px 'Rajdhani',sans-serif; letter-spacing:6px; text-align:center; color:#d8c8ff; margin:6px 0; }
 .lb-join input { flex:1; min-width:0; font:700 24px 'Rajdhani',sans-serif; letter-spacing:8px; text-align:center; text-transform:uppercase;
@@ -841,6 +842,7 @@ canvas {
       <div class="lb-join"><input id="joinCode" maxlength="300" placeholder="CODE or LINK" autocomplete="off" spellcheck="false"><button class="lb-btn" id="btnJoin">JOIN</button></div>
       <div class="lb-sec">ON THIS COMPUTER</div>
       <button class="lb-btn local" id="btnLocal">LOCAL 2 PLAYER · SAME KEYBOARD</button>
+      <div class="lb-cpu"><span>🤖 VS CPU</span><button class="lb-btn local" id="btnCpuE">EASY</button><button class="lb-btn local" id="btnCpuN">NORMAL</button><button class="lb-btn local" id="btnCpuH">HARD</button></div>
       <button class="lb-btn local" id="btnTrain">🧪 TRAINING · SOLO — TEST EVERY CHARACTER</button>
       <div class="lb-sec">MORE</div>
       <button class="lb-btn ghost" id="acChip">👤 ACCOUNT</button>
@@ -7527,7 +7529,7 @@ const LBL_ONLINE = { ab1:'Q', ab2:'E', ab3:'R', ult:'F', atk:'CLICK', left:'A', 
 const LBL_L1 = { ab1:'1', ab2:'2', ab3:'3', ult:'Q', atk:'F', left:'A', right:'D', jump:'W', down:'S', pick:'G', feat:'T', block:'—', dash:'—', vtog:'E' };
 const LBL_L2 = { ab1:'L', ab2:'K', ab3:'J', ult:';', atk:'/', left:'←', right:'→', jump:'↑', down:'↓', pick:'ENTER', feat:'R-SHIFT', block:'—', dash:'—', vtog:'I' };
 function keyLbl(pl, a){
-  if(typeof NET!=='undefined' && NET.role==='local' && !(typeof gameMode!=='undefined' && gameMode==='training')) return ((pl && pl.playerNum===2) ? LBL_L2 : LBL_L1)[a];
+  if(typeof NET!=='undefined' && NET.role==='local' && !(typeof gameMode!=='undefined' && gameMode==='training') && !(typeof CPU!=='undefined' && CPU.on)) return ((pl && pl.playerNum===2) ? LBL_L2 : LBL_L1)[a];
   return LBL_ONLINE[a];
 }
 const padPrevs = [{}, {}];
@@ -12669,7 +12671,7 @@ class Player {
       ctx.fillStyle = sp < 0.5 ? '#ff5aa8' : '#b07cff'; ctx.fillRect(flip?bx+bw-Math.floor(bw*sp):bx, y+bh-5, Math.floor(bw*sp), 5);
       ctx.save(); ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.fillStyle = '#e8dcff'; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillText(`SOUL ${Math.ceil(this.soul)}/${this.soulMax}`, flip ? bx+4 : bx+bw-4, y+bh-7); ctx.restore(); }
     ctx.fillStyle='#ccc'; ctx.font=`700 13px 'Rajdhani',sans-serif`;
-    ctx.textAlign=flip?'right':'left'; ctx.fillText(this.name,flip?bx+bw-5:bx+5,y+14);
+    ctx.textAlign=flip?'right':'left'; ctx.fillText(this.name + (CPU.on && this===p2 ? ` · CPU ${CPU_LEVELS[CPU.lvl].label}` : ''),flip?bx+bw-5:bx+5,y+14);
     // Account name + equipped feats / vows
     if(this.lo){
       const tags = [];
@@ -17864,11 +17866,928 @@ const trainOpt = {meters:false, nocd:false, dummy:0, immortal:true, ol:true, hid
 const TRAIN_DUMMY = ['STAND', 'JUMP', 'BLOCK', 'WALK', 'CROUCH'];
 const TRAIN_METERS = [['domainCharge','DOMAIN_CHARGE_REQ'], ['getoCharge','GETO_MIRROR_REQ'], ['fugaCharge','FUGA_CHARGE_REQ'], ['hollowCharge','HOLLOW_CHARGE_REQ'], ['yujiUltCharge','YUJI_ULT_COST'],
   ['yujiBfCharge','YUJI_BF_REQ'], ['yutaCopyUltCharge','YUTA_COPY_ULT_REQ'], ['chosoCharge','CHOSO_RING_REQ'], ['dagonCharge','DAGON_FLOOD_REQ'], ['hakCharge','HAK_PUNCH_REQ'],
-  ['hanaCharge','HANA_FIELD_REQ'], ['higuCharge','HIGU_THROW_REQ'], ['jogoCharge','JOGO_MOUND_REQ'], ['kenCharge','KEN_AG_REQ'], ['mahiCharge','MAHI_FORM_REQ'],
+  ['hanaCharge','HANA_FIELD_REQ'], ['higuCharge','HIGU_THROW_REQ'], ['jogoCharge','JOGO_MOUND_REQ'], ['kenCharge','KEN_AG_REQ'], ['mahiCharge','MAHI_IDLE_REQ'],
   ['puppetCharge','PUPPET_REQ'], ['takCharge','TAKA_CTR_REQ'], ['todoCharge','TODO_SUPER_REQ'], ['naoCharge','NAO_SPECIAL_REQ'], ['megCharge','MEG_DOG_REQ']];
 const trainStat = {prevHp:100, combo:0, hits:0, last:0, lastT:-1e9, best:0};
 function isTraining(){ return typeof gameMode!=='undefined' && gameMode==='training'; }
 function isLocalPair(){ return NET.role==='local' && !isTraining(); }
+
+// CPU opponent (Oct 17): the bot from the Oct 14 playtest (it won 553 of 800 matches), updated for the new kits.
+// CPU_BOT.act(obs) -> held buttons for this frame.
+const CPU_BOT = (function(){
+  'use strict';
+  const EDGE_KEYS = ['atk','ab1','ab2','ab3','ult','vtog','pick','feat','jump','dash'];
+  const ALL_KEYS = ['left','right','jump','down','atk','ab1','ab2','ab3','ult','vtog','block','dash','pick','feat'];
+  const PASSIVE = {idle:1, walk:1, air:1, stun:1, ragd:1, dead:1, block:1, framed:1, dash:1};
+  const LOCKED = {stun:1, ragd:1, framed:1};
+  const NO_ANTI = {}; // fighters assumed to have anti-domain via atk+ult
+  const ANTI = {mechamaru:1, todo:1, higuruma:1, jogo:1, hanami:1, meimei:1, yuki:1};
+  const CLASH = {sukuna:1, gojo:1, yuta:1, higuruma:1, mahito:1};
+  const TRAPS = {jogoMounds:1, flowerFields:1, fireTowers:1};
+  const STATIC_KINDS = {uiuis:1, shutterDoors:1, mahiBlobs:1, jogoMounds:1, flowerFields:1};
+  const NO_ITEM = {katana:1, katanas:1};  // ground items seen: kamu, cloud, isoh (Inverted Spear), speech (Inumaki's Recording)
+
+  // ------------------------------------------------------------ helpers
+  function sgn(v){ return v > 0 ? 1 : v < 0 ? -1 : 0; }
+  function num(v, d){ return (typeof v === 'number' && isFinite(v)) ? v : d; }
+
+  function makeCtx(o){
+    const m = o.mem || {};
+    const me = o.me, op = o.opp;
+    const S = {
+      o, m, me, op,
+      t: num(o.t, 0),
+      online: o.rules === 'online',
+      dx: num(o.dx, op.cx - me.cx), dy: num(o.dy, op.cy - me.cy),
+      want: {},
+      tap(k){ if(S.want[k] !== 'hold') S.want[k] = 'tap'; },
+      hold(k){ S.want[k] = 'hold'; },
+      drop(k){ delete S.want[k]; },
+    };
+    S.ax = Math.abs(S.dx); S.ady = Math.abs(S.dy); S.dir = S.dx >= 0 ? 1 : -1;
+    S.f = m.f;
+    S.feet = me.y + me.h;
+    S.opFeet = op.y + op.h;
+    S.hittable = op.hittable !== false && op.state !== 'dead' && op.state !== 'ragd';
+    S.sameLevel = S.ady < 55 || (S.ady < 140 && !op.onGround && S.dy < 0 && S.ax < 120);
+    S.ce = num(me.ce, 0); S.ceMax = num(me.ceMax, 100);
+    S.special = me.special == null ? 0 : num(me.special, 0);
+    S.ult = num(me.ult, 0); S.rawUlt = S.ult;
+    // don't spam the ultimate key: one try per 0.4s, and if the bar stays full after 5 tries, leave it 8s
+    if(S.rawUlt < 0.98){ m.ultTries = 0; m.yujiUlt = false; }
+    if(me.state === 'yujiult') m.yujiUlt = true;
+    if(m.yujiUlt || (m.ultBlock && num(o.t, 0) < m.ultBlock) || num(o.t, 0) - (m.ultLast || -9999) < 400) S.ult = 0;
+    S.ready1 = me.ready ? me.ready.ab1 !== false : true;
+    S.ready2 = me.ready ? me.ready.ab2 !== false : true;
+    S.myDomain = o.domain && o.domain.owner === 'me';
+    S.oppDomain = o.domain && o.domain.owner === 'opp';
+    S.busy = !PASSIVE[me.state];
+    S.locked = !!LOCKED[me.state];
+    S.oppBusy = !PASSIVE[op.state];
+    return S;
+  }
+
+  // jump: Mechamaru has no normal jump (hold to charge the jets), everyone else taps
+  function doJump(S, ty){
+    if(S.me.type === 'mechamaru'){ S.m.jetF = S.f + 36; S.m.jetTy = ty == null ? S.feet - 160 : ty; S.hold('jump'); }
+    else S.tap('jump');
+  }
+  function move(S, d){ if(d > 0){ S.hold('right'); S.drop('left'); } else if(d < 0){ S.hold('left'); S.drop('right'); } }
+  function face(S){ if(S.me.facing !== S.dir && !S.busy) move(S, S.dir); }
+  function facing(S){ return S.me.facing === S.dir; }
+  // aim helper while a move winds up: hold up/down toward the opponent
+  function aim(S, thr){ thr = thr || 0.35; const a = -S.dy / Math.max(40, S.ax);
+    if(a > thr) S.hold('jump'); else if(a < -thr) S.hold('down'); }
+  function setAim(S, ms, thr){ S.m.aimUntil = S.t + ms; S.m.aimThr = thr || 0.35; }
+
+  // a clear line along the floor between me and the opponent at chest height?
+  function lineClear(S){
+    const o = S.o; if(typeof o.solid !== 'function') return true;
+    const x0 = Math.min(S.me.cx, S.op.cx), x1 = Math.max(S.me.cx, S.op.cx);
+    const y0 = Math.min(S.me.cy, S.op.cy) - 10, y1 = Math.max(S.me.cy, S.op.cy);
+    const n = Math.ceil((x1 - x0) / 24);
+    for(let i = 1; i < n; i++){ const x = x0 + i * 24, fr = i / n;
+      const y = S.me.cx < S.op.cx ? S.me.cy + (S.op.cy - S.me.cy) * fr : S.op.cy + (S.me.cy - S.op.cy) * fr;
+      try { if(o.solid(x - 4, y - 6, 8, 12)) return false; } catch(e){ return true; } }
+    return true;
+  }
+
+  // ------------------------------------------------------------ navigation
+  // one-way ledges I found by running around each map in practice (row:col-col, 20px cells)
+  const KNOWN_PLATS = {
+   "SHIBUYA STATION": "7:64-64 8:36-36 9:3-3 10:16-16 10:37-39 12:91-91 13:3-7 15:58-58 16:12-12 16:43-43 16:55-56 16:86-86 23:43-61 23:86-93 27:33-34 27:38-38 29:15-15 29:25-25 29:83-84 30:77-78 35:26-27 35:36-36 36:15-22 36:60-69 36:78-84 41:43-43 41:55-56 41:89-90 47:22-31 48:42-57 48:89-96 49:63-63 49:88-88 52:13-14 52:18-18 53:1-14 53:18-64 53:88-97",
+   "SISTER SCHOOL EXCHANGE": "28:17-17 28:23-23 29:83-87 30:33-35 30:82-84 32:79-80 33:18-19 33:116-121 34:31-31 34:40-40 34:92-98 34:109-110 36:5-7 36:21-23 36:86-90 37:41-41 39:104-110 40:5-7 40:48-49 40:80-86 40:97-104 41:29-30 41:45-45 42:50-51 43:1-3 43:17-23 43:116-122 44:92-98 45:26-27 45:85-91 45:109-115 46:16-19 46:25-26 46:51-54 46:57-58 46:67-71 46:76-79 47:24-24 47:68-68 47:72-72 47:76-76 47:80-80 48:23-23 49:2-2 49:22-22 49:100-101 49:110-110 50:0-3 50:21-22 50:51-54 50:66-101 50:109-127",
+   "SHINJUKU": "25:9-9 28:9-12 28:46-46 28:52-52 28:109-109 28:113-113 29:108-108 29:113-116 30:43-44 30:54-54 30:107-108 34:9-12 34:41-44 34:54-57 34:105-108 34:116-119 35:81-81 36:84-84 37:77-77 39:74-77 39:84-88 40:9-12 40:41-44 40:54-57 40:85-85 40:105-108 40:116-120 41:106-106 42:99-99 43:117-117 44:64-64 44:68-69 44:74-77 44:85-87 45:9-12 45:41-44 45:54-57 45:71-72 45:92-93 45:105-108 46:55-55 46:63-63 46:100-100 47:120-120 48:25-25 48:28-28 48:42-42 50:25-29 50:63-63 50:66-66 50:76-77 50:86-86 51:9-11 51:42-44 51:53-56 51:75-75 51:87-87 51:101-101 51:105-108 51:116-117 51:125-125 52:57-57 52:69-69 52:75-75 52:88-88 52:94-94 52:103-103 52:121-121 53:56-56 53:70-70 53:73-74 53:89-89 53:92-93 53:104-104 53:120-120 54:30-30 54:37-37 54:54-54 54:71-72 54:89-91 54:119-119 55:29-29 55:36-37 55:53-53 55:72-72 55:90-90 55:107-107 55:118-118 56:8-30 56:35-37 56:41-54 56:71-72 56:89-91 56:106-119",
+   "SENDAI": "34:106-109 35:83-89 37:39-46 38:83-88 39:76-79 39:106-109 40:76-77 40:91-96 40:99-106 41:12-15 41:30-31 41:38-39 41:48-48 41:56-56 41:74-83 41:87-96 42:74-76 42:90-92 42:95-97 43:19-19 43:73-76 43:89-92 43:95-97 44:18-18 44:68-68 44:106-109 45:18-18 45:68-68 46:11-14 46:17-17 46:69-69 47:16-16 47:70-70 47:104-104 47:108-108 48:15-15 48:71-71 48:100-100 48:108-108 49:15-15 49:71-71 50:13-14 50:72-72 50:96-97 50:110-110 51:2-14 51:19-67 51:71-98 51:109-119"
+  };
+  
+  const C = 20;
+  function buildGrid(S){
+    const o = S.o, m = S.m;
+    const W = Math.ceil(o.map.w / C), H = Math.ceil(o.map.h / C) + 1;
+    const g = new Uint8Array(W * H);
+    const gr = Math.floor(num(o.map.ground, o.map.h) / C);
+    for(let r = 0; r < H; r++) for(let c = 0; c < W; c++){
+      let s = 0;
+      if(r >= gr) s = 1; else { try { s = o.solid(c * C + 2, r * C + 2, C - 4, C - 4) ? 1 : 0; } catch(e){ s = 0; } }
+      g[r * W + c] = s;
+    }
+    const kp = KNOWN_PLATS[o.map.name];
+    if(kp && !m.kpDone){ m.plats = m.plats || {}; for(const tok of kp.split(' ')){ const [r, cs] = tok.split(':'); const [a, b] = cs.split('-').map(Number); for(let c = a; c <= b; c++) m.plats[(+r) * W + c] = 1; } m.kpDone = true; }
+    if(m.plats) for(const k in m.plats){ const i = +k; if(i >= 0 && i < g.length && g[i] === 0) g[i] = 2; }
+    // how many 20px rows each fighter can jump up (measured in the training room: most rise ~143px)
+    const JRS = {naoya: 5, mechamaru: 12, hakari: 8, yuji: 9, hanami: 8, todo: 8, megumi: 7, yuki: 7};
+    m.grid = {g, W, H, t: S.t, jr: JRS[S.me.type] || 7};
+  }
+  function learnPlat(S, f){
+    if(!f || !f.onGround) return; const m = S.m, G = m.grid; if(!G) return;
+    const r = Math.round((f.y + f.h) / C); if(r <= 0 || r >= G.H) return;
+    const c0 = Math.floor((f.x + 4) / C), c1 = Math.floor((f.x + f.w - 4) / C);
+    m.plats = m.plats || {};
+    for(let c = c0; c <= c1; c++){ if(c < 0 || c >= G.W) continue; const i = r * G.W + c;
+      if(G.g[i] === 0){ m.plats[i] = 1; G.g[i] = 2; } }
+  }
+  function cell(G, c, r){ if(c < 0 || c >= G.W || r < 0) return 1; if(r >= G.H) return 1; return G.g[r * G.W + c]; }
+  function clearCol(G, c, r0, r1){ for(let r = r0; r <= r1; r++) if(cell(G, c, r) === 1) return false; return true; }
+  function isFoot(G, c, r){ if(c < 0 || c >= G.W || r < 4 || r >= G.H) return false; const v = cell(G, c, r); return v >= 1 && clearCol(G, c, r - 4, r - 1); }
+  function nodeOf(G, f){
+    const c = Math.max(0, Math.min(G.W - 1, Math.floor((f.x + f.w / 2) / C)));
+    const r0 = Math.round((f.y + f.h) / C);
+    for(const dr of [0, 1, -1, 2]) if(isFoot(G, c, r0 + dr)) return (r0 + dr) * G.W + c;
+    // falling / flying: first foothold below
+    for(let r = Math.max(4, r0); r < G.H; r++) if(isFoot(G, c, r)) return r * G.W + c;
+    for(const dc of [1, -1, 2, -2]) for(let r = Math.max(4, r0); r < G.H; r++) if(isFoot(G, c + dc, r)) return r * G.W + c + dc;
+    return -1;
+  }
+  function neighbors(G, id, out){
+    const W = G.W, c = id % W, r = (id / W) | 0; out.length = 0;
+    for(const d of [-1, 1]){
+      let walked = false;
+      for(const dr of [0, -1, 1]) if(isFoot(G, c + d, r + dr)){ out.push([(r + dr) * W + c + d, 1, 'walk']); walked = true; break; }
+      if(!walked && clearCol(G, c + d, r - 4, r - 1)){
+        for(const cc of [c + d, c + 2 * d]){ let found = false;
+          for(let rr = r + 1; rr < G.H; rr++){ const v = cell(G, cc, rr); if(v >= 1){ if(isFoot(G, cc, rr)){ out.push([rr * W + cc, 2 + (rr - r) * 0.05, 'fall']); found = true; } break; } }
+          if(found) break; }
+      }
+    }
+    if(cell(G, c, r) === 2){ for(let rr = r + 1; rr < G.H; rr++){ if(cell(G, c, rr) >= 1){ if(isFoot(G, c, rr)) out.push([rr * W + c, 3, 'drop']); break; } } }
+    const JR = G.jr || 8;
+    for(let dr = 0; dr >= -JR; dr--){
+      for(let dc = -6; dc <= 6; dc++){
+        if(Math.abs(dc) <= 1 && dr >= -1) continue;
+        const cc = c + dc, rr = r + dr; if(!isFoot(G, cc, rr)) continue;
+        if(!clearCol(G, c, rr - 5, r - 1)) continue;
+        let ok = true; const s = sgn(dc);
+        for(let x = c; x !== cc; x += s){ if(cell(G, x, rr - 4) === 1 || cell(G, x, rr - 2) === 1){ ok = false; break; } }
+        if(ok) out.push([rr * W + cc, 3 + Math.abs(dc) * 0.3 + (-dr) * 0.2, 'jump']);
+      }
+    }
+    return out;
+  }
+  function findPath(G, src, dst, bad, f){
+    if(src < 0 || dst < 0) return null; if(src === dst) return [{id: src, type: 'walk'}];
+    if(G.W * G.H > 40000) return null;
+    const N = G.W * G.H; const dist = new Float32Array(N).fill(1e9); const prev = new Int32Array(N).fill(-1); const ptype = {};
+    // simple Dijkstra with a binary-heap-free bucket approach (costs small) -> use array scan of frontier
+    let frontier = [src]; dist[src] = 0; const nb = []; let iter = 0;
+    while(frontier.length && iter < 6000){ iter++;
+      // pop min
+      let bi = 0; for(let i = 1; i < frontier.length; i++) if(dist[frontier[i]] < dist[frontier[bi]]) bi = i;
+      const u = frontier[bi]; frontier[bi] = frontier[frontier.length - 1]; frontier.pop();
+      if(u === dst) break;
+      neighbors(G, u, nb);
+      for(const [v, w, ty] of nb){ if(bad && bad[u + '>' + v] > f) continue; const nd = dist[u] + w; if(nd < dist[v]){ if(dist[v] >= 1e9) frontier.push(v); dist[v] = nd; prev[v] = u; ptype[v] = ty; } }
+    }
+    let partial = false, end = dst;
+    if(prev[dst] < 0){ // unreachable: go to the reachable foothold closest to the target instead
+      const dc = dst % G.W, dr = (dst / G.W) | 0; let best = -1, bd = 1e9;
+      for(let i = 0; i < N; i++){ if(dist[i] >= 1e9) continue; const c = i % G.W, r = (i / G.W) | 0; const d = Math.hypot(c - dc, (r - dr) * 1.3) + dist[i] * 0.02; if(d < bd){ bd = d; best = i; } }
+      if(best < 0 || best === src) return {path: null, partial: true, end: src};
+      end = best; partial = true;
+    }
+    const path = []; let v = end; let guard = 0;
+    while(v !== src && v >= 0 && guard++ < 2000){ path.push({id: v, type: ptype[v]}); v = prev[v]; }
+    path.push({id: src, type: 'walk'}); path.reverse(); path.partial = partial; return path;
+  }
+  // move toward a world point using the map graph. returns true if it issued movement.
+  function navTo(S, tx, tfeet){
+    const m = S.m, G = m.grid, me = S.me; if(!G) return false;
+    const W = G.W;
+    if(me.onGround) m.lastGround = nodeOf(G, me);
+    { const s0 = m.lastGround != null ? m.lastGround : nodeOf(G, me); if(m.navSrc !== s0){ m.navSrc = s0; m.navSrcF = S.f; } else if(S.f - m.navSrcF > 200 && m.path && m.path.length > 1){ const i0 = m.path.findIndex(n => n.id === s0); const nx0 = m.path[i0 + 1]; if(i0 >= 0 && nx0){ m.bad = m.bad || {}; m.bad[s0 + '>' + nx0.id] = S.f + 900; } m.navSrcF = S.f; m.path = null; m.pathKey = ''; m.airTx = null; } }
+    if(!me.onGround){ // steer in the air
+      const ax = m.airTx != null ? m.airTx : tx; const d = ax - me.cx;
+      if(Math.abs(d) > 6) move(S, sgn(d));
+      if(S.me.vy > 0 && S.me.type === 'gojo') S.hold('jump');
+      if(S.me.type === 'mechamaru' && m.jetTy != null && S.feet > m.jetTy) S.hold('jump');
+      return true;
+    }
+    m.airTx = null;
+    const src = nodeOf(G, me);
+    const tc = Math.max(0, Math.min(W - 1, Math.floor(tx / C)));
+    let dst = -1; const tr = Math.round(tfeet / C);
+    for(const dr of [0, 1, -1, 2, -2, 3]){ if(isFoot(G, tc, tr + dr)){ dst = (tr + dr) * W + tc; break; } }
+    if(dst < 0){ for(const dc of [1, -1, 2, -2, 3, -3]){ for(const dr of [0, 1, -1, 2, -2]) if(isFoot(G, tc + dc, tr + dr)){ dst = (tr + dr) * W + tc + dc; break; } if(dst >= 0) break; } }
+    if(dst < 0) dst = nodeOf(G, {x: tx - 14, y: tfeet - 78, w: 28, h: 78});
+    if(dst === src && Math.abs(tfeet - S.feet) > 60){ m.noPathF = (m.noPathF || 0) + 1; return false; }
+    const key = src + ':' + dst;
+    const age = S.f - (m.pathF || 0);
+    const onPath = m.path && m.path.some(n => n.id === src);
+    const need = !m.path ? age > 10 : (age > 30 || !onPath || (m.pathDst !== dst && age > 8));
+    if(need && (m.pathKey !== key || age > 60)){ m.pathDst = dst; let fp = findPath(G, src, dst, m.bad, S.f); if(fp && !Array.isArray(fp)) fp = null; m.path = fp; m.pathKey = key; m.pathF = S.f; }
+    const p = m.path; if(!p || p.length < 2){ if(!p) m.noPathF = (m.noPathF || 0) + 1; return false; }
+    if(p.partial && p[p.length - 1].id === src){ m.noPathF = (m.noPathF || 0) + 1; return false; }
+    if(!p.partial) m.noPathF = 0; else m.noPathF = Math.max(m.noPathF || 0, 1) + 1;
+    let i = p.findIndex(n => n.id === src); if(i < 0) i = 0;
+    const nx = p[i + 1]; if(!nx) return false;
+    const ncx = (nx.id % W) * C + C / 2;
+    if(nx.type === 'walk'){
+      // look ahead along the walk run
+      let j = i + 1; while(j + 1 < p.length && p[j + 1].type === 'walk' && j - i < 8) j++;
+      const lx = (p[j].id % W) * C + C / 2; move(S, sgn(lx - me.cx) || 1);
+    } else if(nx.type === 'fall'){ move(S, sgn(ncx - me.cx) || 1); m.airTx = ncx; }
+    else if(nx.type === 'drop'){ S.hold('down'); S.drop('left'); S.drop('right'); m.airTx = ncx; }
+    else if(nx.type === 'jump'){
+      const scx = (p[i].id % W) * C + C / 2; const d = ncx - me.cx;
+      if(Math.abs(d) > 70 && Math.abs(scx - me.cx) > 6 && sgn(scx - me.cx) !== sgn(d)) move(S, sgn(scx - me.cx));
+      else { doJump(S, ((nx.id / W) | 0) * C - 10); if(Math.abs(d) > 4) move(S, sgn(d)); m.airTx = ncx; }
+    }
+    return true;
+  }
+  // generic approach: direct when on the same level with a clear line, otherwise path-find
+  function approach(S, tx, tfeet){
+    if(tx == null){ tx = S.op.cx; tfeet = S.opFeet; }
+    const d = tx - S.me.cx;
+    const direct = Math.abs(tfeet - S.feet) < 50 && (Math.abs(d) < 100 || lineClear(S));
+    if(direct) S.m.noPathF = 0;
+    if(!direct && navTo(S, tx, tfeet)) return;
+    if(Math.abs(d) > 8 || !direct) move(S, sgn(d) || S.dir);
+    if(!S.me.onGround && S.me.type === 'gojo' && S.me.vy > 0) S.hold('jump');
+  }
+  function retreat(S){
+    const away = -S.dir; const o = S.o;
+    const nearWall = S.me.cx + away * 120 < 30 || S.me.cx + away * 120 > o.map.w - 30;
+    let blocked = false; try { blocked = o.solid(S.me.cx + away * 40 - 5, S.me.y + 10, 10, S.me.h - 20); } catch(e){}
+    if(nearWall || blocked){ return false; }
+    move(S, away); return true;
+  }
+  // hold a distance band; hysteresis so I don't jitter at the edge of it
+  function keepRange(S, lo, hi){
+    const m = S.m;
+    if(!S.sameLevel || S.ax > hi){ m.backing = false; approach(S); return; }
+    if(S.ax < lo) m.backing = true;
+    if(m.backing && S.ax > lo + 70) m.backing = false;
+    if(m.backing){ if(!retreat(S)){ m.backing = false; face(S); } return; }
+    face(S);
+  }
+
+  // ------------------------------------------------------------ Maximum Output
+  function moCooldown(S){ return S.me.type === 'gojo' ? 9300 : 6300; }
+  // try to fire Maximum Output move n (1/2). returns true if the request is in progress.
+  function useMO(S, n, opts){
+    const m = S.m; opts = opts || {};
+    m.moCD = m.moCD || {1: 0, 2: 0};
+    if(S.t < m.moCD[n]) return false;
+    if(S.ce < (opts.ce || 20)) return false;
+    if(S.busy || S.locked) return false;
+    if(m.mo && m.mo.n !== n) return false;
+    if(!S.me.varMode){ S.tap('vtog'); m.mo = {n, t: S.t, aim: opts.aim, hold: opts.hold}; return true; }
+    S.tap('ab' + n); m.moCD[n] = S.t + (opts.cd || moCooldown(S)); m.mo = null;
+    m.moHold = opts.hold ? {k: 'ab' + n, until: S.t + opts.hold} : null;
+    m.moExit = S.t + (opts.exit || 350); if(opts.aim) setAim(S, opts.aim);
+    return true;
+  }
+  function moTick(S){
+    const m = S.m;
+    if(m.mo){ if(S.t - m.mo.t > 500){ m.mo = null; } else if(S.me.varMode){ const n = m.mo.n, o2 = {aim: m.mo.aim, hold: m.mo.hold}; m.mo = null; m.moCD = m.moCD || {1:0,2:0}; m.moCD[n] = 0; S.tap('ab' + n); m.moCD[n] = S.t + moCooldown(S); m.moExit = S.t + 350; if(o2.aim) setAim(S, o2.aim); if(o2.hold) m.moHold = {k: 'ab' + n, until: S.t + o2.hold}; return true; } else { return true; } }
+    if(m.moHold && S.t < m.moHold.until){ S.hold(m.moHold.k); }
+    if(S.me.varMode && !m.keepMO && S.t > (m.moExit || 0) && !S.busy && !(m.moHold && S.t < m.moHold.until)){ S.tap('vtog'); m.moExit = S.t + 400; }
+    return false;
+  }
+
+  // ------------------------------------------------------------ defense / reactions
+  function incoming(S){
+    const me = S.me; let best = null;
+    for(const p of (S.o.projectiles || [])){
+      if(p.mine || STATIC_KINDS[p.kind]) continue;
+      const rx = p.x - me.cx, ry = p.y - me.cy;
+      if(Math.abs(ry) > 90) continue;
+      const approaching = (rx * num(p.vx, 0) < 0) || Math.abs(rx) < 60;
+      if(!approaching) continue;
+      const dist = Math.abs(rx);
+      if(dist < 170 && (!best || dist < best.d)) best = {d: dist, p};
+    }
+    return best;
+  }
+  function meleeThreat(S){
+    const op = S.op;
+    return S.oppBusy && op.state !== 'block' && S.ax < 150 && S.ady < 90 && op.facing === sgn(S.me.cx - op.cx || 1);
+  }
+
+  // ------------------------------------------------------------ generic melee
+  function punch(S, every){
+    const m = S.m; every = every || (m.cfg && m.cfg.every) || (S.online ? (S.me.type === 'yuji' ? 19 : 4) : 8);
+    face(S);
+    if(S.f - (m.lastAtk || -99) >= every){ S.tap('atk'); m.lastAtk = S.f; }
+  }
+  function brawl(S, reach){ // walk in and punch
+    reach = reach || 60;
+    if(S.ax > reach - 8 || !S.sameLevel) approach(S);
+    else face(S);
+    // don't punch into a guard (a timed block stuns me): wait for them to drop it
+    if(S.ax < reach + 10 && S.sameLevel && S.hittable && !(S.online && S.op.state === 'block' && !(S.m.cfg && S.m.cfg.punchBlock))){
+      if(careful(S) && !openOpp(S)){ if(S.ax < reach - 20) retreat(S); return; }
+      punch(S);
+    }
+  }
+  // the opponent blocks a lot -> only swing when they can't guard
+  function careful(S){ const m = S.m; if(!S.online || (m.cfg && m.cfg.noCareful)) return false; const r = ((m.blk || 0) + 0.5) / ((m.att || 0) + 2); return (m.att || 0) >= 4 && r > 0.4; }
+  function openOpp(S){ const st = S.op.state; return st === 'stun' || st === 'framed' || (S.oppBusy && st !== 'block' && st !== 'dash'); }
+
+  // ------------------------------------------------------------ fighter plans
+  // each returns nothing, writes into S via tap/hold/move.
+  const P = {};
+
+  P.sukuna = function(S){
+    const m = S.m;
+    if(S.ult >= 1 && !S.o.domain && S.hittable){ S.tap('ult'); return; }
+    if(S.me.state === 'fuga'){ aim(S, 0.3); if(S.me.facing !== S.dir) move(S, S.dir); return; }
+    if(S.special >= 1 && S.ax < 750 && S.hittable && (S.sameLevel || S.ax > 150)){ face(S); if(facing(S)){ S.tap('ab3'); setAim(S, 1500, 0.3); } return; }
+    // Spider Web: both together with 70%+ CE
+    if(S.ce >= S.ceMax * 0.72 && S.sameLevel && S.ax < 240 && S.ax > 60 && S.hittable && facing(S) && S.ready1 && S.ready2){ S.tap('ab1'); S.tap('ab2'); return; }
+    if(S.ready2 && S.sameLevel && S.ax < 105 && S.hittable && S.me.onGround){ face(S); S.tap('ab2'); return; }
+    if(S.ax < 125 && S.sameLevel && S.hittable && useMO(S, 2)) return;
+    if(S.ax < 250 && S.ax > 70 && S.sameLevel && S.hittable && facing(S) && useMO(S, 1)) return;
+    // Dismantle chain: only if they're low
+    if(m.dismT && S.t - m.dismT < 1400 && S.op.state === 'ragd' && S.op.hp < 30 && (m.chain || 0) < 2 && S.ce > 30){ S.tap('ab1'); m.chain = (m.chain || 0) + 1; m.dismT = S.t; return; }
+    if(S.ready1 && S.ax < 650 && S.ax > 90 && S.hittable && facing(S) && (S.sameLevel || S.ax > 200)){ S.tap('ab1'); m.dismT = S.t; m.chain = 0; if(!S.me.onGround) setAim(S, 400); return; }
+    brawl(S, 60);
+  };
+
+  P.gojo = function(S){
+    const m = S.m, me = S.me;
+    // steering orbs (Gojo stands still while Blue flies)
+    if(me.state === 'lapse' || me.state === 'reversal'){
+      const kind = me.state === 'lapse' ? 'lapseOrbs' : 'redOrbs';
+      const orb = (S.o.projectiles || []).find(p => p.mine && p.kind === kind);
+      if(orb){ const ox = S.op.cx + S.op.vx * 6 - orb.x, oy = S.op.cy - orb.y;
+        if(Math.abs(ox) > 8) move(S, sgn(ox)); if(oy < -10) S.hold('jump'); else if(oy > 10) S.hold('down');
+        if(me.state === 'lapse' && Math.hypot(ox, oy) < 50 && S.t - (m.blueT || 0) > 250){ S.tap('ab1'); }
+      }
+      return;
+    }
+    if(me.state === 'hollow'){ aim(S, 0.25); return; }
+    // ultimate: Hollow Purple 200% if CE allows and they're roughly in line, else Infinite Void
+    if(S.ult >= 1 && !S.o.domain && S.hittable){
+      if(S.ce >= 82 && S.ax < 900 && S.ady < 200){ if(!me.varMode){ S.tap('vtog'); m.keepMO = true; } else { face(S); if(facing(S)){ S.tap('ult'); m.keepMO = false; m.moExit = S.t + 2200; setAim(S, 2000, 0.25); } } return; }
+      if(S.ce < 82){ S.tap('ult'); return; }
+    }
+    if(S.myDomain){ // Infinite Void: they can't move. Hit them with everything.
+      if(S.special >= 1 && S.ax < 800){ face(S); if(facing(S)) { S.tap('ab3'); setAim(S, 1700, 0.25); } return; }
+      if(S.ready2 && S.ax > 60 && S.ax < 500){ face(S); if(facing(S)) S.tap('ab2'); return; }
+      if(S.ready1 && S.ax < 500){ S.tap('ab1'); m.blueT = S.t; return; }
+      brawl(S, 60); return;
+    }
+    const oppStun = S.op.state === 'stun' || S.op.state === 'framed';
+    if(S.special >= 1 && S.ax < 850 && S.hittable && (S.sameLevel || S.ax > 200) && (S.ax > 160 || oppStun)){ face(S); if(facing(S)){ S.tap('ab3'); setAim(S, 1700, 0.25); } return; }
+    // they're on me and swinging: Infinity (takes 25%) — Gojo has CE to spare
+    if(S.ax < 120 && S.ady < 90 && (meleeThreat(S) || S.oppBusy) && useMO(S, 2)) return;
+    if(S.ready2 && S.ax < 600 && S.ax > 70 && S.hittable && (S.sameLevel || S.ax > 200)){ face(S); if(facing(S)){ S.tap('ab2'); return; } }
+    if(S.ready1 && S.ax < 650 && S.hittable && (S.ax > 140 || oppStun)){ S.tap('ab1'); m.blueT = S.t; return; }
+    // Max Output Pull yanks them in for a punch string
+    if(S.ax < 380 && S.ax > 90 && S.hittable && useMO(S, 1)){ m.pullT = S.t; return; }
+    if(m.pullT && S.t - m.pullT < 1500){ brawl(S, 60); return; }
+    // nothing ready: punch if they're already close, otherwise hold a mid range
+    if(S.ax < 90 && S.sameLevel) brawl(S, 60);
+    else keepRange(S, 180, 420);
+  };
+
+  P.yuji = function(S){
+    const m = S.m, me = S.me, X = me.x_ || {};
+    if(X.modulo){   // Modulo: Piercing Blood (tap / hold), exploding Cleave, chase-grab Dismantle
+      if(m.pbHold){ if(S.t < m.pbHold) { S.hold('ab1'); return; } m.pbHold = 0; return; }
+      if(!X.modDisCd && S.ax < 470 && S.hittable){ S.tap('ab3'); return; }
+      if(S.ready2 && S.ax < 650 && S.ax > 90 && S.hittable){ face(S); S.tap('ab2'); return; }
+      if(S.ready1 && S.ax > 320 && S.hittable && !incoming(S)){ m.pbHold = S.t + 780; S.hold('ab1'); return; }
+      if(S.ready1 && S.ax < 600 && S.hittable && facing(S)){ S.tap('ab1'); return; }
+      brawl(S, 58); return;
+    }
+    // Divergent Fist follow-up for Black Flash timing
+    if(m.dfT && S.t - m.dfT > 0){ const dt = S.t - m.dfT; const w = m.dfWin || 820;
+      if(dt >= w && dt < w + 60 && !m.dfDone){ S.tap('ab1'); m.dfDone = true; }
+      if(dt > 900) m.dfT = 0; }
+    if(m.dcT){ const dt = S.t - m.dcT; const w = m.dcWin || 800; if(dt >= w && !m.dcDone){ S.tap('ab2'); m.dcDone = true; } if(dt > 1500) m.dcT = 0; }
+    if(S.ult >= 1 && S.hittable && S.ax < 400){ S.tap('ult'); return; }
+    // Black Flash super silently does nothing point-blank (and from far away): fire it from ~60-200px
+    if(S.special >= 1 && S.ax < 230 && S.sameLevel && S.hittable){
+      if(S.ax >= 58){ face(S); if(facing(S) && S.ax < 210) S.tap('ab3'); else approach(S); return; }
+      if(!m.bfBack) m.bfBack = S.t;
+      if(S.t - m.bfBack < 600 && retreat(S)) return;
+      if(S.t - m.bfBack > 2500) m.bfBack = 0;
+    } else m.bfBack = 0;
+    if(S.ax < 120 && meleeThreat(S) && useMO(S, 1)) return;
+    if(S.ax < 140 && S.sameLevel && S.hittable && !m.zoneUsed && S.t > 15000 && useMO(S, 2)){ m.zoneUsed = S.t; return; }
+    if(m.zoneUsed && S.t - m.zoneUsed > 25000) m.zoneUsed = 0;
+    const cfg = m.cfg || {};
+    if(!cfg.noAb2 && S.ready2 && S.ax < 230 && S.ax > 60 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab2'); m.dcT = S.t; m.dcDone = false; return; }
+    if(!cfg.noAb1 && S.ready1 && S.ax < 75 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); m.dfT = S.t; m.dfDone = false; return; }
+    if(m.dfT && S.t - m.dfT < 1000) { face(S); return; }
+    brawl(S, 58);
+  };
+
+  P.yuta = function(S){
+    const m = S.m, me = S.me, X = me.x_ || {};
+    if(S.ult >= 1 && S.hittable && !S.o.domain && S.ce > S.ceMax*0.45){ S.tap('ult'); return; }
+    if(S.myDomain && m.ladderTry !== Math.floor(S.t / 1500)){ m.ladderTry = Math.floor(S.t / 1500); S.tap('ult'); }
+    if(S.special >= 1 && !X.rika){ S.tap('ab3'); return; }                                   // Summon Rika
+    if(X.rika && S.ce >= 105 && S.hittable && S.ady < 200 && facing(S) && useMO(S, 2, {aim: 1400, cd: 20500})) return;   // True Love Beam
+    if(X.copyOk && S.ax < 300 && S.hittable && useMO(S, 1, {cd: 7000})) return;              // Copy
+    if(S.ready2 && S.ax < 150 && S.ady < 110 && S.hittable && S.ce >= 30){ S.tap('ab2'); return; }   // Cursed Energy Discharge
+    if(X.katanaCopy && S.ax < 260 && S.hittable){ face(S); S.tap('atk'); return; }
+    if(S.ready1 && S.ax < 85 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    brawl(S, 62);
+  };
+
+  P.mechamaru = function(S){
+    const m = S.m, me = S.me;
+    if(me.state === 'mechcannon'){ aim(S, 0.3); return; }
+    const mechNow = m.mechT && S.t - m.mechT < 21000;
+    if(mechNow){ // giant mech: lasers, cannon, punches
+      if(S.ready1 && S.ax < 700){ S.tap('ab1'); return; }
+      if(S.ready2 && S.ax < 400 && S.ady < 120){ face(S); if(facing(S)) S.tap('ab2'); return; }
+      brawl(S, 90); return;
+    }
+    // Ultimate Mechamaru costs a life: only to finish them or when I'm about to lose this life anyway
+    if(S.ult >= 1 && !S.o.domain){
+      const finish = S.op.lives <= 1 && S.op.hp < 75 && S.me.lives >= 2;
+      const doomed = S.me.hp < 25 && S.me.lives >= 2;
+      if((finish || doomed) && S.hittable && S.op.state !== 'dead'){ S.tap('ult'); m.mechT = S.t; return; }
+    }
+    if(S.special >= 1 && !m.puppetT){ S.tap('ab3'); m.puppetT = S.t; return; }
+    if(m.puppetT && S.t - m.puppetT > 21000) m.puppetT = 0;
+    if(S.ready2 && S.ax < 250 && S.ax > 40 && S.ady < 160 && S.hittable){ face(S); if(facing(S)){ S.tap('ab2'); setAim(S, 700, 0.3); } return; }
+    if(S.ready1 && S.ax < 300 && S.ax > 60 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    if(S.ax < 160 && S.ax > 50 && S.sameLevel && S.hittable && facing(S) && useMO(S, 1)) return;
+    if(S.ax < 70 && meleeThreat(S) && me.hp < 50 && useMO(S, 2)) return;
+    brawl(S, 60);
+  };
+
+  P.todo = function(S){
+    const m = S.m, me = S.me;
+    // swap to send their projectile back at them
+    const inc = incoming(S);
+    if(inc && inc.d < 110 && S.ready2 && S.ax < 700){ S.tap('ab2'); return; }
+    if(S.ult >= 1 && S.hittable){ S.tap('ult'); return; }
+    if(S.special >= 1 && S.hittable){ S.tap('ab3'); return; }
+    if(!me.onGround && S.dy > 40 && S.ax < 60 && S.ready1){ S.tap('ab1'); return; }
+    if(S.ax < 110 && S.sameLevel && S.hittable && useMO(S, 1)){ m.feintT = S.t; return; }
+    if(S.ready1 && S.ax < 95 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    // Boogie to drag a far opponent in when they zone us
+    if(S.ready2 && S.ax > 350 && S.ax < 650 && S.t - (m.boogieT || 0) > 6000){ S.tap('ab2'); m.boogieT = S.t; return; }
+    brawl(S, 64);
+  };
+
+  P.choso = function(S){
+    const m = S.m, me = S.me;
+    if(m.charging){
+      // charging Piercing Blood: hold, aim, release when charged enough or when they're close / stunned
+      const held = S.t - m.pbT;
+      aim(S, 0.3); if(me.facing !== S.dir) move(S, S.dir);
+      const release = held > 1700 || (held > 600 && S.ax < 200) || (S.op.state === 'stun' && held > 300);
+      if(!release){ S.hold('ab1'); return; }
+      m.charging = false; return;
+    }
+    if(me.state === 'chosopb'){ aim(S, 0.3); return; }
+    if(S.ult >= 1 && S.ax < 260 && S.hittable){ S.tap('ult'); return; }
+    if(S.special >= 1 && S.ax < 600 && S.hittable && facing(S)){ S.tap('ab3'); return; }
+    // Convergence orb: make it, detonate when they're near
+    const orb = (S.o.projectiles || []).find(p => p.mine && p.kind === 'bloodOrbs');
+    if(orb){ const d = Math.hypot(S.op.cx - orb.x, S.op.cy - orb.y); if(d < 70 && S.hittable) { S.tap('ab2'); return; } }
+    else if(S.ready2 && S.ax < 400 && S.t - (m.convT || 0) > 1000){ S.tap('ab2'); m.convT = S.t; return; }
+    if(S.ax < 120 && S.sameLevel && S.hittable && useMO(S, 2)) return;
+    if(S.ready1 && S.ax > 110 && S.ax < 850 && S.hittable && facing(S)){ S.hold('ab1'); m.pbT = S.t; m.charging = true; return; }
+    if(S.ax < 200) brawl(S, 60); else keepRange(S, 200, 450);
+  };
+
+  P.higuruma = function(S){
+    const m = S.m, me = S.me;
+    if(S.myDomain || S.oppDomain){ if(S.o.domain.type === 'court'){ mash(S); return; } }
+    if(S.ult >= 1 && S.hittable && !S.o.domain){ S.tap('ult'); return; }
+    // keep the hammer Long
+    m.size = m.size || 0; // 0 normal, 1 long, 2 large
+    const want = (m.cfg && m.cfg.hsize != null) ? m.cfg.hsize : (m.hWant != null ? m.hWant : 0);
+    if(m.size !== want && S.ce >= 10 && !S.busy && S.t - (m.sizeT || 0) > 600){ S.tap('ab3'); m.size = (m.size + 1) % 3; m.sizeT = S.t; return; }
+    if(S.ready2 && S.ax > 200 && S.ax < 600 && S.hittable && facing(S)){ S.tap('ab2'); setAim(S, 400, 0.3); return; }
+    if(S.ax < 120 && S.sameLevel && S.hittable && useMO(S, 1)) return;
+    if(meleeThreat(S) && S.ax < 120 && useMO(S, 2)) return;
+    const headR = m.size === 1 ? 260 : m.size === 2 ? 110 : 80;
+    if(S.ready1 && S.ax < headR + 40 && S.ax > (m.size === 1 ? 120 : 0) && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    if(m.size === 1 && S.ax < 120 && S.ready1 && S.hittable) { if(!retreat(S)) punch(S); return; }
+    if(m.size === 1 && S.ready1) keepRange(S, 200, 280); else brawl(S, 60);
+  };
+
+  P.hakari = function(S){
+    const m = S.m, me = S.me;
+    if(S.ult >= 1 && !S.o.domain && S.hittable){ S.tap('ult'); return; }
+    if(S.special >= 1 && S.ax < 80 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab3'); return; }
+    if(S.ready2 && S.ax < 320 && S.hittable && !S.oppBusy){ S.tap('ab2'); m.shutT = S.t; return; }
+    if(m.shutT && S.t - m.shutT < 1100 && S.special >= 1){ approach(S); if(S.ax < 80) { face(S); S.tap('ab3'); } return; }
+    if(S.ax < 90 && S.sameLevel && S.hittable && facing(S) && useMO(S, 1)) return;
+    if(S.ready1 && S.ax < 500 && S.ax > 60 && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    if(S.ax > 150 && S.ax < 500 && S.sameLevel && S.hittable && me.facing === S.dir && useMO(S, 2)) return;
+    brawl(S, 60);
+  };
+
+  P.meimei = function(S){
+    const m = S.m, me = S.me;
+    // Bird Strike: steer the crow above them, then dive
+    if(me.state === 'meicrow'){
+      const crow = (S.o.projectiles || []).find(p => p.mine && /crow|bird/i.test(p.kind));
+      if(!m.crowT) m.crowT = S.t;
+      if(crow){ const tx = S.op.cx + S.op.vx * 8, ty = S.op.cy - (m.cfg && m.cfg.crowH != null ? m.cfg.crowH : 0);
+        const ox = tx - crow.x, oy = ty - crow.y;
+        if(Math.abs(ox) > 8) move(S, sgn(ox)); if(oy < -12) S.hold('jump'); else if(oy > 12) S.hold('down');
+        if(Math.abs(ox) < 28 && Math.abs(oy) < 60 && S.t - m.crowT > 350){ S.tap('ult'); }
+      }
+      return;
+    }
+    m.crowT = 0;
+    if(S.ult >= 1 && S.hittable && !S.o.domain && !S.busy && (S.ax > 220 || S.op.state === 'stun' || S.op.state === 'framed')){ S.tap('ult'); return; }
+    // place Ui Ui early
+    if(!m.uiPlaced && S.me.onGround && S.t > 1500){ S.tap('ab3'); m.uiPlaced = S.t; return; }
+    // escape by teleport when low and pressed
+    if(m.uiPlaced && me.hp < 30 && S.ax < 100 && S.oppBusy && S.t - (m.tpT || 0) > 3000){ S.tap('ab3'); m.tpT = S.t; return; }
+    if(S.ax > 160 && S.ax < 600 && S.hittable && useMO(S, 2)) return;
+    if(S.ready1 && S.ax < 95 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
+    if(S.ready2 && S.ax < 85 && S.sameLevel && S.hittable){ S.tap('ab2'); return; }
+    brawl(S, 64);
+  };
+
+  P.jogo = function(S){
+    const m = S.m, me = S.me;
+    if(S.ult >= 1 && S.hittable && !S.o.domain){
+      if(S.ce >= 72 && S.op.hp <= 40){ if(!me.varMode){ S.tap('vtog'); m.keepMO = true; } else { S.tap('ult'); m.keepMO = false; m.moExit = S.t + 600; } return; }
+      S.tap('ult'); return; }
+    if(S.special >= 1 && S.ax < 400 && S.ax > 100 && S.sameLevel && S.op.vx * S.dir < 0 && facing(S) && me.onGround){ S.tap('ab3'); return; }
+    if(S.special >= 1 && S.ax < 160 && S.ax > 50 && S.sameLevel && facing(S) && me.onGround){ S.tap('ab3'); return; }
+    if(S.ax < 110 && S.sameLevel && S.hittable && useMO(S, 1)) return;
+    if(S.ready1 && S.ax < 650 && S.ax > 80 && S.hittable && facing(S)){ S.tap('ab1'); setAim(S, 300, 0.25); return; }
+    if(S.ax < 330 && S.ax > 100 && S.hittable && facing(S) && useMO(S, 2)) return;
+    if(S.ready2 && S.ax < 240 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab2'); return; }
+    keepRange(S, 140, 420); if(S.ax < 70 && S.sameLevel && S.hittable) punch(S);
+  };
+
+  P.dagon = function(S){
+    const m = S.m, me = S.me;
+    if(me.state === 'dagonjet'){ aim(S, 0.3); return; }
+    if(me.state === 'dagonswarm'){ aim(S, 0.3); return; }
+    if(S.ult >= 1 && S.hittable && !S.o.domain){ S.tap('ult'); return; }
+    if(m.prisonT && S.t - m.prisonT < 1800 && S.ready2){ face(S); if(facing(S)){ S.tap('ab2'); setAim(S, 600, 0.3); m.prisonT = 0; } return; }
+    if(S.special >= 1 && S.ax < 400 && me.onGround){ S.tap('ab3'); return; }
+    if(S.ready1 && S.ax < 370 && S.hittable){ S.tap('ab1'); m.prisonT = S.t; return; }
+    if(S.ax < 650 && S.hittable && useMO(S, 1, {hold: 600, aim: 900})) return;
+    if(S.ax < 260 && S.ax > 60 && S.sameLevel && S.hittable && facing(S) && useMO(S, 2)) return;
+    if(S.ready2 && S.ax < 450 && S.ax > 80 && S.hittable && facing(S)){ S.tap('ab2'); setAim(S, 600, 0.3); return; }
+    keepRange(S, 160, 380); if(S.ax < 70 && S.sameLevel && S.hittable) punch(S);
+  };
+
+  P.hanami = function(S){
+    const m = S.m, me = S.me;
+    if(me.state === 'hanagrab'){ aim(S, 0.3); return; }
+    if(S.ult >= 1 && S.hittable && !S.o.domain){ S.tap('ult'); return; }
+    if(S.special >= 1 && me.onGround && (S.ax < 220 || me.hp < 60)){ S.tap('ab3'); return; }
+    if(S.ready2 && S.ax < 420 && S.ax > 90 && S.hittable && facing(S)){ S.tap('ab2'); setAim(S, 700, 0.3); return; }
+    if(S.ax < 700 && S.hittable && useMO(S, 1)) return;
+    if(S.ready1 && S.ax < 450 && S.ax > 70 && S.hittable && facing(S)){ S.tap('ab1'); setAim(S, 300, 0.4); return; }
+    const inc = incoming(S); if(inc && inc.d < 220 && useMO(S, 2)) return;
+    // stay in own flowers when hurt
+    const fl = (S.o.projectiles || []).find(p => p.mine && p.kind === 'flowerFields');
+    if(fl && me.hp < 70 && S.ax > 120){ const d = fl.x - me.cx; if(Math.abs(d) > 20) move(S, sgn(d)); return; }
+    if(S.ax < 80) brawl(S, 60); else keepRange(S, 150, 380);
+  };
+
+  P.mahito = function(S){
+    const m = S.m, me = S.me, X = me.x_ || {};
+    const immune = {yuji:1, sukuna:1, meguna:1};
+    if(X.ibdk){   // Instant Spirit Body of Distorted Killing
+      if(meleeThreat(S) && S.ax < 130 && !X.ctrCd){ S.tap('ab3'); return; }
+      if(!X.slamCd && S.ax < 95 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab2'); return; }
+      if(!X.tenCd && S.ax < 400 && S.ady < 150 && S.hittable){ face(S); if(facing(S)) S.tap('ab1'); return; }
+      brawl(S, 60); return;
+    }
+    if(X.ibdkReady){ S.tap('ult'); return; }
+    if(S.ult >= 1 && !S.o.domain && S.ce > S.ceMax*0.45 && (X.oppSoul < 0.5 || S.ax < 150)){ S.tap('ult'); return; }
+    if(S.special >= 1 && !immune[S.op.type] && S.ax < 80 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab3'); return; }
+    if(!X.curseCd && S.ax > 110 && S.ax < 330 && S.sameLevel && S.hittable){ face(S); if(facing(S)){ S.tap('ab2'); return; } }
+    if((X.humans||0) >= 2 && (incoming(S) || (S.ax < 140 && S.oppBusy)) && useMO(S, 1)) return;   // Spiky Wall
+    if(!X.depCd && (X.humans||0) > 0 && S.ax > 140 && S.ax < 520 && S.hittable){ S.tap('ab1'); return; }
+    if(!X.depCd && !(X.humans>0) && S.ax < 480 && S.ady < 50 && S.hittable && facing(S)){ S.tap('ab1'); return; }   // the kiss
+    brawl(S, 60);   // his punches hit the soul
+  };
+
+  P.takaba = function(S){
+    const m = S.m, me = S.me;
+    if(S.ult >= 1 && S.hittable && S.op.onGround){ S.tap('ult'); return; }
+    if(S.special >= 1 && meleeThreat(S) && S.ax < 110){ S.tap('ab3'); return; }
+    if(S.ready2 && S.ax < 440 && S.ax > 90 && S.hittable && S.ady < 150){ S.tap('ab2'); return; }
+    if(S.ax < 120 && S.sameLevel && S.hittable && useMO(S, 2)) return;
+    if(S.ax < 480 && S.op.ready && (S.op.ready.ab1 || S.op.ready.ab2) && S.oppSuper && useMO(S, 1)) return;
+    if(S.ready1 && S.ax < 300 && S.hittable && S.me.hp >= S.op.hp - 10){ S.tap('ab1'); m.rpsT = S.t; return; }
+    brawl(S, 60);
+  };
+
+  P.naoya = function(S){
+    const m = S.m, me = S.me;
+    const curse = me.type === 'naoyac' || me.maxHp > 80 || me.ceMax >= 200;
+    const framed = S.op.state === 'framed';
+    if(curse){
+      if(me.state && /rocket/i.test(me.state)){ if(S.ax > 6) move(S, S.dir); if(S.dy < -10) S.hold('jump'); else if(S.dy > 10) S.hold('down'); if(Math.hypot(S.dx, S.dy) < 40) S.tap('ab1'); return; }
+      if(S.ult >= 1 && !S.o.domain){ S.tap('ult'); return; }
+      if(S.special >= 1 && S.hittable){ S.tap('ab3'); m.fpsT = S.t; return; }
+      if(S.ready1 && S.ax < 700 && S.hittable){ S.tap('ab1'); return; }
+      if(S.ready2 && S.ax < 200 && S.sameLevel){ face(S); S.tap('ab2'); m.fieldT = S.t; return; }
+      if(m.fieldT && S.t - m.fieldT > 900 && S.t - m.fieldT < 6000 && S.ax < 220){ S.tap('ab2'); m.fieldT = 0; return; }
+      brawl(S, 60); return;
+    }
+    if(S.special >= 1 && S.hittable){ S.tap('ab3'); m.fpsT = S.t; return; }
+    if(m.fpsT && S.t - m.fpsT < 4000 && !framed){ // draw a messy motion (mixed keys)
+      const seq = ['left','atk','jump','right','down','atk','right','left','jump','atk','down','right'];
+      const i = Math.floor((S.t - m.fpsT) / 110); const k = seq[i % seq.length];
+      if(((S.t - m.fpsT) % 110) < 55){ if(k === 'atk' || k === 'jump') S.tap(k); else S.hold(k); }
+      if(S.op.state === 'framed') m.fpsT = 0;
+      return;
+    }
+    const lined = S.sameLevel && S.hittable && facing(S) && lineClear(S);
+    if(framed || S.op.state === 'stun'){
+      if(S.ready2 && S.ax < 70 && S.sameLevel && facing(S)){ S.tap('ab2'); return; }
+      if(S.ready1 && S.ax < 300 && lined){ S.tap('ab1'); return; }
+      brawl(S, 56); return;
+    }
+    if(S.ax < 200 && S.ax > 40 && lined && S.t - (m.unframeT || 0) > 0 && useMO(S, 1)){ return; }
+    if(S.ax < 70 && S.sameLevel && S.hittable && facing(S) && useMO(S, 2)) return;
+    if(S.ready1 && S.ax < 260 && S.ax > 60 && lined && !S.oppBusy){ S.tap('ab1'); return; }
+    brawl(S, 56);
+  };
+
+  P.megumi = function(S){
+    const m = S.m, me = S.me;
+    if(S.ult >= 1 && !S.o.domain && !me.varMode){ S.tap('ult'); m.gardenT = S.t; return; }
+    const garden = m.gardenT && S.t - m.gardenT < 12000;
+    if(S.special >= 1 && S.hittable){ S.tap('ab3'); return; }
+    if(S.ready1 && S.ax < 90 && S.sameLevel && (S.oppBusy || me.hp < 50 || garden)){ S.tap('ab1'); return; }
+    if(S.ready2 && S.ax < 370 && S.ax > 70 && S.hittable){ S.tap('ab2'); m.toadT = S.t; return; }
+    if(S.ax < 390 && S.hittable && useMO(S, 1)) return;
+    if(S.ax < 200 && S.ax > 50 && S.sameLevel && S.hittable && facing(S) && useMO(S, 2)) return;
+    if(garden){ if(S.ready1 && S.ax < 100) { S.tap('ab1'); return; } }
+    brawl(S, 60);
+  };
+
+  P.yuki = function(S){
+    const m = S.m, me = S.me;
+    // Black Hole costs this life: only when it decides the fight
+    if(S.ult >= 1 && !S.o.domain && S.op.hp <= 55 && (me.lives >= 2 || S.op.lives <= 1 && S.op.hp < me.hp) && S.ax < 500){ S.tap('ult'); return; }
+    if(S.oppDomain && S.ult < 1){ S.hold('atk'); if(S.t - (m.sdT || 0) > 1000){ S.tap('ult'); m.sdT = S.t; } return; }
+    // go Extreme when we're about to brawl with a full tank
+    if(!m.extreme && S.ce > S.ceMax * 0.9 && S.ax < 260 && me.hp > 25 && !S.busy){ S.tap('ab3'); m.extreme = S.t; return; }
+    if(m.extreme && S.t - m.extreme > 15000) m.extreme = 0;
+    if(S.ax < 210 && S.sameLevel && S.hittable && useMO(S, 1)) return;
+    if(S.ax < 190 && S.hittable && useMO(S, 2)) return;
+    if(S.ready1 && S.ax < 370 && S.ax > 90 && S.hittable){ S.tap('ab1'); return; }
+    if(S.ready2 && S.ax < 600 && S.ax > 120 && S.hittable && facing(S)){ S.tap('ab2'); return; }
+    brawl(S, 62);
+  };
+
+  P.geto = function(S){
+    const m = S.m, me = S.me;
+    if(me.state === 'getodragon'){ aim(S, 0.3); return; }
+    if(S.ult >= 1 && !S.o.domain){ S.tap('ult'); return; }
+    const inc = incoming(S);
+    if(S.special >= 1 && (inc || (S.ax > 250 && /gojo|jogo|dagon|hanami|choso|hakari|sukuna|ryu/.test(S.op.type)))){ S.tap('ab3'); return; }
+    if(S.ready2 && S.ax < 70 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab2'); return; }
+    if(S.ax < 110 && S.hittable && S.sameLevel && useMO(S, 2, {cd: 32500})) return;
+    if(S.ax > 150 && S.ax < 900 && S.hittable && facing(S) && useMO(S, 1, {aim: 900})) return;
+    if(S.ready1 && S.ax < 700 && S.hittable){ S.tap('ab1'); return; }
+    brawl(S, 60);
+  };
+
+  P.ryu = function(S){
+    const m = S.m, me = S.me;
+    if(me.state === 'ryubeam' || me.state === 'ryucharge'){ aim(S, 0.25); if(me.state === 'ryucharge' && S.ax > 200 && !S.hittable) {} return; }
+    // pump Output while they're far away (to ~70%)
+    m.output = m.output || 0;
+    if(S.ax > 380 && (me.x_ && me.x_.out || 0) < 0.7 && S.ce > 50 && me.onGround && !incoming(S) && S.t - (m.outT||0) > 1300){ S.tap('ab3'); m.outT = S.t; return; }
+    if(S.ult >= 1 && S.hittable && S.ady < 260){ face(S); if(facing(S)){ S.tap('ult'); setAim(S, 1100, 0.2); } return; }
+    if(S.ready1 && S.ax < 62 && S.sameLevel && S.hittable && facing(S) && S.oppBusy === false){ S.tap('ab1'); return; }
+    if(S.ax < 110 && S.sameLevel && S.hittable && useMO(S, 1)) return;
+    if(S.ready2 && S.ax < 880 && S.ax > 70 && S.hittable && facing(S)){ S.tap('ab2'); setAim(S, 600, 0.2); return; }
+    if(S.ax < 600 && S.ax > 120 && S.hittable && facing(S) && useMO(S, 2, {aim: 500})) return;
+    brawl(S, 60);
+  };
+
+  const DIG = {takaba: ['ab2'], mechamaru: ['ab1','ab2'], yuki: ['ab2'], naoya: ['ab3'], meimei: ['ab1','ab2'], higuruma: ['ab2','ab1'], megumi: ['ab3','ab2'], mahito: ['ab2'], todo: ['ab1'], yuta: ['ab2','ab1']};
+  function dig(S){
+    const m = S.m;
+    if(S.ax > 24){ face(S); if(!facing(S)) return true; }
+    if(S.busy){ aim(S, 0.2); return true; }
+    if(S.f - (m.digF || 0) < 30) return false;
+    // moves I found that actually break out of a sealed pocket (e.g. under the Sendai deck)
+    const ESC = {sukuna: 'ab1', todo: 'ab2', mechamaru: 'mo1', naoya: 'mo1', ryu: 'mo2', geto: 'mo1', gojo: 'ab3'};
+    const e = ESC[S.me.type];
+    if(e === 'ab3' && S.special >= 1){ S.tap('ab3'); m.digF = S.f; setAim(S, 1700, 0.2); return true; }
+    if(e && e.startsWith('mo') && useMO(S, +e[2], {aim: 800})){ m.digF = S.f; return true; }
+    if(e && e.startsWith('ab') && e !== 'ab3' && (e === 'ab1' ? S.ready1 : S.ready2)){ S.tap(e); m.digF = S.f; return true; }
+    const keys = DIG[S.me.type] || ['ab2','ab1'];
+    for(const k of keys){ const rdy = k === 'ab1' ? S.ready1 : k === 'ab2' ? S.ready2 : S.special >= 1;
+      if(rdy){ S.tap(k); m.digF = S.f; setAim(S, 1200, 0.2); return true; } }
+    if(S.dy < -100 && S.me.onGround){ doJump(S, S.opFeet); }
+    return false;
+  }
+
+  // key-press minigames I can't see: mash a rotating set of keys
+  function mash(S){
+    const seq = ['atk','ab1','ab2','ab3','jump','atk','ab1','ab2'];
+    const i = Math.floor(S.f / 4);
+    if(S.f % 4 < 2) S.tap(seq[i % seq.length]);
+  }
+
+  // ------------------------------------------------------------ items
+  function itemLogic(S){
+    const o = S.o, me = S.me, m = S.m;
+    const held = me.item ? String(me.item.kind || me.item.name || me.item).toLowerCase() : '';
+    if(held){
+      if(/kamu|lightning/.test(held) && S.ax < 540 && S.hittable && S.f - (m.kamuF || 0) > 40){ face(S); S.tap('atk'); m.kamuF = S.f; return true; }
+      // Inumaki's Recording: the next attack freezes them for 5s - open with it from mid range, then hit hard
+      if(/speech|record|inumaki/.test(held) && Math.hypot(S.dx, S.dy) < 420 && S.hittable && !S.busy){ face(S); S.tap('atk'); m.speechT = S.t; return true; }
+      return false;
+    }
+    if(!o.items || !o.items.length) return false;
+    let best = null;
+    for(const it of o.items){ if(NO_ITEM[it.kind]) continue;
+      const d = Math.abs(it.x - me.cx) + Math.abs(it.y - S.feet) * 1.5;
+      const od = Math.abs(it.x - S.op.cx) + Math.abs(it.y - S.opFeet) * 1.5;
+      if(d < 900 && (d < od + 150 || S.ax > 200) && (!best || d < best.d)) best = {d, it}; }
+    if(!best) return false;
+    if(S.ax < 110 && S.sameLevel && S.hittable && best.d > 120) return false; // fight first
+    const it = best.it;
+    // give up on an item I can't reach (chased it for 7s, or no route)
+    const ik = it.kind + '@' + Math.round(it.x / 40) + ',' + Math.round(it.y / 40);
+    if(m.itemKey !== ik){ m.itemKey = ik; m.itemT = S.t; }
+    if(m.itemGiveUp === ik) return false;
+    if(S.t - m.itemT > 7000 || (m.noPathF || 0) > 120){ m.itemGiveUp = ik; return false; }
+    if(Math.abs(it.x - me.cx) < 22 && Math.abs(it.y - S.feet) < 60){ S.tap('pick'); return true; }
+    approach(S, it.x, it.y);
+    if(Math.abs(it.x - me.cx) < 40) S.tap('pick');
+    return true;
+  }
+
+  // ------------------------------------------------------------ main
+  function act(o){
+    const m = o.mem; m.f = (m.f || 0) + 1;
+    if(!o.me || !o.opp) return {};
+    const S = makeCtx(o);
+    // grid / platform learning
+    if(!m.grid || S.f - (m.gridF || 0) > 90){ try { buildGrid(S); } catch(e){ m.grid = null; } m.gridF = S.f; }
+    learnPlat(S, o.me); learnPlat(S, o.opp);
+
+    const me = o.me;
+    if(me.state === 'dead' || me.hp <= 0){ return finish(S); }
+
+    // Evasive out of stun / knockdown
+    if(S.locked){ m.lockF = (m.lockF || 0) + 1; } else m.lockF = 0;
+    if(m.lockF > 12 && m.lockF % 15 === 0){ if(S.online) S.tap('dash'); else { S.hold('down'); S.tap('jump'); } return finish(S); }
+    if(S.locked){ return finish(S); }
+    const X = me.x_ || {};
+    // Black Flash ring: answer it on the beat (how often depends on the difficulty)
+    if(X.bfRing != null){ if(X.bfRing >= X.bfAt - 18 && !m.bfAns){ m.bfAns = true; if(Math.random() < (m.cfg && m.cfg.bf != null ? m.cfg.bf : 0.8)) S.tap('atk'); } return finish(S); } else m.bfAns = false;
+    // I Really am a Curse! ring
+    if(X.curseRing != null){ if(X.curseRing >= 780 && !m.crAns){ m.crAns = true; if(Math.random() < (m.cfg && m.cfg.bf != null ? m.cfg.bf : 0.8)) S.tap('atk'); } return finish(S); } else m.crAns = false;
+
+    // aim holds for moves that wind up
+    if(m.aimUntil && S.t < m.aimUntil && S.busy){ aim(S, m.aimThr); }
+
+    if(moTick(S)) return finish(S);
+
+    // domains
+    if(S.oppDomain){
+      if(o.domain.type === 'court'){ mash(S); return finish(S); }
+      // Naoya's curse domain hurts anything that moves: stand still (unless I can clash/anti-domain)
+      if(S.op.type === 'naoyac' && !(S.ult >= 1 && CLASH[me.type]) && !(S.online && ANTI[me.type])){ m.stillDom = true; return finish(S); }
+      if(S.ult >= 1 && CLASH[me.type]){ S.tap('ult'); return finish(S); }
+      if(me.x_ && me.x_.ad && S.t - (m.antiT || 0) > 2000){ S.tap('ult'); m.antiT = S.t; return finish(S); }   // anti-domain is one key now
+    }
+
+    // online defense
+    const cfg = m.cfg || {};
+    if(S.online && !S.busy && !cfg.noBlock){
+      const inc = incoming(S);
+      const mt = meleeThreat(S);
+      if((inc && inc.d < 120) || mt){
+        m.blockF = (m.blockF || 0) + 1;
+        if(m.blockF < 50){ S.hold('block'); return finish(S); }
+        if(m.blockF > 80) m.blockF = 0;
+      } else m.blockF = 0;
+    } else if(!S.online && !S.busy){
+      const inc = incoming(S);
+      if(inc && inc.d < 90 && me.onGround && S.f - (m.hopF || 0) > 30){ S.tap('jump'); m.hopF = S.f; }
+    }
+
+    // avoid stepping on enemy traps (lava mounds)
+    for(const p of (o.projectiles || [])){ if(!p.mine && p.kind === 'jogoMounds' && me.onGround){ const rx = p.x - me.cx; if(Math.abs(rx) < 60 && Math.abs(p.y - S.feet) < 40 && sgn(rx) === sgn(me.vx || S.dir)){ S.tap('jump'); } } }
+
+    // hanging in the air without falling (seen wedged beside support columns): wriggle out
+    if(!me.onGround && !S.busy){
+      if(m.hangY != null && Math.abs(S.feet - m.hangY) < 14 && Math.abs(me.x - m.hangX) < 14) m.hangF = (m.hangF || 0) + 1; else { m.hangF = 0; m.hangY = S.feet; m.hangX = me.x; }
+      if(m.hangF > 45){ const ph = Math.floor(m.hangF / 40) % 4; m.hangN = (m.hangN || 0) + 1;
+        if(ph === 0){ S.hold('down'); move(S, -S.dir); } else if(ph === 1){ move(S, S.dir); doJump(S); } else if(ph === 2){ move(S, -S.dir); doJump(S); } else { S.hold('down'); move(S, S.dir); }
+        return finish(S); }
+    } else { m.hangF = 0; m.hangY = null; }
+    // items
+    if(itemLogic(S)) return finish(S);
+
+    // walled in (e.g. a sealed pocket): carve a way with techniques aimed at them
+    if(m.noPathF > 90 && (!S.sameLevel || !lineClear(S)) && dig(S)) return finish(S);
+    // Recording froze them: open with the biggest hit
+    const ATTACK_SUPER = {sukuna:1, gojo:1, yuji:1, todo:1, choso:1, hakari:1, jogo:1, dagon:1, hanami:1, megumi:1, naoya:1};
+    if(m.speechT && S.t - m.speechT < 4500 && S.op.state === 'stun' && S.special >= 1 && ATTACK_SUPER[me.type] && !S.busy && (S.ax < 300 || me.type === 'megumi' || me.type === 'todo')){
+      face(S); if(facing(S)){ S.tap('ab3'); m.speechT = 0; setAim(S, 1500, 0.3); } return finish(S); }
+    const plan = P[me.type] || P[String(me.type).replace(/c$/, '')] || ((S) => brawl(S, 60));
+    // watchdog: if my plan has left me standing around doing nothing for 1.5s, just go fight
+    if(m.wakeUntil && S.t < m.wakeUntil){ brawl(S, 60); if(S.ax < 70 && S.sameLevel) punch(S); }
+    else plan(S);
+    if(m.jetF && S.f < m.jetF && !S.want.down) S.hold('jump');
+    // stuck: trying to move but not moving -> hop
+    const moving = S.want.left || S.want.right;
+    if(moving && me.onGround && !S.busy){ m.stuckF = (m.stuckF || 0) + 1; if(m.stuckF === 1) m.stuckX = me.x;
+      if(m.stuckF >= 30){ if(Math.abs(me.x - m.stuckX) < 6) doJump(S); m.stuckF = 0; } } else m.stuckF = 0;
+    return finish(S);
+  }
+
+  function finish(S){
+    const m = S.m, prev = m.prev || {}, out = {};
+    for(const k in S.want){
+      if(S.want[k] === 'hold') out[k] = true;
+      else if(S.want[k] === 'tap'){ if(!prev[k]) out[k] = true; }
+    }
+    // read the opponent: do they guard when I swing?
+    if(m.pend){ if(S.op.state === 'block'){ m.blk = (m.blk || 0) + 1; m.att = (m.att || 0) + 1; m.pend = 0; } else if(S.f - m.pend > 15){ m.att = (m.att || 0) + 1; m.pend = 0; } }
+    else if((out.atk || out.ab1 || out.ab2) && S.ax < 160 && S.ady < 80 && S.op.state !== 'block' && S.op.state !== 'stun') m.pend = S.f;
+    if(out.ult && S.rawUlt >= 0.98){ m.ultLast = S.t; m.ultTries = (m.ultTries || 0) + 1; if(m.ultTries >= 5){ m.ultBlock = S.t + 8000; m.ultTries = 0; } }
+    if(out.left && out.right) delete out.left;
+    if(!S.online){ delete out.block; delete out.dash; }
+    // watchdog bookkeeping
+    if(Object.keys(out).length === 0 && !S.busy && !S.locked && S.me.state !== 'dead'){ m.idleF = (m.idleF || 0) + 1; if(m.idleF > 90){ m.wakeUntil = S.t + 1200; m.idleF = 0; m.wakes = (m.wakes || 0) + 1; } } else m.idleF = 0;
+    m.prev = out;
+    return out;
+  }
+
+  return {
+    _dbg: {findPath, neighbors, isFoot, nodeOf},
+    act(o){
+      try { return act(o); }
+      catch(e){ try { if(o && o.mem){ o.mem.err = (o.mem.err || 0) + 1; o.mem.lastErr = String(e && e.stack || e).slice(0, 300); } } catch(_){}
+        return {}; }
+    }
+  };
+})();
+
+// ═══ SINGLE PLAYER: VS CPU (Oct 17) ═══════════════════════════════════
+// The CPU drives player 2's buttons through the same input slots a person would use. Difficulty changes how often it thinks,
+// how many of its presses get through, whether it guards, and how often it lands Black Flash rings.
+const CPU = { on:false, lvl:'normal', mem:{}, prev:{}, f:0 };
+const CPU_LEVELS = {
+  easy:   {every:3, drop:0.4, block:0.35, bf:0.25, mo:false, label:'EASY'},
+  normal: {every:2, drop:0.15, block:0.8, bf:0.55, mo:true, label:'NORMAL'},
+  hard:   {every:1, drop:0, block:1, bf:0.9, mo:true, label:'HARD'},
+};
+function cpuSpecial(p){ let best = null; for(const [f, c] of TRAIN_METERS){ if(f==='domainCharge' || typeof p[f]!=='number') continue; let req = 0; try{ req = eval(c); }catch(e){} if(req>0) best = Math.max(best||0, Math.min(1, p[f]/req)); } return best; }
+function cpuReady(p, slot){ const t = CE_SLOTS[p.type] && CE_SLOTS[p.type][slot]; if(!t) return null; return !(p[t[0]]>0); }
+function cpuPub(p, lives, opp){
+  if(!p) return null;
+  const x = {   // extra facts the bot needs for the reworked kits and new mechanics
+    bfRing: p.bfEvt && !p.bfEvt.res ? p.bfEvt.t : null, bfAt: BF_EVT_MS*BF_EVT_AT,
+    curseRing: p.state===S.MAHICURSE && p.mcPh==='ring' ? p.sTimer - p.mcT0 : null,
+    ad: !!OL_AD[p.type], modulo: p.moduloT>0, modDisCd: p.modDisCd>0, rika: p.rikaOnT>0, copyOk: !!(p.yCopyReady || (typeof yutaCopyTier==='function' && yutaCopyTier(p) && (p.rikaDmg||0) > 0)),
+    katanaCopy: !!p.yKatanaCopy, out: p.ryuOut||0, humans: p.mahiHumans, ibdk: p.ibdkT>0, depCd: p.mahiPalmCd>0, curseCd: p.mahiIsoCd>0,
+    tenCd: p.ibdkTenCd>0, slamCd: p.ibdkSlamCd>0, ctrCd: p.ibdkCtrCd>0,
+    ibdkReady: p.type==='mahito' && !(p.ibdkT>0) && (p.bfLife||0) >= IBDK_BF && (p.domainCharge||0) >= DOMAIN_CHARGE_REQ*IBDK_ULT,
+    oppSoul: opp && opp.soulMax ? opp.soul/opp.soulMax : 1 };
+  return {type:p.type, name:p.name, x:p.x, y:p.y, w:PW, h:PH, cx:p.x+PW/2, cy:p.y+PH/2, vx:p.vx, vy:p.vy, facing:p.facing, onGround:!!p.onGround,
+    hp:p.hp, maxHp:p.maxHp||100, lives, ce:p.ce, ceMax:p.ceMax, state:p.state, varMode:!!p.varMode,
+    ult:Math.min(1,(p.domainCharge||0)/DOMAIN_CHARGE_REQ), special:cpuSpecial(p), ready:{ab1:cpuReady(p,'ab1'), ab2:cpuReady(p,'ab2')},
+    item:p.item||null, hittable:!!p.hittable, x_:x};
+}
+function cpuProjectiles(me){
+  const out = [];
+  for(const k in SYNC_ARR){ if(k==='speechFx' || k==='slashMarks' || k==='worldItems' || k==='bloodPools' || k==='waterPs' || k==='lavaGround') continue;
+    const a = SYNC_ARR[k]; if(!a || !a.length) continue;
+    for(const e of a){ if(!e || typeof e.x!=='number' || typeof e.y!=='number') continue;
+      const own = e.owner || e.o; if(Math.hypot(e.x - (me.x+PW/2), e.y - (me.y+PH/2)) > 700) continue;
+      out.push({kind:k, x:e.x, y:e.y, vx:e.vx||0, vy:e.vy||0, mine: own===me}); if(out.length >= 24) return out; } }
+  return out;
+}
+function cpuHeld(){
+  const me = p2, op = p1, L = CPU_LEVELS[CPU.lvl] || CPU_LEVELS.normal, out = {};
+  if(phase!=='fight' || paused || !me || !op || me.state===S.DEAD) { CPU.prev = {}; return out; }
+  CPU.f++;
+  const m = CPU.mem; m.cfg = Object.assign(m.cfg || {}, {bf: L.bf, noBlock: Math.random() > L.block});
+  // think every N frames; ring answers are always on time-critical frames, so those skip the throttle
+  const urgent = (me.bfEvt && !me.bfEvt.res) || (me.state===S.MAHICURSE && me.mcPh==='ring');
+  if(CPU.f % L.every !== 0 && !urgent){ return Object.assign({}, CPU.hold || {}); }
+  const obs = {t:terClock, rules: olOn() ? 'online' : 'classic', me:cpuPub(me, p2lives, op), opp:cpuPub(op, p1lives, me),
+    dx:(op.x - me.x), dy:(op.y - me.y), projectiles:cpuProjectiles(me), items:worldItems.map(i=>({kind:i.kind, x:i.x, y:i.y})),
+    domain: activeDomain ? {owner: activeDomain.owner===me ? 'me' : 'opp', type:activeDomain.type} : null,
+    map:{w:W, h:H, ground:GND, name:MAPS[mapIdx].name}, solid:(x,y,w,h) => terSolid(x, y, w||1, h||1), mem:m};
+  let held = {}; try{ held = CPU_BOT.act(obs) || {}; }catch(e){ held = {}; }
+  for(const k in held){ if(!held[k]) continue;
+    const fresh = !CPU.prev[k];
+    if(fresh && ['ab1','ab2','ab3','ult'].includes(k) && Math.random() < L.drop) continue;   // a slower player misses chances
+    if(k==='vtog' && !L.mo && !me.varMode) continue;
+    out[k] = true; }
+  CPU.prev = held; CPU.hold = {}; for(const k of ['left','right','down','block']) if(out[k]) CPU.hold[k] = true;
+  return out;
+}
+function cpuStart(lvl){ CPU.on = true; CPU.lvl = lvl || 'normal'; CPU.mem = {}; CPU.prev = {}; CPU.f = 0; window._olForce = true; }
+function cpuStop(){ if(CPU.on){ CPU.on = false; window._olForce = false; } }
 function trainDummyHeld(){
   const h = {}, t = Date.now();
   if(phase!=='fight' || paused) return h;
@@ -18281,9 +19200,9 @@ function drawCharSelect(){
   ctx.globalAlpha = 1;
   // title banner
   ctx.fillStyle = '#d6b64a'; ctx.beginPath(); ctx.moveTo(W/2-210, 8); ctx.lineTo(W/2+210, 8); ctx.lineTo(W/2+196, 40); ctx.lineTo(W/2-196, 40); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#17120a'; ctx.font = `700 22px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(solo ? 'TRAINING · CHOOSE YOUR FIGHTER' : 'CHOOSE YOUR FIGHTER', W/2, 32);
+  ctx.fillStyle = '#17120a'; ctx.font = `700 22px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(solo ? 'TRAINING · CHOOSE YOUR FIGHTER' : CPU.on ? (p1Confirmed ? `PICK THE CPU'S FIGHTER · ${CPU_LEVELS[CPU.lvl].label}` : 'VS CPU · CHOOSE YOUR FIGHTER') : 'CHOOSE YOUR FIGHTER', W/2, 32);
   ctx.font = `600 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,214,200,0.6)'; ctx.textAlign = 'left';
-  const k1 = NET.role==='local' && !solo ? 'P1: WASD move · F lock' : 'Arrows / WASD move · SPACE / CLICK lock', k2 = NET.role==='local' && !solo ? 'P2: arrows move · / lock' : 'ESC back';
+  const twoP = NET.role==='local' && !solo && !CPU.on, k1 = twoP ? 'P1: WASD move · F lock' : 'Arrows / WASD move · SPACE / CLICK lock', k2 = twoP ? 'P2: arrows move · / lock' : 'ESC back';
   ctx.fillText(k1, 14, 22); ctx.fillText(k2, 14, 35);
   if(bans){ ctx.textAlign = 'right'; ctx.fillStyle = '#ff8a8a'; ctx.fillText(`BANS ON · ${NET.role==='local' ? 'P1 T / P2 R-SHIFT' : 'T'} bans the hovered fighter`, W-14, 22); }
   // portrait grid
@@ -18319,7 +19238,7 @@ function drawCharSelect(){
     const tx = px + 156;
     ctx.textAlign = 'left'; ctx.fillStyle = col; ctx.font = `700 12px 'Rajdhani',sans-serif`;
     const isMe = (NET.role==='host' && p===0) || (NET.role==='guest' && !NET.spectator && p===1);
-    ctx.fillText((solo ? 'YOU' : 'PLAYER ' + (p+1)) + (isMe ? ' · YOU' : ''), tx, py+18);
+    ctx.fillText((solo ? 'YOU' : CPU.on ? (p===0 ? 'YOU' : `CPU · ${CPU_LEVELS[CPU.lvl].label}`) : 'PLAYER ' + (p+1)) + (isMe ? ' · YOU' : ''), tx, py+18);
     ctx.fillStyle = ch.color; ctx.font = `700 26px 'Rajdhani',sans-serif`; ctx.fillText(ch.name, tx, py+44);
     ctx.fillStyle = 'rgba(225,220,210,0.7)'; ctx.font = `600 11px 'Rajdhani',sans-serif`; ctx.fillText(CHAR_ROLE[ch.type] || ch.description || '', tx, py+60);
     // the kit at a glance: key chip + move name
@@ -19195,8 +20114,9 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   });
   auSync();
   $('wkClose').onclick = () => { wiki.hidden = true; };
-  $('btnLocal').onclick = () => { netReset(); NET.role = 'local'; gameMode = 'normal'; lbStatus(''); hideLobby(); goModeSelect(); };
-  $('btnTrain').onclick = () => { netReset(); NET.role = 'local'; lbStatus(''); hideLobby(); goModeSelect(); gameMode = 'training'; phase = 'mapSelect'; mapSelectIdx = 0; };
+  $('btnLocal').onclick = () => { cpuStop(); netReset(); NET.role = 'local'; gameMode = 'normal'; lbStatus(''); hideLobby(); goModeSelect(); };
+  for(const [id, lvl] of [['btnCpuE','easy'], ['btnCpuN','normal'], ['btnCpuH','hard']]) $(id).onclick = () => { netReset(); NET.role = 'local'; gameMode = 'normal'; cpuStart(lvl); lbStatus(''); hideLobby(); goModeSelect(); };
+  $('btnTrain').onclick = () => { cpuStop(); netReset(); NET.role = 'local'; lbStatus(''); hideLobby(); goModeSelect(); gameMode = 'training'; phase = 'mapSelect'; mapSelectIdx = 0; };
   $('btnJoin').onclick = () => netJoin($('joinCode').value);
   $('joinCode').addEventListener('keydown', e => { if(e.key==='Enter') netJoin($('joinCode').value); });
   $('joinCode').addEventListener('input', e => { e.target.value = parseJoinCode(e.target.value); });
@@ -19284,6 +20204,7 @@ function logicMapSelect(){
 function logicCharSelect(dt){
   const L = CHARACTERS.length;
   if(isTraining() && p1Confirmed && !p2Confirmed){ p2CharIdx = p1CharIdx; p2Confirmed = true; MI1 = {}; }
+  if(CPU.on && p1Confirmed && !p2Confirmed){ MI2 = MI1; MI1 = {}; }   // VS CPU: you pick the CPU's fighter next
   // grid cursor: left / right step, up / down jump a row
   const nav = (M, idx) => { if(M.left) idx = (idx-1+L)%L; if(M.right) idx = (idx+1)%L;
     if(M.jump && !M.confirm){ idx -= CS_COLS; if(idx < 0) idx = Math.min(L-1, idx + Math.ceil(L/CS_COLS)*CS_COLS); }
@@ -19655,7 +20576,11 @@ function loopFrame(ts){
   try{ accWatch(); }catch(e){}
   try{ chatWatch(); }catch(e){}
   // ── Input ──
-  if(NET.role==='local' && isTraining()){
+  if(NET.role==='local' && CPU.on){
+    const A = readLocalInput(BINDS, 0, ['Enter','NumpadEnter','Space','KeyJ','Mouse0','KeyF'], ['Escape']);
+    setSlotKeys(1, A.held, A.pressed); setSlotKeys(2, cpuHeld(), {});
+    MI1 = A.pressed; MI2 = {}; liveHeld = [A.held, {}];
+  } else if(NET.role==='local' && isTraining()){
     const A = readLocalInput(BINDS, 0, ['Enter','NumpadEnter','Space','KeyJ','Mouse0','KeyF'], ['Escape']);
     setSlotKeys(1, A.held, A.pressed); setSlotKeys(2, trainDummyHeld(), {});
     MI1 = A.pressed; MI2 = {}; liveHeld = [A.held, {}];
