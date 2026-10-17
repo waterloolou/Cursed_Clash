@@ -62,6 +62,7 @@ canvas {
 .lb-audio .wide { flex-basis:100%; }
 .lb-or { text-align:center; color:rgba(200,195,185,0.5); font-size:13px; letter-spacing:2px; margin:16px 0 10px; }
 .lb-join { display:flex; gap:8px; }
+#leaveBtn { position:fixed; top:10px; right:10px; z-index:40; font:700 13px 'Rajdhani',sans-serif; letter-spacing:1px; color:#f4ecd8; background:rgba(20,16,24,0.82); border:1px solid rgba(216,212,204,0.35); border-radius:6px; padding:6px 12px; cursor:pointer; } #leaveBtn:hover { background:#c0394a; border-color:#c0394a; }
 .lb-cpu { display:flex; gap:6px; align-items:center; } .lb-cpu span { font:700 14px 'Rajdhani',sans-serif; letter-spacing:.06em; color:#cfd6e4; white-space:nowrap; padding-right:4px; } .lb-cpu .lb-btn { flex:1; padding-left:4px; padding-right:4px; }
 .lb-queue { display:flex; gap:8px; } .lb-queue .lb-btn { flex:1; background:#3a2a5c; border-color:#6a52a0; font-size:16px; } .lb-queue .lb-btn:hover { background:#4a3870; }
 #lbQMode { font:700 34px 'Rajdhani',sans-serif; letter-spacing:6px; text-align:center; color:#d8c8ff; margin:6px 0; }
@@ -294,19 +295,21 @@ canvas {
       </section>
 
       <section data-p="account">
-        <h1>Account, shop &amp; vows</h1>
-        <p class="lead">Play matches to earn coins (¥), then spend them on special feats and binding vows.</p>
+        <h1>Account, levels &amp; vows</h1>
+        <p class="lead">Level up by playing the CPU and online matches. Every special feat and binding vow unlocks at a level, and achievements pay big XP.</p>
         <h2>Account</h2>
         <p>Open <b>👤 Account</b> on the home screen. Your progress is saved in this browser. To move it to another computer, press <b>GET MY SAVE CODE</b>, copy the code, and on the other computer paste it into <b>LOAD SAVE CODE</b>. (If online accounts are ever connected, you can also create an account with an email and password so your coins, unlocks and stats follow you to any computer. Creating an account keeps everything you earned as a guest.)</p>
-        <h2>Coins</h2>
-        <p>Every <b>online</b> match you <b>win</b> pays <b>¥5</b> (losses pay nothing). New players start with ¥50. <b>Local matches on one device don't earn coins</b> — otherwise you could just farm yourself.</p>
+        <h2>Levels &amp; XP</h2>
+        <p>XP replaced coins (Oct 17). A win against the CPU pays <b>20 / 40 / 70 XP</b> (Easy / Normal / Hard), an online win <b>60 XP</b>; losses still pay a little (40% vs the CPU, 25 XP online), and every match adds <b>1 XP per 10 damage</b> you dealt (up to 20). Level 2 takes 100 XP, level 5 takes 1,000, level 10 takes 4,500. <b>Local 2-player and training matches don't give XP</b>, so you can't farm yourself. Old saves keep everything they bought, and their coins (plus what they had spent) turned into twice as much XP.</p>
+        <h2>Achievements</h2>
+        <p>17 achievements, each worth 30–300 XP: winning (your first win, beating a Hard CPU, an online win, 10 wins, 3 in a row, a win without losing a life), Black Flashes (one, and 3 in one match), opening a domain, winning a clash, using an anti-domain technique on an enemy domain, a soul kill as Mahito, breaking out with Evasive, playing 5 and then every fighter, 2,000 total damage and 10 kills in one Endless match. They count in VS CPU and online matches. See them under <b>👤 Account → Achievements</b>.</p>
         <h2>Special feats</h2>
-        <table><tr><th>Feat</th><th>Price</th><th>Effect</th></tr>
-          <tr><td>Six Eyes</td><td>¥600</td><td>Cursed energy refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.</td></tr>
-          <tr><td>Cursed Energy Flow</td><td>¥300</td><td>Your cursed energy bar refills 35% faster.</td></tr>
-          <tr><td>Kenjaku</td><td>¥1000</td><td>Press the feat key (<b>T</b>; Right Shift for local Player 2) to swap into Kenjaku's moveset mid-fight, and again to swap back. Resets each round.</td></tr>
-          <tr><td>Reverse Cursed Technique</td><td>¥800</td><td>After 3s without taking a hit you regenerate 2 HP a second, paying 4 CE per HP. Any hit stops it.</td></tr>
-          <tr><td>Meguna</td><td>¥3000</td><td>Megumi only. With Maximum Output on, his ultimate lets Sukuna take the body until that life ends: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga as a Maximum Output move.</td></tr></table>
+        <table><tr><th>Feat</th><th>Unlocks at</th><th>Effect</th></tr>
+          <tr><td>Six Eyes</td><td>Level 7</td><td>Cursed energy refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.</td></tr>
+          <tr><td>Cursed Energy Flow</td><td>Level 4</td><td>Your cursed energy bar refills 35% faster.</td></tr>
+          <tr><td>Kenjaku</td><td>Level 11</td><td>Press the feat key (<b>T</b>; Right Shift for local Player 2) to swap into Kenjaku's moveset mid-fight, and again to swap back. Resets each round.</td></tr>
+          <tr><td>Reverse Cursed Technique</td><td>Level 9</td><td>After 3s without taking a hit you regenerate 2 HP a second, paying 4 CE per HP. Any hit stops it.</td></tr>
+          <tr><td>Meguna</td><td>Level 15</td><td>Megumi only. With Maximum Output on, his ultimate lets Sukuna take the body until that life ends: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga as a Maximum Output move.</td></tr></table>
         <h2>Kenjaku's moveset</h2>
         <table><tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>Q</td><td>Maximum: Uzumaki</td><td>Charge (aim with up / down), then release a crushing spiral of cursed spirits that pierces through everything: 22 damage, bores a tunnel. 6s cooldown.</td></tr>
@@ -315,13 +318,13 @@ canvas {
           <tr><td>F</td><td>Womb Profusion <em>(domain, 150)</em></td><td>Crushing gravity: the opponent moves at 40% speed, can barely jump, and takes 6 damage every 1.5s.</td></tr></table>
         <h2>Binding vows</h2>
         <p>Buy vows in the shop, then bind up to <b>two</b> in your Loadout before a match.</p>
-        <table><tr><th>Vow</th><th>Price</th><th>Trade</th></tr>
-          <tr><td>Glass Cannon</td><td>¥200</td><td>+35% damage dealt, +35% damage taken.</td></tr>
-          <tr><td>Iron Body</td><td>¥200</td><td>−25% damage taken; −15% speed, −10% damage.</td></tr>
-          <tr><td>Heavenly Restriction</td><td>¥300</td><td>No abilities, super, domain or Kenjaku swap; +50% damage, +30% speed, −15% damage taken.</td></tr>
-          <tr><td>Overtime</td><td>¥250</td><td>Like Nanami's vow: 80% damage during "working hours" (your first two lives), then 125% in overtime, once you're on your last life.</td></tr>
-          <tr><td>Domain Sacrifice</td><td>¥250</td><td>No domain / ultimate; super charges twice as fast, Q / E moves cost 25% less cursed energy.</td></tr>
-          <tr><td>Last Stand</td><td>¥200</td><td>Below 30 HP, +60% damage.</td></tr></table>
+        <table><tr><th>Vow</th><th>Unlocks at</th><th>Trade</th></tr>
+          <tr><td>Glass Cannon</td><td>Level 3</td><td>+35% damage dealt, +35% damage taken.</td></tr>
+          <tr><td>Iron Body</td><td>Level 3</td><td>−25% damage taken; −15% speed, −10% damage.</td></tr>
+          <tr><td>Heavenly Restriction</td><td>Level 5</td><td>No abilities, super, domain or Kenjaku swap; +50% damage, +30% speed, −15% damage taken.</td></tr>
+          <tr><td>Overtime</td><td>Level 4</td><td>Like Nanami's vow: 80% damage during "working hours" (your first two lives), then 125% in overtime, once you're on your last life.</td></tr>
+          <tr><td>Domain Sacrifice</td><td>Level 4</td><td>No domain / ultimate; super charges twice as fast, Q / E moves cost 25% less cursed energy.</td></tr>
+          <tr><td>Last Stand</td><td>Level 3</td><td>Below 30 HP, +60% damage.</td></tr></table>
         <p>Your loadout applies online and as Player 1 on a shared keyboard. Your opponent's feats and vows are shown under their health bar.</p>
       </section>
 
@@ -738,7 +741,7 @@ canvas {
           <tr><td>F</td><td>Chimera Shadow Garden <em>(ultimate, 150)</em></td><td>His incomplete domain: shadow floods the floor for 12s. <b>No CE cost and almost no cooldowns</b> (0.8s) on every shikigami, super always ready (up to 2 dogs at once), and he moves 15% faster.</td></tr>
           <tr><td>Movement</td><td>Ten Shadows</td><td>6% faster than average. <b>Shadow storage:</b> dash (Shift) while holding an item and it sinks into his shadow, its timer paused (on one keyboard, Rabbit Escape does it). Press the pick-up key (<b>G</b>; Enter for local Player 2) to pull it back out. One item at a time.</td></tr>
         </table>
-        <h2>Meguna (feat, ¥3000)</h2>
+        <h2>Meguna (feat, level 15)</h2>
         <p>Turn <b>Maximum Output</b> on and use the ultimate with a full bar: Sukuna takes over Megumi's body until that life ends. He loses all of Megumi's moves. Pool: 240 CE, 22/s.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
@@ -797,8 +800,8 @@ canvas {
 
 <div id="acct" hidden>
   <div class="ac-shell">
-    <div class="ac-top"><h1>👤 ACCOUNT <span>&amp; SHOP</span></h1><span id="acWallet"></span><button id="acClose">✕ CLOSE</button></div>
-    <div class="ac-tabs"><button data-t="account">ACCOUNT</button><button data-t="shop">SHOP</button><button data-t="loadout">LOADOUT</button><button data-t="board">LEADERBOARD</button></div>
+    <div class="ac-top"><h1>👤 ACCOUNT <span>&amp; LEVELS</span></h1><span id="acWallet"></span><button id="acClose">✕ CLOSE</button></div>
+    <div class="ac-tabs"><button data-t="account">ACCOUNT</button><button data-t="shop">UNLOCKS</button><button data-t="loadout">LOADOUT</button><button data-t="ach">ACHIEVEMENTS</button><button data-t="board">LEADERBOARD</button></div>
     <div id="acMsg"></div>
     <div class="ac-body"></div>
   </div>
@@ -827,9 +830,10 @@ canvas {
     <div class="lb-sub">Sorcerers and curses · destructible maps · domain expansions</div>
     <ul class="lb-points">
       <li><b>Online</b> — host, send the invite link, fight</li>
+      <li><b>VS CPU</b> — single player against a bot that knows every fighter</li>
       <li><b>Local</b> — two players, one keyboard</li>
       <li><b>Training</b> — test every fighter on a dummy</li>
-      <li><b>Shop</b> — feats, binding vows and character bans</li>
+      <li><b>Levels</b> — XP, achievements, feats and binding vows</li>
     </ul>
    </div>
    <div class="lb-menu">
@@ -875,6 +879,7 @@ canvas {
     <div class="lb-tip">Move <b>WASD</b> · Attack <b>Click / J</b> · Abilities <b>Q E R F</b> · Block <b>Right-click</b> · Dash <b>Shift</b> · Maximum Output <b>V</b> · Pick up <b>G</b> — full controls in the wiki</div>
   </div>
 </div>
+<button id="leaveBtn" hidden title="Back to the main menu">✕ MENU</button>
 <script src="portraits.js"></script>
 <script>
 'use strict';
@@ -2453,6 +2458,7 @@ function tickClash(dt){
     }
     if(C.bar >= 1 || C.bar <= -1 || C.t >= CLASH_FIGHT){
       C.win = C.bar > 0 ? 'att' : 'def'; C.ph = 2; C.t = 0; doShake(20);
+      achEvt('clash', C.win==='att' ? A : (D && D.owner));
       if(C.win==='att'){
         domainCancelled(D);
         activeDomain = null;
@@ -4143,30 +4149,107 @@ const FB_TEST = new URLSearchParams(location.search).get('fbtest');   // local t
 
 const SHOP = {
   feats: {
-    sixeyes: {name:'Six Eyes', price:600, desc:'Perfect cursed-energy control: CE refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.'},
-    ceflow: {name:'Cursed Energy Flow', price:300, desc:'Training pays off: your cursed energy bar refills 35% faster.'},
-    kenjaku: {name:'Kenjaku', price:1000, desc:'Press the feat key mid-fight to swap into Kenjaku\'s moveset (Uzumaki, Cursed Spirit, Anti-Gravity, Womb Profusion), and again to swap back.'},
-    rct: {name:'Reverse Cursed Technique', price:800, desc:'Turn negative energy positive: after 3s without taking a hit you regenerate 2 HP a second, paid for with cursed energy (4 CE per HP). Any hit stops it.'},
-    bans: {name:'Character Bans', price:20, desc:'Unlocks bans in your games: on the character select screen each player can ban one fighter (feat key on the hovered portrait) — nobody can pick it that match. Works online and on one keyboard.'},
-    meguna: {name:'Meguna', price:3000, desc:'Megumi only: unlocks his Maximum Output ultimate. Sukuna takes the body for the rest of that life, with a new moveset: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga.'}
+    sixeyes: {name:'Six Eyes', price:600, lvl:7, desc:'Perfect cursed-energy control: CE refills 60% faster, moves cost 15% less CE, and the short move cooldowns recover twice as fast.'},
+    ceflow: {name:'Cursed Energy Flow', price:300, lvl:4, desc:'Training pays off: your cursed energy bar refills 35% faster.'},
+    kenjaku: {name:'Kenjaku', price:1000, lvl:11, desc:'Press the feat key mid-fight to swap into Kenjaku\'s moveset (Uzumaki, Cursed Spirit, Anti-Gravity, Womb Profusion), and again to swap back.'},
+    rct: {name:'Reverse Cursed Technique', price:800, lvl:9, desc:'Turn negative energy positive: after 3s without taking a hit you regenerate 2 HP a second, paid for with cursed energy (4 CE per HP). Any hit stops it.'},
+    bans: {name:'Character Bans', price:20, lvl:2, desc:'Unlocks bans in your games: on the character select screen each player can ban one fighter (feat key on the hovered portrait) — nobody can pick it that match. Works online and on one keyboard.'},
+    meguna: {name:'Meguna', price:3000, lvl:15, desc:'Megumi only: unlocks his Maximum Output ultimate. Sukuna takes the body for the rest of that life, with a new moveset: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga.'}
   },
   vows: {
-    glass:     {name:'Glass Cannon',          price:200, desc:'Deal 35% more damage, take 35% more.'},
-    iron:      {name:'Iron Body',             price:200, desc:'Take 25% less damage; move 15% slower and deal 10% less.'},
-    heavenly:  {name:'Heavenly Restriction',  price:300, desc:'No abilities, super or domain. In exchange: 50% more damage, 30% faster, 15% tougher.'},
-    overtime:  {name:'Overtime',              price:250, desc:'Like Nanami\'s vow: you deal only 80% damage during "working hours" (your first two lives), then 125% in overtime, once you\'re on your last life.'},
-    sacrifice: {name:'Domain Sacrifice',      price:250, desc:'You can\'t use your domain or ultimate; your super charges twice as fast and your Q / E moves cost 25% less CE.'},
-    laststand: {name:'Last Stand',            price:200, desc:'Below 30 HP you deal 60% more damage.'}
+    glass:     {name:'Glass Cannon',          price:200, lvl:3, desc:'Deal 35% more damage, take 35% more.'},
+    iron:      {name:'Iron Body',             price:200, lvl:3, desc:'Take 25% less damage; move 15% slower and deal 10% less.'},
+    heavenly:  {name:'Heavenly Restriction',  price:300, lvl:5, desc:'No abilities, super or domain. In exchange: 50% more damage, 30% faster, 15% tougher.'},
+    overtime:  {name:'Overtime',              price:250, lvl:4, desc:'Like Nanami\'s vow: you deal only 80% damage during "working hours" (your first two lives), then 125% in overtime, once you\'re on your last life.'},
+    sacrifice: {name:'Domain Sacrifice',      price:250, lvl:4, desc:'You can\'t use your domain or ultimate; your super charges twice as fast and your Q / E moves cost 25% less CE.'},
+    laststand: {name:'Last Stand',            price:200, lvl:3, desc:'Below 30 HP you deal 60% more damage.'}
   }
 };
 const START_COINS = 50, MAX_VOWS = 2;
+// ═══ LEVELS + ACHIEVEMENTS (Oct 17) — XP replaces Yen ═══════════════════════
+// You level up from XP: matches against the CPU and online pay XP, and achievements pay big chunks. Every feat and vow unlocks at a level.
+// Old saves keep everything they bought, and their coins (plus what they spent) turn into XP (×2) so nobody drops a level.
+const XP_LV = n => 50*n*(n-1);     // total XP needed to reach level n (Lv2 100 · Lv3 300 · Lv5 1000 · Lv10 4500 · Lv15 10500)
+function levelOf(xp){ let n = 1; while(XP_LV(n+1) <= (xp||0)) n++; return n; }
+function lvInfo(xp){ const n = levelOf(xp); return {lv:n, cur:(xp||0) - XP_LV(n), need:XP_LV(n+1) - XP_LV(n)}; }
+const XP_CPU = {easy:20, normal:40, hard:70}, XP_ONLINE_WIN = 60, XP_ONLINE_LOSS = 25, XP_LOSS_FRAC = 0.4, XP_DMG_PER = 10, XP_DMG_CAP = 20;
+const ACH = {
+  first_win:   {name:'First Victory',              desc:'Win a match (against the CPU or online).', xp:50},
+  cpu_hard:    {name:'Not a Practice Dummy',       desc:'Beat a HARD CPU.', xp:150},
+  online_win:  {name:'Sorcerer Duel',              desc:'Win an online match.', xp:80},
+  wins10:      {name:'Grade 1 Sorcerer',           desc:'Win 10 matches.', xp:200},
+  streak3:     {name:'On a Roll',                  desc:'Win 3 matches in a row.', xp:120},
+  flawless:    {name:'Untouchable',                desc:'Win a match without losing a life.', xp:150},
+  bf1:         {name:'Sparks of Black',            desc:'Land a Black Flash.', xp:40},
+  bf3:         {name:'In the Zone',                desc:'Land 3 Black Flashes in one match.', xp:120},
+  domain:      {name:'Domain Expansion',           desc:'Open a domain.', xp:30},
+  clash:       {name:'Domain Clash',               desc:'Win a domain clash.', xp:80},
+  anti:        {name:'Simple Domain',              desc:'Use an anti-domain technique against an enemy domain.', xp:60},
+  soul:        {name:'Your Soul Has a New Shape',  desc:'As Mahito, kill someone with soul damage.', xp:80},
+  evasive:     {name:'Slippery',                   desc:'Break out of a combo with Evasive.', xp:30},
+  fighters5:   {name:'Versatile',                  desc:'Play 5 different fighters.', xp:100},
+  fighters_all:{name:'Every Technique',            desc:'Play every fighter on the roster.', xp:300},
+  dmg2000:     {name:'Cursed Output',              desc:'Deal 2,000 damage in total.', xp:120},
+  endless10:   {name:'Endless Curse',              desc:'Score 10 kills in one Endless match.', xp:100},
+};
+function shopItems(){ const out = []; for(const kind of ['feats','vows']) for(const id in SHOP[kind]) out.push([kind, id, SHOP[kind][id]]); return out; }
+function accMigrate(P){
+  if(!P) return P;
+  if(P.xp==null){ let spent = 0; for(const [k, id, it] of shopItems()) if(P.owned && P.owned[id]) spent += it.price||0; P.xp = Math.round(((P.coins||0) + spent) * 2); }
+  P.ach = P.ach || {}; P.st = Object.assign({bf:0, dmg:0, fighters:{}, streak:0, cpuWins:0}, P.st || {}); P.owned = P.owned || {}; P.eq = P.eq || {feats:{}, vows:[]};
+  return P;
+}
+// unlock everything the level allows; returns the names of new unlocks
+function accLevelUnlocks(P){ const lv = levelOf(P.xp), got = []; for(const [kind, id, it] of shopItems()) if(!P.owned[id] && (it.lvl||99) <= lv){ P.owned[id] = true; got.push(it.name); } return got; }
+const TOASTS = [];
+function toast(title, sub, col){ TOASTS.push({title, sub:sub||'', col:col||'#ffe066', t:0}); if(TOASTS.length > 4) TOASTS.shift(); try{ sfxLocal('jackpot'); }catch(e){} }
+function drawToasts(dt){
+  let y = 70;
+  for(let i=TOASTS.length-1;i>=0;i--){ const T = TOASTS[i]; T.t += dt||16; if(T.t > 4200){ TOASTS.splice(i,1); continue; } }
+  for(const T of TOASTS){ const a = Math.min(1, T.t/200, (4200 - T.t)/400), w = 330;
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = 'rgba(12,10,18,0.92)'; ctx.fillRect(W/2 - w/2, y, w, 40); ctx.strokeStyle = T.col; ctx.lineWidth = 2; ctx.strokeRect(W/2 - w/2, y, w, 40);
+    ctx.textAlign = 'center'; ctx.fillStyle = T.col; ctx.font = "700 15px 'Rajdhani',sans-serif"; ctx.fillText(T.title, W/2, y+17);
+    ctx.fillStyle = 'rgba(232,226,214,0.85)'; ctx.font = "500 11px 'Rajdhani',sans-serif"; ctx.fillText(T.sub, W/2, y+32); ctx.restore(); y += 46; }
+}
+function accGiveXp(n, why){
+  const P = ACC.prof; if(!P || !(n>0)) return; accMigrate(P);
+  const lv0 = levelOf(P.xp); P.xp += Math.round(n); const lv1 = levelOf(P.xp);
+  if(lv1 > lv0){ const got = accLevelUnlocks(P); toast(`LEVEL UP · LV ${lv1}`, got.length ? 'Unlocked: ' + got.join(', ') + ' (equip in Account → Loadout)' : `${lvInfo(P.xp).need} XP to the next level`, '#7fe0ff'); }
+}
+// who is "me" on this device, and do achievements count here (not local 2-player or training: no farming yourself)
+function accMe(){ if(typeof NET==='undefined') return null; if(NET.role==='guest') return NET.spectator ? null : p2; return p1; }
+function achAllowed(){ return typeof NET!=='undefined' && ((NET.role==='local' && typeof CPU!=='undefined' && CPU.on) || NET.role==='host' || (NET.role==='guest' && !NET.spectator)); }
+function achAward(id){
+  const P = ACC.prof, A = ACH[id]; if(!P || !A) return; accMigrate(P); if(P.ach[id]) return;
+  P.ach[id] = Date.now(); toast(`ACHIEVEMENT · ${A.name}`, `${A.desc}  +${A.xp} XP`); accGiveXp(A.xp); ACC.matchAch = (ACC.matchAch||[]).concat([A.name]); accSave();
+}
+const ACC_M = {bf:0};   // per-match counters
+function achEvt(kind, pl){
+  try{
+    if(!achAllowed() || !ACC.prof || !pl || pl!==accMe()) return; const P = accMigrate(ACC.prof);
+    if(kind==='bf'){ P.st.bf++; ACC_M.bf++; achAward('bf1'); if(ACC_M.bf >= 3) achAward('bf3'); }
+    else if(kind==='domain') achAward('domain');
+    else if(kind==='clash') achAward('clash');
+    else if(kind==='anti') achAward('anti');
+    else if(kind==='soul') achAward('soul');
+    else if(kind==='evasive') achAward('evasive');
+  }catch(e){}
+}
+// leaving a mode or match from anywhere (Oct 17): the ✕ MENU button, or M while paused
+function leaveToMenu(){
+  try{ if(NET.role==='host' || NET.role==='guest') netReset(); }catch(e){}
+  try{ cpuStop(); }catch(e){} paused = false; pausedBy = 0;
+  if(typeof gameMode!=='undefined' && gameMode==='training') gameMode = 'normal';
+  backToLobby('', false);
+}
+
 
 const ACC = {
   user:null,            // {uid, email, idToken, refreshToken, exp}
   prof:null,            // {name, coins, wins, losses, matches, owned:{}, eq:{feats:{}, vows:[]}}
   status:'', busy:false, lastAward:null
 };
-function freshProfile(name){ return {name: name||'Guest', coins:START_COINS, wins:0, losses:0, matches:0, owned:{}, eq:{feats:{}, vows:[]}}; }
+function freshProfile(name){ return {name: name||'Guest', coins:START_COINS, wins:0, losses:0, matches:0, owned:{}, eq:{feats:{}, vows:[]}, xp:0, ach:{}, st:{bf:0, dmg:0, fighters:{}, streak:0, cpuWins:0}}; }
 function accOnline(){ return !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey) || !!FB_TEST; }
 
 // ── endpoints ──
@@ -4187,11 +4270,11 @@ async function fbPost(url, body, token){
 }
 // Firestore typed-value helpers
 const fsEnc = p => ({fields:{ name:{stringValue:p.name}, coins:{integerValue:String(p.coins|0)}, wins:{integerValue:String(p.wins|0)},
-  losses:{integerValue:String(p.losses|0)}, matches:{integerValue:String(p.matches|0)}, data:{stringValue:JSON.stringify({owned:p.owned, eq:p.eq})} }});
+  losses:{integerValue:String(p.losses|0)}, matches:{integerValue:String(p.matches|0)}, data:{stringValue:JSON.stringify({owned:p.owned, eq:p.eq, xp:p.xp, ach:p.ach, st:p.st})} }});
 function fsDec(doc){
   const f = doc.fields || {}, n = k => +(f[k] && (f[k].integerValue ?? f[k].doubleValue) || 0);
   let d = {}; try{ d = JSON.parse(f.data && f.data.stringValue || '{}'); }catch(e){}
-  return {name:(f.name && f.name.stringValue) || 'Player', coins:n('coins'), wins:n('wins'), losses:n('losses'), matches:n('matches'), owned:d.owned||{}, eq:Object.assign({feats:{}, vows:[]}, d.eq||{})};
+  return {name:(f.name && f.name.stringValue) || 'Player', coins:n('coins'), wins:n('wins'), losses:n('losses'), matches:n('matches'), owned:d.owned||{}, eq:Object.assign({feats:{}, vows:[]}, d.eq||{}), xp:d.xp, ach:d.ach||{}, st:d.st||null};
 }
 
 // ── session ──
@@ -4272,9 +4355,9 @@ async function accLeaderboard(){
 
 // ── shop + loadout ──
 function accBuy(kind, id){
-  const it = SHOP[kind][id], P = ACC.prof; if(!it || P.owned[id]) return;
-  if(P.coins < it.price){ accUI.msg(`Not enough coins: ${it.name} costs ¥${it.price}.`); return; }
-  P.coins -= it.price; P.owned[id] = true;
+  const it = SHOP[kind][id], P = accMigrate(ACC.prof); if(!it || P.owned[id]) return;
+  if(levelOf(P.xp) < (it.lvl||99)){ accUI.msg(`${it.name} unlocks at level ${it.lvl}. You're level ${levelOf(P.xp)}.`); return; }
+  P.owned[id] = true;
   if(kind==='feats') P.eq.feats[id] = true;
   accUI.msg(`Unlocked ${it.name}!`); sfxLocal('jackpot'); accSave();
 }
@@ -4303,32 +4386,45 @@ function loadoutFor(slot){
   return slot===1 ? myLoadout() : null;
 }
 
-// ── coins at the end of a match ──
+// ── XP at the end of a match (Oct 17: replaces coins) ──
 let _accLastPhase = '';
 function accWatch(){
   if(typeof phase==='undefined') return;
+  if(ACC.prof) accMigrate(ACC.prof);
+  if(phase==='fight' && _accLastPhase!=='fight' && _accLastPhase!=='roundend'){ ACC_M.bf = 0; ACC_M.livesLost = 0; ACC.matchAch = []; }
   if(phase==='end' && _accLastPhase!=='end' && ACC.prof){
-    const me = NET.role==='guest' ? (NET.spectator ? null : p2) : p1;
-    if(NET.role==='local') ACC.lastAward = {local:true};          // same-device matches never pay out (no farming yourself)
+    const me = accMe(), P = accMigrate(ACC.prof);
+    if(NET.role==='local' && !CPU.on) ACC.lastAward = {local:true};          // same-keyboard 2-player matches never pay (no farming yourself)
     else if(me){
-      const won = winner===me, dmg = Math.round(me.dmgDealt||0);
-      const coins = won ? 5 : 0;
-      const P = ACC.prof; P.coins += coins; P.matches++; won ? P.wins++ : P.losses++;
-      ACC.lastAward = {coins, won, dmg};
+      const won = winner===me, dmg = Math.round(me.dmgDealt||0), lv0 = levelOf(P.xp);
+      let base = CPU.on ? XP_CPU[CPU.lvl]||40 : XP_ONLINE_WIN; if(!won) base = CPU.on ? Math.round(base*XP_LOSS_FRAC) : XP_ONLINE_LOSS;
+      const xp = base + Math.min(XP_DMG_CAP, Math.floor(dmg/XP_DMG_PER));
+      P.matches++; won ? P.wins++ : P.losses++; P.st.dmg += dmg; P.st.fighters[me.baseType||me.type] = 1; P.st.streak = won ? (P.st.streak||0) + 1 : 0;
+      accGiveXp(xp);
+      if(won){ achAward('first_win'); if(CPU.on && CPU.lvl==='hard') achAward('cpu_hard'); if(!CPU.on) achAward('online_win'); if(P.wins >= 10) achAward('wins10'); if(P.st.streak >= 3) achAward('streak3');
+        const lives = me===p1 ? p1lives : p2lives; if(gameMode!=='endless' && lives >= startLivesFor(me)) achAward('flawless'); }
+      if(Object.keys(P.st.fighters).length >= 5) achAward('fighters5');
+      if(CHARACTERS.every(c => P.st.fighters[c.type])) achAward('fighters_all');
+      if(P.st.dmg >= 2000) achAward('dmg2000');
+      if(gameMode==='endless' && (me===p1 ? p1kills : p2kills) >= 10) achAward('endless10');
+      ACC.lastAward = {xp, won, dmg, lv0, lv:levelOf(P.xp), ach:(ACC.matchAch||[]).slice()};
       accSave();
     }
   }
   if(phase!=='end' && _accLastPhase==='end') ACC.lastAward = null;
   _accLastPhase = phase;
+  // ✕ MENU button: shown everywhere except the home screen
+  const lb = document.getElementById('leaveBtn');
+  if(lb){ const show = phase!=='home' && document.getElementById('lobby').hidden; if(lb.hidden === show) lb.hidden = !show;
+    if(lb._armT && performance.now() > lb._armT){ lb._armT = 0; lb.textContent = '✕ MENU'; } }
 }
-
 
 // ── Save codes: move a guest profile between computers with no server ──
 function _ccHash(str){ let h = 2166136261 >>> 0; for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return ('0000000' + h.toString(36)).slice(-7); }
 function accExportCode(){
   const P = ACC.prof;
   const o = {n:P.name, c:P.coins|0, w:P.wins|0, l:P.losses|0, m:P.matches|0, o:Object.keys(P.owned||{}).filter(k => P.owned[k]),
-             f:Object.keys((P.eq||{}).feats||{}).filter(k => P.eq.feats[k]), v:(P.eq||{}).vows||[]};
+             f:Object.keys((P.eq||{}).feats||{}).filter(k => P.eq.feats[k]), v:(P.eq||{}).vows||[], x:P.xp|0, a:Object.keys(P.ach||{}), s:P.st||{}};
   const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   return 'CC1-' + b64 + '-' + _ccHash('cc1|' + b64);
 }
@@ -4342,7 +4438,8 @@ function accImportCode(code){
   const owned = {}; for(const id of (o.o||[])) if(all[id]) owned[id] = true;
   const feats = {}; for(const id of (o.f||[])) if(SHOP.feats[id] && owned[id]) feats[id] = true;
   const vows = (o.v||[]).filter(id => SHOP.vows[id] && owned[id]).slice(0, MAX_VOWS);
-  return {name:String(o.n||'Player').slice(0,16), coins:num(o.c, 0), wins:num(o.w, 0), losses:num(o.l, 0), matches:num(o.m, 0), owned, eq:{feats, vows}};
+  const ach = {}; for(const id of (o.a||[])) if(ACH[id]) ach[id] = 1;
+  return accMigrate({name:String(o.n||'Player').slice(0,16), coins:num(o.c, 0), wins:num(o.w, 0), losses:num(o.l, 0), matches:num(o.m, 0), owned, eq:{feats, vows}, xp:o.x==null ? null : num(o.x, 0), ach, st:o.s && typeof o.s==='object' ? o.s : null});
 }
 
 // ── UI ──
@@ -4376,7 +4473,7 @@ const accUI = {
         else if(act==='import'){
           const raw = (q('#acCodeIn')||{}).value||'';
           const prof = accImportCode(raw);
-          if(!confirm(`Load "${prof.name}" (¥${prof.coins}, ${Object.keys(prof.owned).length} unlocks)? This replaces the progress saved in this browser.`)) return;
+          if(!confirm(`Load "${prof.name}" (level ${levelOf(prof.xp)}, ${Object.keys(prof.owned).length} unlocks)? This replaces the progress saved in this browser.`)) return;
           ACC.prof = prof; this.code = null; accSave(); this.msg(`Loaded ${prof.name}'s save. Welcome back!`);
         }
       }catch(err){ this.msg(err.message || String(err)); }
@@ -4392,16 +4489,18 @@ const accUI = {
   },
   refresh(){
     const chip = document.getElementById('acChip');
-    if(chip && ACC.prof) chip.innerHTML = `👤 ${esc(ACC.prof.name)}${ACC.user ? '' : ' (guest)'} · <b>¥${ACC.prof.coins}</b>`;
+    if(ACC.prof){ accMigrate(ACC.prof); accLevelUnlocks(ACC.prof); }
+    if(chip && ACC.prof) chip.innerHTML = `👤 ${esc(ACC.prof.name)}${ACC.user ? '' : ' (guest)'} · <b>LV ${levelOf(ACC.prof.xp)}</b>`;
     if(!this.el || this.el.hidden || !ACC.prof) return;
     const P = ACC.prof, el = this.el;
     el.querySelectorAll('.ac-tabs button').forEach(b => b.classList.toggle('on', b.dataset.t===this.tab));
-    el.querySelector('#acWallet').innerHTML = `¥${P.coins}`;
+    { const L = lvInfo(P.xp); el.querySelector('#acWallet').innerHTML = `LV ${L.lv} · ${L.cur}/${L.need} XP`; }
     el.querySelector('#acMsg').textContent = ACC.status || '';
     let h = '';
     if(this.tab==='account'){
       h += `<div class="ac-card"><div class="ac-big">${esc(P.name)}</div><div class="ac-sub">${ACC.user ? 'Signed in as '+esc(ACC.user.email) : 'Guest: progress is saved in this browser only'}</div>
-        <div class="ac-stats"><span><b>${P.wins}</b> wins</span><span><b>${P.losses}</b> losses</span><span><b>${P.matches}</b> matches</span><span><b>¥${P.coins}</b> coins</span></div></div>`;
+        <div class="ac-stats"><span><b>${P.wins}</b> wins</span><span><b>${P.losses}</b> losses</span><span><b>${P.matches}</b> matches</span><span><b>LV ${levelOf(P.xp)}</b> · ${P.xp} XP</span><span><b>${Object.keys(P.ach||{}).length}/${Object.keys(ACH).length}</b> achievements</span></div>
+        <div style="height:8px;background:#0b0a09;border:1px solid #3a3530;border-radius:4px;margin-top:10px;overflow:hidden"><div style="height:100%;width:${Math.round(100*lvInfo(P.xp).cur/lvInfo(P.xp).need)}%;background:#7fe0ff"></div></div></div>`;
       if(ACC.user){
         h += `<div class="ac-card"><label>Player name <input id="acName" maxlength="16" value="${esc(P.name)}"></label> <button data-act="rename">SAVE NAME</button> <button data-act="signout" class="ghost">SIGN OUT</button></div>`;
       } else if(!accOnline()){
@@ -4423,7 +4522,7 @@ const accUI = {
           <div class="ac-row"><button data-act="signin" ${ACC.busy?'disabled':''}>SIGN IN</button><button data-act="signup" ${ACC.busy?'disabled':''}>CREATE ACCOUNT</button><button data-act="reset" class="ghost">FORGOT PASSWORD</button></div>
           <p class="ac-note">Creating an account keeps your guest coins and unlocks, and lets you play from any computer.</p></div>`;
       }
-      h += `<div class="ac-card"><h3>Earning coins</h3><p class="ac-note">Every <b>online</b> match you win pays <b>¥5</b>. Losses, local and training matches don't pay.</p></div>`;
+      h += `<div class="ac-card"><h3>Levels</h3><p class="ac-note">Win against the CPU (Easy ${XP_CPU.easy} · Normal ${XP_CPU.normal} · Hard ${XP_CPU.hard} XP) or online (${XP_ONLINE_WIN} XP) to level up — losing still pays a little, plus 1 XP per 10 damage you deal. Achievements pay much more. Every feat and vow unlocks at a level. Local 2-player and training don't give XP.</p></div>`;
     } else if(this.tab==='shop' || this.tab==='loadout'){
       const shop = this.tab==='shop';
       for(const kind of ['feats','vows']){
@@ -4433,14 +4532,18 @@ const accUI = {
           if(!shop && !own) continue;
           const on = kind==='feats' ? !!P.eq.feats[id] : P.eq.vows.includes(id);
           h += `<div class="ac-item ${own?'own':''} ${on?'on':''}"><div class="ac-in">${it.name}</div><div class="ac-id">${it.desc}</div>`;
-          if(shop) h += own ? `<div class="ac-owned">✓ OWNED</div>` : `<button data-act="buy" data-kind="${kind}" data-id="${id}" ${P.coins<it.price?'class="poor"':''}>BUY · ¥${it.price}</button>`;
+          if(shop) h += own ? `<div class="ac-owned">✓ UNLOCKED</div>` : `<button data-act="buy" data-kind="${kind}" data-id="${id}" class="poor">🔒 LEVEL ${it.lvl}</button>`;
           else h += `<button data-act="eq" data-kind="${kind}" data-id="${id}">${on ? (kind==='vows' ? '✓ BOUND' : '✓ EQUIPPED') : (kind==='vows' ? 'BIND' : 'EQUIP')}</button>`;
           h += `</div>`;
         }
         h += `</div>`;
       }
-      if(!shop && !Object.keys(P.owned).length) h += `<p class="ac-note">You don't own anything yet; buy feats and vows in the Shop.</p>`;
+      if(!shop && !Object.keys(P.owned).length) h += `<p class="ac-note">Nothing unlocked yet; feats and vows unlock as you level up (see Unlocks).</p>`;
       if(!shop) h += `<p class="ac-note">Your loadout is used in every match you play: online, or as Player 1 on this keyboard. Kenjaku's swap key: <b>T</b> online · <b>T</b> for Player 1 locally · <b>Right Shift</b> for Player 2.</p>`;
+    } else if(this.tab==='ach'){
+      const A = P.ach||{}; h += `<p class="ac-note">${Object.keys(A).length} of ${Object.keys(ACH).length} — achievements count in VS CPU and online matches.</p>`;
+      for(const id in ACH){ const a = ACH[id], got = !!A[id];
+        h += `<div class="ac-item ${got?'own on':''}"><div class="ac-in">${got ? '🏆 ' : '🔒 '}${a.name}</div><div class="ac-id">${a.desc}</div><div class="ac-owned">${got ? '✓' : ''} +${a.xp} XP</div></div>`; }
     } else if(this.tab==='board'){
       if(!accOnline()) h += `<p class="ac-note">There's no leaderboard without an online server — your stats are on the Account tab.</p>`;
       else if(!ACC.user) h += `<p class="ac-note">Sign in to see the leaderboard.</p>`;
@@ -6401,6 +6504,7 @@ function domainFrame(owner){
   return {x:fx, y:fy};
 }
 function startDomain(owner){
+  achEvt('domain', owner);
   const fr = domainFrame(owner);
   // The domain swallows the opponent: anyone outside gets pulled onto the caster's floor
   if(false){
@@ -8136,7 +8240,7 @@ class Player {
     if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick();
     if(opp && opp.state!==S.DEAD && Math.abs(opp.x-this.x) < 160 && ![S.RAGD,S.SLAM].includes(opp.state)){ opp.vx = -dir*4; if(opp.state===S.ATCK) opp.ss(opp.onGround ? S.IDLE : S.AIR); }
     addRing(this.x+PW/2, this.y+PH/2, '#ffffff', 70); addRing(this.x+PW/2, this.y+PH/2, '#9fd8ff', 40); addParts(this.x+PW/2, this.y+PH/2, '#e8f4ff', 18, 6);
-    addSpeech(this.x+PW/2, this.y-24, 'EVASIVE!', '#ffffff', 800); snd('dash', this.x); doShake(5);
+    addSpeech(this.x+PW/2, this.y-24, 'EVASIVE!', '#ffffff', 800); snd('dash', this.x); doShake(5); achEvt('evasive', this);
   }
 
   // Wrapper: runs the normal update, then resolves walls/floors/ceilings against the terrain
@@ -14029,6 +14133,7 @@ function adCast(pl, domStunned){
     if(domStunned) pl.ss(S.IDLE);
     if(AD.amp){ pl.adAmp = true; pl.confiscT = ms; }
     if(AD.uiui){ pl.uiBoxT = ms; pl.sdT = 0; pl.adT = 0; pl.adName = null; const u = uiuis.find(q => q.owner===pl); if(u){ pl.uiBox = {x:u.x, y:u.y}; addRing(u.x, u.y-60, AD.col, 110); } }
+    if(enemyDomainNear(pl)) achEvt('anti', pl);
     addSpeech(pl.x+PW/2, pl.y-20, AD.name.toUpperCase(), AD.col, 1200); addRing(pl.x+PW/2, pl.y+PH, AD.col, 70); addRing(pl.x+PW/2, pl.y+PH/2, AD.col, 120); snd('charge', pl.x); doShake(5); return true; }
   return false;
 }
@@ -14385,7 +14490,7 @@ function ceInfinite(p){ return p.jackpotT>0 || p.gardenT>0 || (isTraining() && t
 function ceRegenMult(p){ return (p._feat && p._feat('sixeyes') ? 1.6 : 1) * (p._feat && p._feat('ceflow') ? 1.35 : 1) * (p.bfCeT>0 ? 3.5 : 1); }
 // Black Flash: for a while afterwards your cursed energy refills 250% faster
 const CE_BF_MS = 10000;
-function ceBlackFlash(p){ if(!p || p.isPuppet) return; p.bfLife = (p.bfLife||0) + 1; p.bfCeT = CE_BF_MS; addSpeech(p.x+PW/2, p.y-34, 'CE REGEN +250%', '#ff4a4a', 900); }
+function ceBlackFlash(p){ if(!p || p.isPuppet) return; p.bfLife = (p.bfLife||0) + 1; achEvt('bf', p); p.bfCeT = CE_BF_MS; addSpeech(p.x+PW/2, p.y-34, 'CE REGEN +250%', '#ff4a4a', 900); }
 // Choso: when out of cursed energy he pays with blood (1 HP = 3 CE) and leaves a pool
 const CE_BLOOD = 3;
 function ceCanPay(p, need){
@@ -17715,6 +17820,7 @@ let pausePage = 0, _pnPrev = [{}, {}];
 const PAUSE_PAGES = ['CONTROLS', 'COMBAT GUIDE', 'YOUR FIGHTER'];
 function pauseNav(){
   if(!paused){ pausePage = 0; return; }
+  if(keyPulse.KeyM || keys.KeyM && !_pnPrev.m){ _pnPrev.m = true; leaveToMenu(); return; } _pnPrev.m = !!keys.KeyM;
   for(let i=0;i<2;i++){
     const h = liveHeld[i] || {}, pv = _pnPrev[i];
     if(h.left && !pv.left) pausePage = (pausePage + PAUSE_PAGES.length - 1) % PAUSE_PAGES.length;
@@ -17836,6 +17942,7 @@ function drawPauseMenu(){
   const local = isLocalPair();
   ctx.fillText((pausedBy && !isTraining() ? `Paused by player ${pausedBy} · ` : '') + (local ? 'ESC (P1) or BACKSPACE (P2) to resume' : isTraining() ? 'ESC to resume · training mode' : 'ESC to resume — the game is paused for both players'), W/2, 72);
   drawPauseHeader();
+  ctx.textAlign = 'center'; ctx.font = `700 13px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ff8a8a'; ctx.fillText('M — LEAVE MATCH (back to the menu)', W/2, 136);
   const meN = local || isTraining() ? 1 : NET.spectator ? 1 : NET.role==='host' ? 1 : 2, mePl = meN===2 ? p2 : p1;
   if(pausePage===1){
     const w = Math.min(980, W-80);
@@ -19301,16 +19408,18 @@ function drawMatchEnd(){
   ctx.strokeText(winner.name+' WINS!',W/2,H/2-30);
   ctx.fillStyle='#d8d4cc'; ctx.fillText(winner.name+' WINS!',W/2,H/2-30);
   ctx.font=`500 17px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(170,165,155,.55)';
-  ctx.fillText(NET.role==='local' ? 'Press F or / for a rematch' : 'Press SPACE / ENTER / CLICK for a rematch',W/2,H/2+22);
+  ctx.fillText(NET.role==='local' && !CPU.on ? 'Press F or / for a rematch · ✕ MENU to leave' : 'Press SPACE / ENTER / CLICK for a rematch · ✕ MENU to leave',W/2,H/2+22);
   if(ACC.lastAward && ACC.lastAward.local){
     ctx.font=`700 16px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(220,210,180,.75)';
-    ctx.fillText('Local matches don\'t earn coins — play online to earn ¥', W/2, H/2+60);
+    ctx.fillText('Local 2-player matches don\'t give XP — play the CPU or online to level up', W/2, H/2+60);
   } else if(ACC.lastAward){
-    const a = ACC.lastAward;
-    ctx.font=`700 22px 'Rajdhani',sans-serif`; ctx.fillStyle='#ffe066';
-    ctx.fillText(`+¥${a.coins}  ${a.won ? 'VICTORY' : 'GOOD FIGHT'} · ${a.dmg} damage dealt`, W/2, H/2+60);
-    ctx.font=`500 14px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(220,210,180,.7)';
-    ctx.fillText(`${ACC.prof.name}: ¥${ACC.prof.coins}${ACC.user ? '' : ' (guest)'}`, W/2, H/2+84);
+    const a = ACC.lastAward, L = lvInfo(ACC.prof.xp);
+    ctx.font=`700 22px 'Rajdhani',sans-serif`; ctx.fillStyle='#7fe0ff';
+    ctx.fillText(`+${a.xp} XP  ${a.won ? 'VICTORY' : 'GOOD FIGHT'} · ${a.dmg} damage dealt`, W/2, H/2+60);
+    ctx.font=`500 14px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(220,210,180,.8)';
+    ctx.fillText(`${ACC.prof.name}: LEVEL ${L.lv}${a.lv > a.lv0 ? ' (LEVEL UP!)' : ''} · ${L.cur}/${L.need} XP${ACC.user ? '' : ' (guest)'}`, W/2, H/2+84);
+    const bw = 260; ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(W/2-bw/2, H/2+92, bw, 6); ctx.fillStyle = '#7fe0ff'; ctx.fillRect(W/2-bw/2, H/2+92, bw*L.cur/L.need, 6);
+    if(a.ach && a.ach.length){ ctx.fillStyle = '#ffe066'; ctx.font=`700 13px 'Rajdhani',sans-serif`; ctx.fillText('🏆 ' + a.ach.join(' · '), W/2, H/2+118); }
   }
 }
 
@@ -20114,6 +20223,9 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   });
   auSync();
   $('wkClose').onclick = () => { wiki.hidden = true; };
+  $('leaveBtn').onclick = () => { const b = $('leaveBtn');
+    if(['fight','roundend'].includes(phase) && !b._armT){ b._armT = performance.now() + 2500; b.textContent = 'CLICK AGAIN TO LEAVE'; return; }
+    b._armT = 0; b.textContent = '✕ MENU'; leaveToMenu(); };
   $('btnLocal').onclick = () => { cpuStop(); netReset(); NET.role = 'local'; gameMode = 'normal'; lbStatus(''); hideLobby(); goModeSelect(); };
   for(const [id, lvl] of [['btnCpuE','easy'], ['btnCpuN','normal'], ['btnCpuH','hard']]) $(id).onclick = () => { netReset(); NET.role = 'local'; gameMode = 'normal'; cpuStart(lvl); lbStatus(''); hideLobby(); goModeSelect(); };
   $('btnTrain').onclick = () => { cpuStop(); netReset(); NET.role = 'local'; lbStatus(''); hideLobby(); goModeSelect(); gameMode = 'training'; phase = 'mapSelect'; mapSelectIdx = 0; };
@@ -20460,6 +20572,7 @@ function simFight(dt){
       else if(dn1 && dn2){ roundWinner=p1; p1lives--; p2lives--; }
       // Mahito (Oct 17): a soul kill gives him 6 humans; every life the opponent loses cuts his HP damage further; his Black Flash count resets when he dies
       for(const [m, dn, v] of [[p1, dn2, p2], [p2, dn1, p1]]) if(dn && m.type==='mahito'){ m.mahiOppDeaths = (m.mahiOppDeaths||0) + 1;
+        if(v._soulKill) achEvt('soul', m);
         if(v._soulKill){ m.mahiHumans = Math.min(MAHI_TH_MAX, (m.mahiHumans||0) + MAHI_SOUL_KILL_TH); addSpeech(m.x+PW/2, m.y-34, `+${MAHI_SOUL_KILL_TH} HUMANS`, '#c9a0ff', 1100); } v._soulKill = false; }
       for(const [pl, dn] of [[p1, dn1], [p2, dn2]]) if(dn){ pl.bfLife = 0; if(pl.type==='mahito'){ pl.ibdkT = 0; pl.mahiSTOn = false; pl.maxHp = 100; } }
       if(roundWinner){
@@ -20660,6 +20773,7 @@ function loopFrame(ts){
       ctx.restore();
     });
   }
+  withView(() => { try{ drawToasts(dt); }catch(e){} });
   ctx.restore();
 }
 requestAnimationFrame(loop);
