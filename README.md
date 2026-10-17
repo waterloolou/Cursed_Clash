@@ -15,11 +15,11 @@ No download needed — just open the link. (Or download it to play offline, belo
 That's it. Everything is in that one file.
 
 ## Modes
-
-- **Local 2 player** — two people on one keyboard. *Local matches don't earn coins.*
-- **Online** — each player on their own computer. One presses **Host online game** and shares the 5-letter code; the other types it in and presses **Join**. Online matches earn coins (¥) for the shop: feats like Six Eyes and Kenjaku, and binding vows.
+- **VS CPU** — single player against a bot (Easy / Normal / Hard). Gives XP.
+- **Local 2 player** — two people on one keyboard. *Local matches don't give XP.*
+- **Online** — each player on their own computer. One presses **Host online game** and shares the 5-letter code; the other types it in and presses **Join**. Online matches give XP; levels unlock feats like Six Eyes and Kenjaku, and binding vows.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
-- **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No coins.
+- **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
 ## Earlier fighter: Yuki Tsukumo
 
@@ -31,7 +31,16 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: Modulo Yuji, Rika as a fighter, easier maps (Oct 14b)
+## Latest: single player, levels and the Mahito rework (Oct 17)
+Full list with old → new values and revert notes in [`changes/oct17.md`](changes/oct17.md).
+- **VS CPU** (Easy / Normal / Hard): a bot that knows every fighter's kit, Black Flash rings and anti-domain included.
+- **Levels + XP replace Yen**: win against the CPU or online to level up; every feat and vow unlocks at a level; **17 achievements**. Old saves keep their unlocks and turn coins into XP.
+- **Mahito rework**: a **soul bar** that never heals, melee that hits the soul, Transfigured Human Deployment (and the kiss), I Really am a Curse!, Spiky Wall, a deadly new domain, and **Instant Spirit Body of Distorted Killing** after two Black Flashes.
+- **Combat**: anyone can **Black Flash** (a random timing ring on finishers), **no i-frames after getting up** (Evasive fills faster instead), supers and ultimates **cost CE**, and **anti-domain is one key** with a prompt.
+- **Ryu**: new Granite Blast art, +10% Output per press, homing Output Burst, an aimable ultimate twice the size, takes 20% more, weaker punch. **Yuta**: Cursed Energy Discharge, Rika charges from any damage, domain katanas load your next punch.
+- **Maps**: smoother slopes, a **train** through Shibuya B5F, **rockfall** in Shinjuku. **Battle music**: "Delirious". **✕ MENU** to leave anything.
+
+## Earlier: Modulo Yuji, Rika as a fighter, easier maps (Oct 14b)
 Full list with old → new values and revert notes in [`changes/oct14b.md`](changes/oct14b.md).
 - **Modulo Yuji** lasts a whole minute (shown by the ultimate bar) with a new moveset: **Piercing Blood** (tap: a fast blockable beam for 10 · hold: 5 homing beams, 15 each), an aimed **Cleave** that explodes on contact (22), and a **Dismantle** that chases them down and grabs (35). Cooldowns scale with damage, 6s max. Enchain Sukuna's **Cleave** is now 5 aimed slashes and his **Fuga** is faster with a bigger blast.
 - **Yuta**: **Metal Arm** replaces Cursed Fist (choke + throw up close, parry from range). **Summon Rika** is his special: she follows him as her own fighter (75 HP) with **Offensive / Defensive / Support** modes. **Copy** and **True Love Beam** are his Maximum Output moves (Copy also needs a Rika hit; the beam needs Rika out).
