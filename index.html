@@ -905,7 +905,7 @@ const GRAV   = 0.52;
 const JUMP_V = -13.5;
 const SPD    = 3.7;
 // Evasive (like JJS): fills over time and when you get hit; when it's full, press DASH (or block — on one keyboard ↓ + jump) while stunned or knocked down to burst free
-const EVA_MAX = 100, EVA_REGEN = 100/18000, EVA_PER_DMG = 1.6, EVA_IF = 650;
+const EVA_MAX = 100, EVA_REGEN = 100/18000, EVA_PER_DMG = 1.6, EVA_IF = 650, EVA_STUCK_MUL = 3, EVA_COMBO_DMG = 2.4;   // Oct 17: regen ×3 while stunned / knocked down, 2.4 per damage taken (was 1.6)
 const AIR_STALL_MAX = 260;   // ms of fall-stalling a whiffed air string gets per jump (hits keep you up as before)
 const CMB_FOLLOW_MS = 650;   // during a combo you drift after the target without holding a direction
 
@@ -923,7 +923,8 @@ const ATK_RANGE   = 88;
 const STUN_MS     = 290;
 const RAGD_MS     = 850;
 // Wake-up i-frames: zero for the first WAKE_IF_FREE ms of a combo, then growing with how long it has lasted
-const CB_GAP = 1000, WAKE_IF_FREE = 1200, WAKE_IF_RATE = 0.5, WAKE_IF_MAX = 1500;
+// Oct 17: NO wake-up i-frames at all (was up to 1.5s after long combos) — Evasive is the way out, and it fills faster while you're being comboed
+const CB_GAP = 1000, WAKE_IF_FREE = 1200, WAKE_IF_RATE = 0.5, WAKE_IF_MAX = 0;
 function wakeIframes(pl){
   const dur = terClock - (pl._cbStart===undefined ? terClock : pl._cbStart);
   return Math.max(0, Math.min(WAKE_IF_MAX, (dur - WAKE_IF_FREE) * WAKE_IF_RATE));
@@ -8118,7 +8119,7 @@ class Player {
   _evasiveTick(dt){
     if(this.isPuppet || this.state===S.DEAD){ this._evaPrev = 0; return; }
     if(this.eva===undefined) this.eva = 0;
-    this.eva = Math.min(EVA_MAX, this.eva + EVA_REGEN*dt);
+    this.eva = Math.min(EVA_MAX, this.eva + EVA_REGEN*dt*([S.STUN, S.RAGD, S.SLAM].includes(this.state) ? EVA_STUCK_MUL : 1));
     const c = this.ctrl, ol = olOn();
     const m = (keys[c.dash] ? 1 : 0) | (keys[c.block] ? 2 : 0) | ((!ol && keys[c.down] && keys[c.jmp]) ? 4 : 0), fresh = m & ~(this._evaPrev||0); this._evaPrev = m;
     if(!fresh || this.eva < EVA_MAX) return;
@@ -8234,6 +8235,8 @@ class Player {
     if(this.higuSwordT>0) this.higuSwordT = Math.max(0, this.higuSwordT-dt);
     // Domain clash: cast into the opponent's domain
     if(domEdge && canClash(this)) startClash(this);
+    else if(domEdge && !olOn() && !this.isPuppet && OL_AD[this.type] && enemyDomainNear(this) && !(this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain)){ adCast(this, this.state===S.STUN); domEdge = false; }
+    adTickLocal(this, dt);
     if(clashFrozen(this)){ freezeFighter(this, dt); return; }
     // Deadly Sentencing: both sides stand trial — nobody moves
     if(courtFreeze(this, dt)) return;
@@ -8798,6 +8801,13 @@ class Player {
     }
 
     let atkEdge=keys[c.atk]&&!this.atkDown;
+    if(this.bfEvt){ const E = this.bfEvt; E.t += dt;
+      if(this.state!==S.ATCK){ this.bfEvt = null; }
+      else if(!E.res && atkEdge && E.t < 150){ atkEdge = false; this.atkDown = true; }   // presses right as the ring appears are mash, not an answer
+      else if(!E.res && atkEdge){ E.res = true; atkEdge = false; this.atkDown = true;
+        E.ok = Math.abs(E.t - BF_EVT_MS*BF_EVT_AT) <= BF_EVT_WIN*(this.zonedT>0 ? 2 : 1);
+        addSpeech(this.x+PW/2, this.y-26, E.ok ? 'TIMED!' : 'OFF BEAT', E.ok ? '#ff3030' : '#888', 500); }
+      else if(!E.res && E.t >= BF_EVT_MS){ E.res = true; } }
     let jmpEdge=keys[c.jmp]&&!this.jmpDown;
     // Deadly Sentencing: the court confiscates the defendant's ability to jump
     const _jOpp = this===p1 ? p2 : this===p2 ? p1 : null;
@@ -11515,10 +11525,11 @@ class Player {
     snd('swing', this.x);
     if(this.type==='yuji'||this.type==='sukuna'||this.type==='gojo'||this.type==='yuta') this.vx=0;
     if(!this.onGround && (this.combo>=3 || keys[this.ctrl.down])){ this.ss(S.DIVE,2000); this.diveVy=5; this.atkHit=false; }
-    else{ this.ss(S.ATCK,ATK_START+ATK_ACT+ATK_REC); this.atkPhase=0; this.atkTimer=0; this.atkHit=false; this.atkAnim=0; this._wasFinisher=(this.combo>=3); this._lUpper = this.combo>=3 && !!keys[this.ctrl.jmp] && this.onGround; }
+    else{ this.ss(S.ATCK,ATK_START+ATK_ACT+ATK_REC); this.atkPhase=0; this.atkTimer=0; this.atkHit=false; this.atkAnim=0; this._wasFinisher=(this.combo>=3); this._lUpper = this.combo>=3 && !!keys[this.ctrl.jmp] && this.onGround; this.bfEvt = null; if(this._wasFinisher) bfEvtRoll(this); }
   }
 
   _tickAtk(dt,atkEdge){
+    if(bfEvtHold(this)){ this._phys(dt); return; }
     if(this.oaKind){ this._olTickAtk(dt, atkEdge); return; }
     if(this._lUpper && this.atkHit && this.onGround && keys[this.ctrl.jmp]){ const mv = this._moveStats(); this._lUpper = false; this.ss(S.AIR); this.vy = JUMP_V*mv.jmp; this.onGround = false; this.jmpDown = true; snd('jump', this.x); return; }
     this.atkTimer+=dt*(this.item==='cloud'?1.7:1);
@@ -11527,7 +11538,7 @@ class Player {
       this.atkAnim=this.atkTimer/ATK_ACT;
       if(this.atkTimer>=ATK_ACT){ this.atkPhase=2; this.atkTimer=0; this.atkAnim=0; }
     } else if(this.atkPhase===2&&this.atkTimer>=ATK_REC){
-      if(atkEdge){ this.atkDown=true; this.atkPhase=0; this.atkTimer=0; this.atkHit=false; this.atkAnim=0; }
+      if(atkEdge){ this.atkDown=true; this.atkPhase=0; this.atkTimer=0; this.atkHit=false; this.atkAnim=0; this._wasFinisher=(this.combo>=3); this.bfEvt=null; if(this._wasFinisher) bfEvtRoll(this); }
       else {
         // If this was a finisher attempt and it missed, lose the combo
         if(this._wasFinisher && !this.atkHit) this.combo=0;
@@ -11642,6 +11653,15 @@ class Player {
       if(this.type==='gojo')   this.hollowCharge=Math.min(HOLLOW_CHARGE_REQ,this.hollowCharge+DMG_SLAM);
       if(this.type==='yuji'){  this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+DMG_SLAM); yujiCmAdd(this, DMG_SLAM); }
       this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+DMG_SLAM);
+    } else if(isFinisher && bfEvtLand(this, def)){
+      // Black Flash event answered on the beat
+      this.combo=0; const bd = Math.round(DMG_KB*2.5); this._itemOnHit(def, 2);
+      def.hp=Math.max(0,def.hp-bd); def.flash=400; addDmg(mx,def.y-18,bd,'#ff2a2a'); ceBlackFlash(this);
+      if(def.hp<=0){ def._initRd(this.facing*9,-6,.14*this.facing); def.ss(S.DEAD); } else { def._initRd(this.facing*17,-9,.18*this.facing); def.ss(S.RAGD, RAGD_MS*1.3); }
+      addBlackFlash(mx, my); addParts(mx,my,'#000',26,8); addParts(mx,my,'#ff1a1a',18,7); addRing(mx,my,'#ff2a2a',90); addRing(mx,my,'#111',60);
+      addSpeech(mx, def.y-30, 'BLACK FLASH', '#ff3030', 1000); snd('blackflash', mx); doShake(16);
+      if(this.type==='yuji'){ this.yujiUltCharge=Math.min(YUJI_ULT_COST,this.yujiUltCharge+bd); yujiCmAdd(this, bd); }
+      this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+bd+20);
     } else if(isFinisher && this._lUpper){
       // uppercut finisher: pops them straight up — jump after them
       this.combo=0; def.hp=Math.max(0,def.hp-DMG_KB); def.flash=320; this._itemOnHit(def, 1.6);
@@ -11863,6 +11883,8 @@ class Player {
     drawFramedOverlay(this);
     if(this.type==='mahito' || this.reshapeT>0 || this.soulMarks>0) drawMahitoBody(this);
     if(this.type==='mahito') drawCurseRing(this);
+    if(this.bfEvt) drawBfEvt(this);
+    drawAdPrompt(this);
     // Mei Mei: the battle axe
     if(this.type==='meimei' && this._hand && ![S.RAGD,S.SLAM,S.DEAD,S.DIVE].includes(this.state) && !(itemWeapon(this) && ![S.MEISPIN,S.MEICHOP].includes(this.state))){
       const h = this._hand, f = this.facing;
@@ -13906,6 +13928,35 @@ const OL = {
   VAR_CD:8000, AD_CD:25000, AD_MS:5000,
 };
 const BF_TYPES = ['yuji','todo','mahito'];
+// Black Flash event (Oct 17): when anyone throws a combo finisher at a stunned opponent, there's a chance a timing ring pops up on them.
+// The finisher waits while the ring closes; press attack as it meets the inner circle and the finisher lands as a BLACK FLASH (×2.5).
+// Yuji, Todo and Mahito (Black Flash naturals) get the ring more often. It replaced "a perfect finisher = Black Flash".
+const BF_EVT_CHANCE = 0.25, BF_EVT_CHANCE_NAT = 0.4, BF_EVT_MS = 620, BF_EVT_AT = 0.78, BF_EVT_WIN = 85;
+function bfEvtRoll(p){
+  if(!p || p.isPuppet || p.bfEvt) return;
+  const d = p._cmbTgt ? netRes(p._cmbTgt) : null;
+  if(!d || d.state===S.DEAD || !(d.state===S.STUN || terClock - (p._cmbHitT||-1e9) < 450) || Math.abs(d.x - p.x) > 170 || terClock - (p._cmbHitT||-1e9) > 900) return;
+  if(Math.random() >= (BF_TYPES.includes(p.baseType||p.type) ? BF_EVT_CHANCE_NAT : BF_EVT_CHANCE)) return;
+  p.bfEvt = {t:0, res:false, ok:false}; if(p.sDur) p.sDur += BF_EVT_MS; snd('tick', p.x);
+}
+// hold the finisher (and the stunned target) until the ring is answered or runs out
+function bfEvtHold(p){
+  const E = p.bfEvt; if(!E || E.res) return false;
+  const d = p._cmbTgt ? netRes(p._cmbTgt) : null; if(d && d.state===S.STUN){ d.sTimer = Math.min(d.sTimer, 60); d.vx = 0; }
+  p.vx *= 0.6; return true;
+}
+function bfEvtLand(p, def){   // called where a finisher lands: true = it's a Black Flash
+  const E = p.bfEvt; p.bfEvt = null; return !!(E && E.ok);
+}
+function drawBfEvt(p){
+  const E = p.bfEvt; if(!E || E.res) return; const d = p._cmbTgt ? netRes(p._cmbTgt) : null; if(!d) return;
+  const k = Math.min(1, E.t/BF_EVT_MS), cx = d.x+PW/2, cy = d.y+PH/2, inner = 16, r = inner + (1 - k/BF_EVT_AT)*60;
+  ctx.save(); ctx.lineWidth = 3; ctx.strokeStyle = '#ff2a2a'; ctx.beginPath(); ctx.arc(cx, cy, Math.max(3, r), 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = '#ff4a4a'; ctx.font = "700 11px 'Rajdhani',sans-serif"; ctx.textAlign = 'center'; ctx.fillText(`BLACK FLASH? [${keyLbl(p,'atk')}]`, cx, d.y - 30);
+  ctx.restore();
+}
 const OL_KINDS = {
   j1:    {st:70,  act:90,  rec:150, dmg:2, r:78,  name:'Jab'},
   j2:    {st:70,  act:90,  rec:160, dmg:3, r:80,  name:'Cross'},
@@ -13961,6 +14012,36 @@ function olHit(owner, def, dmg, o){
 function olShot(owner, s){ s.owner = owner; s.t = 0; s.hits = {}; olShots.push(s); return s; }
 
 // ── Anti-domain techniques (ATTACK + F) ──
+// Anti-domain (Oct 17): one function for both rule sets, plus a big on-screen prompt whenever it matters
+function enemyDomainNear(pl){ const o = pl===p1 ? p2 : pl===p2 ? p1 : null; return !!((activeDomain && activeDomain.owner!==pl) || (o && o.state===S.DOMAIN)); }
+function adCast(pl, domStunned){
+  const AD = OL_AD[pl.type]; if(!AD) return false;
+  if(!pl.varCd) pl.varCd = {1:0,2:0,3:0,4:0};
+  if(AD.amp && pl.adAmp && pl.adT>0){ pl.adT = 0; pl.sdT = 0; pl.confiscT = 0; pl.adAmp = false; olTag(pl, 'AMPLIFICATION OFF', '#aaa', 500); }
+  else if(AD.uiui && !uiuis.some(q => q.owner===pl)){ olTag(pl, 'NEEDS UI UI', '#888', 600); }
+  else if(AD.charges && !(pl.sdCharges>0)){ olTag(pl, 'NO SEALED CHARGES LEFT', '#888', 600); }
+  else if(pl.varCd[4]>0){ olTag(pl, `${AD.name.toUpperCase()} ${Math.ceil(pl.varCd[4]/1000)}s`, '#888', 500); }
+  else if(!ceCanPay(pl, CE_AD_COST)){ ceDeny(pl, 'ab1', CE_AD_COST); }
+  else { cePay(pl, CE_AD_COST);
+    const ms = AD.ms || OL.AD_MS; if(AD.charges){ pl.sdCharges--; addSpeech(pl.x+PW/2, pl.y-38, `CHARGE ${AD.charges-pl.sdCharges}/${AD.charges}`, AD.col, 900); } pl.varCd[4] = AD.cd || OL.AD_CD; pl.sdT = ms; pl.adT = ms; pl.adName = AD.name;
+    if(domStunned) pl.ss(S.IDLE);
+    if(AD.amp){ pl.adAmp = true; pl.confiscT = ms; }
+    if(AD.uiui){ pl.uiBoxT = ms; pl.sdT = 0; pl.adT = 0; pl.adName = null; const u = uiuis.find(q => q.owner===pl); if(u){ pl.uiBox = {x:u.x, y:u.y}; addRing(u.x, u.y-60, AD.col, 110); } }
+    addSpeech(pl.x+PW/2, pl.y-20, AD.name.toUpperCase(), AD.col, 1200); addRing(pl.x+PW/2, pl.y+PH, AD.col, 70); addRing(pl.x+PW/2, pl.y+PH/2, AD.col, 120); snd('charge', pl.x); doShake(5); return true; }
+  return false;
+}
+// one-keyboard rules: timers the online pre-step would normally run
+function adTickLocal(pl, dt){ if(olOn()) return; for(const k of ['adT','confiscT']) if(pl[k]>0) pl[k] = Math.max(0, pl[k]-dt); if(pl.type!=='todo' && pl.sdT>0) pl.sdT = Math.max(0, pl.sdT-dt);
+  if(pl.varCd && pl.varCd[4]>0) pl.varCd[4] = Math.max(0, pl.varCd[4]-dt); if(pl.adT<=0 && pl.adName) pl.adName = null; if(pl.adAmp && !(pl.adT>0)) pl.adAmp = false; }
+function drawAdPrompt(pl){
+  const AD = OL_AD[pl.type]; if(!AD || pl.isPuppet || pl.state===S.DEAD || !enemyDomainNear(pl)) return;
+  const cx = pl.x+PW/2, y = pl.y - 46, on = pl.sdT>0 || pl.adT>0 || pl.uiBoxT>0, cd = pl.varCd && pl.varCd[4]>0;
+  const txt = on ? `${AD.name.toUpperCase()} ACTIVE` : cd ? `${AD.name.toUpperCase()} ${Math.ceil(pl.varCd[4]/1000)}s` : `[${keyLbl(pl,'ult')}] ${AD.name.toUpperCase()}`;
+  ctx.save(); ctx.font = "700 12px 'Rajdhani',sans-serif"; ctx.textAlign = 'center'; const w = ctx.measureText(txt).width + 16;
+  const pulse = on || cd ? 0.75 : 0.65 + 0.35*Math.abs(Math.sin(Date.now()*0.008));
+  ctx.globalAlpha = pulse; ctx.fillStyle = 'rgba(10,12,20,0.85)'; ctx.fillRect(cx - w/2, y - 13, w, 18); ctx.strokeStyle = AD.col; ctx.lineWidth = 1.5; ctx.strokeRect(cx - w/2, y - 13, w, 18);
+  ctx.fillStyle = cd && !on ? '#999' : AD.col; ctx.fillText(txt, cx, y); ctx.restore();
+}
 const OL_AD = {
   sukuna:  {name:'Hollow Wicker Basket', col:'#e8d7a0', note:'A Heian-era anti-domain barrier woven around the user. Neutralises sure-hit effects for 5s, but slows you while you hold it.', slow:0.6},
   gojo:    {name:'Falling Blossom Emotion', col:'#9be8ff', note:'Gojo clan anti-domain art: cursed energy coats the body and counters sure-hit attacks for 5s. Also takes 20% off every hit.', dr:0.8},
@@ -14277,7 +14358,7 @@ const CE_KEYS = [['ab1','ab1Key'], ['ab2','ab2Key'], ['ab3','ab3Key'], ['ult','d
 const CE_FOLLOW = {
   gojo:{ab1:p => lapseOrbs.some(o => o.owner===p && o.controllable)},
   choso:{ab2:p => bloodOrbs.some(o => o.owner===p)},
-  yuta:{ab3:p => !!p.yutaCopiedUlt, ult:p => !!(activeDomain && activeDomain.owner===p)},
+  yuta:{ab3:p => !!p.yutaCopiedUlt || p.rikaOnT>0, ult:p => !!(activeDomain && activeDomain.owner===p)},   // Rika out: R switches her mode (free)
   mechamaru:{ab3:p => !!(puppet && puppet.owner===p && puppet.state!==S.DEAD)},
   meimei:{ab3:p => uiuis.some(q => q.owner===p), ult:p => crows.some(c => c.owner===p)},
   hanami:{ult:p => p.rampT>0},
@@ -14331,21 +14412,24 @@ function ceVarCostOld(p, n){ const mx = p.ceMax || (CE_PROFILE[p.type]||[100])[0
 // melee moves (punches, sword / axe / hammer swings) stay free
 const CE_MELEE = {yuji:{ab2:1}, yuta:{ab1:1, ab2:1}, todo:{ab1:1}, higuruma:{ab1:1}, meimei:{ab1:1, ab2:1}, naoya:{ab2:1}};
 const CE_LIGHT_MIN = 3, CE_LIGHT_MAX = 8, CE_WEAPON = 5;
+// CE rework (Oct 17): every move that's a cursed technique costs cursed energy — abilities, supers AND ultimates / domains.
+// Pure physical moves (CE_MELEE) stay free. Moves that already spend CE their own way (CE_OWN) aren't charged twice.
+const CE_DEFAULT_LIGHT = 5, CE_SUPER_FRAC = 0.12, CE_SUPER_MIN = 12, CE_SUPER_MAX = 35, CE_DOM_FRAC = 0.4, CE_ULT_FRAC = 0.25;
+const CE_OWN = {ryu:{ab3:1}, yuki:{ab3:1}, yuta:{ab2:1}};
 function ceNeed(p, slot){
   if(ceInfinite(p)) return 0;
-  if(slot==='ab1' || slot==='ab2' || slot==='ab3'){
-    const t = p.baseType ? p.type : p.type;
+  const t = p.type, pool = p.ceMax || (CE_PROFILE[ceProfKey(p)]||[100])[0];
+  if(CE_OWN[t] && CE_OWN[t][slot]) return 0;
+  if(slot==='ab1' || slot==='ab2'){
     if(CE_MELEE[t] && CE_MELEE[t][slot]) return 0;
-    const cs = CE_SLOTS[t] && CE_SLOTS[t][slot]; if(!cs) return 0;          // supers that charge from damage stay free
     if(slot==='ab2' && t==='todo' && p.todoNoCdT>0) return 0;
-    let ms = 0; try{ ms = eval(cs[1]); }catch(e){}
+    const cs = CE_SLOTS[t] && CE_SLOTS[t][slot];
+    let ms = 5000; if(cs){ try{ ms = eval(cs[1]); }catch(e){} } else return Math.round(CE_DEFAULT_LIGHT * ceCostMult(p));
     return Math.round(Math.max(CE_LIGHT_MIN, Math.min(CE_LIGHT_MAX, ms/1000)) * ceCostMult(p));
   }
-  return 0;   // ultimates run on the ultimate bar
-  if(ceInfinite(p)) return 0;
-  if(slot==='ab1' || slot==='ab2'){ if(slot==='ab2' && p.type==='todo' && p.todoNoCdT>0) return 0; return Math.round(ceBaseCost(p.type, slot)*ceCostMult(p)); }
-  if(slot==='ab3') return p.ceMax*CE_SPECIAL;
-  return CE_DOMAIN.has(p.type) ? p.ceMax : p.ceMax*CE_ULT;
+  if(slot==='ab3') return Math.round(Math.max(CE_SUPER_MIN, Math.min(CE_SUPER_MAX, pool*CE_SUPER_FRAC)) * ceCostMult(p));
+  if(slot==='ult'){ if(t==='naoya') return 0; return Math.round(pool * (CE_DOMAIN.has(t) ? CE_DOM_FRAC : CE_ULT_FRAC) * ceCostMult(p)); }
+  return 0;
 }
 function ceSpend(p, slot){
   { const need = ceNeed(p, slot); if(need > 0) cePay(p, need); }
@@ -14398,7 +14482,7 @@ Player.prototype._cePre = function(dt){
       if(this.varMode && (s==='ab1' || s==='ab2')) continue;      // those are Maximum Output moves now
       const k = this[kf]; if(!keys[k] && !rel[s]) continue;
       if(!basic || ceFollow(this, s)) continue;                                   // follow-up inputs are free
-      if(s==='ult' && atkHeld && ol && OL_AD[this.type]) continue;                // anti-domain technique (paid in _olPre)
+      if(s==='ult' && OL_AD[this.type] && ((atkHeld && ol) || enemyDomainNear(this))) continue;   // anti-domain technique (paid when cast)
       const need = ceNeed(this, s);
       if(!ceCanPay(this, need)){ if(keys[k]) mask(k); if(press[s]) ceDeny(this, s, need); }
       else pay[s] = true;
@@ -14483,7 +14567,7 @@ function drawCeHud(pl, x, flip){
   }
   // domain / ultimate bar: say when it's the CE (not the hit charge) that's missing
   if(pl.type!=='naoya' && !(activeDomain && activeDomain.owner===pl) && !ceInfinite(pl) && !(pl._vow && (pl._vow('sacrifice') || pl._vow('heavenly'))) && pl.ce + 1e-6 < ceNeed(pl, 'ult') && !ceFollow(pl, 'ult')){
-    const domY = abY+30, need = CE_DOMAIN.has(pl.type) ? 'FULL' : '75%';
+    const domY = abY+30, need = CE_DOMAIN.has(pl.type) ? '40%' : '25%';
     ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillStyle = '#8fc4ff';
     ctx.fillText(`NEEDS ${need} CE`, flip ? bx+5 : bx+bw-5, domY+10);
   }
@@ -14571,23 +14655,10 @@ Player.prototype._olPre = function(dt, other, e1, e2, e3, eD, blocked){
   // anti-domain techniques can be cast even while an enemy domain has you stunned
   const domStunned = this.state===S.STUN && activeDomain && activeDomain.owner!==this;
   const V = OL_VARS[this.type] || {};
-  // anti-domain technique: hold ATTACK + F (costs a little CE)
-  if(keys[c.atk] && eD && ((canVar && !blocked) || domStunned)){
-    const AD = OL_AD[this.type];
-    if(AD){
-      if(AD.amp && this.adAmp && this.adT>0){ this.adT = 0; this.sdT = 0; this.confiscT = 0; this.adAmp = false; olTag(this, 'AMPLIFICATION OFF', '#aaa', 500); }
-      else if(AD.uiui && !uiuis.some(q => q.owner===this)){ olTag(this, 'NEEDS UI UI', '#888', 600); }
-      else if(AD.charges && !(this.sdCharges>0)){ olTag(this, 'NO SEALED CHARGES LEFT', '#888', 600); }
-      else if(this.varCd[4]>0){ olTag(this, `${AD.name.toUpperCase()} ${Math.ceil(this.varCd[4]/1000)}s`, '#888', 500); }
-      else if(!ceCanPay(this, CE_AD_COST)){ ceDeny(this, 'ab1', CE_AD_COST); }
-      else { cePay(this, CE_AD_COST);
-        const ms = AD.ms || OL.AD_MS; if(AD.charges){ this.sdCharges--; addSpeech(this.x+PW/2, this.y-38, `CHARGE ${AD.charges-this.sdCharges}/${AD.charges}`, AD.col, 900); } this.varCd[4] = AD.cd || OL.AD_CD; this.sdT = ms; this.adT = ms; this.adName = AD.name; this.adCol = AD.col;
-        if(domStunned) this.ss(S.IDLE);
-        if(AD.amp){ this.adAmp = true; this.confiscT = ms; }
-        if(AD.uiui){ this.uiBoxT = ms; this.sdT = 0; this.adT = 0; this.adName = null; const u = uiuis.find(q => q.owner===this); if(u){ this.uiBox = {x:u.x, y:u.y}; addRing(u.x, u.y-60, AD.col, 110); } }
-        addSpeech(this.x+PW/2, this.y-20, AD.name.toUpperCase(), AD.col, 1200); addRing(this.x+PW/2, this.y+PH, AD.col, 70); snd('charge', this.x); }
-      this._ceHandled = true;
-    }
+  // anti-domain technique: hold ATTACK + F — or (Oct 17) just F while an enemy domain is up / being cast and you can't clash
+  const adAuto = eD && OL_AD[this.type] && enemyDomainNear(this) && !canClash(this) && !(this.domainCharge>=DOMAIN_CHARGE_REQ && !activeDomain);
+  if((keys[c.atk] && eD || adAuto) && ((canVar && !blocked) || domStunned || adAuto)){
+    if(OL_AD[this.type]){ adCast(this, domStunned); this._ceHandled = true; }
     eD = false;
   }
   // variants: toggle variant mode, then ability 1 / 2 fire the variants (twice the CE of the normal move)
@@ -14646,7 +14717,8 @@ Player.prototype._olPress = function(){
   else kind = (chain===0 && dn) ? 'sweep' : (chain===0 && up) ? 'upper' : chain===0 ? 'j1' : 'j2';
   this.oaChain = chain + 1;
   this.ss(S.ATCK, 99999); this.oaKind = kind; this.oaPerfect = perfect;
-  this.atkPhase = 0; this.atkTimer = 0; this.atkHit = false; this.atkAnim = 0; this._wasFinisher = false;
+  this.atkPhase = 0; this.atkTimer = 0; this.atkHit = false; this.atkAnim = 0; this._wasFinisher = false; this.bfEvt = null;
+  if(OL_KINDS[kind].fin) bfEvtRoll(this);
   if(!air && (kind==='j1' || kind==='sweep')) this.vx *= 0.3;
   if(air && ((this.airStallUsed||0) < AIR_STALL_MAX || terClock - (this.oaHitAt||-1e9) < 500)) this.vy = Math.min(this.vy, 0.5);
   if(perfect) snd('tick', this.x);
@@ -14688,10 +14760,8 @@ Player.prototype._olLandHit = function(def){
   if(this.atkHit) return; this.atkHit = true; this.comboTimer = 0; this._cmbTgt = netRef(def); this._cmbHitT = terClock;
   const K = OL_KINDS[this.oaKind], f = this.facing, mx = def.x+PW/2, my = def.y+PH/2;
   let dmg = K.dmg, tag = null;
-  if(this.oaPerfect){
-    if(K.fin && BF_TYPES.includes(this.type)){ dmg = Math.round(dmg*2.5); tag = 'BLACK FLASH'; ceBlackFlash(this); }
-    else { dmg = Math.round(dmg*1.5 + 0.4); tag = 'CRITICAL'; }
-  }
+  if(K.fin && bfEvtLand(this, def)){ dmg = Math.round(dmg*2.5); tag = 'BLACK FLASH'; ceBlackFlash(this); }
+  else if(this.oaPerfect){ dmg = Math.round(dmg*1.5 + 0.4); tag = 'CRITICAL'; }
   this.oaHitAt = terClock;
   if(def.state===S.CLEAVE){ def.cleaveArm = 0; def.cleaveCooldown = 0; }
   if(def.state===S.FUGA) def.fugaArm = 0;
@@ -14736,7 +14806,7 @@ function guardFilter(pl, d, oppM){
   if(!(d>0)) return d;
   const now = terClock;
   pl._lastHitDmg = d; pl._lastHitAt = now;
-  if(oppM && oppM!==pl && pl.eva!==undefined) pl.eva = Math.min(EVA_MAX, pl.eva + d*EVA_PER_DMG);
+  if(oppM && oppM!==pl && pl.eva!==undefined) pl.eva = Math.min(EVA_MAX, pl.eva + d*EVA_COMBO_DMG);
   pl.lastCombatT = now; if(oppM) oppM.lastCombatT = now;
   if(pl._rawDmg) return d;
   if(pl.type==='takaba' && !pl.isPuppet){
@@ -17695,7 +17765,7 @@ function drawCombatGuide(pl, x, y, w){
     yl = guideBlock('BASIC STRING', kfill(pl, '{atk} ×3 = Jab → Cross → Finisher. Hold nothing for a Heavy Blow (knockback), {jump} for a LAUNCHER (they float — jump after them for an air combo), or {down} for a SWEEP. {down} + {atk} on its own is a quick sweep.'), x, yl, colW);
     yl = guideBlock('AIR COMBOS', kfill(pl, '{atk} ×3 in the air keeps you both floating. {down} + {atk} in the air is a METEOR SPIKE that slams them into the floor.'), x, yl, colW);
     yl = guideBlock('PERFECT TIMING', 'After every hit a ring closes in on your fist. Press again as it meets the inner circle (about 0.15–0.25s after impact) for a PERFECT link: +50% damage. Press before the hit lands and it\'s TOO EARLY — the combo drops and you\'re locked out for a moment. Wait more than ~0.5s and the string resets.', x, yl, colW);
-    yl = guideBlock('BLACK FLASH', BF_TYPES.includes(pl.type) ? 'You can Black Flash! A PERFECT finisher becomes a Black Flash: ×2.5 damage and a chunk of domain charge.' : 'Only Yuji, Todo and Mahito turn a PERFECT finisher into a Black Flash (×2.5). For you it\'s a CRITICAL (+50%).', x, yl, colW, BF_TYPES.includes(pl.type) ? '#ff5a5a' : '#ffe066');
+    yl = guideBlock('BLACK FLASH', 'Sometimes a red ring pops up on them when you throw a finisher. Press attack as it meets the inner circle: the finisher lands as a BLACK FLASH (×2.5 damage, CE refill, domain charge).' + (BF_TYPES.includes(pl.type) ? ' You\'re a natural: the ring shows up more often.' : '') + ' A PERFECT-timed finisher is a CRITICAL (+50%).', x, yl, colW, BF_TYPES.includes(pl.type) ? '#ff5a5a' : '#ffe066');
     yl = guideBlock('COMBO SCALING', 'From the 3rd hit on, damage drops (×0.9, ×0.8 … down to ×0.5) and stuns get shorter — so no infinite combos. The hit counter shows on your side of the screen.', x, yl, colW);
     yr = guideBlock('BLOCK', kfill(pl, 'Hold {block}: you take only 20% chip damage but your GUARD bar (under your health) drains. If it empties: GUARD BREAK, stunned for 1s. Blocking does nothing against an enemy domain\'s sure-hit.'), xr, yr, colW);
     yr = guideBlock('PERFECT BLOCK', kfill(pl, 'Tap {block} just as a hit lands: no damage, the attacker is staggered for 0.65s, and you gain guard and domain charge. Spamming it doesn\'t work — there\'s a short lockout between taps.'), xr, yr, colW);
