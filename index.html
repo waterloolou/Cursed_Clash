@@ -1081,7 +1081,7 @@ const UC_FIRE            = 420;     // blast duration (visual)
 const UC_RANGE           = 420;     // long blast that tears straight through walls
 const UC_DMG             = 38;
 const UC_COOLDOWN        = 8500;
-const MUC_CHARGE = 420, MUC_REC = 380, MUC_RANGE = 260, MUC_DMG = 16, MUC_CD = 6500;   // mini Ultra Cannon (no mech needed)
+const MUC_CHARGE = 420, MUC_REC = 380, MUC_RANGE = 260, MUC_DMG = 18, MUC_CD = 6500;   // mini Ultra Cannon (no mech needed)
 const MP_DUR             = 340;     // mech punch (attack key)
 const MP_DMG             = 7;
 const MP_COOLDOWN        = 650;
@@ -1115,7 +1115,7 @@ const YUJI_BF_DMG    = 28, YUJI_BF_MISS_DMG = 12;
 //    A combo meter (0-100) that only goes up from his normal punches; Maximum Output (Manji Kick counter, The Zone) spends it.
 //    Ultimate: under 75% meter → "Enchain", Sukuna takes over; 75%+ → Modulo.
 const YUJI_DIV_CD = 5000, DIV_REACH = 80, DIV_DMG = 6, DIV_BF_DMG = 18, DIV_MISS_DMG = 5, DIV_RING_MS = 900, DIV_HIT_AT = 0.75, DIV_WIN = 85, DIV_WIN_ZONE = 170;
-const YUJI_CM_GAIN = 1.25;                       // combo meter per point of normal-punch damage
+const YUJI_CM_GAIN = 1.9;   // balance Oct 18: 1.25 → 1.9                       // combo meter per point of normal-punch damage
 const MANJI_BASE = 450, MANJI_PER = 900, MANJI_COST = 10, MANJI_DMG = 10, MANJI_DMG_PER = 12;
 const ZONE_COST = 20, ZONE_BASE = 5000, ZONE_PER = 10000, ZONE_CD_SPEED = 0.75;
 const YUJI_SUK_MS = 15000, YUJI_MOD_MS = 60000, YUJI_ENCHAIN = 75, MODULO_DMG = 1.1, MODULO_SPD = 1.2;
@@ -2023,13 +2023,13 @@ const HIGU_LONG_W = 220, HIGU_LONG_A = 170, HIGU_LONG_R = 260;
 const HIGU_BIG_CD    = 6500, HIGU_BIG_DMG = 23;
 const HIGU_BIG_W = 360, HIGU_BIG_A = 150, HIGU_BIG_R = 360, HIGU_BIG_HEAD = 4.2;
 const HIGU_THROW_REQ = 40;      // damage dealt to unlock the gavel throw
-const HIGU_THROW_SPD = 17, HIGU_THROW_DMG = 8, HIGU_DASH_DMG = 16, HIGU_DASH_SPD = 24;
+const HIGU_THROW_SPD = 17, HIGU_THROW_DMG = 10, HIGU_DASH_DMG = 16, HIGU_DASH_SPD = 24;
 const HIGU_SWORD_DUR = 20000;
 // Hammer Size (special) toggles NORMAL → LONG → LARGE. Hammer Hit (1) changes with the size; Gavel Throw (2) is a regular move.
 const HIGU_SIZES = ['normal', 'long', 'large'], HIGU_SIZE_NAME = {normal:'NORMAL', long:'LONG', large:'LARGE'};
 const HIGU_COMBO_CD = 3500, HIGU_COMBO_DMG = [4, 4, 7], HIGU_THROW_CD = 6000, HIGU_HANDLE_DMG = 6;
-const HIGU_IDLE = {normal:[22, 1], long:[46, 1.15], large:[30, 2.3]};   // Executioner's Sword after a GUILTY verdict
-const COURT_INTRO = 1700, COURT_TRIAL = 5500, COURT_VERDICT = 2300, COURT_STEPS = 6;
+const HIGU_IDLE = {normal:[26, 1], long:[52, 1.15], large:[36, 2.3]};   // balance Oct 18: stronger guilty verdict   // Executioner's Sword after a GUILTY verdict
+const COURT_INTRO = 1700, COURT_TRIAL = 4000, COURT_VERDICT = 2300, COURT_STEPS = 6;
 const COURT_ACTS = ['jump','down','left','right','atk','ab1','ab2'];
 const gavelThrows = [];
 // Every fighter moves a little differently
@@ -2592,7 +2592,7 @@ const HAK_WALL_MS = 3500, HAK_FRAME_MS = 2600, HAK_WALL_W = 56, HAK_WALL_H = 62;
 // jackpot moveset (replaces 1 and 2 while the fever lasts) and the pachinko bonus (+1 ball per jackpot, up to +6)
 const HAK_J1_CD = 2200, HAK_J1_HITS = 5, HAK_J1_DMG = 3, HAK_J1_FIN = 7, HAK_J2_CD = 3800, HAK_J2_N = 12, HAK_J2_DMG = 4, HAK_BALL_BONUS_MAX = 6;
 const HAK_PUNCH_REQ = 40, HAK_PUNCH_DMG = 35, HAK_PUNCH_WIND = 320, HAK_PUNCH_TOTAL = 700;
-const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.2, GAMBLE_ODDS_UP = 0.08;   // each miss raises the next roll's odds (Increased Probability)
+const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.15, GAMBLE_ODDS_UP = 0.08;   // each miss raises the next roll's odds (Increased Probability)
 const JACKPOT_CONT_ODDS = 0.5, JACKPOT_CONT_DUR = 15000, JACKPOT_CONT_MAX = 3;   // Continuation: when a jackpot runs out, the reels spin again
 const JACKPOT_DUR = 30000, JACKPOT_LEAPS = 2, JACKPOT_LEAP_DMG = 45, JACKPOT_LEAP_R = 170;
 const pachinkoBalls = [];   // {owner, x, y, vx, vy, bounces, life, hits:{}}
@@ -3751,6 +3751,24 @@ function drawHanamiBody(pl){
 // ═══════════════════════════════════════════════════════════════════
 // MAHITO — Idle Transfiguration · Soul Isomer · Distorted Killing · Self-Embodiment of Perfection
 // ═══════════════════════════════════════════════════════════════════
+
+// ── Balance pass (Oct 18): per-fighter damage multipliers, tuned from hard-CPU tournaments ──
+//  out: everything this fighter deals · in: everything this fighter takes
+//  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
+//  i.e. hits that land while the attacker is not in a move or a domain
+const BAL = {
+  out:    {},
+  in:     {},
+  lingOut:{megumi:0.85},
+  lingIn: {todo:0.85},
+};
+const BAL_LING_ST = new Set(['idle','walk','air','block','dash','stun','ragd','slam']);
+function balMul(def, att){
+  const at = att.baseType || att.type, dt = def.baseType || def.type;
+  let m = (BAL.out[at] || 1) * (BAL.in[dt] || 1);
+  if(BAL_LING_ST.has(att.state) && !(activeDomain && activeDomain.owner===att)) m *= (BAL.lingOut[at] || 1) * (BAL.lingIn[dt] || 1);
+  return m;
+}
 const MAHI_PALM_CD = 7000, PALM_WIND = 180, PALM_REC = 260, PALM_REACH = 72, PALM_DMG = 12, RESHAPE_MS = 5000;
 const MAHI_ISO_CD = 8000, ISO_SPD = 4.2, ISO_LIFE = 4200, ISO_R = 72, ISO_DMG = 26;   // Oct 17: 16 → 26 (Polymorphic Soul Isomer hits hard, dies to anything)
 const MAHI_FORM_REQ = 14, MAHI_FORM_MS = 8000;   // MAHI_FORM_REQ = the charge for the Self-Transfiguration special
@@ -3888,8 +3906,8 @@ function tickMahito(dt){
 const SOUL_CE_K = 0.5, MAHI_HP_MUL = [0.6, 0.45, 0.32, 0.25], MAHI_MELEE_SOUL = 2.5, MAHI_SOUL_KILL_TH = 6, MAHI_TH_MAX = 16;
 const DEP_NAMES = ['3 HUMANS', 'BODY REPEL', 'SOUL ISOMER'], DEP_COST = [1, 2, 2], DEP_CD = [5000, 9000, 8000];
 const MINI_N = 3, MINI_SPD = 3.6, MINI_DMG = 3, MINI_EVERY = 700, MINI_LIFE = 7000;
-const KISS_WIND = 280, KISS_RANGE = 520, KISS_SPD = 34, KISS_DMG = 30, KISS_CD = 7000;
-const CURSE_CD = 6000, CURSE_DASH_MS = 230, CURSE_SPD = 22, CURSE_HP = 6, CURSE_SOUL = 10, CURSE_BF_DMG = 24, CURSE_BF_SOUL = 12, CURSE_RING_MS = 900, CURSE_WIN = 90;
+const KISS_WIND = 280, KISS_RANGE = 520, KISS_SPD = 34, KISS_DMG = 18, KISS_CD = 12000;   // balance Oct 18: 30 → 18 (now scaled by his normal damage reduction), 7s → 12s
+const CURSE_CD = 6000, CURSE_DASH_MS = 230, CURSE_SPD = 22, CURSE_HP = 6, CURSE_SOUL = 10, CURSE_BF_DMG = 18, CURSE_BF_SOUL = 12, CURSE_RING_MS = 900, CURSE_WIN = 90;
 const MAHI_IDLE_REQ = 40, MAHI_IDLE_SOUL = 50, MAHI_IDLE_REACH = 80;
 const SPIKE_COST = 2, SPIKE_MS = 8000, SPIKE_W = 26, SPIKE_DMG = 6, SPIKE_EVERY = 500, OMNI_COST = 4, OMNI_R = 230, OMNI_DMG = 18;
 const MAHI_ST_SPD = 1.25, MAHI_ST_JMP = 1.2, MAHI_ST_DRAIN = 6;
@@ -3987,7 +4005,7 @@ function tickMahiRework(dt){
     if(!L.hit && L.len < KISS_RANGE){ L.len = Math.min(KISS_RANGE, L.len + KISS_SPD*f);
       const tipX = L.x + L.dir*L.len;
       for(const def of olFoes(L.owner)){ const b = def.bodyBox(); if(tipX > b.x-6 && tipX < b.x+b.w+6 && L.y > b.y-10 && L.y < b.y+b.h+10){ L.hit = true;
-          if(olHit(L.owner, def, KISS_DMG / mahiHpMul(L.owner), {ubk:true, rag:[12,-7,RAGD_MS], dir:L.dir, col:'#ff6a9a'}) && def._guardStamp!==terClock){ addSpeech(def.x+PW/2, def.y-28, 'MWAH', '#ff6a9a', 900); doShake(12); snd('heavy', def.x); }
+          if(olHit(L.owner, def, KISS_DMG, {ubk:true, rag:[12,-7,RAGD_MS], dir:L.dir, col:'#ff6a9a'}) && def._guardStamp!==terClock){ addSpeech(def.x+PW/2, def.y-28, 'MWAH', '#ff6a9a', 900); doShake(12); snd('heavy', def.x); }
           break; } }
       if(terSolid(tipX-4, L.y-4, 8, 8)) L.hit = true; }
     if(L.t > 900 || L.owner.state===S.DEAD) mahiLips.splice(i,1);
@@ -4018,6 +4036,7 @@ function drawCurseRing(pl){
 }
 // Self-Embodiment of Perfection: hands close in, and every touch reshapes the soul
 // Self-Embodiment of Perfection (Oct 17): under 50% soul they explode on the spot; otherwise one touch from Mahito kills
+const MAHI_DOM_BURST = 0.3;   // balance Oct 18: explode on the spot under 30% soul (was 50%)
 function tickSoul(d, dt){
   d.soulRise = Math.min(1, (d.soulRise||0) + dt/1200);
   const def = d.owner===p1 ? p2 : p1, own = d.owner;
@@ -4025,7 +4044,7 @@ function tickSoul(d, dt){
   if(def.sdT>0) return;   // anti-domain holds it off
   soulInit(def);
   if(soulImmune(def)){ d.touchT = (d.touchT||0) + dt; if(d.touchT >= SOUL_TICK){ d.touchT = 0; if(def.hittable){ def.hp = Math.max(0, def.hp-SOUL_DMG); addDmg(def.x+PW/2, def.y-14, SOUL_DMG, '#c9a0ff'); if(def.hp<=0){ def._initRd(0,-3,.05); def.ss(S.DEAD); } } } return; }
-  if(def.soul < def.soulMax*0.5){ if(!d.boomed){ d.boomed = true; addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 60, 12); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 160); doShake(22); snd('boom', def.x);
+  if(def.soul < def.soulMax*MAHI_DOM_BURST){ if(!d.boomed){ d.boomed = true; addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 60, 12); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 160); doShake(22); snd('boom', def.x);
       def._soulKill = true; def._rawDmg = true; def.hp = 0; def._rawDmg = false; def._initRd(0,-6,.1); def.ss(S.DEAD); showTxt('SOUL BURST', 1200); sayFor(own, 'Your soul has a new shape now.'); } return; }
   const ob = own.bodyBox(), db = def.bodyBox();
   if(ob.x < db.x+db.w+6 && ob.x+ob.w > db.x-6 && ob.y < db.y+db.h && ob.y+ob.h > db.y){
@@ -6594,7 +6613,7 @@ function yutaRandomCopy(p){
   addSpeech(p.x+PW/2, p.y-36, `PUNCH → ${copySlotName(type, slot).toUpperCase()} [${keyLbl(p,'atk')}]`, '#ffccee', 1200);
 }    // 4 katana charges to fill Jacob's Ladder
 const JACOB_LADDER_DMG_FRAC = 0.8; // 4/5 of opponent max HP
-const DOMAIN_SLASH_DMG  = 5;    // damage per second (applied continuously)
+const DOMAIN_SLASH_DMG  = 4;   // balance Oct 18: 5 → 4    // damage per second (applied continuously)
 const DOMAIN_SLASH_INT  = 100;  // ms between slash mark spawns during domain
 
 // Active domain state (global — only one can be active)
@@ -8218,7 +8237,7 @@ class Player {
     if(this.mechUltPhase===1 || this.mechUltPhase===2) d = 0;
     else if(this.mechUltPhase===3 && !this._mechSelfKill) d *= MECH_ULT_ARMOR;
     { const oppM = this===p1 ? p2 : this===p2 ? p1 : null;
-      if(v > 0 && !this._mechSelfKill){ d *= this._dmgIn(); if(oppM) d *= oppM._dmgOut(); }
+      if(v > 0 && !this._mechSelfKill){ d *= this._dmgIn(); if(oppM){ d *= oppM._dmgOut(); d *= balMul(this, oppM); } }
       // Naoya's combos fall off: past 25 damage in one string his hits do half, past 40 a fifth (stops wall loops)
       if(d > 0 && oppM && isNaoya(oppM) && !this._rawDmg){
         if(terClock - (this.naoCmbT||-1e9) > 1400) this.naoCmb = 0;
@@ -9623,7 +9642,7 @@ class Player {
 
   // ── Divergent Fist: a punch; if it lands, a ring closes on them — press ability 1 as it meets the inner ring for a Black Flash ──
   _startDivFist(){
-    this.ss(S.YUJIDIV, 3000); this.divPhase = 0; this.divT = 0; this.divRef = null; this.divKeyDown = true; this.vx = this.facing*7;
+    this.ss(S.YUJIDIV, 3000); this.divPhase = 0; this.divT = 0; this.divRef = null; this.divKeyDown = true; this.vx = this.facing*11;
     this.yujiDivCd = YUJI_DIV_CD; snd('swing', this.x); sayFor(this, 'Divergent Fist!');
   }
   _tickDivFist(dt){
@@ -10200,7 +10219,7 @@ class Player {
         if(Math.sqrt(dx*dx+dy*dy) < 36){
           // Caught!
           this.drillTarget = other;
-          const dmg = 22;
+          const dmg = 25;   // balance Oct 18: 22 → 25
           other.hp = Math.max(0, other.hp - dmg);
           other.flash = 300;
           addDmg(ex, other.y-14, dmg, '#aaaaaa');
@@ -14685,7 +14704,7 @@ const CE_LIGHT_MIN = 3, CE_LIGHT_MAX = 8, CE_WEAPON = 5;
 // Pure physical moves (CE_MELEE) stay free. Moves that already spend CE their own way (CE_OWN) aren't charged twice.
 const CE_DEFAULT_LIGHT = 5, CE_SUPER_FRAC = 0.12, CE_SUPER_MIN = 12, CE_SUPER_MAX = 35, CE_DOM_FRAC = 0.4, CE_ULT_FRAC = 0.25;
 const CE_OWN = {ryu:{ab3:1}, yuki:{ab3:1}, yuta:{ab2:1}};
-const CE_TYPE_MULT = {ryu:1.6};   // Oct 18: Ryu's moves cost 60% more cursed energy
+const CE_TYPE_MULT = {ryu:1.3};   // balance Oct 18: 1.6 → 1.3   // Oct 18: Ryu's moves cost 60% more cursed energy
 function ceNeed(p, slot){
   if(ceInfinite(p)) return 0;
   const t = p.type, pool = p.ceMax || (CE_PROFILE[ceProfKey(p)]||[100])[0];
@@ -15760,7 +15779,7 @@ function drawTruck(tr){
 //  4th life → Vengeful Cursed Spirit: Rocket · Frame Field · Time Cell Moon Palace
 //  Passive: speed builds while he runs; every 3rd hit of a quick string freezes the foe in a frame.
 // ═══════════════════════════════════════════════════════════════════
-const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 0.9, NAO_CURSE_MS = 60000;   // the vengeful curse only lasts a minute
+const NAO_HP = 75, NAO_LIVES = 4, NAO_DMG_OUT = 1.0, NAO_CURSE_MS = 60000;   // the vengeful curse only lasts a minute
 const NAO_DASH_CD = 5000, NAO_DASH_SPD = 21, NAO_DASH_MS = 420, NAO_DASH_DMG = 14;
 const NAO_COMBO_CD = 6000, NAO_COMBO_MS = 820, NAO_COMBO_HITS = [90, 200, 310, 420], NAO_COMBO_FIN = 600, NAO_COMBO_JAB = 3, NAO_COMBO_KICK = 9;
 const NAO_SPECIAL_REQ = 40, NAO_GAME_RANGE = 560, NAO_FRAME_MS = 3000, NAO_ATK_FRAME_MS = 2200, NAO_SPECIAL_FRAME_MS = 5000, NAO_FRAME_IMMUNE = 4000, NAO_FRAME_DMG_IN = 1.14;
@@ -17482,7 +17501,7 @@ const RIKA_NPC_MS = 45000, RIKA_HP = 75, RIKA_SLAM_DMG = 10, RIKA_SLAM_CD = 3200
 const RIKA_SUP_GRAB_MS = 2500, RIKA_SUP_GRAB_CD = 9000, RIKA_JUMP_CD = 3000, RIKA_PUSH_CD = 700, RIKA_LEASH = 900;
 const RIKA_MODE_NAMES = {off:'OFFENSIVE', def:'DEFENSIVE', sup:'SUPPORT'}, RIKA_MODE_COL = {off:'#ff6a8a', def:'#8ac8ff', sup:'#9fe0a0'};
 const METAL_RANGE = 86, METAL_CHOKE_MS = 2000, METAL_THROW_DMG = 10, METAL_PARRY_MS = 450, YUTA_METAL_CD = 6000;
-const YUTA_DISCH_WIND = 260, YUTA_DISCH_R = 150, YUTA_DISCH_DMG = 15, YUTA_DISCH_CE = 25;   // Cursed Energy Discharge (Oct 17, replaces Metal Arm)
+const YUTA_DISCH_WIND = 260, YUTA_DISCH_R = 150, YUTA_DISCH_DMG = 12, YUTA_DISCH_CE = 25;   // Cursed Energy Discharge (Oct 17, replaces Metal Arm)
 function rikaSummon(p){
   p.rikaOnT = RIKA_NPC_MS; p.rk = {x:p.x+PW/2 - p.facing*40, y:p.y-10, hp:RIKA_HP, mode:(p.rk && p.rk.mode) || 'off', slamCd:600, biteCd:0, grabCd:0, jumpCd:0, pushCd:0, hitT:0, act:null, actT:0};
   addRing(p.x+PW/2, p.y+PH/2, '#cc88ff', 140); addParts(p.x+PW/2, p.y, '#e8e4ec', 30, 7); doShake(14); snd('domain', p.x); showTxt('RIKA', 1200); sayFor(p, 'Come, Rika.');
@@ -18595,14 +18614,14 @@ const CPU_BOT = (function(){
     const m = S.m, me = S.me;
     // swap to send their projectile back at them
     const inc = incoming(S);
-    if(inc && inc.d < 110 && S.ready2 && S.ax < 700){ S.tap('ab2'); return; }
+    if(inc && inc.d < 160 && S.ready2 && S.ax < 700){ S.tap('ab2'); return; }
     if(S.ult >= 1 && S.hittable){ S.tap('ult'); return; }
     if(S.special >= 1 && S.hittable){ S.tap('ab3'); return; }
     if(!me.onGround && S.dy > 40 && S.ax < 60 && S.ready1){ S.tap('ab1'); return; }
     if(S.ax < 110 && S.sameLevel && S.hittable && useMO(S, 1)){ m.feintT = S.t; return; }
     if(S.ready1 && S.ax < 95 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
     // Boogie to drag a far opponent in when they zone us
-    if(S.ready2 && S.ax > 350 && S.ax < 650 && S.t - (m.boogieT || 0) > 6000){ S.tap('ab2'); m.boogieT = S.t; return; }
+    if(S.ready2 && S.ax > 220 && S.ax < 700 && S.t - (m.boogieT || 0) > 2500){ S.tap('ab2'); m.boogieT = S.t; return; }
     brawl(S, 64);
   };
 
@@ -19113,7 +19132,7 @@ function drawTut(){
 
 // Mahito's Evasive (Oct 18): his body bursts into tiny running heads. Pick one (left / right, then attack / jump / dash — or wait) and
 // they all rush to it and he reforms there. Untouchable, and no moves, the whole time.
-const MSPLIT_N = 5, MSPLIT_RUN = 650, MSPLIT_PICK = 1500, MSPLIT_MERGE = 420;
+const MSPLIT_N = 5, MSPLIT_RUN = 450, MSPLIT_PICK = 750, MSPLIT_MERGE = 300;   // balance Oct 18: about 1.2s untouchable (was about 2.5s)
 function mahiSplitStart(pl, opp){
   const cx = pl.x+PW/2, gy = pl.y+PH, heads = [];
   for(let k=0;k<MSPLIT_N;k++){ const v = (k - (MSPLIT_N-1)/2) * 2.6 + (Math.random()-0.5); heads.push({x:cx, y:gy, vx:v || 0.6, ph:Math.random()*6}); }
