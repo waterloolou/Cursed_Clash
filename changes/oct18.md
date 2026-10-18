@@ -32,8 +32,8 @@ Each area is its own commit (listed at the bottom), so any one can be reverted w
 ## Yuta
 - **Every attack can hurt Rika**: any area attack covering her (`rikaAreaHit` inside `olArea`, 6 every 0.3s) and projectiles in every
   mode (Defensive still eats them; other modes they pass through after hitting her). Before: only punches, and projectiles in Defensive.
-- **Copy never takes a super or ultimate**: tiers 10+ → ability 1, 30+ → ability 2 (the 50+ → super tier is gone); katana copies only
-  ability 1 / 2; a copy no longer fills the domain/ultimate bar while active (`domainCharge` skipped in `_yutaStartCopy`).
+- **Copy never takes the F ultimate**: a copy no longer fills the domain/ultimate bar while active (`domainCharge` skipped in
+  `_yutaStartCopy`), so the copied fighter's ultimate can't fire. Tiers unchanged (10+ ability 1, 30+ ability 2, 50+ super).
 
 ## Ryu
 - Every move costs **60% more CE** (`CE_TYPE_MULT.ryu = 1.6`: abilities 6 → 10, Max Output 18 → 29, ultimate 80 → 128) and Output
@@ -54,7 +54,7 @@ Each area is its own commit (listed at the bottom), so any one can be reverted w
 ## Testing
 - Home: screenshots desktop + phone width, panels and keyboard nav, no errors. Tutorial: played through all 14 steps with scripted
   inputs. Character fixes in both rule sets: split (5 heads, untouchable, reforms), soul refill (20 → 150), Spider Web refused on the
-  second press, Ryu costs, Rika takes area damage (75 → 69), Copy tier at a 60 combo = ability 2. Anti-domain kinds vs a real domain
+  second press, Ryu costs, Rika takes area damage (75 → 69), Copy tier at a 60 combo = super (the 50+ tier was briefly removed, then restored). Anti-domain kinds vs a real domain
   (basket drained the timer, blossom dealt 8, circle created, amp on). Fuzz Mahito / Sukuna / Yuta / Ryu vs everyone, both rule sets:
   0 issues.
 - The hard-CPU tournament and balance report come next; balance changes from it are NOT in this update.
