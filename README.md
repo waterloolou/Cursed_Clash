@@ -19,6 +19,7 @@ That's it. Everything is in that one file.
 - **Local 2 player** — two people on one keyboard. *Local matches don't give XP.*
 - **Online** — each player on their own computer. One presses **Host online game** and shares the 5-letter code; the other types it in and presses **Join**. Online matches give XP; levels unlock feats like Six Eyes and Kenjaku, and binding vows.
 - **Normal** (3 lives, the KO'd fighter respawns from the sky) or **Endless** (kill counter).
+- **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
 ## Earlier fighter: Yuki Tsukumo
@@ -31,7 +32,15 @@ Also recent:
 - **Reverse Cursed Technique** is now a shop feat (¥800): regenerate HP for CE when you're out of combat.
 - **Naoya Zen'in** — the fastest fighter, 4 lives, the 24 FPS frame prompt (5s freeze).
 
-## Latest: single player, levels and the Mahito rework (Oct 17)
+## Latest: Random fighter (Oct 18)
+Full list with revert notes in [`changes/oct18.md`](changes/oct18.md).
+- **🎲 Random** is a new tile on the character select screen (the die, after Ryu), in **VS CPU** (for you or the CPU), **local 2 player**, **online** and **training**.
+- Lock it in like a fighter: when both players are locked in, each Random player gets a random fighter, revealed during the **READY TO FIGHT!** countdown.
+- **Banned fighters never come up**, and the Random tile itself can't be banned.
+- Un-locking cancels the roll, so you get a fresh one next time.
+- The roster grid is now 11 tiles wide, so 20 fighters + Random still fit in two rows.
+
+## Earlier: single player, levels and the Mahito rework (Oct 17)
 Full list with old → new values and revert notes in [`changes/oct17.md`](changes/oct17.md).
 - **VS CPU** (Easy / Normal / Hard): a bot that knows every fighter's kit, Black Flash rings and anti-domain included.
 - **Levels + XP replace Yen**: win against the CPU or online to level up; every feat and vow unlocks at a level; **17 achievements**. Old saves keep their unlocks and turn coins into XP.

@@ -380,6 +380,8 @@ canvas {
           <li><b>Normal</b> — 3 lives each, one continuous fight. When someone is KO'd, the winner <b>keeps their health, position and cooldowns</b>; the fallen fighter drops back in from the sky after <b>5 seconds</b> with <b>5 seconds of invincibility</b> (and no fall damage). First to lose all lives loses the match.</li>
           <li><b>Endless</b> — no lives. KOs add to a kill counter and the fighter respawns instantly.</li>
         </ul>
+        <h2>🎲 Random fighter</h2>
+        <p>The last tile on the character select screen is <b>Random</b> (the die). Lock it in like any fighter — in VS CPU (for you or the CPU), local 2 player, online and training. When both players are locked in, the game rolls a fighter for each Random player and shows who came up during the <b>READY TO FIGHT!</b> countdown. <b>Banned fighters never come up.</b> Un-locking cancels the roll, so you get a fresh one next time.</p>
         <h2>Training (solo)</h2>
         <p>Press <b>🧪 Training</b> on the home screen to test any fighter on your own. You use the full online layout (mouse + WASD + Q / E / R / F, block, dash, Maximum Output) and get a target that stands still, can't die, and heals back up 1.5s after you stop hitting it. Pick a map — including the <b>Training Room</b>, a flat floor with distance markers every 100px that only appears here — then your fighter. Training doesn't earn coins.</p>
         <table><tr><th>Key</th><th>Option</th></tr>
@@ -4166,7 +4168,7 @@ const SHOP = {
     ceflow: {name:'Cursed Energy Flow', price:300, lvl:4, desc:'Training pays off: your cursed energy bar refills 35% faster.'},
     kenjaku: {name:'Kenjaku', price:1000, lvl:11, desc:'Press the feat key mid-fight to swap into Kenjaku\'s moveset (Uzumaki, Cursed Spirit, Anti-Gravity, Womb Profusion), and again to swap back.'},
     rct: {name:'Reverse Cursed Technique', price:800, lvl:9, desc:'Turn negative energy positive: after 3s without taking a hit you regenerate 2 HP a second, paid for with cursed energy (4 CE per HP). Any hit stops it.'},
-    bans: {name:'Character Bans', price:20, lvl:2, desc:'Unlocks bans in your games: on the character select screen each player can ban one fighter (feat key on the hovered portrait) — nobody can pick it that match. Works online and on one keyboard.'},
+    bans: {name:'Character Bans', price:20, lvl:2, desc:'Unlocks bans in your games: on the character select screen each player can ban one fighter (feat key on the hovered portrait) — nobody can pick it that match, and Random never rolls it. Works online and on one keyboard.'},
     meguna: {name:'Meguna', price:3000, lvl:15, desc:'Megumi only: unlocks his Maximum Output ultimate. Sukuna takes the body for the rest of that life, with a new moveset: Nue Totality, Agito, World Cutting Slash, Malevolent Shrine, and Mahoraga.'}
   },
   vows: {
@@ -19396,7 +19398,7 @@ function drawMovesOverlay(dt){
 // showing their fighter and a short summary of the kit. Optional portrait pictures come from
 // portraits.js (window.CC_PORTRAITS = {type: 'portraits/file.png'}); without one, the in-game fighter is drawn.
 // ═══════════════════════════════════════════════════════════════════
-const CS_COLS = 10, CS_TW = 82, CS_TH = 72, CS_GAP = 4;
+const CS_COLS = 11, CS_TW = 78, CS_TH = 72, CS_GAP = 4;   // 11 columns (was 10, tiles 82 wide) so 20 fighters + the Random tile still fit in two rows
 const CHAR_ROLE = { sukuna:'Ranged slashes · deadly domain', gojo:'Space control · Infinity', yuji:'Brawler · Black Flash', yuta:'Copycat · Rika',
   mechamaru:'Lasers · puppet · mech', todo:'Brawler · place swaps', choso:'Blood beams · blood pools', higuruma:'Hammer sizes · trial domain',
   hakari:'Gambler · jackpot fever', meimei:'Axe · teleport · crows', jogo:'Zoner · fire & lava', dagon:'Zoner · flood water', hanami:'Zoner · flowers & roots',
@@ -19404,7 +19406,34 @@ const CHAR_ROLE = { sukuna:'Ranged slashes · deadly domain', gojo:'Space contro
   geto:'Curse summoner · swarm', ryu:'Output beams · glass cannon' };
 let charBans = {1:null, 2:null};      // synced: the character type each player has banned (Character Bans unlock)
 function bansEnabled(){ if(isTraining()) return false; const has = s => { const l = loadoutFor(s); return !!(l && l.feats && l.feats.includes('bans')); }; return has(1) || has(2); }
-function isBanned(type){ return charBans[1]===type || charBans[2]===type; }
+function isBanned(type){ return !!type && (charBans[1]===type || charBans[2]===type); }   // !!type: the Random tile (type null) is never banned
+// RANDOM tile: the last tile on the grid (index CHARACTERS.length). A player can lock it in like a fighter; when both players are
+// locked in, csRoll[n] gets a random fighter index for each Random player (banned fighters never come up) and the panel reveals it
+// during the "READY TO FIGHT!" countdown. Un-locking clears the roll. csRoll is synced so online guests see the reveal.
+let csRoll = {1:null, 2:null};
+const csN = () => CHARACTERS.length + 1;               // tiles on the grid: every fighter + Random
+const csIsRand = i => i === CHARACTERS.length;
+const csType = i => (CHARACTERS[i] || {}).type || null; // null for the Random tile
+function csRollFighter(){
+  const pool = CHARACTERS.map((c, i) => i).filter(i => !isBanned(CHARACTERS[i].type));
+  const from = pool.length ? pool : CHARACTERS.map((c, i) => i);
+  return from[Math.floor(Math.random()*from.length)];
+}
+const csPick = n => { const idx = n===1 ? p1CharIdx : p2CharIdx; return csIsRand(idx) ? csRoll[n] : idx; };   // the fighter this player will play (null = not rolled yet)
+// a die: rounded square with pips; face 1-6, tilt in radians
+function drawDie(cx, cy, s, face, tilt){
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(tilt || 0);
+  const r = s*0.18, h = s/2;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.roundRect(-h+3, -h+5, s, s, r); ctx.fill();
+  const g = ctx.createLinearGradient(-h, -h, h, h); g.addColorStop(0, '#fdfbf4'); g.addColorStop(1, '#cfc8b6');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(-h, -h, s, s, r); ctx.fill();
+  ctx.strokeStyle = '#8a8270'; ctx.lineWidth = Math.max(1, s*0.03); ctx.stroke();
+  const P = {1:[[0,0]], 2:[[-1,-1],[1,1]], 3:[[-1,-1],[0,0],[1,1]], 4:[[-1,-1],[1,-1],[-1,1],[1,1]],
+             5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]], 6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]}[face] || [];
+  ctx.fillStyle = face===1 ? '#c8344a' : '#1a1622';
+  for(const [px, py] of P){ ctx.beginPath(); ctx.arc(px*s*0.27, py*s*0.27, s*(face===1 ? 0.12 : 0.085), 0, Math.PI*2); ctx.fill(); }
+  ctx.restore();
+}
 const _csPrev = {};
 function csPreview(i){
   const ch = CHARACTERS[i]; if(!ch) return null;
@@ -19431,7 +19460,7 @@ function csDrawFighter(i, x, y, w, h, sc, bust){
   }
   ctx.restore();
 }
-function csTileXY(i){ const r = Math.floor(i/CS_COLS), c = i % CS_COLS, n = Math.min(CS_COLS, CHARACTERS.length - r*CS_COLS), rowW = n*(CS_TW+CS_GAP) - CS_GAP;
+function csTileXY(i){ const r = Math.floor(i/CS_COLS), c = i % CS_COLS, n = Math.min(CS_COLS, csN() - r*CS_COLS), rowW = n*(CS_TW+CS_GAP) - CS_GAP;
   return {x:(W - rowW)/2 + c*(CS_TW+CS_GAP), y:52 + r*(CS_TH+CS_GAP)}; }
 function drawCharSelect(){
   const t = Date.now(), solo = isTraining(), bans = bansEnabled();
@@ -19448,12 +19477,14 @@ function drawCharSelect(){
   ctx.fillText(k1, 14, 22); ctx.fillText(k2, 14, 35);
   if(bans){ ctx.textAlign = 'right'; ctx.fillStyle = '#ff8a8a'; ctx.fillText(`BANS ON · ${NET.role==='local' ? 'P1 T / P2 R-SHIFT' : 'T'} bans the hovered fighter`, W-14, 22); }
   // portrait grid
-  for(let i=0;i<CHARACTERS.length;i++){
-    const ch = CHARACTERS[i], {x, y} = csTileXY(i), ban = isBanned(ch.type);
+  for(let i=0;i<csN();i++){
+    const rnd = csIsRand(i), ch = rnd ? {name:'RANDOM', color:'#e8dcb8', dimColor:'#3a3326'} : CHARACTERS[i], {x, y} = csTileXY(i), ban = !rnd && isBanned(ch.type);
     const h1 = p1CharIdx===i, h2 = !solo && p2CharIdx===i;
     const bg = ctx.createLinearGradient(x, y, x, y+CS_TH); bg.addColorStop(0, ch.dimColor || '#222'); bg.addColorStop(1, '#0c0c12');
     ctx.fillStyle = bg; ctx.fillRect(x, y, CS_TW, CS_TH);
-    csDrawFighter(i, x, y, CS_TW, CS_TH-14, 1.25, true);
+    if(rnd){ const spin = (h1 && !p1Confirmed) || (h2 && !p2Confirmed);   // a hovered die keeps rolling its faces
+      drawDie(x+CS_TW/2, y+(CS_TH-14)/2+1, 34, spin ? 1 + Math.floor(t/140) % 6 : 5, spin ? Math.sin(t*0.012)*0.3 : -0.12); }
+    else csDrawFighter(i, x, y, CS_TW, CS_TH-14, 1.25, true);
     ctx.fillStyle = 'rgba(0,0,0,0.72)'; ctx.fillRect(x, y+CS_TH-15, CS_TW, 15);
     ctx.fillStyle = ch.color; ctx.font = `700 11px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(ch.name, x+CS_TW/2, y+CS_TH-4);
     if(ban){ ctx.fillStyle = 'rgba(10,10,14,0.65)'; ctx.fillRect(x, y, CS_TW, CS_TH); ctx.strokeStyle = '#ff4a4a'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x+12, y+10); ctx.lineTo(x+CS_TW-12, y+CS_TH-22); ctx.moveTo(x+CS_TW-12, y+10); ctx.lineTo(x+12, y+CS_TH-22); ctx.stroke();
@@ -19466,22 +19497,41 @@ function drawCharSelect(){
     if(h2) tok(2, p2Confirmed ? '#5a9aff' : '#3462c8', h1 ? CS_TW-14 : CS_TW/2);
   }
   // player panels
-  const gridBottom = csTileXY(CHARACTERS.length-1).y + CS_TH + 10, py = Math.max(gridBottom, 214), ph = H - py - 10;
+  const gridBottom = csTileXY(csN()-1).y + CS_TH + 10, py = Math.max(gridBottom, 214), ph = H - py - 10;
   for(let p=0;p<(solo ? 1 : 2);p++){
-    const idx = p===0 ? p1CharIdx : p2CharIdx, ch = CHARACTERS[idx], conf = p===0 ? p1Confirmed : p2Confirmed;
+    const sel = p===0 ? p1CharIdx : p2CharIdx, rand = csIsRand(sel), conf = p===0 ? p1Confirmed : p2Confirmed;
+    const idx = rand ? csRoll[p+1] : sel;   // Random: the rolled fighter once both are locked in, else null (die panel)
+    const ch = idx===null || idx===undefined ? {name:'RANDOM', color:'#e8dcb8', type:null} : CHARACTERS[idx];
     const pw = solo ? 520 : (W - 48)/2, px = solo ? (W - pw)/2 : (p===0 ? 16 : 32 + pw), col = p===0 ? '#d23a4e' : '#3a6ad2';
     // panel body with a slanted colour strip
     const pg = ctx.createLinearGradient(px, py, px+pw, py+ph); pg.addColorStop(0, p===0 ? '#3a1018' : '#101a3a'); pg.addColorStop(1, '#0c0c12');
     ctx.fillStyle = pg; ctx.fillRect(px, py, pw, ph);
     ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px+150, py); ctx.lineTo(px+120, py+ph); ctx.lineTo(px, py+ph); ctx.closePath(); ctx.globalAlpha = 0.35; ctx.fill(); ctx.globalAlpha = 1;
     ctx.strokeStyle = conf ? ch.color : 'rgba(255,255,255,0.15)'; ctx.lineWidth = conf ? 2.5 : 1; ctx.strokeRect(px+0.5, py+0.5, pw-1, ph-1);
-    // big fighter
-    csDrawFighter(idx, px+6, py+6, 140, ph-12, 2.6, false);
     const tx = px + 156;
     ctx.textAlign = 'left'; ctx.fillStyle = col; ctx.font = `700 12px 'Rajdhani',sans-serif`;
     const isMe = (NET.role==='host' && p===0) || (NET.role==='guest' && !NET.spectator && p===1);
     ctx.fillText((solo ? 'YOU' : CPU.on ? (p===0 ? 'YOU' : `CPU · ${CPU_LEVELS[CPU.lvl].label}`) : 'PLAYER ' + (p+1)) + (isMe ? ' · YOU' : ''), tx, py+18);
+    if(!ch.type){   // Random, not rolled yet: a big die and how it works
+      drawDie(px+76, py+ph/2, 92, conf ? 5 : 1 + Math.floor(t/140) % 6, conf ? -0.12 : Math.sin(t*0.012)*0.3);
+      ctx.textAlign = 'left'; ctx.fillStyle = ch.color; ctx.font = `700 26px 'Rajdhani',sans-serif`; ctx.fillText('🎲 RANDOM', tx, py+44);
+      ctx.fillStyle = 'rgba(225,220,210,0.75)'; ctx.font = `600 12px 'Rajdhani',sans-serif`;
+      ctx.fillText('A random fighter for this match.', tx, py+68);
+      ctx.fillText(bans ? 'Banned fighters never come up.' : 'Any fighter can come up.', tx, py+86);
+      ctx.fillText('Revealed when both players lock in.', tx, py+104);
+      ctx.textAlign = 'right';
+      if(bans){ const mine = charBans[p+1]; ctx.fillStyle = mine ? '#ff6a6a' : 'rgba(255,140,140,0.6)'; ctx.font = `700 10px 'Rajdhani',sans-serif`;
+        ctx.fillText(mine ? `BAN: ${(CHARACTERS.find(c => c.type===mine)||{}).name}` : `BAN: none [${NET.role==='local' ? (p===0 ? 'T' : 'R-SHIFT') : 'T'}]`, px+pw-10, py+18); }
+      if(conf){ ctx.fillStyle = ch.color; ctx.font = `700 16px 'Rajdhani',sans-serif`; ctx.fillText('✓ READY', px+pw-10, py+ph-10); }
+      else { ctx.globalAlpha = 0.6 + 0.4*Math.abs(Math.sin(t*0.005)); ctx.fillStyle = '#e8e3d8'; ctx.font = `700 11px 'Rajdhani',sans-serif`;
+        ctx.fillText(NET.role==='local' && !solo ? (p===0 ? 'F TO LOCK IN' : '/ TO LOCK IN') : 'SPACE / CLICK TO LOCK IN', px+pw-10, py+ph-10); ctx.globalAlpha = 1; }
+      continue;
+    }
+    // big fighter
+    csDrawFighter(idx, px+6, py+6, 140, ph-12, 2.6, false);
+    ctx.textAlign = 'left';
     ctx.fillStyle = ch.color; ctx.font = `700 26px 'Rajdhani',sans-serif`; ctx.fillText(ch.name, tx, py+44);
+    if(rand){ const nw = ctx.measureText(ch.name).width; ctx.fillStyle = '#e8dcb8'; ctx.font = `700 12px 'Rajdhani',sans-serif`; ctx.fillText('🎲 RANDOM PICK', tx + nw + 10, py+43); }
     ctx.fillStyle = 'rgba(225,220,210,0.7)'; ctx.font = `600 11px 'Rajdhani',sans-serif`; ctx.fillText(CHAR_ROLE[ch.type] || ch.description || '', tx, py+60);
     // the kit at a glance: key chip + move name
     const MI = MOVE_INFO[ch.type] || [], rows = MI.filter(m => ['ab1','ab2','ab3','ult'].includes(m[0]));
@@ -20072,7 +20122,7 @@ const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hol
 const NET_G = {
   phase:[()=>phase, v=>phase=v], gameMode:[()=>gameMode, v=>gameMode=v], mapIdx:[()=>mapIdx, v=>mapIdx=v],
   modeSelectIdx:[()=>modeSelectIdx, v=>modeSelectIdx=v], mapSelectIdx:[()=>mapSelectIdx, v=>mapSelectIdx=v],
-  p1CharIdx:[()=>p1CharIdx, v=>p1CharIdx=v], p2CharIdx:[()=>p2CharIdx, v=>p2CharIdx=v], charBans:[()=>charBans, v=>charBans=v||{1:null,2:null}],
+  p1CharIdx:[()=>p1CharIdx, v=>p1CharIdx=v], p2CharIdx:[()=>p2CharIdx, v=>p2CharIdx=v], charBans:[()=>charBans, v=>charBans=v||{1:null,2:null}], csRoll:[()=>csRoll, v=>csRoll=v||{1:null,2:null}],
   p1Confirmed:[()=>p1Confirmed, v=>p1Confirmed=v], p2Confirmed:[()=>p2Confirmed, v=>p2Confirmed=v],
   bct:[()=>window._bothConfirmedTimer||0, v=>window._bothConfirmedTimer=v],
   fightTxt:[()=>fightTxt, v=>fightTxt=v], fightTxtT:[()=>fightTxtT, v=>fightTxtT=v],
@@ -20445,11 +20495,11 @@ function logicMapSelect(){
     buildTerrain(mapIdx); terrainReset();
     phase = 'charSelect';
     p1CharIdx = 0; p2CharIdx = Math.min(1, CHARACTERS.length-1);
-    p1Confirmed = false; p2Confirmed = false; window._bothConfirmedTimer = 0; charBans = {1:null, 2:null};
+    p1Confirmed = false; p2Confirmed = false; window._bothConfirmedTimer = 0; charBans = {1:null, 2:null}; csRoll = {1:null, 2:null};
   }
 }
 function logicCharSelect(dt){
-  const L = CHARACTERS.length;
+  const L = csN();   // every fighter + the Random tile
   if(isTraining() && p1Confirmed && !p2Confirmed){ p2CharIdx = p1CharIdx; p2Confirmed = true; MI1 = {}; }
   if(CPU.on && p1Confirmed && !p2Confirmed){ MI2 = MI1; MI1 = {}; }   // VS CPU: you pick the CPU's fighter next
   // grid cursor: left / right step, up / down jump a row
@@ -20461,26 +20511,30 @@ function logicCharSelect(dt){
   // Character Bans (shop unlock): the feat key bans / unbans the fighter you're hovering — one ban each
   if(bansEnabled()){
     for(const [n, M, idx, conf] of [[1, MI1, p1CharIdx, p1Confirmed], [2, MI2, p2CharIdx, p2Confirmed]]){
-      if(!M.feat || conf) continue; const ty = CHARACTERS[idx].type;
+      if(!M.feat || conf) continue; const ty = csType(idx);
+      if(!ty) continue;   // the Random tile can't be banned
       if(charBans[n]===ty) charBans[n] = null;
       else if(charBans[3-n]===ty){ /* already banned by the other player */ }
       else charBans[n] = ty;
       sfxLocal('uiok');
     }
     // a fighter that just got banned can't stay locked in
-    if(p1Confirmed && isBanned(CHARACTERS[p1CharIdx].type)) p1Confirmed = false;
-    if(p2Confirmed && !isTraining() && isBanned(CHARACTERS[p2CharIdx].type)) p2Confirmed = false;
+    if(p1Confirmed && isBanned(csType(p1CharIdx))) p1Confirmed = false;
+    if(p2Confirmed && !isTraining() && isBanned(csType(p2CharIdx))) p2Confirmed = false;
   }
-  if(MI1.confirm && !isBanned(CHARACTERS[p1CharIdx].type)) p1Confirmed = true;
-  if(MI2.confirm && !isBanned(CHARACTERS[p2CharIdx].type)) p2Confirmed = true;
+  if(MI1.confirm && !isBanned(csType(p1CharIdx))) p1Confirmed = true;
+  if(MI2.confirm && !isBanned(csType(p2CharIdx))) p2Confirmed = true;
   if(MI1.back){ if(p1Confirmed) p1Confirmed = false; else { phase = 'mapSelect'; return; } }
   if(MI2.back) p2Confirmed = false;
   if(p1Confirmed && p2Confirmed){
+    // Random: roll once, the moment both are locked in, so the countdown shows who came up
+    if(csIsRand(p1CharIdx) && csRoll[1]===null) csRoll[1] = csRollFighter();
+    if(csIsRand(p2CharIdx) && csRoll[2]===null) csRoll[2] = isTraining() ? csPick(1) : csRollFighter();   // training dummy = your fighter
     window._bothConfirmedTimer = (window._bothConfirmedTimer||0) + dt;
     if(window._bothConfirmedTimer >= 1200){
       window._bothConfirmedTimer = 0;
-      p1 = buildPlayer(p1CharIdx, 170,  1, ctrlFor(1), 1);
-      p2 = buildPlayer(p2CharIdx, 690, -1, ctrlFor(2), 2);
+      p1 = buildPlayer(csPick(1), 170,  1, ctrlFor(1), 1);
+      p2 = buildPlayer(csPick(2), 690, -1, ctrlFor(2), 2);
       p1lives=startLivesFor(p1); p2lives=startLivesFor(p2); p1kills=0; p2kills=0; clearProjectiles(); bloodPools.length=0;
       buildTerrain(mapIdx); terrainReset();
       activeDomain=null; domainClash=null; domainFlash=0; timeScale=1;
@@ -20489,7 +20543,7 @@ function logicCharSelect(dt){
       if(isTraining()){ p2.facing = -1; trainStat.prevHp = 100; trainStat.combo = 0; trainStat.hits = 0; trainStat.best = 0; }
       setTimeout(()=>{ if(phase==='fight') showTxt('FIGHT!'); }, 1000);
     }
-  } else window._bothConfirmedTimer = 0;
+  } else { window._bothConfirmedTimer = 0; csRoll = {1:null, 2:null}; }   // someone un-locked: Random rolls again next time
 }
 function logicRoundEnd(dt){
   roundDelay -= dt;
