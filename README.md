@@ -22,6 +22,9 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Balance pass (Oct 18, not live yet)
+Tuned with seven rounds of hard-CPU tournaments until every fighter wins **40–60%** (Mahito was 97%, Mechamaru 24%). Big ones: Mahito's kiss (30 → 14), true form (60s → 20s) and domain (explode under 30% soul); Sukuna's shrine 4/s; Hakari's jackpot 15%; Yuta's Discharge 12; buffs for Higuruma, Yuji, Todo, Mechamaru, Ryu and Naoya; plus a per-fighter damage table. Full list and revert notes in [`changes/oct18-balance.md`](changes/oct18-balance.md).
+
 ## Earlier fighter: Yuki Tsukumo
 
 Star Rage: **Garuda Grapple** (her shikigami latches on and reels her in), **Garuda Throw**, and a **Mass Shift** special that cycles Regular → Extreme (+75% damage, slow, burns CE) → Light (very fast, 25% damage) for half her CE and 5 HP. Ultimate: she collapses into a **black hole** that drags everyone in — and then self-destructs, costing her that life. Maximum Output: **Star Rage Rush** and **Uppercut: Garuda Dive**. Anti-domain: Simple Domain (New Shadow Style).
