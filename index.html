@@ -996,7 +996,7 @@ const DMG_HIT  = 2;
 const DMG_KB   = 5;
 const DMG_SLAM = 15;
 
-const S = { MAHICURSE:'mahicurse', MAHIIBDK:'mahiibdk', IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
+const S = { MAHISPLIT:'mahisplit', MAHICURSE:'mahicurse', MAHIIBDK:'mahiibdk', IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             DIVE:'dive', STUN:'stun', RAGD:'ragd', SLAM:'slam', DEAD:'dead',
             CLEAVE:'cleave', DISMANTLE:'dismantle', FUGA:'fuga', LAPSE:'lapse',
             REVERSAL:'reversal', HOLLOW:'hollow', DOMAIN:'domain',
@@ -6586,7 +6586,7 @@ const LOVE_KATANA_EVERY = 2500;   // a new katana appears in Yuta's domain this 
 // every katana Yuta picks up in his domain swaps his stored Copy for a random ability from the roster
 function yutaRandomCopy(p){
   const types = CHARACTERS.map(c => c.type).filter(t => t!=='yuta' && MOVE_INFO[t]);
-  const type = types[Math.floor(Math.random()*types.length)], slot = ['ab1','ab2','ab3'][Math.floor(Math.random()*3)];
+  const type = types[Math.floor(Math.random()*types.length)], slot = ['ab1','ab2'][Math.floor(Math.random()*2)];
   p.yKatanaCopy = {type, slot};   // fired by his next punch (Oct 17; it used to wait for Maximum Output Copy)
   addSpeech(p.x+PW/2, p.y-36, `PUNCH → ${copySlotName(type, slot).toUpperCase()} [${keyLbl(p,'atk')}]`, '#ffccee', 1200);
 }    // 4 katana charges to fill Jacob's Ladder
@@ -7521,7 +7521,7 @@ function sukChainEnd(p){ const n = p.cleaveChainN||0, cd = sukChainCd(p); p.clea
 // Cleave: a short reaction window before it grabs; Fuga: only the first moment of the draw can be interrupted
 const SUK_CLEAVE_REACT = 260, FUGA_ARMOR = 300;
 // Spider Web: Dismantle + Cleave pressed together with high CE
-const SUK_WEB_GAP = 160, SUK_WEB_MIN = 0.7, SUK_WEB_CE = 30, SUK_WEB_DMG = 24, SUK_WEB_R = 260;
+const SUK_WEB_GAP = 160, SUK_WEB_MIN = 0.7, SUK_WEB_CE = 45, SUK_WEB_DMG = 24, SUK_WEB_R = 260, SUK_WEB_CD = 14000;   // Oct 18: 14s cooldown, both moves must be ready, 45 CE (was 30, no cooldown)
 const CLEAVE_COOLDOWN = 6000;
 const AIR_CLEAVE_AIM  = 1000;  // ms to aim during air variant
 const AIR_CLEAVE_AIM_SPEED = Math.PI / 1400; // rad per ms when holding key
@@ -8339,6 +8339,7 @@ class Player {
     if(!stuck || domStun || this.rikaHeldT>0) return;
     const opp = this===p1 ? p2 : p1, dir = opp ? (Math.sign(this.x - opp.x) || -this.facing) : -this.facing;
     if([S.RAGD,S.SLAM].includes(this.state)){ this.x = Math.max(10, Math.min(W-PW-10, this.rdX)); this.y = Math.min(GND-PH, this.rdY); this.rdRot = 0; }
+    if(this.type==='mahito' && !(this.ibdkT>0)){ this.framedT = 0; this.frameMax = 0; this.eva = 0; this.hitsTaken = 0; mahiSplitStart(this, opp); achEvt('evasive', this); if(typeof TUT!=='undefined' && TUT.on && this===p1) TUT.d.evaDone = true; return; }
     this.framedT = 0; this.frameMax = 0; this.eva = 0;
     this.state = S.AIR; this.sTimer = 0; this.sDur = 0; this.oaKind = null;
     this.vx = dir*7; this.vy = -7.5; this.onGround = false; this.iframes = Math.max(this.iframes||0, EVA_IF); this.hitsTaken = 0;
@@ -8960,6 +8961,7 @@ class Player {
         ab2Edge = false;
       }
       if(this.cleaveCooldown>0)    this.cleaveCooldown=Math.max(0,this.cleaveCooldown-dt);
+      if(this.sukWebCd>0) this.sukWebCd = Math.max(0, this.sukWebCd - dt);
       if(this.dismantleCooldown>0) this.dismantleCooldown=Math.max(0,this.dismantleCooldown-dt);
       // Dismantle chain window runs out → the cooldown comes back, longer for every link
       if(this.cleaveChainT>0){ this.cleaveChainT = Math.max(0, this.cleaveChainT-dt);
@@ -9198,6 +9200,7 @@ class Player {
       case S.HANAGRAB:   this._tickHanaGrab(dt); break;
       case S.MAHIPALM:   this._tickMahiPalm(dt); break;
       case S.MAHICURSE:  this._tickMahiCurse(dt); break;
+      case S.MAHISPLIT:  this._tickMahiSplit(dt); break;
       case S.MAHIIBDK:   this._tickMahiIbdk(dt); break;
       case S.BLOCK: case S.DASH: case S.OVAR: this._olTickCustom(dt); break;
       case S.TAKAKAN:    this._tickTakaKan(dt); break;
@@ -9370,11 +9373,12 @@ class Player {
   // Spider Web (passive): Dismantle and Cleave pressed together with high CE → a web of slashes through the ground ahead
   _sukWeb(){
     if(this.isPuppet || !this.ceMax || (!ceInfinite(this) && (this.ce||0) < this.ceMax*SUK_WEB_MIN)) return false;
+    if(this.sukWebCd>0 || this.cleaveCooldown>0 || this.dismantleCooldown>0){ if(this.sukWebCd>0) addSpeech(this.x+PW/2, this.y-20, `SPIDER WEB ${Math.ceil(this.sukWebCd/1000)}s`, '#888', 500); return false; }
     if([S.STUN,S.RAGD,S.SLAM,S.DEAD].includes(this.state)) return false;
     if(!ceInfinite(this)) this.ce -= SUK_WEB_CE;
     this.cleaveArm = 0; this.dismPend = null; this.cleaveChainT = 0; this.cleaveChainN = 0;
     this.ss(S.DISMANTLE, 380); this.dismantleArm = 0; this.vx = 0;
-    this.cleaveCooldown = CLEAVE_COOLDOWN; this.dismantleCooldown = DISMANTLE_COOLDOWN;
+    this.cleaveCooldown = CLEAVE_COOLDOWN; this.dismantleCooldown = DISMANTLE_COOLDOWN; this.sukWebCd = SUK_WEB_CD;
     const f = this.facing, x0 = this.x+PW/2, gy = this.y+PH;
     olShot(this, {kind:'web', x:x0+f*SUK_WEB_R/2, y:gy-2, dir:f, life:520, dmg:0});
     if(!IS_GUEST) for(let k=0;k<8;k++){ const a = -0.15 - k*0.1; carveCapsule(x0+f*30, gy+4, x0+f*(70+k*28), gy+4+Math.sin(a)*-18, 2); }
@@ -11926,6 +11930,7 @@ class Player {
   _initRd(vx,vy,angV){ this.rdX=this.x;this.rdY=this.y;this.rdVx=vx;this.rdVy=vy;this.rdRot=0;this.rdAngV=angV; }
 
   draw(){
+    if(this.state===S.MAHISPLIT){ drawMahiSplit(this); return; }   // Mahito's split: only the heads are drawn
     const phys=[S.RAGD,S.SLAM,S.DEAD].includes(this.state);
     // KO'd and waiting to respawn: fade out quickly, then stay invisible until the sky drop
     let _koA = 1;
@@ -14188,6 +14193,7 @@ function olAfter(ms, fn){ olTimers.push({t:ms, fn}); }
 function olTag(pl, text, col, ms){ addSpeech(pl.x+PW/2, pl.y-24, text, col||'#fff', ms||650); }
 function olFoes(owner){ return dagonFoes(owner).filter(d => d && d.state!==S.DEAD); }
 function olArea(owner, x, y, w, h){
+  rikaAreaHit(owner, x, y, w, h);
   return olFoes(owner).filter(d => { if(!d.hittable) return false; const b = d.bodyBox(); return b.x < x+w && b.x+b.w > x && b.y < y+h && b.y+b.h > y; });
 }
 function olFront(p, reach, yo, h){ const f = p.facing; return [f>0 ? p.x+PW-4 : p.x+4-reach, p.y+(yo||4), reach, h||PH-8]; }
@@ -14587,7 +14593,7 @@ function ceBaseCost(type, slot){
   if(t){ try{ v = ceCdCost(eval(t[1])); }catch(e){} }
   return (_ceCostCache[k] = v);
 }
-function ceCostMult(p){ return (p.type==='yuki' ? yukiMass(p).ce : 1) * (p._vow && p._vow('sacrifice') ? 0.75 : 1) * (p._feat && p._feat('sixeyes') ? 0.85 : 1); }
+function ceCostMult(p){ return (CE_TYPE_MULT[p.baseType ? p.type : p.type] || 1) * (p.type==='yuki' ? yukiMass(p).ce : 1) * (p._vow && p._vow('sacrifice') ? 0.75 : 1) * (p._feat && p._feat('sixeyes') ? 0.85 : 1); }
 function ceProfKey(p){ return p.type==='naoyac' || p.type==='meguna' ? p.type : (p.baseType || p.type); }
 function ceInit(p){
   const pr = CE_PROFILE[ceProfKey(p)] || [100, 7];
@@ -14630,6 +14636,7 @@ const CE_LIGHT_MIN = 3, CE_LIGHT_MAX = 8, CE_WEAPON = 5;
 // Pure physical moves (CE_MELEE) stay free. Moves that already spend CE their own way (CE_OWN) aren't charged twice.
 const CE_DEFAULT_LIGHT = 5, CE_SUPER_FRAC = 0.12, CE_SUPER_MIN = 12, CE_SUPER_MAX = 35, CE_DOM_FRAC = 0.4, CE_ULT_FRAC = 0.25;
 const CE_OWN = {ryu:{ab3:1}, yuki:{ab3:1}, yuta:{ab2:1}};
+const CE_TYPE_MULT = {ryu:1.6};   // Oct 18: Ryu's moves cost 60% more cursed energy
 function ceNeed(p, slot){
   if(ceInfinite(p)) return 0;
   const t = p.type, pool = p.ceMax || (CE_PROFILE[ceProfKey(p)]||[100])[0];
@@ -16973,7 +16980,7 @@ const RYU_PUNCH_CD = 6000, RYU_PUNCH_REACH = 90, RYU_PUNCH_DMG = 18,   // Oct 17
 const RYU_BEAM_CD = 6000, RYU_BEAM_WIND = 420, RYU_BEAM_DMG = 18, RYU_BEAM_LEN = 900, RYU_BEAM_H = 22, RYU_BEAM_H_OUT = 50;
 const RYU_ULT_WIND = 900, RYU_ULT_DMG = 30, RYU_ULT_DMG_OUT = 30, RYU_ULT_H = 180, RYU_ULT_H_OUT = 180;   // Oct 17: twice as big (90 + 90×Output before)
 const RYU_AIM_MAX = 1.35;   // aim range (rad) for Granite Blast and the ultimate (was 0.9)
-const RYU_OUT_STEP = 0.10, RYU_OUT_CAST = 320, RYU_OUT_CD = 1200, RYU_OUT_CE = 12, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.2, RYU_DMG_IN = 1.2;   // Oct 17: each use of his special = +10% Output (was hold to fill 45%/s); he always takes 20% more
+const RYU_OUT_STEP = 0.10, RYU_OUT_CAST = 320, RYU_OUT_CD = 1200, RYU_OUT_CE = 20, RYU_OUT_DMG = 0.8, RYU_OUT_TAKEN = 0.2, RYU_DMG_IN = 1.2;   // Oct 17: each use of his special = +10% Output (was hold to fill 45%/s); he always takes 20% more
 const RYU_LASER_N = 5, RYU_LASER_DMG = 5, RYU_LASER_SPD = 9;   // Output Burst: homing lasers   // per second while charging · +80% damage dealt and +50% taken at 100%
 const RYU_ART_SRC = { charge:'data:image/webp;base64,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', beam:'data:image/webp;base64,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' };
 // Ryu art (Oct 17): 6-frame 128×128 Granite Blast start-up (orb at (13,64), beam opens to the right) + 5-frame 256×128 beam tile
@@ -17393,7 +17400,7 @@ function drawYukiBody(pl){
 //  Rika (R in Maximum Output, uses the super charge): 25s. Grab (5s hold, +125% damage taken),
 //        Eat (copies their super), True Love Beam (F with Rika out: 100 CE, 85, erases terrain), and a throw on double jump
 // ═══════════════════════════════════════════════════════════════════
-const YUTA_COPY_TIERS = [[50,'ab3'], [30,'ab2'], [10,'ab1']], YUTA_CMB_GAP = 1500;
+const YUTA_COPY_TIERS = [[30,'ab2'], [10,'ab1']], YUTA_CMB_GAP = 1500;   // Oct 18: Copy no longer takes their super (50+ used to)
 const RIKA_STRUGGLE_MS = 380;   // each mash press takes this much off Rika's 5s hold
 const RIKA_MS = 25000, RIKA_GRAB_MS = 5000, RIKA_GRAB_DMG_IN = 2.25, RIKA_GRAB_R = 320;
 const YUTA_BEAM_CE = 100, YUTA_BEAM_CHARGE = 1400, YUTA_BEAM_DMG = 85, YUTA_BEAM_H = 90, YUTA_THROW_DMG = 4;
@@ -17407,7 +17414,7 @@ function yutaTrackCombo(att, d){
 }
 // run one of the opponent's moves as Yuta: borrow their technique for the length of the move
 Player.prototype._yutaStartCopy = function(type, slot){
-  const meters = {}; for(const [f, c] of TRAIN_METERS){ meters[f] = this[f]; try{ this[f] = eval(c); }catch(e){} }
+  const meters = {}; for(const [f, c] of TRAIN_METERS){ if(f==='domainCharge') continue; meters[f] = this[f]; try{ this[f] = eval(c); }catch(e){} }   // never hands over an ultimate bar
   this.yCopy = {type, slot, t:0, meters};
   this.baseType = 'yuta'; this.type = type;
   const cd = CE_SLOTS[type] && CE_SLOTS[type][slot]; if(cd) this[cd[0]] = 0;
@@ -17433,6 +17440,12 @@ function rikaSummon(p){
 }
 function rikaGone(p, why){ if(!p.rk) return; addParts(p.rk.x, p.rk.y, '#e8e4ec', 24, 6); addSpeech(p.rk.x, p.rk.y-60, why || 'RIKA FADES', '#cc88ff', 900); p.rikaOnT = 0; }
 function rikaBox(R){ return {x:R.x-34, y:R.y-60, w:68, h:130}; }
+// Oct 18: any area attack that covers Rika hurts her too (6, at most every 0.3s), not just punches and (in Defensive mode) projectiles
+function rikaAreaHit(owner, x, y, w, h){
+  if(!owner) return;
+  for(const p of [p1, p2]){ if(!p || p===owner || !(p.rikaOnT>0) || !p.rk || (owner.owner && owner.owner===p)) continue;
+    const b = rikaBox(p.rk); if(b.x < x+w && b.x+b.w > x && b.y < y+h && b.y+b.h > y && terClock - (p.rk.areaT||-1e9) > 300){ p.rk.areaT = terClock; rikaHurt(p, 6, '#ffb0d0'); } }
+}
 function rikaHurt(p, dmg, col){ const R = p.rk; if(!R || !(p.rikaOnT>0)) return; R.hp = Math.max(0, R.hp - dmg); R.flash = 160; addDmg(R.x, R.y-64, Math.round(dmg*10)/10, col||'#ffb0d0'); if(R.hp<=0) rikaGone(p, 'RIKA IS DISPELLED'); }
 function yutaParry(pl, att){
   pl.yParryT = 0; pl.iframes = Math.max(pl.iframes||0, 500); pl.sTimer = Math.max(pl.sTimer, pl.sDur - 80);
@@ -17483,6 +17496,9 @@ function tickRikaNpc(p, dt){
   // ── she can be hit: punches and weapon swings that touch her ──
   const b = rikaBox(R);
   if(opp.hitboxOn && opp.atkBox){ const ab = opp.atkBox(); if(ab && overlaps(ab, b) && terClock - (R.hitT||-1e9) > 320){ R.hitT = terClock; rikaHurt(p, 6, '#ffb0d0'); } }
+  // projectiles hit her in every mode now (Defensive still eats them; other modes they keep flying)
+  if(R.mode!=='def' && p.rikaOnT>0) for(const arr of GETO_REFLECT()){ if(!arr) continue; for(const q of arr){ if(!q || q.owner===p || q._rkHit || typeof q.x!=='number') continue;
+      if(q.x > b.x && q.x < b.x+b.w && q.y > b.y && q.y < b.y+b.h){ q._rkHit = 1; rikaHurt(p, Math.min(12, q.dmg || 5), '#ffb0d0'); if(!(p.rikaOnT>0)) return; } } }
 }
 function tickRika(dt){
   for(const p of [p1, p2]){
@@ -19033,6 +19049,56 @@ function drawTut(){
   const k = TUT.i / (TUT_STEPS.length-1); ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(x, y+56, w, 2); ctx.fillStyle = '#7fe0a0'; ctx.fillRect(x, y+56, w*k, 2);
   if(TUT.okT > 0){ ctx.globalAlpha = Math.min(1, TUT.okT/300); ctx.fillStyle = '#7fe0a0'; ctx.font = "900 26px 'Cinzel',serif"; ctx.fillText('✓', x + w - 24, y + 36); }
   ctx.restore();
+}
+
+
+// Mahito's Evasive (Oct 18): his body bursts into tiny running heads. Pick one (left / right, then attack / jump / dash — or wait) and
+// they all rush to it and he reforms there. Untouchable, and no moves, the whole time.
+const MSPLIT_N = 5, MSPLIT_RUN = 650, MSPLIT_PICK = 1500, MSPLIT_MERGE = 420;
+function mahiSplitStart(pl, opp){
+  const cx = pl.x+PW/2, gy = pl.y+PH, heads = [];
+  for(let k=0;k<MSPLIT_N;k++){ const v = (k - (MSPLIT_N-1)/2) * 2.6 + (Math.random()-0.5); heads.push({x:cx, y:gy, vx:v || 0.6, ph:Math.random()*6}); }
+  pl.msHeads = heads; pl.msPh = 'run'; pl.msT = 0; pl.msSel = Math.floor(MSPLIT_N/2); pl.msPrev = {};
+  pl.msAuto = pl.isPuppet || (typeof CPU!=='undefined' && CPU.on && pl===p2);
+  pl.state = S.MAHISPLIT; pl.sTimer = 0; pl.sDur = MSPLIT_RUN + MSPLIT_PICK + MSPLIT_MERGE + 200; pl.oaKind = null; pl.vx = 0; pl.vy = 0;
+  pl.iframes = Math.max(pl.iframes||0, pl.sDur + 250);
+  addParts(cx, pl.y+PH/2, '#9aa8b8', 26, 7); addRing(cx, pl.y+PH/2, '#c9a0ff', 60); addSpeech(cx, pl.y-24, 'SPLIT!', '#c9a0ff', 700); snd('swing', cx); doShake(5);
+}
+Player.prototype._tickMahiSplit = function(dt){
+  const H = this.msHeads || [], f = dt/16.67; this.msT += dt; this.vx = 0; this.vy = 0;
+  if(this.iframes < 200) this.iframes = 200;
+  const c = this.ctrl, k = n => !!keys[c[n]], edge = n => { const on = k(n), was = this.msPrev[n]; this.msPrev[n] = on; return on && !was; };
+  for(const h of H){ h.ph += dt*0.02;
+    if(this.msPh!=='merge'){ const sp = this.msPh==='run' ? 1 : 0.35, nx = Math.max(12, Math.min(W-12, h.x + h.vx*sp*f)), gy = terGroundTop(nx-4, 8, h.y-24, true);
+      if(gy >= h.y - 30){ h.x = nx; h.y = gy; } else h.vx = -h.vx; } }
+  if(this.msAuto && H.length){ const o = this===p1 ? p2 : p1; let best = 0, bd = -1; H.forEach((h, i) => { const d = o ? Math.abs(h.x - (o.x+PW/2)) : 0; if(d > bd){ bd = d; best = i; } }); this.msSel = best; }
+  if(this.msPh==='run' || this.msPh==='pick'){
+    if(!this.msAuto){ if(edge('left')) this.msSel = (this.msSel + H.length - 1) % H.length; if(edge('right')) this.msSel = (this.msSel + 1) % H.length; }
+    if(this.msPh==='run' && this.msT >= MSPLIT_RUN) this.msPh = 'pick';
+    const go = !this.msAuto && (edge('atk') || edge('jmp') || edge('dash'));
+    if((go && this.msT > 250) || this.msT >= MSPLIT_RUN + MSPLIT_PICK || (this.msAuto && this.msT >= MSPLIT_RUN + 200)){ this.msPh = 'merge'; this.msT0 = this.msT; snd('tick', this.x); }
+  }
+  if(this.msPh==='merge'){ const t = H[this.msSel] || H[0], q = Math.min(1, (this.msT - this.msT0)/MSPLIT_MERGE);
+    for(const h of H){ h.x += (t.x - h.x)*0.25*f; h.y += (t.y - h.y)*0.25*f; }
+    if(q >= 1){ safeTeleport(this, Math.max(10, Math.min(W-PW-10, t.x - PW/2)), t.y - PH); this.msHeads = null; this.msPh = null;
+      this.state = S.AIR; this.onGround = false; this.sTimer = 0; this.sDur = 0; this.iframes = Math.max(this.iframes||0, EVA_IF*0.6);
+      addParts(this.x+PW/2, this.y+PH/2, '#9aa8b8', 22, 6); addRing(this.x+PW/2, this.y+PH/2, '#c9a0ff', 70); snd('heavy', this.x); }
+  }
+};
+function drawMahiSplit(pl){
+  if(pl.state!==S.MAHISPLIT || !pl.msHeads) return true;
+  pl.msHeads.forEach((h, i) => { const bob = Math.abs(Math.sin(h.ph))*4, x = h.x, y = h.y - 9 - bob, sel = i===pl.msSel;
+    ctx.save(); ctx.fillStyle = '#9aa4b2'; ctx.strokeStyle = '#3e4652'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 9, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#2a2430'; ctx.beginPath(); ctx.moveTo(x-7, y-2); ctx.lineTo(x+7, y+3); ctx.stroke();                      // the stitch across the face
+    for(let m=-1;m<=1;m++){ ctx.beginPath(); ctx.moveTo(x + m*4 - 1, y - 2 + m*1.8); ctx.lineTo(x + m*4 + 1, y + 1 + m*1.8); ctx.stroke(); }
+    ctx.fillStyle = '#2a2430'; ctx.fillRect(x-4, y-4, 2, 2); ctx.fillRect(x+3, y-4, 2, 2);
+    ctx.strokeStyle = '#4a4f5a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x-4, y+9); ctx.lineTo(x-6 + Math.sin(h.ph)*3, y+15 + bob); ctx.moveTo(x+4, y+9); ctx.lineTo(x+6 - Math.sin(h.ph)*3, y+15 + bob); ctx.stroke();
+    if(sel){ ctx.strokeStyle = '#c9a0ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 14 + Math.sin(performance.now()*0.012)*2, 0, 6.283); ctx.stroke();
+      ctx.fillStyle = '#c9a0ff'; ctx.beginPath(); ctx.moveTo(x-6, y-26); ctx.lineTo(x+6, y-26); ctx.lineTo(x, y-18); ctx.closePath(); ctx.fill(); }
+    ctx.restore(); });
+  if(pl.msPh!=='merge' && !pl.msAuto && !pl.isPuppet){ ctx.save(); ctx.textAlign = 'center'; ctx.font = "700 11px 'Rajdhani',sans-serif"; ctx.fillStyle = '#e8dcff';
+    ctx.fillText(`${keyLbl(pl,'left')} / ${keyLbl(pl,'right')} PICK A HEAD · ${keyLbl(pl,'atk')} REFORM`, pl.msHeads[pl.msSel].x, pl.msHeads[pl.msSel].y - 40); ctx.restore(); }
+  return false;
 }
 
 // ═══ MAP HAZARDS (Oct 17) ═════════════════════════════════════════════
@@ -20953,7 +21019,7 @@ function simFight(dt){
       for(const [m, dn, v] of [[p1, dn2, p2], [p2, dn1, p1]]) if(dn && m.type==='mahito'){ m.mahiOppDeaths = (m.mahiOppDeaths||0) + 1;
         if(v._soulKill) achEvt('soul', m);
         if(v._soulKill){ m.mahiHumans = Math.min(MAHI_TH_MAX, (m.mahiHumans||0) + MAHI_SOUL_KILL_TH); addSpeech(m.x+PW/2, m.y-34, `+${MAHI_SOUL_KILL_TH} HUMANS`, '#c9a0ff', 1100); } v._soulKill = false; }
-      for(const [pl, dn] of [[p1, dn1], [p2, dn2]]) if(dn){ pl.bfLife = 0; if(pl.type==='mahito'){ pl.ibdkT = 0; pl.mahiSTOn = false; pl.maxHp = 100; } }
+      for(const [pl, dn] of [[p1, dn1], [p2, dn2]]) if(dn){ pl.bfLife = 0; if(pl.soulMax) pl.soul = pl.soulMax; /* Oct 18: the soul regenerates after a death */ if(pl.type==='mahito'){ pl.ibdkT = 0; pl.mahiSTOn = false; pl.maxHp = 100; } }
       if(roundWinner){
         timeScale=1;
         if(gameMode==='endless'){
