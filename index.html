@@ -3757,7 +3757,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {gojo:1.12, hakari:0.8, higuruma:1.22, mahito:0.78, meimei:1.08, ryu:1.16, sukuna:0.85, takaba:1.12, todo:1.18, yuji:1.22, yuki:1.16, yuta:0.88},
+  out:    {gojo:1.12, hakari:0.8, higuruma:1.22, jogo:1.08, mahito:0.78, mechamaru:0.95, meimei:1.08, naoya:1.08, ryu:1.16, sukuna:0.8, takaba:1.12, todo:1.18, yuji:1.22, yuki:1.16, yuta:0.88},
   in:     {higuruma:0.92, mahito:1.2, yuji:0.9},
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -3912,8 +3912,8 @@ const MAHI_IDLE_REQ = 40, MAHI_IDLE_SOUL = 50, MAHI_IDLE_REACH = 80;
 const SPIKE_COST = 2, SPIKE_MS = 8000, SPIKE_W = 26, SPIKE_DMG = 6, SPIKE_EVERY = 500, OMNI_COST = 4, OMNI_R = 230, OMNI_DMG = 18;
 const MAHI_ST_SPD = 1.25, MAHI_ST_JMP = 1.2, MAHI_ST_DRAIN = 6;
 const MAHI_HANDSIGN = 2400;   // his domain takes more than twice as long to cast, and he isn't protected until the very end
-const IBDK_MS = 60000, IBDK_SPD = 1.5, IBDK_HP = 1.25, IBDK_BF = 2, IBDK_ULT = 0.75;
-const IBDK_CTR_MS = 420, IBDK_CTR_CD = 15000, IBDK_TEN_RANGE = 420, IBDK_TEN_DMG = 14, IBDK_TEN_CD = 5000, IBDK_SLAM_REACH = 100, IBDK_SLAM_DMG = 32, IBDK_SLAM_CD = 8000;
+const IBDK_MS = 20000, IBDK_SPD = 1.5, IBDK_HP = 1.1, IBDK_BF = 2, IBDK_ULT = 0.75;   // balance Oct 18: 60s → 20s, 125 → 110 HP
+const IBDK_CTR_MS = 420, IBDK_CTR_CD = 15000, IBDK_TEN_RANGE = 420, IBDK_TEN_DMG = 11, IBDK_TEN_CD = 5000, IBDK_SLAM_REACH = 100, IBDK_SLAM_DMG = 24, IBDK_SLAM_CD = 8000;
 const SOUL_NON_CE = new Set(['axe', 'crow', 'gavel', 'pach']);   // olShot kinds that aren't cursed energy: Spiky Wall bounces these
 const mahiMinis = [];   // synced: small transfigured humans {owner, x, y, dir, t, vy, hitT}
 const mahiWalls = [];   // synced: Spiky Walls {owner, x, top, bot, t, hits:{}}
