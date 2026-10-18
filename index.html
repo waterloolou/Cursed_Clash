@@ -14242,6 +14242,7 @@ function adCast(pl, domStunned){
   else if(pl.varCd[4]>0){ olTag(pl, `${AD.name.toUpperCase()} ${Math.ceil(pl.varCd[4]/1000)}s`, '#888', 500); }
   else if(!ceCanPay(pl, CE_AD_COST)){ ceDeny(pl, 'ab1', CE_AD_COST); }
   else { cePay(pl, CE_AD_COST);
+    if(AD.kind==='simple') pl.sdCircle = null;
     const ms = AD.ms || OL.AD_MS; if(AD.charges){ pl.sdCharges--; addSpeech(pl.x+PW/2, pl.y-38, `CHARGE ${AD.charges-pl.sdCharges}/${AD.charges}`, AD.col, 900); } pl.varCd[4] = AD.cd || OL.AD_CD; pl.sdT = ms; pl.adT = ms; pl.adName = AD.name;
     if(domStunned) pl.ss(S.IDLE);
     if(AD.amp){ pl.adAmp = true; pl.confiscT = ms; }
@@ -14262,17 +14263,58 @@ function drawAdPrompt(pl){
   ctx.globalAlpha = pulse; ctx.fillStyle = 'rgba(10,12,20,0.85)'; ctx.fillRect(cx - w/2, y - 13, w, 18); ctx.strokeStyle = AD.col; ctx.lineWidth = 1.5; ctx.strokeRect(cx - w/2, y - 13, w, 18);
   ctx.fillStyle = cd && !on ? '#999' : AD.col; ctx.fillText(txt, cx, y); ctx.restore();
 }
+
+// Anti-domain effects (Oct 18): every technique does something different on top of blocking sure-hits
+//  basket   Hollow Wicker Basket — you're slowed, but the enemy domain burns out 50% faster while it's woven around you
+//  blossom  Falling Blossom Emotion — counters: every second the enemy domain is up, its caster takes 4; you also take 20% less
+//  simple   Simple Domain — a 110px circle where you cast it: protected only while you stand inside it, and enemy projectiles that enter it are cut down
+//  amp      Domain Amplification — no abilities, 30% less damage, and enemy projectiles that touch you dissolve
+//  uiui     Ui Ui's box (unchanged): a box around Ui Ui that neutralises cursed energy inside it
+const AD_SIMPLE_R = 110, AD_BLOSSOM_DMG = 4, AD_BASKET_DRAIN = 0.5, AD_AMP_R = 46;
+function adKind(pl){ const A = OL_AD[pl.type]; return A && A.kind; }
+function tickAdEffects(dt){
+  if(IS_GUEST) return;
+  for(const pl of [p1, p2]){ if(!pl || pl.state===S.DEAD) continue;
+    const k = adKind(pl), on = pl.adT > 0, opp = pl===p1 ? p2 : p1;
+    if(k==='basket' && on && activeDomain && activeDomain.owner!==pl && typeof activeDomain.timer==='number') activeDomain.timer -= dt*AD_BASKET_DRAIN;
+    if(k==='blossom' && on && activeDomain && activeDomain.owner===opp){ pl.adCtrT = (pl.adCtrT||0) + dt;
+      if(pl.adCtrT >= 1000){ pl.adCtrT = 0; if(opp && opp.state!==S.DEAD){ opp.hp = Math.max(0, opp.hp - AD_BLOSSOM_DMG); opp.flash = 200; addDmg(opp.x+PW/2, opp.y-16, AD_BLOSSOM_DMG, '#9be8ff'); addRing(pl.x+PW/2, pl.y+PH/2, '#9be8ff', 50);
+          if(opp.hp<=0){ opp._initRd(0,-4,.1); opp.ss(S.DEAD); } } } }
+    if(k==='simple'){
+      if(on && !pl.sdCircle){ pl.sdCircle = {x:pl.x+PW/2, y:pl.y+PH, r:AD_SIMPLE_R}; }
+      if(!on) pl.sdCircle = null;
+      const C = pl.sdCircle;
+      if(C){ const inside = Math.abs(pl.x+PW/2 - C.x) < C.r && Math.abs(pl.y+PH - C.y) < 60;
+        pl.sdT = inside ? Math.max(pl.sdT||0, 120) : 0;
+        for(const arr of GETO_REFLECT()){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const q = arr[j]; if(!q || q.owner===pl || typeof q.x!=='number') continue;
+          if(Math.hypot(q.x - C.x, q.y - (C.y - 40)) < C.r){ addParts(q.x, q.y, '#e6f2ff', 6, 3); arr.splice(j,1); } } } }
+    }
+    if(k==='amp' && on){ const cx = pl.x+PW/2, cy = pl.y+PH/2;
+      for(const arr of GETO_REFLECT()){ if(!arr) continue; for(let j=arr.length-1;j>=0;j--){ const q = arr[j]; if(!q || q.owner===pl || typeof q.x!=='number') continue;
+        if(Math.hypot(q.x - cx, q.y - cy) < AD_AMP_R){ addParts(q.x, q.y, OL_AD[pl.type].col, 8, 3); arr.splice(j,1); } } } }
+  }
+}
+function drawAdEffects(){
+  for(const pl of [p1, p2]){ if(!pl) continue; const k = adKind(pl);
+    if(k==='simple' && pl.sdCircle){ const C = pl.sdCircle; ctx.save(); ctx.strokeStyle = 'rgba(230,242,255,0.75)'; ctx.lineWidth = 2; ctx.setLineDash([8, 6]);
+      ctx.beginPath(); ctx.ellipse(C.x, C.y - 2, C.r, 16, 0, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 0.12; ctx.fillStyle = '#e6f2ff'; ctx.fill(); ctx.restore(); }
+    if(k==='amp' && pl.adT>0){ ctx.save(); ctx.globalAlpha = 0.25 + 0.1*Math.sin(performance.now()*0.01); ctx.strokeStyle = OL_AD[pl.type].col; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(pl.x+PW/2, pl.y+PH/2, AD_AMP_R, 0, 6.283); ctx.stroke(); ctx.restore(); }
+    if(k==='blossom' && pl.adT>0){ ctx.save(); const t = performance.now()*0.003; ctx.fillStyle = 'rgba(155,232,255,0.6)';
+      for(let n=0;n<6;n++){ const a = t + n*1.047, r = 30; ctx.beginPath(); ctx.ellipse(pl.x+PW/2 + Math.cos(a)*r, pl.y+PH/2 + Math.sin(a)*r*1.3, 5, 3, a, 0, 6.283); ctx.fill(); } ctx.restore(); }
+  }
+}
 const OL_AD = {
-  sukuna:  {name:'Hollow Wicker Basket', col:'#e8d7a0', note:'A Heian-era anti-domain barrier woven around the user. Neutralises sure-hit effects for 5s, but slows you while you hold it.', slow:0.6},
-  gojo:    {name:'Falling Blossom Emotion', col:'#9be8ff', note:'Gojo clan anti-domain art: cursed energy coats the body and counters sure-hit attacks for 5s. Also takes 20% off every hit.', dr:0.8},
-  todo:    {name:'Simple Domain', col:'#e6f2ff', ms:8000, cd:22000, note:'8s of protection from domain sure-hits (shrine slashes, the Infinite Void stun, katana throws, Jacob\'s Ladder…). Can be cast even while a domain has you stunned. 22s cooldown.'},
-  mechamaru:{name:'Simple Domain (Sealed)', col:'#9fc4ff', ms:6000, cd:1500, charges:4, note:'Kokichi never learned New Shadow Style — he watched Miwa use Simple Domain and sealed his own copies into the mech. 6s of protection from domain sure-hits, castable while a domain has you stunned. Only 4 charges per match.'},
-  jogo:    {name:'Domain Amplification', col:'#ffb070', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
-  hanami:  {name:'Domain Amplification', col:'#c8e6a0', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
-  higuruma:{name:'Domain Amplification', col:'#f1d27a', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
-  meimei:  {name:'Ui Ui: Simple Domain', col:'#e8e3ff', uiui:true, ms:6000, cd:20000, note:'Ui Ui raises a box-shaped Simple Domain around himself for 6s that neutralises cursed energy inside it: while Mei Mei stands in the box she is immune to domain sure-hits. Needs Ui Ui placed.'},
-  yuki:    {name:'Simple Domain: New Shadow Style', col:'#fff2c0', ms:8000, cd:20000, note:'Yuki learned the New Shadow Style\'s Simple Domain: 8s of protection from domain sure-hits. Can be cast while a domain has you stunned.'},
-  kenjaku: {name:'Falling Blossom Emotion', col:'#b07cff', note:'Inherited through the Kamo bloodline: neutralises sure-hit attacks for 5s and takes 20% off every hit.', dr:0.8},
+  sukuna:  {kind:'basket', name:'Hollow Wicker Basket', col:'#e8d7a0', note:'A Heian-era anti-domain barrier woven around the user. Neutralises sure-hit effects for 5s, but slows you while you hold it.', slow:0.6},
+  gojo:    {kind:'blossom', name:'Falling Blossom Emotion', col:'#9be8ff', note:'Gojo clan anti-domain art: cursed energy coats the body and counters sure-hit attacks for 5s. Also takes 20% off every hit.', dr:0.8},
+  todo:    {kind:'simple', name:'Simple Domain', col:'#e6f2ff', ms:8000, cd:22000, note:'8s of protection from domain sure-hits (shrine slashes, the Infinite Void stun, katana throws, Jacob\'s Ladder…). Can be cast even while a domain has you stunned. 22s cooldown.'},
+  mechamaru:{kind:'simple', name:'Simple Domain (Sealed)', col:'#9fc4ff', ms:6000, cd:1500, charges:4, note:'Kokichi never learned New Shadow Style — he watched Miwa use Simple Domain and sealed his own copies into the mech. 6s of protection from domain sure-hits, castable while a domain has you stunned. Only 4 charges per match.'},
+  jogo:    {kind:'amp', name:'Domain Amplification', col:'#ffb070', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
+  hanami:  {kind:'amp', name:'Domain Amplification', col:'#c8e6a0', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
+  higuruma:{kind:'amp', name:'Domain Amplification', col:'#f1d27a', amp:true, ms:5000, cd:20000, dr:0.7, note:'Intensifies cursed energy into a domain-like aura that dissolves any technique it touches: 5s of immunity to domain sure-hits and 30% less damage taken — but you can\'t use your own technique while it\'s up. Press again to drop it early.'},
+  meimei:  {kind:'uiui', name:'Ui Ui: Simple Domain', col:'#e8e3ff', uiui:true, ms:6000, cd:20000, note:'Ui Ui raises a box-shaped Simple Domain around himself for 6s that neutralises cursed energy inside it: while Mei Mei stands in the box she is immune to domain sure-hits. Needs Ui Ui placed.'},
+  yuki:    {kind:'simple', name:'Simple Domain: New Shadow Style', col:'#fff2c0', ms:8000, cd:20000, note:'Yuki learned the New Shadow Style\'s Simple Domain: 8s of protection from domain sure-hits. Can be cast while a domain has you stunned.'},
+  kenjaku: {kind:'blossom', name:'Falling Blossom Emotion', col:'#b07cff', note:'Inherited through the Kamo bloodline: neutralises sure-hit attacks for 5s and takes 20% off every hit.', dr:0.8},
 };
 
 // ── Variants: hold ATTACK and press an ability ──
@@ -18924,6 +18966,16 @@ const CPU_BOT = (function(){
     // watchdog: if my plan has left me standing around doing nothing for 1.5s, just go fight
     if(m.wakeUntil && S.t < m.wakeUntil){ brawl(S, 60); if(S.ax < 70 && S.sameLevel) punch(S); }
     else plan(S);
+    // Oct 18: use moves more — if the plan didn't press anything this beat, throw whatever is ready
+    { const pressed = Object.keys(S.want).some(k => /^(ab[123]|ult|vtog)$/.test(k)), gap = (m.cfg && m.cfg.abGap) || 900;
+      if(!pressed && !S.busy && !S.locked && S.hittable && S.t - (m.abT||0) > gap){
+        const ty = me.type, moOK = !(m.cfg && m.cfg.noMO);
+        if(S.ult >= 1 && !S.o.domain && S.ce > S.ceMax*0.45 && ty!=='yuki'){ S.tap('ult'); m.abT = S.t; }
+        else if(S.special >= 1 && S.ax < 520 && ty!=='ryu'){ face(S); S.tap('ab3'); m.abT = S.t; }
+        else if(S.ready1 && S.ax < 480 && S.ady < 160){ face(S); S.tap('ab1'); m.abT = S.t; }
+        else if(S.ready2 && S.ax < 320 && S.ady < 140){ face(S); S.tap('ab2'); m.abT = S.t; }
+        else if(moOK && S.ax < 320 && S.ce > 45 && useMO(S, ty==='mahito' ? 1 : (m.moAlt = (m.moAlt||1) === 1 ? 2 : 1))) m.abT = S.t;
+      } }
     if(m.jetF && S.f < m.jetF && !S.want.down) S.hold('jump');
     // stuck: trying to move but not moving -> hop
     const moving = S.want.left || S.want.right;
@@ -19177,9 +19229,9 @@ function drawMapHaz(){
 // how many of its presses get through, whether it guards, and how often it lands Black Flash rings.
 const CPU = { on:false, lvl:'normal', mem:{}, prev:{}, f:0 };
 const CPU_LEVELS = {
-  easy:   {every:3, drop:0.4, block:0.35, bf:0.25, mo:false, label:'EASY'},
-  normal: {every:2, drop:0.15, block:0.8, bf:0.55, mo:true, label:'NORMAL'},
-  hard:   {every:1, drop:0, block:1, bf:0.9, mo:true, label:'HARD'},
+  easy:   {every:3, drop:0.4, block:0.35, bf:0.25, mo:false, abGap:1800, label:'EASY'},
+  normal: {every:2, drop:0.15, block:0.8, bf:0.55, mo:true, abGap:1100, label:'NORMAL'},
+  hard:   {every:1, drop:0, block:1, bf:0.9, mo:true, abGap:650, label:'HARD'},
 };
 function cpuSpecial(p){ let best = null; for(const [f, c] of TRAIN_METERS){ if(f==='domainCharge' || typeof p[f]!=='number') continue; let req = 0; try{ req = eval(c); }catch(e){} if(req>0) best = Math.max(best||0, Math.min(1, p[f]/req)); } return best; }
 function cpuReady(p, slot){ const t = CE_SLOTS[p.type] && CE_SLOTS[p.type][slot]; if(!t) return null; return !(p[t[0]]>0); }
@@ -19211,7 +19263,7 @@ function cpuHeld(){
   const me = p2, op = p1, L = CPU_LEVELS[CPU.lvl] || CPU_LEVELS.normal, out = {};
   if(phase!=='fight' || paused || !me || !op || me.state===S.DEAD) { CPU.prev = {}; return out; }
   CPU.f++;
-  const m = CPU.mem; m.cfg = Object.assign(m.cfg || {}, {bf: L.bf, noBlock: Math.random() > L.block});
+  const m = CPU.mem; m.cfg = Object.assign(m.cfg || {}, {bf: L.bf, noBlock: Math.random() > L.block, abGap: L.abGap, noMO: !L.mo});
   // think every N frames; ring answers are always on time-critical frames, so those skip the throttle
   const urgent = (me.bfEvt && !me.bfEvt.res) || (me.state===S.MAHICURSE && me.mcPh==='ring');
   if(CPU.f % L.every !== 0 && !urgent){ return Object.assign({}, CPU.hold || {}); }
@@ -21003,7 +21055,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickRyu(fdt); if(!IS_GUEST) tickHanaWalls(fdt); tickMapHaz(fdt); tickYujiProj(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickRyu(fdt); if(!IS_GUEST) tickHanaWalls(fdt); tickMapHaz(fdt); tickAdEffects(fdt); tickYujiProj(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -21044,7 +21096,7 @@ function simFight(dt){
     }
 }
 function drawFight(dt){
-    drawDomain(); drawLoveKatanas(); if(!activeDomain) drawMapHaz();   // the domain is the backdrop: every projectile and effect is drawn on top of it
+    drawDomain(); drawLoveKatanas(); if(!activeDomain) drawMapHaz(); drawAdEffects();   // the domain is the backdrop: every projectile and effect is drawn on top of it
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawYujiProj(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet(); drawSteam();
