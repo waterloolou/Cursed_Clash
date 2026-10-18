@@ -3757,7 +3757,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {gojo:1.12, hakari:0.8, higuruma:1.22, mahito:0.78, meimei:1.08, ryu:1.09, sukuna:0.92, takaba:1.12, todo:1.1, yuji:1.22, yuki:1.16, yuta:0.85},
+  out:    {gojo:1.12, hakari:0.8, higuruma:1.22, mahito:0.78, meimei:1.08, ryu:1.16, sukuna:0.85, takaba:1.12, todo:1.18, yuji:1.22, yuki:1.16, yuta:0.88},
   in:     {higuruma:0.92, mahito:1.2, yuji:0.9},
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -3906,7 +3906,7 @@ function tickMahito(dt){
 const SOUL_CE_K = 0.5, MAHI_HP_MUL = [0.6, 0.45, 0.32, 0.25], MAHI_MELEE_SOUL = 2.5, MAHI_SOUL_KILL_TH = 6, MAHI_TH_MAX = 16;
 const DEP_NAMES = ['3 HUMANS', 'BODY REPEL', 'SOUL ISOMER'], DEP_COST = [1, 2, 2], DEP_CD = [5000, 9000, 8000];
 const MINI_N = 3, MINI_SPD = 3.6, MINI_DMG = 3, MINI_EVERY = 700, MINI_LIFE = 7000;
-const KISS_WIND = 280, KISS_RANGE = 520, KISS_SPD = 34, KISS_DMG = 18, KISS_CD = 12000;   // balance Oct 18: 30 → 18 (now scaled by his normal damage reduction), 7s → 12s
+const KISS_WIND = 280, KISS_RANGE = 520, KISS_SPD = 34, KISS_DMG = 14, KISS_CD = 14000;   // balance Oct 18: 30 → 14 (now scaled by his normal damage reduction), 7s → 14s
 const CURSE_CD = 6000, CURSE_DASH_MS = 230, CURSE_SPD = 22, CURSE_HP = 6, CURSE_SOUL = 10, CURSE_BF_DMG = 18, CURSE_BF_SOUL = 12, CURSE_RING_MS = 900, CURSE_WIN = 90;
 const MAHI_IDLE_REQ = 40, MAHI_IDLE_SOUL = 50, MAHI_IDLE_REACH = 80;
 const SPIKE_COST = 2, SPIKE_MS = 8000, SPIKE_W = 26, SPIKE_DMG = 6, SPIKE_EVERY = 500, OMNI_COST = 4, OMNI_R = 230, OMNI_DMG = 18;
@@ -3923,6 +3923,7 @@ function soulInit(pl){ if(!pl || pl.soulMax) return; pl.soulMax = Math.round((pl
 function soulHit(att, def, amt, col){
   if(!def || def.state===S.DEAD || !(amt>0) || IS_GUEST) return;
   if(soulImmune(def)){ if(terClock - (def._soulImmT||-1e9) > 900){ def._soulImmT = terClock; addSpeech(def.x+PW/2, def.y-30, 'HIS SOUL WON\'T CHANGE', '#999', 800); } return; }
+  if(att) amt *= (BAL.out[att.baseType||att.type] || 1);   // balance: soul damage follows the fighter's damage multiplier
   soulInit(def); def.soul = Math.max(0, def.soul - amt); def.reshapeT = Math.max(def.reshapeT||0, 900);
   addDmg(def.x+PW/2 + 14, def.y-26, 'SOUL ' + Math.round(amt), col||'#c9a0ff');
   if(def.soul <= 0 && def.hp > 0){
