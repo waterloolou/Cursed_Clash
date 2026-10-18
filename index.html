@@ -2029,7 +2029,7 @@ const HIGU_SWORD_DUR = 20000;
 const HIGU_SIZES = ['normal', 'long', 'large'], HIGU_SIZE_NAME = {normal:'NORMAL', long:'LONG', large:'LARGE'};
 const HIGU_COMBO_CD = 3500, HIGU_COMBO_DMG = [4, 4, 7], HIGU_THROW_CD = 6000, HIGU_HANDLE_DMG = 6;
 const HIGU_IDLE = {normal:[26, 1], long:[52, 1.15], large:[36, 2.3]};   // balance Oct 18: stronger guilty verdict   // Executioner's Sword after a GUILTY verdict
-const COURT_INTRO = 1700, COURT_TRIAL = 4000, COURT_VERDICT = 2300, COURT_STEPS = 6;
+const COURT_INTRO = 1700, COURT_TRIAL = 4000, COURT_VERDICT = 1600, COURT_STEPS = 6;
 const COURT_ACTS = ['jump','down','left','right','atk','ab1','ab2'];
 const gavelThrows = [];
 // Every fighter moves a little differently
@@ -2592,7 +2592,7 @@ const HAK_WALL_MS = 3500, HAK_FRAME_MS = 2600, HAK_WALL_W = 56, HAK_WALL_H = 62;
 // jackpot moveset (replaces 1 and 2 while the fever lasts) and the pachinko bonus (+1 ball per jackpot, up to +6)
 const HAK_J1_CD = 2200, HAK_J1_HITS = 5, HAK_J1_DMG = 3, HAK_J1_FIN = 7, HAK_J2_CD = 3800, HAK_J2_N = 12, HAK_J2_DMG = 4, HAK_BALL_BONUS_MAX = 6;
 const HAK_PUNCH_REQ = 40, HAK_PUNCH_DMG = 35, HAK_PUNCH_WIND = 320, HAK_PUNCH_TOTAL = 700;
-const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.15, GAMBLE_ODDS_UP = 0.08;   // each miss raises the next roll's odds (Increased Probability)
+const GAMBLE_DUR = 25400, GAMBLE_ROLL_EVERY = 5000, GAMBLE_SPIN = 1400, GAMBLE_ODDS = 0.15, GAMBLE_ODDS_UP = 0.06;   // each miss raises the next roll's odds (Increased Probability)
 const JACKPOT_CONT_ODDS = 0.5, JACKPOT_CONT_DUR = 15000, JACKPOT_CONT_MAX = 3;   // Continuation: when a jackpot runs out, the reels spin again
 const JACKPOT_DUR = 30000, JACKPOT_LEAPS = 2, JACKPOT_LEAP_DMG = 45, JACKPOT_LEAP_R = 170;
 const pachinkoBalls = [];   // {owner, x, y, vx, vy, bounces, life, hits:{}}
@@ -3757,9 +3757,9 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {},
-  in:     {},
-  lingOut:{megumi:0.85},
+  out:    {gojo:1.06, hakari:0.86, higuruma:1.1, mahito:0.85, ryu:1.09, takaba:1.12, todo:1.1, yuji:1.1, yuki:1.1, yuta:0.89},
+  in:     {mahito:1.12, yuji:0.95},
+  lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
 };
 const BAL_LING_ST = new Set(['idle','walk','air','block','dash','stun','ragd','slam']);
