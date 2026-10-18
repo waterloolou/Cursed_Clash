@@ -1,71 +1,60 @@
-# Oct 18 — Random fighter on character select
+# Oct 18 — home screen, tutorial, Mahito / Sukuna / Yuta / Ryu fixes, CPU, anti-domains
 
-One commit on `main` (base `fb49bba`). Everything is in `index.html`'s CHARACTER SELECT block (search `csRoll`), plus docs.
-Nothing about any fighter's kit, the maps or combat changed.
+Each area is its own commit (listed at the bottom), so any one can be reverted with `git revert <commit>`.
 
-## 1. Random tile (new)
-**What:** a 21st tile, **RANDOM**, drawn as a die, at the end of the character grid. It works wherever the grid is used:
-VS CPU (your pick and the CPU's pick), local 2 player, online (host and guest each pick their own) and training.
+## Home screen
+- The two-column lobby card → a centered menu over a full-window **night sky** (nebula, twinkling stars, a shooting star, pink horizon
+  glow, two hill silhouettes, mist) with a slowly turning **magic circle** behind it (`drawHomeSky`, drawn across the whole window,
+  not letterboxed). Title in Cinzel, menu items as text with a gold selected state (lines above/below + a ✕ rune), like the reference.
+- Main menu: Play Online · VS CPU · Local 2 Player · Training · **Tutorial** · Account & Levels · Wiki · Settings. Play Online, VS CPU
+  and Settings open panels with a Back item (`homePanel`). ↑ ↓ / W S + Enter / Space, Esc = back, mouse hover selects (`homeMenuInit`).
+- Account badge top-left (level shown), version tag top-right. Every old button id is kept, so all the old handlers still work.
+- Revert: restore the old `#lobby` markup, drop the `.hm-*` CSS, `drawHomeSky`, `homeMenuInit` and the `drawBG` home early-return.
 
-How it works:
-- The Random tile is grid index `CHARACTERS.length` (one past the last fighter). `p1CharIdx` / `p2CharIdx` hold that index while
-  a player is on it, so cursors, lock-in and online sync use the existing paths.
-- New globals / helpers next to `isBanned`: `csRoll = {1:null, 2:null}`, `csN()` (tiles on the grid = fighters + 1),
-  `csIsRand(i)`, `csType(i)` (fighter type, `null` for Random), `csRollFighter()` (random index from the fighters not banned;
-  falls back to the whole roster if every fighter were banned), `csPick(n)` (the fighter player n will actually play),
-  `drawDie(cx, cy, size, face, tilt)`.
-- `logicCharSelect`: when both players are locked in, each Random player gets `csRoll[n] = csRollFighter()` once, so the panel
-  reveals the fighter during the 1.2s READY TO FIGHT! countdown. The fight starts with `buildPlayer(csPick(1) …)` /
-  `buildPlayer(csPick(2) …)` (was `p1CharIdx` / `p2CharIdx`). Training: the dummy copies your rolled fighter
-  (`csRoll[2] = csPick(1)`). If either player un-locks, `csRoll` resets to `{1:null, 2:null}`.
-- `logicMapSelect` resets `csRoll` with the other character-select state.
-- Bans: the feat key on the Random tile does nothing (`csType` is `null`); `csRollFighter` skips banned fighters.
-- Online: `csRoll` added to `NET_G` so guests see the reveal. The host does the roll; guests never roll.
-- Drawing (`drawCharSelect`): the grid loops over `csN()` tiles; the Random tile shows a die whose faces keep rolling while a
-  player hovers it. A player panel on Random shows a big die and three lines on how it works until the roll, then the rolled
-  fighter's normal panel with a **🎲 RANDOM PICK** tag next to the name.
+## Tutorial
+- New mode (`tutStart`): training map, you're Sukuna vs a Jogo dummy that can't die; you can't lose either. 14 steps, each checked live
+  (`tutTick`): move, jump, 3 punches, finisher, block (the dummy attacks), dash, Dismantle, Cleave, Fuga (charge given), Maximum Output,
+  Black Flash (the ring is guaranteed in this step), Evasive (the dummy combos you, meter kept full), domain, anti-domain (the dummy
+  opens Coffin of the Iron Mountain). Panel at the top with the step, instruction (your real keys) and a progress bar.
+- Revert: delete the TUTORIAL block (`TUT`, `TUT_STEPS`, `tut*`, `drawTut`) and its hooks.
 
-**Revert:** delete the block from `// RANDOM tile:` to the end of `drawDie` (just above `const _csPrev`), then:
-`csN()` → `CHARACTERS.length` in `csTileXY`, the grid loop, `gridBottom` (`csTileXY(CHARACTERS.length-1)`) and
-`logicCharSelect`'s `L`; restore the grid-loop tile body (`const ch = CHARACTERS[i] …`, `csDrawFighter(i, …)`) and the panel
-head (`const idx = p===0 ? p1CharIdx : p2CharIdx, ch = CHARACTERS[idx], conf = …`, delete the `if(!ch.type){ … continue; }`
-die branch and the `RANDOM PICK` tag); `csType(...)` → `CHARACTERS[...].type` in the ban / lock-in lines; delete the two
-`csRoll[...] =` roll lines; `csPick(1)` / `csPick(2)` → `p1CharIdx` / `p2CharIdx` in `buildPlayer`; restore
-`} else window._bothConfirmedTimer = 0;`; remove `csRoll = {1:null, 2:null}` from `logicMapSelect`; remove the `csRoll`
-entry from `NET_G`. Or restore `index.html` from `fb49bba`.
+## Mahito
+- **Soul refills after a death** (it used to carry over for the whole match). Still no regeneration during a life.
+- **Evasive = head split** (`mahiSplitStart`, `S.MAHISPLIT`): 5 heads run out (0.65s), pick one with left / right and press attack /
+  jump / dash (or wait 1.5s); they converge (0.42s) and he reforms there. Untouchable throughout, no moves. The CPU picks the head
+  farthest from you. (Not in his true form, which already ignores knockback.)
+- Revert: drop the `mahito` branch in `_evasiveTick` and the split code; remove the soul refill on the death line.
 
-## 2. Grid width
-`CS_COLS 10 → 11`, `CS_TW 82 → 78` (`CS_TH 72`, `CS_GAP 4` unchanged). With 10 columns the Random tile started a third row,
-which squeezed the player panels. 11 columns of 78px plus gaps is 898px wide (was 856px, out of 960) and keeps two rows (11 + 10).
-**Revert:** set `CS_COLS = 10, CS_TW = 82` (only together with item 1, or the Random tile gets its own third row).
+## Sukuna
+- **Spider Web was spammable**: it ignored the Dismantle / Cleave cooldowns and only cost 30 CE. Now it needs both off cooldown, has its
+  own **14s cooldown** (`SUK_WEB_CD`, `sukWebCd`) and costs **45 CE** (`SUK_WEB_CE` 30 → 45).
 
-## 3. `isBanned(null)` fix (found while testing item 1)
-**Why:** `isBanned(type)` compared `type` with both ban slots, and an empty ban slot is `null`, so `isBanned(null)` was `true`
-whenever a player hadn't banned anything. No caller passed `null` before, but the Random tile's type is `null`, so it could
-never be locked in. Found by the key-press test below (lock-in on Random did nothing).
-**Change:** `return charBans[1]===type || charBans[2]===type` → `return !!type && (charBans[1]===type || charBans[2]===type)`.
-Real fighter types are non-empty strings, so nothing else changes.
-**Revert:** only together with item 1.
+## Yuta
+- **Every attack can hurt Rika**: any area attack covering her (`rikaAreaHit` inside `olArea`, 6 every 0.3s) and projectiles in every
+  mode (Defensive still eats them; other modes they pass through after hitting her). Before: only punches, and projectiles in Defensive.
+- **Copy never takes a super or ultimate**: tiers 10+ → ability 1, 30+ → ability 2 (the 50+ → super tier is gone); katana copies only
+  ability 1 / 2; a copy no longer fills the domain/ultimate bar while active (`domainCharge` skipped in `_yutaStartCopy`).
 
-## 4. Docs
-- Wiki → Modes & online play: new **🎲 Random fighter** section.
-- Shop: the Character Bans description now says Random never rolls a banned fighter.
-- README: Modes bullet and a new "Latest: Random fighter (Oct 18)" section (Oct 17 renamed to "Earlier").
+## Ryu
+- Every move costs **60% more CE** (`CE_TYPE_MULT.ryu = 1.6`: abilities 6 → 10, Max Output 18 → 29, ultimate 80 → 128) and Output
+  12 → **20** CE a press.
+
+## CPU
+- **Uses moves more**: if its plan didn't press an ability this beat, it throws whatever is ready (ultimate, special, ability 1 / 2,
+  Maximum Output) every 650ms on Hard / 1.1s Normal / 1.8s Easy (`abGap`). Measured over 5 matchups: 24 moves fired vs 14 before.
+
+## Anti-domain techniques now differ (`tickAdEffects`, `AD_KIND_TXT`)
+- **Hollow Wicker Basket** (Sukuna): slows you (as before) but the enemy domain burns out 50% faster while it's up.
+- **Falling Blossom Emotion** (Gojo, Kenjaku): counters — the domain's caster takes 4 every second; still −20% damage taken.
+- **Simple Domain** (Todo, Yuki, Mechamaru's sealed charges): a 110px circle where you cast it — protected only while inside, and enemy
+  projectiles entering it are cut down.
+- **Domain Amplification** (Jogo, Hanami, Higuruma): as before (no abilities, −30% damage) plus enemy projectiles touching you dissolve.
+- **Ui Ui's box** (Mei Mei): unchanged.
 
 ## Testing
-All with the `cursed-clash-testing` scripts plus two new scratch scripts (not committed): `rnd_test.js` (real key presses) and
-`net_rand.js` (online host + guest through the fake relay).
-- `rnd_test.js` — **21 / 21 pass**:
-  - local 2 player: both cursors reach Random (P1 left wraps from Sukuna, P2 left twice), both lock in, both get a roll during the
-    countdown, the fight starts with exactly the rolled fighters, un-locking clears the roll.
-  - VS CPU (Normal): you lock in Random, then pick Random for the CPU; both rolled; the fight starts and the bot keeps playing for 3s.
-  - training: Random gives a random fighter and the dummy is the same fighter.
-  - bans: 3,000 rolls with Gojo and Yuji banned never gave either of them and gave all 18 other fighters (147–189 each);
-    the feat key on the Random tile bans nothing; a ban by P2 leaves P1 locked in on Random.
-  - no page errors in any mode.
-- `net_rand.js` — **pass**: host and guest each move to Random with their own keys and lock in; the guest sees the same rolls as the host
-  (`{1:2, 2:3}`), and both pages start the fight as Yuji vs Yuta. No errors on either page.
-- `net2.js ryu,yuki` (existing online check, goes through character select): 4 pairings ok, 0 bad.
-- `allpairs.js` spot check, one shard of the Sukuna pairs (8 matches, both rule sets, 600 frames): 0 with issues. No fighter
-  code changed, so the full fuzz and `nav.js` were not run.
-- Screenshots of the die tile, the die panel, the countdown reveal and the online guest's view checked by eye.
+- Home: screenshots desktop + phone width, panels and keyboard nav, no errors. Tutorial: played through all 14 steps with scripted
+  inputs. Character fixes in both rule sets: split (5 heads, untouchable, reforms), soul refill (20 → 150), Spider Web refused on the
+  second press, Ryu costs, Rika takes area damage (75 → 69), Copy tier at a 60 combo = ability 2. Anti-domain kinds vs a real domain
+  (basket drained the timer, blossom dealt 8, circle created, amp on). Fuzz Mahito / Sukuna / Yuta / Ryu vs everyone, both rule sets:
+  0 issues.
+- The hard-CPU tournament and balance report come next; balance changes from it are NOT in this update.
