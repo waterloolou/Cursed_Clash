@@ -2,40 +2,42 @@
 
 **Status: local branch `balance-oct18`, not pushed.** Built from `2c6bd14`.
 
-Seven rounds of "change → 800/1,600-match hard-CPU tournament → adjust" until every fighter won 40–60% of their matches.
+Eleven rounds of "change → 800/1,600-match hard-CPU tournament → adjust". Passes 1–7 flattened everyone into 40–60%; passes 8–11 then **tipped the scale by grade**: special grades on top, stepping down to grade 2 and below, each fighter aimed at a target win rate (targets average 50%).
 Rules for every tournament: hard CPU vs hard CPU, online rules, 2 lives, 90s, maps rotating Shibuya / Sister School / Shinjuku / Sendai, mirrors excluded.
 
-## Result
+## Result (pass 11, 1,520 matches)
 
-| Fighter | Before | After (pass 7, 1,520 matches) |
-|---|---|---|
-| Choso | 59% | 58% |
-| Sukuna | 67% | 54% |
-| Geto | 59% | 54% |
-| Hanami | 53% | 53% |
-| Mechamaru | 24% | 52% |
-| Mahito | 97% | 51% |
-| Takaba | 39% | 51% |
-| Hakari | 67% | 51% |
-| Higuruma | 33% | 50% |
-| Naoya | 39% | 50% |
-| Dagon | 51% | 49% |
-| Yuki | 43% | 49% |
-| Yuta | 64% | 49% |
-| Megumi | 70% | 49% |
-| Mei Mei | 46% | 48% |
-| Jogo | 43% | 48% |
-| Yuji | 32% | 47% |
-| Gojo | 45% | 46% |
-| Todo | 28% | 45% |
-| Ryu | 36% | 40% |
+Every fighter finished within ±4% of their target; tier averages step down 57% → 54% → 48% → 45% → 40%.
 
-Ryu (40%) is the closest to the edge. Each fighter has about a ±4% swing from match-to-match randomness at this sample size.
+| Tier | Fighter | Before | Flat (pass 7) | Target | Final |
+|---|---|---|---|---|---|
+| Special grade | Sukuna | 67% | 54% | 60% | **61%** |
+| Special grade | Gojo | 45% | 46% | 58% | **60%** |
+| Special grade | Yuta | 64% | 49% | 56% | **57%** |
+| Special grade | Mahito | 97% | 51% | 56% | **55%** |
+| Special grade | Geto | 59% | 54% | 55% | **57%** |
+| Special grade | Yuki | 43% | 49% | 55% | **55%** |
+| Special grade curse | Jogo | 43% | 48% | 53% | **54%** |
+| Special grade curse | Hanami | 53% | 53% | 52% | **52%** |
+| Special grade curse | Dagon | 51% | 49% | 52% | **55%** |
+| Grade 1 (special-grade level) | Hakari | 67% | 51% | 51% | **49%** |
+| Grade 1 (special-grade level) | Choso | 59% | 58% | 50% | **49%** |
+| Grade 1 (special-grade level) | Ryu | 36% | 40% | 49% | **47%** |
+| Grade 1 (special-grade level) | Higuruma | 33% | 50% | 48% | **49%** |
+| Grade 1 (special-grade level) | Naoya | 39% | 50% | 48% | **44%** |
+| Grade 1 | Yuji | 32% | 47% | 46% | **44%** |
+| Grade 1 | Todo | 28% | 45% | 45% | **45%** |
+| Grade 1 | Mei Mei | 46% | 48% | 44% | **45%** |
+| Grade 2 and below | Megumi | 70% | 49% | 42% | **38%** |
+| Grade 2 and below | Mechamaru | 24% | 52% | 41% | **41%** |
+| Grade 2 and below | Takaba | 39% | 51% | 40% | **39%** |
+
+At this sample size each fighter's number swings about ±4% from randomness alone, so the order inside a tier isn't meaningful.
 
 ## How the numbers are applied
 
 New `BAL` table next to the Mahito constants, applied in the `hp` setter through `balMul(def, att)`, so it covers **every** source of damage (melee, moves, projectiles, entities, domains):
-- `BAL.out[type]` — everything that fighter deals: Gojo ×1.12, Hakari ×0.8, Higuruma ×1.3, Jogo ×1.08, Mahito ×0.72, Mechamaru ×1.0, Mei Mei ×1.08, Naoya ×1.08, Ryu ×1.16, Sukuna ×0.8, Takaba ×1.12, Todo ×1.14, Yuji ×1.26, Yuki ×1.2, Yuta ×0.88
+- `BAL.out[type]` — everything that fighter deals: Choso ×0.942, Dagon ×1.11, Geto ×0.955, Gojo ×1.254, Hakari ×0.78, Hanami ×1.0, Higuruma ×1.303, Jogo ×1.151, Mahito ×0.754, Mechamaru ×0.985, Megumi ×0.886, Mei Mei ×0.972, Naoya ×0.985, Ryu ×1.199, Sukuna ×0.848, Takaba ×1.051, Todo ×1.15, Yuji ×1.235, Yuki ×1.346, Yuta ×0.96
 - `BAL.in[type]` — everything that fighter takes: Higuruma ×0.92, Mahito ×1.25, Yuji ×0.9
 - `BAL.lingOut[type]` / `BAL.lingIn[type]` — only hits that land while the attacker isn't in a move or a domain (shikigami, projectiles, walls, lingering entities): Megumi ×0.8; takes: Todo ×0.85
 - `soulHit` also multiplies soul damage by `BAL.out` (so Mahito's soul damage follows his multiplier).
@@ -43,6 +45,8 @@ New `BAL` table next to the Mahito constants, applied in the `hp` setter through
 **Revert everything:** `git checkout 2c6bd14 -- index.html` (or drop the branch). **Revert only the multipliers:** empty the four objects in `BAL`.
 
 ## Specific changes (with old values)
+
+Passes 2–11 mostly move the `BAL` multipliers; the final values are listed above.
 
 ### Pass 1
 - **Mahito** (nerf): Kiss: 30 → 18, now scaled by his normal damage reduction (was unreduced); cooldown 7s → 12s
@@ -108,6 +112,51 @@ New `BAL` table next to the Mahito constants, applied in the `hp` setter through
 - **Mahito** (nerf): Damage dealt −28% total (was −25%); damage taken +25% (was +20%)
 - **Mechamaru** (buff): Removed the pass 5 −5% damage cut
 - **Yuji** (buff): Damage dealt +26% total (was +22%)
+
+### Pass 8 (tiered)
+- **Sukuna** (buff): Tier target 60%: damage multiplier ×0.8 → ×0.848
+- **Gojo** (buff): Tier target 58%: damage multiplier ×1.12 → ×1.254
+- **Yuta** (buff): Tier target 56%: damage multiplier ×0.88 → ×0.944
+- **Mahito** (buff): Tier target 56%: damage multiplier ×0.72 → ×0.754
+- **Yuki** (buff): Tier target 55%: damage multiplier ×1.2 → ×1.268
+- **Jogo** (buff): Tier target 53%: damage multiplier ×1.08 → ×1.134
+- **Dagon** (buff): Tier target 52%: damage multiplier ×1.0 → ×1.027
+- **Choso** (nerf): Tier target 50%: damage multiplier ×1.0 → ×0.921
+- **Ryu** (buff): Tier target 49%: damage multiplier ×1.16 → ×1.263
+- **Mei Mei** (nerf): Tier target 44%: damage multiplier ×1.08 → ×1.037
+- **Megumi** (nerf): Tier target 42%: damage multiplier ×1.0 → ×0.933
+- **Mechamaru** (nerf): Tier target 41%: damage multiplier ×1.0 → ×0.89
+- **Takaba** (nerf): Tier target 40%: damage multiplier ×1.12 → ×0.993
+
+### Pass 9 (tiered)
+- **Yuta** (buff): Tier target 56% (pass 8: 52.6%): damage multiplier ×0.944 → ×0.96
+- **Geto** (nerf): Tier target 55% (pass 8: 59.9%): damage multiplier ×1.0 → ×0.976
+- **Yuki** (buff): Tier target 55% (pass 8: 42.8%): damage multiplier ×1.268 → ×1.346
+- **Jogo** (buff): Tier target 53% (pass 8: 50.0%): damage multiplier ×1.134 → ×1.151
+- **Dagon** (buff): Tier target 52% (pass 8: 46.7%): damage multiplier ×1.027 → ×1.054
+- **Choso** (buff): Tier target 50% (pass 8: 45.4%): damage multiplier ×0.921 → ×0.942
+- **Ryu** (nerf): Tier target 49% (pass 8: 59.2%): damage multiplier ×1.263 → ×1.199
+- **Higuruma** (nerf): Tier target 48% (pass 8: 52.0%): damage multiplier ×1.3 → ×1.274
+- **Naoya** (nerf): Tier target 48% (pass 8: 53.3%): damage multiplier ×1.08 → ×1.051
+- **Todo** (nerf): Tier target 45% (pass 8: 48.7%): damage multiplier ×1.14 → ×1.119
+- **Mei Mei** (nerf): Tier target 44% (pass 8: 54.6%): damage multiplier ×1.037 → ×0.982
+- **Megumi** (nerf): Tier target 42% (pass 8: 52.0%): damage multiplier ×0.933 → ×0.886
+- **Mechamaru** (buff): Tier target 41% (pass 8: 28.9%): damage multiplier ×0.89 → ×0.944
+- **Takaba** (buff): Tier target 40% (pass 8: 28.3%): damage multiplier ×0.993 → ×1.051
+
+### Pass 10 (tiered)
+- **Geto** (nerf): Tier target 55% (pass 9: 64.5%): damage multiplier ×0.976 → ×0.93
+- **Dagon** (buff): Tier target 52% (pass 9: 41.4%): damage multiplier ×1.054 → ×1.11
+- **Hakari** (nerf): Tier target 51% (pass 9: 55.9%): damage multiplier ×0.8 → ×0.78
+- **Higuruma** (buff): Tier target 48% (pass 9: 43.4%): damage multiplier ×1.274 → ×1.303
+- **Naoya** (nerf): Tier target 48% (pass 9: 60.5%): damage multiplier ×1.051 → ×0.985
+- **Yuji** (nerf): Tier target 46% (pass 9: 50.0%): damage multiplier ×1.26 → ×1.235
+- **Todo** (buff): Tier target 45% (pass 9: 39.5%): damage multiplier ×1.119 → ×1.15
+- **Mei Mei** (nerf): Tier target 44% (pass 9: 46.1%): damage multiplier ×0.982 → ×0.972
+- **Mechamaru** (buff): Tier target 41% (pass 9: 28.9%): damage multiplier ×0.944 → ×0.985
+
+### Pass 11 (tiered)
+- **Geto** (buff): Tier target 55% (pass 10: 45.4%): damage multiplier ×0.93 → ×0.955 (only change; everyone else was on target)
 
 ## Constants touched (old → new)
 - Mahito: `KISS_DMG` 30 → 14 and no longer divided by `mahiHpMul` (so it gets his normal reduction), `KISS_CD` 7000 → 14000, `CURSE_BF_DMG` 24 → 18, new `MAHI_DOM_BURST` 0.3 (was a hardcoded 0.5), `MSPLIT_RUN/PICK/MERGE` 650/1500/420 → 450/750/300, `IBDK_MS` 60000 → 20000, `IBDK_HP` 1.25 → 1.1, `IBDK_TEN_DMG` 14 → 11, `IBDK_SLAM_DMG` 32 → 24
