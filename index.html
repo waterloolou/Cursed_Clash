@@ -17528,10 +17528,10 @@ const TOJI_TOOLS = [
   {k:'chain', item:null,    name:'CHAIN OF A THOUSAND MILES', short:'CHAIN', col:'#c8ccd8', reach:250,          dmg:0.75, kb:0.8},
   {k:'cloud', item:'cloud', name:'PLAYFUL CLOUD',             short:'CLOUD', col:'#e0533f', reach:ATK_RANGE+34, dmg:1,    kb:1},
 ];
-const TOJI_FLURRY_CD = 7000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 2.8, TOJI_FLURRY_FIN = 7;
-const TOJI_RUSH_CD = 10000, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 120, TOJI_RUSH_MAX = 6, TOJI_RUSH_DMG = 22, TOJI_RUSH_REC = 340;
+const TOJI_FLURRY_CD = 7000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 3.2, TOJI_FLURRY_FIN = 8;
+const TOJI_RUSH_CD = 10000, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 120, TOJI_RUSH_MAX = 6, TOJI_RUSH_DMG = 24, TOJI_RUSH_REC = 340;
 const TOJI_FLY_CD = 16000, TOJI_FLY_MS = 6000, TOJI_FLY_R = 150, TOJI_GUN_CD = 12000, TOJI_GUN_DMG = 14, TOJI_GUN_SPD = 30;
-const TOJI_ULT_MS = 6000, TOJI_ULT_SPD = 1.5, TOJI_ULT_DMG = 6, TOJI_FIN_R = 520, TOJI_FIN_DMG = 85;
+const TOJI_ULT_MS = 6000, TOJI_ULT_SPD = 1.5, TOJI_ULT_DMG = 6, TOJI_FIN_R = 520, TOJI_FIN_DMG = 95;
 const tojiClouds = [];   // synced: Fly Heads swarms {owner, x, y, t, life, heads:[{a, r, s, y}]}
 function isToji(p){ return !!p && p.type==='toji'; }
 function tojiTool(p){ return TOJI_TOOLS[(p && p.tojiTool)||0] || TOJI_TOOLS[0]; }
