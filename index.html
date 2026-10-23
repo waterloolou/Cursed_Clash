@@ -465,7 +465,8 @@ canvas {
           <li><b>Anti-domain</b>: when an enemy domain is up or being cast, a prompt appears over you — just press your ultimate key (one keyboard too). Attack + ultimate still works.</li>
           <li><b>Casting a domain</b> spends the bar right away. For the first <b>third of the hand sign</b> you can be interrupted (Mahito: almost all of it); after that you're untouchable until it opens. Once it's open you can be hit as normal (except Higuruma, who can't be hurt during his trial).</li>
           <li>If your domain gets <b>cancelled</b> — the cast is interrupted, you lose a clash, it's shattered by the Inverted Spear, or you die mid-domain — you get <b>50% of the domain bar back</b>.</li>
-          <li>Knocked-down fighters can't be hit until they get up, but there are <b>no i-frames after getting up</b> any more (Oct 17). Your Evasive meter fills 3× faster while you're stunned or knocked down and faster from hits, so use it to get out. Respawning still gives a short window of i-frames. To break out of a long combo yourself, use <b>Evasive</b>.</li>
+          <li><b>Dash</b> (online, Oct 23): a <b>6s cooldown</b> — but the moment your Evasive meter fills up, the dash comes back too. A small DASH bar sits at the end of the Evasive line.</li>
+          <li>Knocked-down fighters can't be hit until they get up — except by a few heavy moves (Oct 23): Toji's Flurry, Four-Step Stab and killing blow; Todo's Haymaker, Shoulder Tackle and Grab &amp; Slam; Mahito's Sky Crash. There are <b>no i-frames after getting up</b> any more (Oct 17). Your Evasive meter fills 3× faster while you're stunned or knocked down and faster from hits, so use it to get out. Respawning still gives a short window of i-frames. To break out of a long combo yourself, use <b>Evasive</b>.</li>
           <li>You can keep moving while you swing (you just can't turn around mid-punch).</li>
           <li>Hold <b>TAB</b> during a fight to see both fighters' moves.</li>
           <li>Playing <b>online</b> (separate computers)? Melee works differently: real combo strings, blocking, perfect blocks, dashes and Maximum Output (V). See <b>Online Combat</b> in the sidebar.</li>
@@ -1067,9 +1068,9 @@ const TODO_PUNCH_DMG     = 18;      // Oct 23: 15 → 18
 const TODO_PUNCH_CD      = 3000;    // Oct 23: 3.5s → 3s
 const TODO_BW_RANGE      = 650;     // Boogie Woogie swap range
 const TODO_BW_CD         = 6000;    // Oct 23: 7s → 6s
-const TODO_BW_STUN       = 1500;    // Oct 23: the swapped foe is stunned 1.5s (once every 3.5s at most)
-const TODO_BW_STUN_IMM   = 3500;
-const TODO_GRAB_REACH    = 96, TODO_GRAB_LIFT = 480, TODO_GRAB_DMG = 14;   // Oct 23: Grab & Slam (Max Output 1, replaces Feint Clap)
+const TODO_BW_STUN       = 1500;    // Oct 23: the swapped foe is stunned 1.5s (once every 6s at most)
+const TODO_BW_STUN_IMM   = 6000;
+const TODO_GRAB_REACH    = 96, TODO_GRAB_LIFT = 480, TODO_GRAB_DMG = 12;   // Oct 23: Grab & Slam (Max Output 1, replaces Feint Clap)
 const TODO_SUPER_REQ     = 40;      // damage dealt to unlock Unlimited Boogie
 const TODO_SUPER_DUR     = 30000;   // Boogie Woogie has no cooldown for 30s
 const TODO_SD_DUR        = 8000;    // Simple Domain lasts 8s
@@ -3781,7 +3782,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:0.942, dagon:1.11, geto:0.955, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:1.15, yuji:1.235, yuki:1.346, yuta:0.96},
+  out:    {choso:0.942, dagon:1.11, geto:0.955, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:0.93, toji:1.2, yuji:1.235, yuki:1.346, yuta:0.96},
   in:     {higuruma:0.92, mahito:1.25, yuji:0.9},
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -11039,7 +11040,7 @@ class Player {
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
   _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.type==='mahito' && !(this.ibdkT>0)) m *= mahiHpMul(this); if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.tojiUltT>0) m *= TOJI_ULT_DMG; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='toji') m *= TOJI_DMG_IN; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -11634,6 +11635,7 @@ class Player {
           this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge+TODO_PUNCH_DMG);
           if(def.state===S.CLEAVE) def.cleaveArm=0;
           if(def.hp<=0){ def._initRd(this.facing*18,-9,.2*this.facing); def.ss(S.DEAD); }
+          else if(rg) ragBounce(def, this.facing);   // already down: a bounce, not a fresh launch
           else { def._initRd(this.facing*17,-8,.19*this.facing); def.ss(S.RAGD, RAGD_MS*1.6); }
           break;
         }
@@ -14427,7 +14429,10 @@ function olAreaR(owner, x, y, w, h){
     const b = ragBox(d); if(b.x < x+w && b.x+b.w > x && b.y < y+h && b.y+b.h > y){ ragPrep(d); a.push(d); } }
   return a;
 }
-function olHitR(owner, d, dmg, o){ if(ragHittable(d)){ ragPrep(d); o = Object.assign({}, o, {any:true}); } return olHit(owner, d, dmg, o); }
+// a hit on a ragdolled fighter does its damage and bounces them, but never re-launches or re-stuns them (no endless juggles)
+function ragOpts(o){ const q = Object.assign({}, o, {any:true}); delete q.rag; delete q.stun; delete q.launch; delete q.push; return q; }
+function ragBounce(d, dir){ d.rdVy = Math.min(d.rdVy||0, -3.5); d.rdVx = (d.rdVx||0) + (dir||0)*2; }
+function olHitR(owner, d, dmg, o){ if(ragHittable(d)){ ragPrep(d); const ok = olHit(owner, d, dmg, ragOpts(o)); if(ok && d.state!==S.DEAD) ragBounce(d, (o && o.dir) || Math.sign(d.x - owner.x)); return ok; } return olHit(owner, d, dmg, o); }
 function olFront(p, reach, yo, h){ const f = p.facing; return [f>0 ? p.x+PW-4 : p.x+4-reach, p.y+(yo||4), reach, h||PH-8]; }
 function olNearest(owner, maxD){
   let best = null, bd = maxD||1e9;
@@ -14613,7 +14618,7 @@ const OL_VARS = {
       addParts(p.x+PW/2+p.facing*18, p.y+PH*0.42, '#ff9a3a', 12, 4); snd('boom', p.x); doShake(4); }},
   },
   todo: {
-    1:{name:'Grab & Slam', desc:'Grabs the foe in front of him (even one knocked down), hoists them over his head and slams them into the ground: 14 and a knockdown. Can\'t be blocked.', lock:200, run(p){
+    1:{name:'Grab & Slam', desc:'Grabs the foe in front of him (even one knocked down), hoists them over his head and slams them into the ground: 12 and a knockdown. Can\'t be blocked. 9s cooldown.', lock:200, cd:9000, run(p){
       const [x,y,w,h] = olFront(p, TODO_GRAB_REACH, -10, PH+14), d = olAreaR(p, x, y, w, h)[0];
       if(!d){ addSpeech(p.x+PW/2, p.y-20, 'WHIFF', '#999', 600); return; }
       p.tgRef = netRef(d) || d; p.tgDone = false; p.vx = 0; p.ss(S.TODOGRAB, TODO_GRAB_LIFT + 520);
@@ -17510,10 +17515,11 @@ const TOJI_TOOLS = [
   {k:'chain', name:'CHAIN OF A THOUSAND MILES', short:'CHAIN', col:'#c8ccd8', reach:250, dmg:0.75, kb:0.8},   // reach
   {k:'cloud', name:'PLAYFUL CLOUD',             short:'CLOUD', col:'#e0533f', reach:88,  dmg:1.45, kb:1.6},   // raw strength
 ];
-const TOJI_FLURRY_CD = 6000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 2.6, TOJI_FLURRY_FIN = 6;
-const TOJI_RUSH_CD = 9000, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 130, TOJI_RUSH_DMG = 16, TOJI_RUSH_REC = 320;
+const TOJI_FLURRY_CD = 5000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 3.2, TOJI_FLURRY_FIN = 8;
+const TOJI_RUSH_CD = 7500, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 130, TOJI_RUSH_DMG = 20, TOJI_RUSH_REC = 320;
 const TOJI_SPEAR_CE = 8, TOJI_SPEAR_CE_BIG = 30, TOJI_SPEAR_CD_ADD = 1500;
 const TOJI_FLY_CD = 16000, TOJI_FLY_MS = 6000, TOJI_FLY_R = 150, TOJI_GUN_CD = 12000, TOJI_GUN_DMG = 14, TOJI_GUN_SPD = 30;
+const TOJI_DMG_IN = 0.9;   // a Heavenly Restriction body: takes 10% less damage
 const TOJI_ULT_MS = 8000, TOJI_ULT_SPD = 1.5, TOJI_ULT_DMG = 6, TOJI_FIN_R = 520, TOJI_FIN_DMG = 95;
 const tojiClouds = [];   // synced: Fly Heads swarms {owner, x, y, t, life, heads:[{a, r, s, y}]}
 function isToji(p){ return !!p && p.type==='toji'; }
@@ -17524,9 +17530,9 @@ function tojiHit(p, d, dmg, o){
   const T = tojiTool(p), spear = T.k==='spear', big = !!(o && o.big);
   const opts = Object.assign({col:T.col, dir:p.facing}, o||{}); delete opts.big;
   if(spear) opts.ubk = true;
-  if(ragHittable(d)){ ragPrep(d); opts.any = true; }
+  const rg = ragHittable(d);
   if(spear) d._noDR = true;
-  const ok = olHit(p, d, dmg*T.dmg, opts);
+  const ok = rg ? olHitR(p, d, dmg*T.dmg, opts) : olHit(p, d, dmg*T.dmg, opts);
   d._noDR = false;
   if(ok && spear && d.state!==S.DEAD){
     if(d.ceMax && !ceInfinite(d)) d.ce = Math.max(0, (d.ce||0) - (big ? TOJI_SPEAR_CE_BIG : TOJI_SPEAR_CE));
@@ -18577,7 +18583,7 @@ function drawFighterGuide(pl, x, y, w, twoCol){
   const P = MOVE_PASSIVES[pl.type];
   if(P && !(MOVE_INFO[pl.type]||[]).some(r => r[0]==='move')) yl = guideBlock(`PASSIVE  ${P.name}`, P.desc, x, yl, colW, pl.charColor);
   else if(P && P.desc) yl = guideBlock('PASSIVE (details)', P.desc, x, yl, colW, 'rgba(220,215,205,0.8)');
-  { const pr = CE_PROFILE[ceProfKey(pl)] || [100,7]; yl = guideBlock(`CURSED ENERGY  ${pr[0]} · refills ${pr[1]}/s`, CE_LORE[ceProfKey(pl)] || '', x, yl, colW, '#6fb8ff'); }
+  { const pr = CE_PROFILE[ceProfKey(pl)] || [100,7]; yl = guideBlock(pr[1]===0 ? 'CURSED ENERGY  none (Heavenly Restriction)' : `CURSED ENERGY  ${pr[0]} · refills ${pr[1]}/s`, CE_LORE[ceProfKey(pl)] || '', x, yl, colW, '#6fb8ff'); }
   if(!twoCol) yr = yl;
   if(online){
     const V = OL_VARS[pl.type] || {}, AD = OL_AD[pl.type];
@@ -20170,7 +20176,7 @@ function drawMovesOverlay(dt){
 // showing their fighter and a short summary of the kit. Optional portrait pictures come from
 // portraits.js (window.CC_PORTRAITS = {type: 'portraits/file.png'}); without one, the in-game fighter is drawn.
 // ═══════════════════════════════════════════════════════════════════
-const CS_COLS = 11, CS_TW = 78, CS_TH = 72, CS_GAP = 4;   // 11 columns (was 10, tiles 82 wide) so 20 fighters + the Random tile still fit in two rows
+const CS_COLS = 11, CS_TW = 78, CS_TH = 72, CS_GAP = 4;   // 11 columns (was 10, tiles 82 wide) so 21 fighters + the Random tile fit in two rows
 const CHAR_ROLE = { sukuna:'Ranged slashes · deadly domain', gojo:'Space control · Infinity', yuji:'Brawler · Black Flash', yuta:'Copycat · Rika',
   mechamaru:'Lasers · puppet · mech', todo:'Brawler · place swaps', choso:'Blood beams · blood pools', higuruma:'Hammer sizes · trial domain',
   hakari:'Gambler · jackpot fever', meimei:'Axe · teleport · crows', jogo:'Zoner · fire & lava', dagon:'Zoner · flood water', hanami:'Zoner · flowers & roots',
@@ -20313,12 +20319,12 @@ function drawCharSelect(){
       ctx.textAlign = 'left'; ctx.fillStyle = '#e8e3d8'; ctx.font = `600 11px 'Rajdhani',sans-serif`; ctx.fillText(txt, tx+36, ry); ry += 17; };
     const short = s => s.replace(/ · .*$/, '');
     const keyOf = s => ({ab1:'1', ab2:'2', ab3:'SUPER', ult:'ULT'})[s];
-    for(const m of rows) chip(keyOf(m[0]), short(m[1]) + (m[0]==='ab3' ? '  (super)' : ''), m[0]==='ult' ? 'rgba(214,182,74,0.45)' : m[0]==='ab3' ? 'rgba(160,120,255,0.4)' : null);
+    for(const m of rows) chip(m[0]==='ab3' && ch.type==='toji' ? '3' : keyOf(m[0]), short(m[1]) + (m[0]==='ab3' && ch.type!=='toji' ? '  (super)' : ''), m[0]==='ult' ? 'rgba(214,182,74,0.45)' : m[0]==='ab3' ? 'rgba(160,120,255,0.4)' : null);
     if(V[1] || V[2]) chip('MAX', [V[1] && V[1].name, V[2] && V[2].name].filter(Boolean).join(' · '), 'rgba(167,124,240,0.45)');
     if(pas) chip('PASS', pas.name, 'rgba(120,200,160,0.35)');
     // CE pool as a small bar
     { const pr = CE_PROFILE[ch.type] || [100, 7], k = Math.min(1, pr[0]/480); ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(tx, ry-6, 120, 5); ctx.fillStyle = '#4f9cf0'; ctx.fillRect(tx, ry-6, 120*k, 5);
-      ctx.fillStyle = 'rgba(200,215,240,0.7)'; ctx.font = `600 9px 'Rajdhani',sans-serif`; ctx.fillText(`CE ${pr[0]} · +${pr[1]}/s`, tx+126, ry-1); ry += 12; }
+      ctx.fillStyle = 'rgba(200,215,240,0.7)'; ctx.font = `600 9px 'Rajdhani',sans-serif`; ctx.fillText(pr[1]===0 ? 'NO CURSED ENERGY' : `CE ${pr[0]} · +${pr[1]}/s`, tx+126, ry-1); ry += 12; }
     // speed / jump height / health at a glance
     { const M = pas || {spd:1, jmp:1}, hp = ch.type==='naoya' ? NAO_HP : 100, lives = ch.type==='naoya' ? NAO_LIVES : 3;
       const stat = (lbl, v, k, c, dx) => { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(tx+dx, ry-6, 70, 5); ctx.fillStyle = c; ctx.fillRect(tx+dx, ry-6, 70*Math.max(0.05, Math.min(1, k)), 5);

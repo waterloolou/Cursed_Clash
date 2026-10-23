@@ -22,6 +22,15 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Latest: Toji Fushiguro, the Colony theater, Todo rework (Oct 23)
+Full list with revert notes in [`changes/oct23.md`](changes/oct23.md).
+- **New fighter: Toji Fushiguro.** No cursed energy at all (nothing costs CE, longer cooldowns). **R** swaps cursed tools with no cooldown: the **Inverted Spear of Heaven** (unblockable, ignores damage reduction, drains CE, shatters domains), the **Chain of a Thousand Miles** (long reach) and **Playful Cloud** (hardest hits). **Q** Flurry, **E** Four-Step Stab, Max Output **Fly Heads** (invisible inside the swarm) and a **Gun**. Ultimate **Unleashed**: +50% speed, +500% damage, dash through anything, and F again for a 95-damage killing blow.
+- **New map: Tokyo No. 1 Colony Theater** — the dark Ikebukuro theatre where Higuruma waits in a bathtub on the stage, lit only by a follow spot and the green exit signs.
+- **Todo**: Boogie Woogie now leaves them stunned for 1.5s with their back to him; **Grab & Slam** replaces Feint Clap; Haymaker 18; Shoulder Tackle 12.
+- **Dash**: 6s cooldown, refilled early when your Evasive bar fills up.
+- Some heavy moves can now hit a fighter who's **knocked down** (Toji, Todo, Mahito's Sky Crash).
+- **Rika** 50 HP (was 75), **Mechamaru's puppet** 20 HP (was 30).
+
 ## Balance pass (Oct 18, live Oct 23)
 Tuned with eleven rounds of hard-CPU tournaments. First everyone was flattened into **40–60%** (Mahito was 97%, Mechamaru 24%), then the scale was **tipped by grade**: special grades win most (Sukuna and Gojo about 60%), special grade curses next, then grade 1, down to grade 2 and below at about 40%. Big ones: Mahito's kiss (30 → 14), true form (60s → 20s) and domain (explode under 30% soul); Sukuna's shrine 4/s; Hakari's jackpot 15%; Yuta's Discharge 12; plus a per-fighter damage table. Full list and revert notes in [`changes/oct18-balance.md`](changes/oct18-balance.md).
 
