@@ -6,14 +6,14 @@ Everything below is in `index.html` (plus one line in `portraits.js`). Search fo
 Code block: search `TOJI FUSHIGURO (Oct 23)` (sits just above the Yuki block). Constants `TOJI_*`, tools table `TOJI_TOOLS`.
 - **Heavenly Restriction**: no cursed energy. `CE_PROFILE.toji = [1,0]`, `ceNeed()` and `ceVarCost()` return 0 for him, the CE bar
   reads "HEAVENLY RESTRICTION · NO CURSED ENERGY", and `_cePost` skips the ×0.75 CE-era cooldown cut for him (`cdMul`), so his
-  cooldowns stay long. No aura (not in `AURA_OF`), no anti-domain.
+  cooldowns stay long. No aura (not in `AURA_OF`), no anti-domain. Takes 10% less damage (`TOJI_DMG_IN`, in `_dmgIn`).
 - **R — Cursed Tools** (no cooldown): Inverted Spear of Heaven → Chain of a Thousand Miles → Playful Cloud. `tojiHit()`:
   - Spear: `ubk` (only a perfect block stops it), sets `_noDR` on the target so the `hp` setter skips `_dmgIn` (ignores damage
     reduction, Infinity included), drains 8 CE per hit; the big stab drains 30, adds 1.5s to their cooldowns and shatters a domain.
   - Chain: reach 250px, 75% damage. Cloud: 145% damage, 1.6× knockback, 88px reach.
-- **Q — Flurry** (`S.TOJIFLURRY`): 6 hits 95ms apart (2.6 each, last 6 + knockback) × tool damage. 6s cooldown.
-- **E — Four-Step Stab** (`S.TOJIRUSH`): 4 teleport-dashes closing 40 / 50 / 67 / 100% of the remaining gap, then a 16 × tool stab.
-  9s cooldown.
+- **Q — Flurry** (`S.TOJIFLURRY`): 6 hits 95ms apart (3.2 each, last 8 + knockback) × tool damage. 5s cooldown.
+- **E — Four-Step Stab** (`S.TOJIRUSH`): 4 teleport-dashes closing 40 / 50 / 67 / 100% of the remaining gap, then a 20 × tool stab.
+  7.5s cooldown.
 - **Max Output 1 — Fly Heads**: `tojiClouds` swarm for 6s (16s cooldown). `tickToji` sets `pl.tojiInvis` while he's inside it; `draw()`
   returns early, `olNearest` skips him (homing / auto-aim can't lock on) and the CPU only sees the swarm's centre (fog in `CPU_BOT.act`).
 - **Max Output 2 — Gun** (blockable): `olShot` kind `bullet`, 14 + stagger, 12s cooldown. New SFX `gunshot`.
@@ -44,10 +44,10 @@ Search `TOKYO NO. 1 COLONY THEATER (Oct 23)`: `THR`, `thrRake`, `buildTheater`, 
 ## Todo
 - Haymaker `TODO_PUNCH_DMG` 15 → 18, `TODO_PUNCH_CD` 3500 → 3000; it can hit a ragdolled foe (`ragHittable` in `_tickTodoPunch`).
 - Boogie Woogie `TODO_BW_CD` 7000 → 6000. After the swap Todo turns to face them but **they keep their facing** (so they have their back
-  to him) and are stunned `TODO_BW_STUN` 1.5s, at most once per `TODO_BW_STUN_IMM` 3.5s (stops Unlimited Boogie stun-locking).
+  to him) and are stunned `TODO_BW_STUN` 1.5s, at most once per `TODO_BW_STUN_IMM` 6s (stops Unlimited Boogie stun-locking).
   Old line: `this.facing = tgt.x > this.x ? 1 : -1; if(!phys) tgt.facing = -this.facing;`
 - Max Output 1: **Feint Clap → Grab & Slam** (`S.TODOGRAB`, `_tickTodoGrab`, `TODO_GRAB_*`): grabs the foe in front (even ragdolled),
-  lifts them over his head for 0.48s, slams them down in front of him: 14, knockdown, unblockable. Old Feint Clap: clap, opponent within
+  lifts them over his head for 0.48s, slams them down in front of him: 12, knockdown, unblockable, 9s cooldown (`cd:9000`). Old Feint Clap: clap, opponent within
   600px turned around and frozen 0.4s.
 - Shoulder Tackle 10 → 12 and it can hit a ragdolled foe.
 - CPU uses the grab up close (also on a knocked-down foe).
@@ -60,9 +60,16 @@ Search `TOKYO NO. 1 COLONY THEATER (Oct 23)`: `THR`, `thrRake`, `buildTheater`, 
 ## Ragdoll hits
 - Helpers above `olFront`: `ragHittable`, `ragBox`, `ragPrep`, `olAreaR`, `olHitR`. Moves that use them: Toji's Flurry, Four-Step Stab
   and killing blow; Todo's Haymaker, Shoulder Tackle and Grab & Slam; Mahito's Sky Crash.
+- A hit on a ragdolled fighter (`olHitR` / `ragOpts` / `ragBounce`) does its damage and bounces them but strips any launch / stun, so it
+  can't restart the ragdoll (the first version let Todo juggle forever: 88–91% win rate in testing).
 
 ## Rika and Mechamaru's puppet
 - `RIKA_HP` 75 → 50. `PUPPET_HP` 30 → 20.
 
 ## Balance pass goes live
 - The Oct 18 balance pass (`changes/oct18-balance.md`) was merged into main and pushed before this update.
+
+## Balance multipliers (BAL table)
+- `BAL.out.todo` 1.14 → 0.93: his kit buffs (stun, grab, Haymaker 18) took him from 45% to 88% in testing; the multiplier brings him to
+  about the low 50s, still well above where he was.
+- `BAL.out.toji` 1.2 (new fighter, aimed at the special-grade tier).
