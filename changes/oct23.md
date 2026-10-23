@@ -20,6 +20,9 @@ Code block: search `TOJI FUSHIGURO (Oct 23)` (sits just above the Yuki block). C
 - **F — Unleashed**: `tojiUltT` 8s, `TOJI_ULT_SPD` 1.5 (in the move-speed code), `TOJI_ULT_DMG` ×6 in `_dmgOut`, dash cooldown held at 0 and
   dashes go through terrain (`_olTickCustom`, `S.DASH` branch). F again → `S.TOJIFIN`: blink to the nearest foe within 520px and stab for
   `TOJI_FIN_DMG` 95 with `_rawHit` (the `hp` setter skips every multiplier), ending Unleashed.
+- **Inventory curse**: `TOJI_STORE` (`kamu`, `speech`) + `canStore()`; `megShadowStore` / `megShadowPull` now also serve Toji for those two
+  items (dash, or G while holding one, stores it; G with empty hands pulls it out; Kamutoke keeps its strikes — `kamuN` is saved,
+  which also fixes Megumi's shadow resetting Kamutoke's strikes). HUD reads "IN THE CURSE".
 - Registries: `CHARACTERS`, `S` states, `_updateCore` dispatch, `MOVE_PASSIVES`, `CE_PROFILE`, `CE_LORE`, `CE_SLOTS`, `VOICE` + lines + `VL_NAMES`,
   `OL_VARS.toji`, `CHAR_TIPS`, `MOVE_INFO`, `CHAR_ROLE`, wiki sidebar / home card / `<section data-p="toji">`, HUD block (`// Toji HUD`),
   `cpuPub` (`tool`, `tojiUlt`, `invis`, `fogX/Y`), CPU plan `P.toji`, `SYNC_ARR` (`tojiClouds`), `clearProjectiles`, `portraits.js`.

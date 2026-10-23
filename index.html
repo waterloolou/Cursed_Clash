@@ -846,6 +846,7 @@ canvas {
           <tr><td>E</td><td>Four-Step Stab</td><td>Four dashes at the nearest foe (up to 820px), each closing more of the gap, then a huge stab: 20 × the tool's damage and a big knockback. <b>Hits fighters who are knocked down.</b> 7.5s cooldown.</td></tr>
           <tr><td>F</td><td>Unleashed <em>(ultimate, 150)</em></td><td>8 seconds: <b>+50% speed</b>, <b>+500% damage</b>, and his dash has <b>no cooldown and goes straight through any terrain</b>. Press F again while it lasts for the <b>killing blow</b>: he blinks to the nearest foe within 520px and stabs them for <b>95</b> (ignores every defence), ending Unleashed.</td></tr>
           <tr><td>Max Output</td><td>Fly Heads · Gun</td><td><b>Fly Heads</b>: a swarm of tiny fly-head curses fills the air around him for 6s; while he stays inside it he's <b>invisible</b> and nothing can lock on to him (no damage, 16s cooldown). <b>Gun</b> (blockable): a pistol shot straight at the opponent, 14 and a stagger (12s cooldown).</td></tr>
+          <tr><td>Items</td><td>Inventory Curse</td><td>Holding <b>Kamutoke</b> or <b>Inumaki's Recording</b>? Press the pick-up key (G) or dash to stuff it into the curse around his shoulders — its timer stops (and Kamutoke keeps its strikes). Press G with empty hands to pull it back out. (Like Megumi's shadow, but only for those two tools.)</td></tr>
           <tr><td>Movement</td><td>Heavenly Restriction</td><td>No cursed energy bar, no aura. One of the fastest runners (+18%) with high jumps (+12%), and his body shrugs off 10% of all damage. No anti-domain technique.</td></tr>
         </table>
       </section>
@@ -8712,7 +8713,7 @@ class Player {
     // ── Held item: timer + pick-up key ──
     if(this.item){ this.itemT -= dt; if(this.itemT <= 0){ addSpeech(this.x+PW/2, this.y-6, ITEM_DEFS[this.item].short+' WORE OFF', '#999', 900); this.item = null; } }
     { const pk = keys[`A${this.playerNum}_pick`] && !this.isPuppet;
-      if(pk && !this.pickDown && !abilityBlocked && this.state!==S.MECHULT){ if(!megShadowPull(this)) this._tryPickup(); }
+      if(pk && !this.pickDown && !abilityBlocked && this.state!==S.MECHULT){ if(!megShadowPull(this) && !(this.type==='toji' && megShadowStore(this))) this._tryPickup(); }
       this.pickDown = !!pk; }
 
     // ── CHOSO: 1 = Piercing Blood (hold + aim), 2 = Convergence, 3 = Slicing Exorcism, F = Supernova ──
@@ -13177,7 +13178,7 @@ class Player {
     if(this.shadowItem && ITEM_DEFS[this.shadowItem.kind]){
       const d = ITEM_DEFS[this.shadowItem.kind], iy = y+bh+(this.item ? 156 : 138);
       ctx.save(); ctx.font=`700 10px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left'; ctx.fillStyle = '#8fd8ff';
-      ctx.fillText(`IN SHADOW: ${d.name} ${Math.ceil(this.shadowItem.t/1000)}s [${keyLbl(this,'pick')}]`, flip ? bx+bw : bx, iy);
+      ctx.fillText(`${this.type==='toji' ? 'IN THE CURSE' : 'IN SHADOW'}: ${d.name} ${Math.ceil(this.shadowItem.t/1000)}s [${keyLbl(this,'pick')}]`, flip ? bx+bw : bx, iy);
       ctx.restore();
     }
     // Choso ability HUD (3 boxes + full-width blood bar)
@@ -16528,17 +16529,22 @@ const MEG_NUE_CD = 6000, MEG_AGI_CD = 8000, MEG_WCS_REQ = 40, MEG_WCS_DMG = 30, 
 const shikis = [];     // synced: every summoned shikigami / shadow effect {owner, kind, x, y, dir, t, life, ...}
 
 // Ten Shadows storage: dashing while holding an item sinks it into his shadow (its timer stops); G pulls it back out
+// Toji (Oct 23): Kamutoke and Inumaki's Recording can go into his inventory curse the same way (timer stops, strikes kept)
+const TOJI_STORE = new Set(['kamu', 'speech']);
+function canStore(pl){ return !!pl && (pl.type==='megumi' || (pl.type==='toji' && TOJI_STORE.has(pl.item))); }
 function megShadowStore(pl){
-  if(!pl || pl.type!=='megumi' || !pl.item || pl.shadowItem) return false;
-  pl.shadowItem = {kind:pl.item, t:pl.itemT}; pl.item = null; pl.itemT = 0;
+  if(!pl || !pl.item || pl.shadowItem || !canStore(pl)) return false;
+  pl.shadowItem = {kind:pl.item, t:pl.itemT, kamuN:pl.kamuN}; pl.item = null; pl.itemT = 0;
+  if(pl.type==='toji'){ addSpeech(pl.x+PW/2, pl.y-10, 'INTO THE INVENTORY CURSE', '#b8a8d0', 800); addParts(pl.x+PW/2, pl.y+PH*0.35, '#6a5a7a', 12, 3); snd('orb', pl.x); return true; }
   addSpeech(pl.x+PW/2, pl.y-10, 'INTO THE SHADOW', '#8fd8ff', 800); addParts(pl.x+PW/2, pl.y+PH-4, '#05070e', 12, 3); snd('orb', pl.x);
   return true;
 }
 function megShadowPull(pl){
-  if(!pl || pl.type!=='megumi' || pl.item || !pl.shadowItem) return false;
+  if(!pl || (pl.type!=='megumi' && pl.type!=='toji') || pl.item || !pl.shadowItem) return false;
   const s = pl.shadowItem, d = ITEM_DEFS[s.kind]; pl.shadowItem = null; if(!d) return false;
-  pl.item = s.kind; pl.itemT = s.t;
-  addSpeech(pl.x+PW/2, pl.y-10, d.name, d.col, 900); addRing(pl.x+PW/2, pl.y+PH, '#8fd8ff', 40); addParts(pl.x+PW/2, pl.y+PH-4, '#05070e', 12, 4); snd('swing', pl.x);
+  pl.item = s.kind; pl.itemT = s.t; if(s.kind==='kamu'){ pl.kamuN = s.kamuN!=null ? s.kamuN : KAMU_N; pl.kamuCd = 0; }
+  const col = pl.type==='toji' ? '#b8a8d0' : '#8fd8ff';
+  addSpeech(pl.x+PW/2, pl.y-10, d.name, d.col, 900); addRing(pl.x+PW/2, pl.type==='toji' ? pl.y+PH*0.35 : pl.y+PH, col, 40); addParts(pl.x+PW/2, pl.y+PH-4, pl.type==='toji' ? '#6a5a7a' : '#05070e', 12, 4); snd('swing', pl.x);
   return true;
 }
 function isMeg(pl){ return !!pl && (pl.type==='megumi' || pl.type==='meguna'); }
@@ -18511,7 +18517,7 @@ function guideBlock(title, body, x, y, w, col){
   return wrapText(body, x, y+14, w, 13) + 6;
 }
 const CHAR_TIPS = {
-  toji:     ['No cursed energy: nothing costs CE, but everything recharges slower. {ab3} swaps tools with no cooldown — the Spear of Heaven goes through blocks, the chain hits from far away, Playful Cloud hits hardest.', 'Four-Step Stab ({ab2}) dashes in four times, closer each time — great for chasing. Flurry and the stab both hit knocked-down foes.', 'Maximum Output: Fly Heads hides you (nothing can lock on), the Gun is a long-range poke.', 'Ultimate {ult}: 8s Unleashed (+50% speed, +500% damage, dash through anything). Press {ult} again near them for the killing blow (95).'],
+  toji:     ['No cursed energy: nothing costs CE, but everything recharges slower. {ab3} swaps tools with no cooldown — the Spear of Heaven goes through blocks, the chain hits from far away, Playful Cloud hits hardest.', 'Four-Step Stab ({ab2}) dashes in four times, closer each time — great for chasing. Flurry and the stab both hit knocked-down foes.', 'Maximum Output: Fly Heads hides you (nothing can lock on), the Gun is a long-range poke.', 'Ultimate {ult}: 8s Unleashed (+50% speed, +500% damage, dash through anything). Press {ult} again near them for the killing blow (95).', 'Holding Kamutoke or Inumaki\'s Recording? {pick} (or a dash) stores it in the inventory curse — its timer stops. {pick} again pulls it out.'],
   ryu:      ['Each press of {ab3} adds 10% Output: everything hits harder and Granite Blasts get bigger — but you take more damage too (and you already take 20% more).', 'Granite Punch ({ab1}) whiffs are punished hard: only throw it point-blank.', 'Aim Granite Blast with {jump} / {down} during the wind-up. Maximum Granite Blast ({ult}) crosses the whole map.'],
   geto:     ['Dash (or double-tap {left} / {right}) rides a stingray for 3s (up to 200px above where you got on, 11s cooldown): fly over walls and away from trouble.', 'Kuchisake-Onna only works point-blank — the victim gets one key to press; on one keyboard, watch the prompt.', 'The Mirror Curse sends every projectile back at its owner for 6s: summon it against zoners and Gojo.', 'Maximum: Uzumaki uses your whole curse pool (30 to start). Hold {ult} to sacrifice a curse every second: the rest get +3% damage, speed and size. Dead curses are gone for the match.'],
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, up to 3 links) — but when the chain ends, Dismantle AND Cleave are locked for a long time.', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
