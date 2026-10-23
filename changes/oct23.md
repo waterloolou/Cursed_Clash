@@ -76,3 +76,9 @@ Search `TOKYO NO. 1 COLONY THEATER (Oct 23)`: `THR`, `thrRake`, `buildTheater`, 
 - `BAL.out.todo` 1.14 → 0.93: his kit buffs (stun, grab, Haymaker 18) took him from 45% to 88% in testing; the multiplier brings him to
   about the low 50s, still well above where he was.
 - `BAL.out.toji` 1.2 (new fighter, aimed at the special-grade tier).
+
+## Results (hard-CPU tournament, 1,764 matches, all 21 fighters, maps incl. the theater, 0 errors)
+Every fighter wins 36–61%. Toji 51% (special-grade target 56, inside the ±5% band), Todo 54% (was 45% before his buffs).
+17 of 21 are within ±5% of their tier target. Drifted after the dash change and the new fighter: Yuta 49 (target 56), Dagon 59 (52),
+Hakari 39 (51), Ryu 56 (49) — left for a follow-up pass rather than shipping untested numbers.
+Tier averages: special grade 54%, special-grade curses 54%, grade 1 (special-grade level) 48%, grade 1 48%, grade 2 and below 40%.
