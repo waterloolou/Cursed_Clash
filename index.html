@@ -841,13 +841,13 @@ canvas {
         <p class="lead">The Sorcerer Killer. A <b>Heavenly Restriction</b> took every drop of his cursed energy and gave him a superhuman body instead — and he fights with cursed tools pulled from the curse coiled around his shoulders. Nothing he does costs CE, but his moves recharge slower than anyone's.</p>
         <table>
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
-          <tr><td>R</td><td>Cursed Tools</td><td>Swaps to the next tool, <b>no cooldown</b>. <b>Inverted Spear of Heaven</b>: cuts the soul — hits can't be blocked (only a perfect block), ignore damage reduction (even Infinity) and drain 8 CE; the stab drains 30, pushes their cooldowns back 1.5s and <b>shatters a domain</b> they're holding. <b>Chain of a Thousand Miles</b>: the Spear on a chain — 250px reach, 75% damage. <b>Playful Cloud</b>: pure strength — 145% damage, much more knockback, short reach.</td></tr>
-          <tr><td>Q</td><td>Flurry</td><td>Six fast hits with the tool in hand, the last one knocks them away (about 24 with the Spear, 18 with the chain from 250px, 35 with Playful Cloud). <b>Hits fighters who are knocked down</b> (they bounce, they don't get launched again). 5s cooldown.</td></tr>
-          <tr><td>E</td><td>Four-Step Stab</td><td>Four dashes at the nearest foe (up to 820px), each closing more of the gap, then a huge stab: 20 × the tool's damage and a big knockback. <b>Hits fighters who are knocked down.</b> 7.5s cooldown.</td></tr>
+          <tr><td>R</td><td>Cursed Tools</td><td>Swaps to the next tool, <b>no cooldown</b>. The <b>Inverted Spear of Heaven</b> and <b>Playful Cloud</b> are exactly the items (same stats, they just never run out) and they power his punches too: the Spear gives +22 reach and +2 a hit, and every hit drains 30 CE, adds 2.5s to their cooldowns and <b>shatters a domain</b> they're holding (his Flurry only drains on its first hit); Playful Cloud gives +34 reach, +3 a hit and faster punches. <b>Chain of a Thousand Miles</b>: 250px reach, 75% damage. He <b>can't pick up</b> the Spear or Playful Cloud items (he already carries them).</td></tr>
+          <tr><td>Q</td><td>Flurry</td><td>Six fast hits with the tool in hand, the last one knocks them away: 24 plus the tool's bonus (the Spear: about 37, Playful Cloud: about 44, the chain: 18 from 250px). <b>Hits fighters who are knocked down</b> (they bounce, they don't get launched again). 5s cooldown.</td></tr>
+          <tr><td>E</td><td>Four-Step Stab</td><td>He dashes <b>back and forth around</b> the nearest foe (up to 820px) — past them, back in front, past them again — each dash landing about half as close, until he's in reach (up to 6 dashes), then <b>stabs them as hard as he can</b>: 24 plus 2.5× the tool's bonus, and a huge knockback. <b>Hits fighters who are knocked down.</b> 7.5s cooldown.</td></tr>
           <tr><td>F</td><td>Unleashed <em>(ultimate, 150)</em></td><td>8 seconds: <b>+50% speed</b>, <b>+500% damage</b>, and his dash has <b>no cooldown and goes straight through any terrain</b>. Press F again while it lasts for the <b>killing blow</b>: he blinks to the nearest foe within 520px and stabs them for <b>95</b> (ignores every defence), ending Unleashed.</td></tr>
           <tr><td>Max Output</td><td>Fly Heads · Gun</td><td><b>Fly Heads</b>: a swarm of tiny fly-head curses fills the air around him for 6s; while he stays inside it he's <b>invisible</b> and nothing can lock on to him (no damage, 16s cooldown). <b>Gun</b> (blockable): a pistol shot straight at the opponent, 14 and a stagger (12s cooldown).</td></tr>
           <tr><td>Items</td><td>Inventory Curse</td><td>Holding <b>Kamutoke</b> or <b>Inumaki's Recording</b>? Press the pick-up key (G) or dash to stuff it into the curse around his shoulders — its timer stops (and Kamutoke keeps its strikes). Press G with empty hands to pull it back out. (Like Megumi's shadow, but only for those two tools.)</td></tr>
-          <tr><td>Movement</td><td>Heavenly Restriction</td><td>No cursed energy bar, no aura. One of the fastest runners (+18%) with high jumps (+12%), and his body shrugs off 10% of all damage. No anti-domain technique.</td></tr>
+          <tr><td>Movement</td><td>Heavenly Restriction</td><td>No cursed energy bar, no aura. Normal speed, jump, health and damage. No anti-domain technique.</td></tr>
         </table>
       </section>
       <section data-p="geto">
@@ -1286,6 +1286,8 @@ let itemSpawnT = 30000, _itemSeq = 0;
 const ITEM_SPAWN_MS = 48000, ITEM_WEAPONS = new Set(['cloud','isoh']);
 // a cursed-tool item held in hand replaces the fighter's own weapon (axe, gavel, katana) until it wears off
 function itemWeapon(p){ return !!(p && p.item && ITEM_WEAPONS.has(p.item)); }
+// the item whose effects apply to this fighter's hits: Toji's Spear / Playful Cloud count as the ISOH / Playful Cloud items (Oct 23b)
+function effItem(p){ if(!p) return null; if(p.type==='toji'){ const T = TOJI_TOOLS[p.tojiTool||0]; if(T && T.item) return T.item; } return p.item || null; }
 
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2067,7 +2069,7 @@ const MOVE_PASSIVES = {
   todo:     {spd:0.94, jmp:1.06, name:'Heavyweight Landing',   desc:'A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).'},
   choso:    {spd:1.00, jmp:1.00, name:'Blood Rush',            desc:'Below half health his blood boils: 20% faster.'},
   naoya:    {spd:1.28, jmp:0.90, name:'Projection Sorcery',    desc:'The fastest fighter (28% faster, up to 50% after a second of running) but jumps 10% lower. Every 3rd hit of a quick string freezes the foe in a frame for 0.6s.'},
-  toji:     {spd:1.18, jmp:1.12, name:'Heavenly Restriction', desc:'Not a drop of cursed energy: no move costs CE and he gives off no aura, but his moves recharge slower. A superhuman body — one of the fastest runners, high jumps, and he takes 10% less damage.'},
+  toji:     {spd:1.00, jmp:1.00, name:'Heavenly Restriction', desc:'Not a drop of cursed energy: no move costs CE and he gives off no aura, but his moves recharge slower. Normal speed, jump, health and damage.'},
   ryu:      {spd:0.98, jmp:1.00, name:'Cursed Energy Output', desc:'Each press of his special adds 10% to his Output bar: up to 80% more damage, but up to 20% more taken on top of his base +20%.'},
   geto:     {spd:1.02, jmp:1.00, name:'Stingray',              desc:'He has no dash: dash (or double-tap left / right) mounts a stingray curse for 3s — fly in any direction with the movement keys (6s cooldown).'},
   yuki:     {spd:1.04, jmp:1.04, name:'Star Rage',             desc:'Her mass shift (special) changes how she moves: extreme mass is 28% slower and jumps lower, light mass is 45% faster and jumps 25% higher.'},
@@ -3783,7 +3785,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:0.942, dagon:1.11, geto:0.955, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:0.93, toji:1.2, yuji:1.235, yuki:1.346, yuta:0.96},
+  out:    {choso:0.942, dagon:1.11, geto:0.955, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:0.93, yuji:1.235, yuki:1.346, yuta:0.96},
   in:     {higuruma:0.92, mahito:1.25, yuji:0.9},
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -8457,7 +8459,7 @@ class Player {
 
   atkBox(){
     if(this.state===S.ATCK && this.oaKind) return this._olAtkBox();
-    if(this.state===S.ATCK){ const R=ATK_RANGE+(this.item==='cloud'?34:this.item==='isoh'?22:0)+(this.higuSwordT>0?44:0); const hx=this.facing===1?this.x+PW:this.x-R; return{x:hx,y:this.y+4,w:R,h:PH-8}; }
+    if(this.state===S.ATCK){ const ei = effItem(this), R=ATK_RANGE+(ei==='cloud'?34:ei==='isoh'?22:0)+(this.higuSwordT>0?44:0); const hx=this.facing===1?this.x+PW:this.x-R; return{x:hx,y:this.y+4,w:R,h:PH-8}; }
     if(this.state===S.DIVE) return{x:this.x-22,y:this.y+PH-28,w:PW+44,h:32};
     return null;
   }
@@ -10783,22 +10785,25 @@ class Player {
     worldItems.forEach((it, i) => { const dx = Math.abs(it.x-cx), dy = Math.abs(it.y-cy);
       if(dx < 48 && dy < 70 && dx+dy < bd){ bd = dx+dy; best = i; } });
     if(best < 0) return;
+    if(this.type==='toji' && ITEM_WEAPONS.has(worldItems[best].kind)){ addSpeech(cx, this.y-8, 'ALREADY CARRIES ONE', '#999', 900); return; }
     const it = worldItems.splice(best, 1)[0], d = ITEM_DEFS[it.kind];
     this.item = it.kind; this.itemT = d.dur; if(it.kind==='kamu'){ this.kamuN = KAMU_N; this.kamuCd = 0; }
     addSpeech(cx, this.y-8, d.name, d.col, 1300);
     addRing(cx, this.y+PH/2, d.col, 40); addParts(cx, this.y+PH/2, d.col, 10, 3);
   }
-  _itemOnHit(def, mult){
-    if(!this.item || !def) return;
+  _itemOnHit(def, mult, lite){   // lite: just the damage bonus (Toji's multi-hit moves only drain / push cooldowns on their first hit)
+    const it = effItem(this);
+    if(!it || !def) return;
     const mx = def.x+PW/2;
-    if(this.item==='cloud'){
+    if(it==='cloud'){
       const extra = Math.round(3*mult);
       def.hp = Math.max(0, def.hp-extra); addDmg(mx, def.y-30, extra, '#e0533f');
       addParts(mx, def.y+PH/2, '#e0533f', 5, 3);
       this.domainCharge = Math.min(DOMAIN_CHARGE_REQ, this.domainCharge+extra);
-    } else if(this.item==='isoh'){
+    } else if(it==='isoh'){
       const extra = Math.round(2*mult);
       def.hp = Math.max(0, def.hp-extra); addDmg(mx, def.y-30, extra, '#9cc3dc');
+      if(lite){ if(def.hp<=0 && def.state!==S.DEAD){ def._initRd(this.facing*6,-5,.1*this.facing); def.ss(S.DEAD); } return; }
       // Nullify technique: push every cooldown the opponent has back
       for(const k of Object.keys(def)) if(/Cooldown$|Cd$/.test(k) && typeof def[k]==='number') def[k] = Math.max(def[k], 0) + ITEM_ISOH_CD_ADD;
       if(def.ceMax && !ceInfinite(def)) def.ce = Math.max(0, (def.ce||0) - 30);
@@ -11041,7 +11046,7 @@ class Player {
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
   _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.type==='mahito' && !(this.ibdkT>0)) m *= mahiHpMul(this); if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.tojiUltT>0) m *= TOJI_ULT_DMG; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
-  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='toji') m *= TOJI_DMG_IN; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
+  _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
     if(this._vow('heavenly')) for(const k of [this.ab1Key, this.ab2Key, this.ab3Key, this.domainKey]) keys[k] = false;
@@ -11937,7 +11942,7 @@ class Player {
     if(bfEvtHold(this)){ this._phys(dt); return; }
     if(this.oaKind){ this._olTickAtk(dt, atkEdge); return; }
     if(this._lUpper && this.atkHit && this.onGround && keys[this.ctrl.jmp]){ const mv = this._moveStats(); this._lUpper = false; this.ss(S.AIR); this.vy = JUMP_V*mv.jmp; this.onGround = false; this.jmpDown = true; snd('jump', this.x); return; }
-    this.atkTimer+=dt*(this.item==='cloud'?1.7:1);
+    this.atkTimer+=dt*(effItem(this)==='cloud'?1.7:1);
     if(this.atkPhase===0&&this.atkTimer>=ATK_START){ this.atkPhase=1; this.atkTimer=0; }
     else if(this.atkPhase===1){
       this.atkAnim=this.atkTimer/ATK_ACT;
@@ -15265,7 +15270,7 @@ Player.prototype._olTickAtk = function(dt, atkEdge){
     this.vx = this.facing*2; snd('jump', this.x); return; }
   if(atkEdge){ this.atkDown = true; const k0 = this.oaKind, t0 = this.atkTimer; this._olPress(); if(this.oaKind!==k0 || this.atkTimer!==t0) return; }
   const K = OL_KINDS[this.oaKind]; if(!K){ this.ss(this.onGround ? S.IDLE : S.AIR); return; }
-  this.atkTimer += dt*(this.item==='cloud' ? 1.5 : 1);
+  this.atkTimer += dt*(effItem(this)==='cloud' ? 1.5 : 1);
   if(this.atkPhase===0 && this.atkTimer>=K.st){ this.atkPhase = 1; this.atkTimer = 0; if(this.oaKind==='spike') this.vy = 9; }
   else if(this.atkPhase===1){ this.atkAnim = Math.min(1, this.atkTimer/K.act);
     // a downward smash (spike) stays live all the way down: it hits on contact, not only at the bottom
@@ -15284,7 +15289,7 @@ Player.prototype._olTickAtk = function(dt, atkEdge){
 };
 Player.prototype._olAtkBox = function(){
   const K = OL_KINDS[this.oaKind], f = this.facing;
-  const R = K.r + (this.item==='cloud' ? 34 : this.item==='isoh' ? 22 : 0) + (this.type==='meimei' && !itemWeapon(this) ? 14 : 0);
+  const ei = effItem(this), R = K.r + (ei==='cloud' ? 34 : ei==='isoh' ? 22 : 0) + (this.type==='meimei' && !itemWeapon(this) ? 14 : 0);
   if(this.oaKind==='spike') return {x: f===1 ? this.x-8 : this.x-38, y:this.y-6, w:PW+46, h:PH+26};
   let y = this.y+4, h = PH-8;
   if(this.oaKind==='sweep'){ y = this.y+PH*0.55; h = PH*0.45+6; }
@@ -17516,16 +17521,16 @@ function drawRyuBody(pl){
 //  Q Flurry · E Four-Step Stab · Max Output: Fly Heads (hides him) · Gun · F Unleashed (+50% speed, +500% damage, dashes go
 //  through anything); F again while Unleashed = the killing blow
 // ═══════════════════════════════════════════════════════════════════
+// Oct 23b: the Spear and Playful Cloud are the same as the items (same reach bonus, same on-hit effects, Cloud's faster swings) —
+// they just never run out. The chain is his own: 250px reach, 75% damage.
 const TOJI_TOOLS = [
-  {k:'spear', name:'INVERTED SPEAR OF HEAVEN', short:'SPEAR', col:'#9cc3dc', reach:96,  dmg:1.0,  kb:1.0},   // cuts the soul: unblockable, ignores damage reduction, drains CE
-  {k:'chain', name:'CHAIN OF A THOUSAND MILES', short:'CHAIN', col:'#c8ccd8', reach:250, dmg:0.75, kb:0.8},   // reach
-  {k:'cloud', name:'PLAYFUL CLOUD',             short:'CLOUD', col:'#e0533f', reach:88,  dmg:1.45, kb:1.6},   // raw strength
+  {k:'spear', item:'isoh',  name:'INVERTED SPEAR OF HEAVEN', short:'SPEAR', col:'#9cc3dc', reach:ATK_RANGE+22, dmg:1,    kb:1},
+  {k:'chain', item:null,    name:'CHAIN OF A THOUSAND MILES', short:'CHAIN', col:'#c8ccd8', reach:250,          dmg:0.75, kb:0.8},
+  {k:'cloud', item:'cloud', name:'PLAYFUL CLOUD',             short:'CLOUD', col:'#e0533f', reach:ATK_RANGE+34, dmg:1,    kb:1},
 ];
 const TOJI_FLURRY_CD = 5000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 3.2, TOJI_FLURRY_FIN = 8;
-const TOJI_RUSH_CD = 7500, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 130, TOJI_RUSH_DMG = 20, TOJI_RUSH_REC = 320;
-const TOJI_SPEAR_CE = 8, TOJI_SPEAR_CE_BIG = 30, TOJI_SPEAR_CD_ADD = 1500;
+const TOJI_RUSH_CD = 7500, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 120, TOJI_RUSH_MAX = 6, TOJI_RUSH_DMG = 24, TOJI_RUSH_REC = 340;
 const TOJI_FLY_CD = 16000, TOJI_FLY_MS = 6000, TOJI_FLY_R = 150, TOJI_GUN_CD = 12000, TOJI_GUN_DMG = 14, TOJI_GUN_SPD = 30;
-const TOJI_DMG_IN = 0.9;   // a Heavenly Restriction body: takes 10% less damage
 const TOJI_ULT_MS = 8000, TOJI_ULT_SPD = 1.5, TOJI_ULT_DMG = 6, TOJI_FIN_R = 520, TOJI_FIN_DMG = 95;
 const tojiClouds = [];   // synced: Fly Heads swarms {owner, x, y, t, life, heads:[{a, r, s, y}]}
 function isToji(p){ return !!p && p.type==='toji'; }
@@ -17533,21 +17538,10 @@ function tojiTool(p){ return TOJI_TOOLS[(p && p.tojiTool)||0] || TOJI_TOOLS[0]; 
 // one hit with the tool in his hand. Spear: unblockable, ignores damage reduction (it cuts the soul), drains CE; the big stab also
 // pushes their cooldowns back and shatters a domain they're holding
 function tojiHit(p, d, dmg, o){
-  const T = tojiTool(p), spear = T.k==='spear', big = !!(o && o.big);
-  const opts = Object.assign({col:T.col, dir:p.facing}, o||{}); delete opts.big;
-  if(spear) opts.ubk = true;
-  const rg = ragHittable(d);
-  if(spear) d._noDR = true;
-  const ok = rg ? olHitR(p, d, dmg*T.dmg, opts) : olHit(p, d, dmg*T.dmg, opts);
-  d._noDR = false;
-  if(ok && spear && d.state!==S.DEAD){
-    if(d.ceMax && !ceInfinite(d)) d.ce = Math.max(0, (d.ce||0) - (big ? TOJI_SPEAR_CE_BIG : TOJI_SPEAR_CE));
-    if(big){
-      for(const k of Object.keys(d)) if(/Cooldown$|Cd$/.test(k) && typeof d[k]==='number' && k!=='swapCd' && k!=='dashCd') d[k] = Math.max(d[k], 0) + TOJI_SPEAR_CD_ADD;
-      addSpeech(d.x+PW/2, d.y-10, `-${TOJI_SPEAR_CE_BIG} CE`, '#4d7c96', 700);
-      if(activeDomain && activeDomain.owner===d){ domainCancelled(d); activeDomain = null; domainClash = null; domainFlash = 0; showTxt('DOMAIN SHATTERED', 1000); addRing(d.x+PW/2, d.y+PH/2, '#9cc3dc', 120); doShake(12); }
-    }
-  }
+  const T = tojiTool(p), mult = (o && o.mult) || 1;
+  const opts = Object.assign({col:T.col, dir:p.facing}, o||{}); delete opts.mult; delete opts.lite;
+  const ok = ragHittable(d) ? olHitR(p, d, dmg*T.dmg, opts) : olHit(p, d, dmg*T.dmg, opts);
+  if(ok && d.state!==S.DEAD && d._guardStamp!==terClock) p._itemOnHit(d, mult, !!(o && o.lite));   // the item's own on-hit (not through a block)
   return ok;
 }
 Player.prototype._tojiAbilities = function(dt, e1, e2, e3, eD, blocked){
@@ -17564,14 +17558,14 @@ Player.prototype._tojiAbilities = function(dt, e1, e2, e3, eD, blocked){
   }
   // Q: Flurry
   if(e1 && free && !(this.tojiFlCd>0)){
-    this.tojiFlCd = TOJI_FLURRY_CD; this.tfN = 0; this.vx = 0; this.tfLash = 0;
+    this.tojiFlCd = TOJI_FLURRY_CD; this.tfN = 0; this.vx = 0; this.tfLash = 0; this.tfHitOnce = {};
     this.ss(S.TOJIFLURRY, TOJI_FLURRY_START + TOJI_FLURRY_N*TOJI_FLURRY_GAP + 180); snd('swing', this.x);
   }
   // E: Four-Step Stab
   if(e2 && free && !(this.tojiRushCd>0)){
     const d = olNearest(this, TOJI_RUSH_R);
-    this.tojiRushCd = TOJI_RUSH_CD; this.trRef = d ? (netRef(d) || d) : null; this.trN = 0; this.trStab = false; this.vx = 0;
-    this.ss(S.TOJIRUSH, TOJI_RUSH_STEP*4 + 160 + TOJI_RUSH_REC); snd('dash', this.x);
+    this.tojiRushCd = TOJI_RUSH_CD; this.trRef = d ? (netRef(d) || d) : null; this.trN = 0; this.trStab = false; this.trSide = 0; this.trD0 = 0; this.vx = 0;
+    this.ss(S.TOJIRUSH, 4000); snd('dash', this.x);
   }
   // F: Unleashed — and while it lasts, F again is the killing blow
   if(eD && !blocked && !busy){
@@ -17595,7 +17589,8 @@ Player.prototype._tickTojiFlurry = function(dt){
     this.tfN = (this.tfN||0) + 1; const fin = this.tfN===TOJI_FLURRY_N;
     const [x,y,w,h] = olFront(this, T.reach + (fin ? 12 : 0), -10, PH+14);
     for(const d of olAreaR(this, x, y, w, h)){
-      tojiHit(this, d, fin ? TOJI_FLURRY_FIN : TOJI_FLURRY_DMG, fin ? {rag:[10*T.kb, -6, RAGD_MS*Math.min(1.5, T.kb)]} : {stun:300, push:1.1*T.kb});
+      const firstHit = !(this.tfHitOnce||{})[netRef(d)||'x']; (this.tfHitOnce = this.tfHitOnce || {})[netRef(d)||'x'] = true;
+      tojiHit(this, d, fin ? TOJI_FLURRY_FIN : TOJI_FLURRY_DMG, fin ? {rag:[10*T.kb, -6, RAGD_MS*Math.min(1.5, T.kb)], mult:1.6, lite:!firstHit} : {stun:300, push:1.1*T.kb, mult:1, lite:!firstHit});
       addParts(d.x+PW/2 - f*6, d.y+PH*0.45, T.col, fin ? 10 : 4, fin ? 5 : 3);
     }
     this.tfLash = terClock; snd(fin ? 'slash' : 'swing', this.x);
@@ -17603,29 +17598,41 @@ Player.prototype._tickTojiFlurry = function(dt){
   if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
 };
 Player.prototype._tickTojiRush = function(dt){
-  const d = typeof this.trRef==='string' ? netRes(this.trRef) : this.trRef, T = tojiTool(this);
+  // Oct 23b: he zig-zags around them — past them, back in front, past them again — each dash landing closer, until he's
+  // close enough, then stabs them as hard as he can
+  const d = typeof this.trRef==='string' ? netRes(this.trRef) : this.trRef, T = tojiTool(this), live = live2(d);
   this.vx = 0; this.vy = Math.min(this.vy||0, 1); this._phys(dt);
-  const step = Math.floor(this.sTimer / TOJI_RUSH_STEP);
-  while((this.trN||0) < Math.min(4, step+1)){
-    this.trN = (this.trN||0) + 1; const k = this.trN, live = d && d.state!==S.DEAD;
-    const tx = live ? (ragHittable(d) ? d.rdX : d.x) : this.x + this.facing*90;
-    const dir = Math.sign(tx - this.x) || this.facing; this.facing = dir;
-    // each dash closes more of what's left; the last one lands right next to them (or at chain's length)
-    const stop = T.k==='chain' ? T.reach - 60 : PW + 14, gap = Math.max(0, Math.abs(tx - this.x) - stop);
-    const nx = live ? this.x + dir*gap*[0.4, 0.5, 0.67, 1][k-1] : this.x + dir*90;
-    const x0 = this.x; safeTeleport(this, nx, this.y);
-    olShot(this, {kind:'streak', x:x0+PW/2, y:this.y+PH*0.5, x2:this.x+PW/2, life:200, dmg:0, col:'rgba(232,232,240,0.85)'});
-    addParts(x0+PW/2, this.y+PH*0.7, 'rgba(220,220,230,0.8)', 6, 3); snd('dash', this.x);
+  if(!this.trStab && this.sTimer >= (this.trN||0)*TOJI_RUSH_STEP){
+    const tx = live ? (ragHittable(d) ? d.rdX : d.x) : null, reach = T.k==='chain' ? T.reach - 60 : PW + 16;
+    const close = live && Math.abs(tx - this.x) <= reach + 6 && (this.trN||0) >= 2;
+    if(close || (this.trN||0) >= TOJI_RUSH_MAX || !live && (this.trN||0) >= 3){
+      // the stab
+      this.trStab = true; this.trStabT = this.sTimer; this.tfLash = terClock; this.sDur = this.sTimer + 60 + TOJI_RUSH_REC;
+      if(live) this.facing = Math.sign(tx - this.x) || this.facing;
+      const [x,y,w,h] = olFront(this, T.reach + 30, -10, PH+14); let hit = false;
+      for(const q of olAreaR(this, x, y, w, h)) if(tojiHit(this, q, TOJI_RUSH_DMG, {rag:[18*T.kb, -9, RAGD_MS*1.4], mult:2.5})){
+        hit = true; const mx = q.x+PW/2, my = q.y+PH/2; addRing(mx, my, '#ffffff', 70); addRing(mx, my, T.col, 120); addParts(mx, my, T.col, 22, 8); doShake(18); snd('heavy', mx); }
+      if(!hit) addSpeech(this.x+PW/2, this.y-20, 'MISSED', '#999', 600); else sayFor(this, 'Got you.');
+    } else {
+      // the next dash: alternate sides of them, each landing about half as far away as the last
+      this.trN = (this.trN||0) + 1; const k = this.trN, x0 = this.x;
+      let nx;
+      if(live){
+        const start = this.trSide || (this.trSide = Math.sign(this.x - tx) || -this.facing);   // the side he started on
+        const side = k % 2 ? -start : start;                                                     // odd dashes go past them
+        const dist0 = this.trD0 || (this.trD0 = Math.max(reach + 40, Math.abs(this.x - tx)));
+        const dist = Math.max(reach, dist0 * Math.pow(0.55, k));
+        nx = tx + side*dist;
+        if(!tpInArena(nx, this.y)) nx = tx - side*dist;                                          // no room past them: stay on this side
+      } else nx = this.x + this.facing*110*(k % 2 ? 1 : -0.4);
+      safeTeleport(this, Math.max(4, Math.min(W-PW-4, nx)), this.y);
+      this.facing = live ? (Math.sign(tx - this.x) || this.facing) : this.facing;
+      const midY = this.y + PH*0.5;
+      olShot(this, {kind:'streak', x:x0+PW/2, y:midY - 18, x2:this.x+PW/2, life:220, dmg:0, col:'rgba(232,232,240,0.85)'});
+      addParts(x0+PW/2, this.y+PH*0.7, 'rgba(220,220,230,0.8)', 6, 3); snd('dash', this.x);
+    }
   }
-  if(!this.trStab && this.sTimer >= TOJI_RUSH_STEP*4 + 60){
-    this.trStab = true; this.tfLash = terClock;
-    if(live2(d)) this.facing = Math.sign((ragHittable(d) ? d.rdX : d.x) - this.x) || this.facing;
-    const [x,y,w,h] = olFront(this, T.reach + 34, -10, PH+14); let hit = false;
-    for(const q of olAreaR(this, x, y, w, h)) if(tojiHit(this, q, TOJI_RUSH_DMG, {rag:[16*T.kb, -8, RAGD_MS*1.3], big:true})){
-      hit = true; const mx = q.x+PW/2, my = q.y+PH/2; addRing(mx, my, '#ffffff', 60); addRing(mx, my, T.col, 100); addParts(mx, my, T.col, 18, 7); doShake(14); snd('heavy', mx); }
-    if(!hit) addSpeech(this.x+PW/2, this.y-20, 'MISSED', '#999', 600); else sayFor(this, 'Got you.');
-  }
-  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+  if(this.trStab && this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
 };
 function live2(d){ return !!d && typeof d==='object' && d.state!==S.DEAD; }
 Player.prototype._tickTojiFin = function(dt){
@@ -18517,7 +18524,7 @@ function guideBlock(title, body, x, y, w, col){
   return wrapText(body, x, y+14, w, 13) + 6;
 }
 const CHAR_TIPS = {
-  toji:     ['No cursed energy: nothing costs CE, but everything recharges slower. {ab3} swaps tools with no cooldown — the Spear of Heaven goes through blocks, the chain hits from far away, Playful Cloud hits hardest.', 'Four-Step Stab ({ab2}) dashes in four times, closer each time — great for chasing. Flurry and the stab both hit knocked-down foes.', 'Maximum Output: Fly Heads hides you (nothing can lock on), the Gun is a long-range poke.', 'Ultimate {ult}: 8s Unleashed (+50% speed, +500% damage, dash through anything). Press {ult} again near them for the killing blow (95).', 'Holding Kamutoke or Inumaki\'s Recording? {pick} (or a dash) stores it in the inventory curse — its timer stops. {pick} again pulls it out.'],
+  toji:     ['No cursed energy: nothing costs CE, but everything recharges slower. {ab3} swaps tools with no cooldown — the Spear of Heaven and Playful Cloud work exactly like the items (and boost your punches too), the chain hits from far away.', 'Four-Step Stab ({ab2}) zig-zags around them, closer each time, then stabs hard. Flurry and the stab both hit knocked-down foes.', 'Maximum Output: Fly Heads hides you (nothing can lock on), the Gun is a long-range poke.', 'Ultimate {ult}: 8s Unleashed (+50% speed, +500% damage, dash through anything). Press {ult} again near them for the killing blow (95).', 'Holding Kamutoke or Inumaki\'s Recording? {pick} (or a dash) stores it in the inventory curse — its timer stops. {pick} again pulls it out.'],
   ryu:      ['Each press of {ab3} adds 10% Output: everything hits harder and Granite Blasts get bigger — but you take more damage too (and you already take 20% more).', 'Granite Punch ({ab1}) whiffs are punished hard: only throw it point-blank.', 'Aim Granite Blast with {jump} / {down} during the wind-up. Maximum Granite Blast ({ult}) crosses the whole map.'],
   geto:     ['Dash (or double-tap {left} / {right}) rides a stingray for 3s (up to 200px above where you got on, 11s cooldown): fly over walls and away from trouble.', 'Kuchisake-Onna only works point-blank — the victim gets one key to press; on one keyboard, watch the prompt.', 'The Mirror Curse sends every projectile back at its owner for 6s: summon it against zoners and Gojo.', 'Maximum: Uzumaki uses your whole curse pool (30 to start). Hold {ult} to sacrifice a curse every second: the rest get +3% damage, speed and size. Dead curses are gone for the match.'],
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, up to 3 links) — but when the chain ends, Dismantle AND Cleave are locked for a long time.', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
@@ -19358,7 +19365,7 @@ const CPU_BOT = (function(){
     const want = S.ax > 190 ? 1 : (S.op.state === 'block' || (S.op.ceMax||0) > 180) ? 0 : 2;
     if((X.tool||0) !== want && S.t - (m.toolT||0) > 220){ S.tap('ab3'); m.toolT = S.t; return; }
     if(S.ready2 && S.ax < 760 && S.ax > 60 && (S.hittable || /ragd|slam/.test(S.op.state))){ face(S); S.tap('ab2'); return; }
-    const reach = [96, 250, 88][X.tool||0];
+    const reach = [ATK_RANGE+22, 250, ATK_RANGE+34][X.tool||0];
     if(S.ready1 && S.ax < reach + 10 && S.ady < 90 && (S.hittable || /ragd|slam/.test(S.op.state))){ face(S); if(facing(S)){ S.tap('ab1'); return; } }
     if(S.ax > 300 && S.ax < 1100 && S.hittable && facing(S) && useMO(S, 2)) return;
     if((me.hp < 40 || incoming(S)) && useMO(S, 1)) return;
@@ -20103,8 +20110,8 @@ const MOVE_INFO = {
              ['ab3','Lava Mound · super','A trap that fades nearly invisible: step on it = fire tower (26). Not in water.'], ['ult','Coffin of the Iron Mountain','Domain: burning + lava geysers. Max Output: giant Maximum: Meteor (38, 70 CE).'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
   meimei:   [['ab1','Axe Chop','Overhead chop (20) floors them; spikes them out of the air.'], ['ab2','Axe Spin','Spinning axe, 3 hits around you (18 total).'],
              ['ab3','Ui Ui','Place him, then teleport to him. Down + this key moves him.'], ['ult','Bird Strike','Steer a crow, press again: it dives and explodes (90).'], ['move','Axe Momentum','Full speed while swinging.']],
-  toji:     [['ab1','Flurry','Six quick hits with the tool in hand (about 24 with the Spear, 18 from far with the chain, 35 with Playful Cloud); hits knocked-down foes.'], ['ab2','Four-Step Stab','Four dashes, each closer, then a huge stab (20 × tool) that knocks them away; hits knocked-down foes.'],
-             ['ab3','Cursed Tools','No cooldown: Spear of Heaven (unblockable, ignores damage reduction, drains CE, shatters domains) → Chain of a Thousand Miles (long reach) → Playful Cloud (hardest hits).'], ['ult','Unleashed','8s: +50% speed, +500% damage, dash through terrain (no dash cooldown). Press again: the killing blow (95).'], ['move','Heavenly Restriction','No cursed energy at all: nothing costs CE, longer cooldowns, no aura. Very fast, high jumps, takes 10% less damage.']],
+  toji:     [['ab1','Flurry','Six quick hits with the tool in hand (24 + the tool\'s bonus; the chain hits from 250px); hits knocked-down foes.'], ['ab2','Four-Step Stab','Dashes back and forth around them, closer each time, then a huge stab (24 + 2.5× tool bonus); hits knocked-down foes.'],
+             ['ab3','Cursed Tools','No cooldown: Spear of Heaven (= the item: drains CE, adds cooldowns, shatters domains) → Chain of a Thousand Miles (250px reach) → Playful Cloud (= the item: harder, faster, longer punches).'], ['ult','Unleashed','8s: +50% speed, +500% damage, dash through terrain (no dash cooldown). Press again: the killing blow (95).'], ['move','Heavenly Restriction','No cursed energy at all: nothing costs CE, longer cooldowns, no aura. Normal speed, jump, health and damage.']],
   ryu:      [['ab1','Granite Punch','A lunging punch. Lands = he steps back, charges, and blasts them (18). Whiff = long end lag.'], ['ab2','Granite Blast','Aimable beam (18), bigger with more Output.'],
              ['ab3','Output · special','Each press: +10% Output (up to +80% damage dealt, +20% taken).'], ['ult','Maximum Granite Blast','Aimable, twice as big: a beam across the whole map (30 + up to 30).'], ['move','Cursed Energy Output','Biggest CE pool, takes 20% more. Max Output: homing Output Burst, Granite Barrage.']],
   geto:     [['ab1','Centipedes','3 red centipedes rush the foe (4 each).'], ['ab2','Kuchisake-Onna','Close range: trapped in her simple domain — press the shown key or get cut (15).'],

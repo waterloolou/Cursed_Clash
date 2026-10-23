@@ -82,3 +82,18 @@ Every fighter wins 36–61%. Toji 51% (special-grade target 56, inside the ±5% 
 17 of 21 are within ±5% of their tier target. Drifted after the dash change and the new fighter: Yuta 49 (target 56), Dagon 59 (52),
 Hakari 39 (51), Ryu 56 (49) — left for a follow-up pass rather than shipping untested numbers.
 Tier averages: special grade 54%, special-grade curses 54%, grade 1 (special-grade level) 48%, grade 1 48%, grade 2 and below 40%.
+
+## Oct 23b — Toji balancing
+- **Tools = the items.** `TOJI_TOOLS` entries carry `item:'isoh'` / `item:'cloud'`; new `effItem(p)` returns the item whose effects apply
+  (Toji's tool counts as that item). Every place that checked `this.item==='cloud'` / `'isoh'` for punch reach, punch speed and on-hit
+  effects now uses `effItem`. So with the Spear his punches get +22 reach, +2 a hit, drain 30 CE, add 2.5s to their cooldowns and
+  shatter domains; with Playful Cloud +34 reach, +3 a hit and faster swings — exactly like a player holding the items.
+- His moves use base damage plus the item's on-hit (`_itemOnHit(def, mult, lite)`; `lite` = damage bonus only). Flurry: 3.2 a hit, 8 on the
+  finisher (×1.6 bonus), the drain / cooldown push only on the first hit per target. The chain is unchanged (250px, ×0.75).
+- Removed the old custom Spear (unblockable + ignore damage reduction) and Cloud (×1.45 damage, ×1.6 knockback) stats.
+- **Can't pick up** the ISOH or Playful Cloud items (`_tryPickup`: "ALREADY CARRIES ONE"). Kamutoke / Inumaki's Recording still work.
+- **Natural stats**: `MOVE_PASSIVES.toji` speed 1.18 → 1.0, jump 1.12 → 1.0; removed `TOJI_DMG_IN` (10% less damage taken) and
+  `BAL.out.toji` (×1.2). Health stays 100.
+- **Four-Step Stab rework** (`_tickTojiRush`): dashes alternate sides of the target — past them, back in front, past them again — each
+  landing at 55% of the previous distance (`TOJI_RUSH_MAX` 6 dashes, `TOJI_RUSH_STEP` 120ms), until he's in reach, then a hard stab:
+  `TOJI_RUSH_DMG` 24 + 2.5× the item bonus, big knockback. If there's no room past them (map edge) he stays on his side.
