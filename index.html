@@ -288,6 +288,7 @@ canvas {
       <a data-p="yuki"><i style="background:#f2d36b"></i>Yuki</a>
       <a data-p="geto"><i style="background:#9a86d6"></i>Geto</a>
       <a data-p="ryu"><i style="background:#c98a4b"></i>Ryu</a>
+      <a data-p="toji"><i style="background:#a8b49a"></i>Toji</a>
       <a data-p="online"><i style="background:#ffe066"></i>Online Combat</a>
     </nav>
     <main class="wk-main">
@@ -325,6 +326,7 @@ canvas {
           <a data-p="yuki" style="--c:#f2d36b"><b>Yuki</b><span>Star Rage · Garuda · Black Hole</span></a>
           <a data-p="geto" style="--c:#9a86d6"><b>Geto</b><span>Centipedes · Kuchisake-Onna · Mirror · Maximum: Uzumaki</span></a>
           <a data-p="ryu" style="--c:#c98a4b"><b>Ryu</b><span>Granite Punch · Granite Blast · Output · Maximum Granite Blast</span></a>
+          <a data-p="toji" style="--c:#a8b49a"><b>Toji</b><span>Flurry · Four-Step Stab · Cursed Tools · Unleashed</span></a>
         </div>
         <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
       </section>
@@ -531,6 +533,8 @@ canvas {
         <p><b>Hazard (Oct 17):</b> rubble keeps falling onto the rubble field (the right side) every ~15s. Shadows grow where it'll land; a chunk hits for 10 and stuns.</p>
         <h2>Sendai</h2>
         <p>The Sendai Colony from the Culling Game, at night under the barrier. On the left, Sendai Station with a concourse you can run through and ledges up to its glass roof; the elevated pedestrian deck with stairs at both ends (one-way: walk under them, jump up through the deck), shelters and a sign gantry to stand on; the zelkova avenue (trunks are one-way, canopies hold you); and on the right a sheared tower stump under a torn, peeled-back sky, with floating slabs of debris and a lobby at its foot.</p>
+        <h2>Tokyo No. 1 Colony Theater</h2>
+        <p>(Oct 23) The Ikebukuro theatre Higuruma uses as his base in the Culling Game — where Yuji finds him lying fully clothed in a bathtub in the middle of the stage. The house lights are dead: the only light is a follow spot from the booth at the back of the balcony, pooled on the tub, plus the green glow of the emergency-exit signs. Everything outside the spotlight sinks into the dark. On the left, the balcony (one-way, on two columns, with stairs up from the stalls); then the raked stalls with rows of red seats (one-way: walk through them or stand on the seat backs); the front aisle; and the stage, 110px up with steps at the side and the bathtub in the middle (metal — it breaks). Ledges up the stage-right wall lead to a fly-gallery catwalk and a lighting batten above it.</p>
         <h2>Terrain rules</h2>
         <ul>
           <li>Almost every technique carves holes that match its shape. Broken terrain returns after <b>30 seconds</b> (it waits if someone is standing there).</li>
@@ -830,6 +834,19 @@ canvas {
           <tr><td>Movement</td><td>Cursed Energy Output</td><td>The biggest cursed energy pool in the game (320) — but every move costs <b>30% more CE</b> (Output 20 a press). Slightly slower runner, and he <b>takes 20% more damage</b>.</td></tr>
         </table>
       </section>
+      <section data-p="toji">
+        <h1 style="--c:#a8b49a">Toji Fushiguro</h1>
+        <p class="lead">The Sorcerer Killer. A <b>Heavenly Restriction</b> took every drop of his cursed energy and gave him a superhuman body instead — and he fights with cursed tools pulled from the curse coiled around his shoulders. Nothing he does costs CE, but his moves recharge slower than anyone's.</p>
+        <table>
+          <tr><th>Key</th><th>Move</th><th>Details</th></tr>
+          <tr><td>R</td><td>Cursed Tools</td><td>Swaps to the next tool, <b>no cooldown</b>. <b>Inverted Spear of Heaven</b>: cuts the soul — hits can't be blocked (only a perfect block), ignore damage reduction (even Infinity) and drain 8 CE; the stab drains 30, pushes their cooldowns back 1.5s and <b>shatters a domain</b> they're holding. <b>Chain of a Thousand Miles</b>: the Spear on a chain — 250px reach, 75% damage. <b>Playful Cloud</b>: pure strength — 145% damage, much more knockback, short reach.</td></tr>
+          <tr><td>Q</td><td>Flurry</td><td>Six fast hits with the tool in hand, the last one knocks them away (about 19 with the Spear, 14 with the chain from 250px, 28 with Playful Cloud). <b>Hits fighters who are knocked down.</b> 6s cooldown.</td></tr>
+          <tr><td>E</td><td>Four-Step Stab</td><td>Four dashes at the nearest foe (up to 820px), each closing more of the gap, then a huge stab: 16 × the tool's damage and a big knockback. <b>Hits fighters who are knocked down.</b> 9s cooldown.</td></tr>
+          <tr><td>F</td><td>Unleashed <em>(ultimate, 150)</em></td><td>8 seconds: <b>+50% speed</b>, <b>+500% damage</b>, and his dash has <b>no cooldown and goes straight through any terrain</b>. Press F again while it lasts for the <b>killing blow</b>: he blinks to the nearest foe within 520px and stabs them for <b>95</b> (ignores every defence), ending Unleashed.</td></tr>
+          <tr><td>Max Output</td><td>Fly Heads · Gun</td><td><b>Fly Heads</b>: a swarm of tiny fly-head curses fills the air around him for 6s; while he stays inside it he's <b>invisible</b> and nothing can lock on to him (no damage, 16s cooldown). <b>Gun</b> (blockable): a pistol shot straight at the opponent, 14 and a stagger (12s cooldown).</td></tr>
+          <tr><td>Movement</td><td>Heavenly Restriction</td><td>No cursed energy bar, no aura. One of the fastest runners (+18%) with high jumps (+12%). No anti-domain technique.</td></tr>
+        </table>
+      </section>
       <section data-p="geto">
         <h1 style="--c:#9a86d6">Suguru Geto</h1>
         <p class="lead">A special-grade sorcerer with <b>Cursed Spirit Manipulation</b>: every curse he has defeated and swallowed is his to summon. He fights through his curses.</p>
@@ -999,7 +1016,7 @@ const DMG_HIT  = 2;
 const DMG_KB   = 5;
 const DMG_SLAM = 15;
 
-const S = { MAHISPLIT:'mahisplit', MAHICURSE:'mahicurse', MAHIIBDK:'mahiibdk', IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
+const S = { TODOGRAB:'todograb', TOJIFLURRY:'tojiflurry', TOJIRUSH:'tojirush', TOJIFIN:'tojifin', MAHISPLIT:'mahisplit', MAHICURSE:'mahicurse', MAHIIBDK:'mahiibdk', IDLE:'idle', WALK:'walk', AIR:'air', ATCK:'atck',
             DIVE:'dive', STUN:'stun', RAGD:'ragd', SLAM:'slam', DEAD:'dead',
             CLEAVE:'cleave', DISMANTLE:'dismantle', FUGA:'fuga', LAPSE:'lapse',
             REVERSAL:'reversal', HOLLOW:'hollow', DOMAIN:'domain',
@@ -1045,10 +1062,13 @@ const TODO_PUNCH_WINDUP  = 260;     // ms wind-up
 const TODO_PUNCH_ACTIVE  = 170;     // ms the fist is live
 const TODO_PUNCH_TOTAL   = 620;     // ms whole move
 const TODO_PUNCH_RANGE   = 100;
-const TODO_PUNCH_DMG     = 15;
-const TODO_PUNCH_CD      = 3500;
+const TODO_PUNCH_DMG     = 18;      // Oct 23: 15 → 18
+const TODO_PUNCH_CD      = 3000;    // Oct 23: 3.5s → 3s
 const TODO_BW_RANGE      = 650;     // Boogie Woogie swap range
-const TODO_BW_CD         = 7000;
+const TODO_BW_CD         = 6000;    // Oct 23: 7s → 6s
+const TODO_BW_STUN       = 1500;    // Oct 23: the swapped foe is stunned 1.5s (once every 3.5s at most)
+const TODO_BW_STUN_IMM   = 3500;
+const TODO_GRAB_REACH    = 96, TODO_GRAB_LIFT = 480, TODO_GRAB_DMG = 14;   // Oct 23: Grab & Slam (Max Output 1, replaces Feint Clap)
 const TODO_SUPER_REQ     = 40;      // damage dealt to unlock Unlimited Boogie
 const TODO_SUPER_DUR     = 30000;   // Boogie Woogie has no cooldown for 30s
 const TODO_SD_DUR        = 8000;    // Simple Domain lasts 8s
@@ -1059,7 +1079,7 @@ const ITEM_SPEECH_STUN   = 5000;
 
 // ── Ultimate Mechamaru (Mechamaru's domain: uses domain charge) ──
 const PUPPET_REQ         = 40;      // super: damage dealt to summon a puppet (like Fuga / Hollow Purple)
-const PUPPET_HP          = 30;
+const PUPPET_HP          = 20;      // Oct 23: 30 → 20
 const PUPPET_LIFE        = 20000;   // puppet fights for 20s or until destroyed
 const MECH_ULT_VANISH    = 450;     // ms sinking into the ground
 const MECH_ULT_EMERGE    = 900;     // ms mech bursting up through the floor
@@ -1348,6 +1368,7 @@ function _pan(x){
 
 // ── SOUND EFFECTS ──
 const SFX = {
+  gunshot:(t,p)=>{ _noise(t, 0.14, 0.9, p, {f:5000, to:400}); _osc('square', 95, t, 0.07, 0.5, p, {to:38}); _noise(t, 0.5, 0.12, p, {f:900, verb:true}); },
   swing:  (t,p)=>{ _noise(t, 0.09, 0.18, p, {type:'bandpass', f:2400, to:900, q:1.2}); },
   hit:    (t,p)=>{ _osc('sine', 150, t, 0.09, 0.5, p, {to:60}); _noise(t, 0.05, 0.35, p, {f:2600, to:600}); },
   hit2:   (t,p)=>{ _osc('sine', 120, t, 0.16, 0.7, p, {to:45}); _noise(t, 0.09, 0.5, p, {f:3000, to:400}); _osc('square', 70, t, 0.06, 0.12, p, {lp:600}); },
@@ -1406,7 +1427,7 @@ function snd(name, x){ sfxLocal(name, x); }
 
 // ── VOICE LINES (text-to-speech) ──
 const VOICE = {
-  geto:{pitch:0.85, rate:0.95}, ryu:{pitch:0.8, rate:1.05}, sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
+  geto:{pitch:0.85, rate:0.95}, ryu:{pitch:0.8, rate:1.05}, toji:{pitch:0.72, rate:0.98}, sukuna:{pitch:0.45, rate:0.85}, gojo:{pitch:1.05, rate:1.0}, yuji:{pitch:1.15, rate:1.1}, yuta:{pitch:1.1, rate:1.0},
   mechamaru:{pitch:0.2, rate:0.9}, todo:{pitch:0.55, rate:0.95}, choso:{pitch:0.7, rate:0.9}, higuruma:{pitch:0.75, rate:0.9},
   hakari:{pitch:1.0, rate:1.15}, meimei:{pitch:1.25, rate:1.0}, jogo:{pitch:0.9, rate:1.1}, dagon:{pitch:0.6, rate:0.85}, hanami:{pitch:1.1, rate:0.9}, mahito:{pitch:1.15, rate:1.05}, takaba:{pitch:1.05, rate:1.15}, naoya:{pitch:1.0, rate:1.2}, naoyac:{pitch:0.45, rate:0.95}, megumi:{pitch:0.95, rate:1.0}, yuki:{pitch:1.15, rate:1.05}, meguna:{pitch:0.6, rate:0.95}, kenjaku:{pitch:0.8, rate:0.9}, judge:{pitch:0.1, rate:0.7}
 };
@@ -1590,13 +1611,14 @@ const VL_LINES = [
   ['meimei','Ui Ui!'], ['meimei','Bird Strike!'],
   ['naoya','Keep up!'], ['naoya','Can you keep up? Twenty-four frames a second.'], ['naoya','Too slow.'], ['naoyac','I came back to kill you myself.'], ['naoyac','Faster. Faster!'], ['naoyac','Domain Expansion. Time Cell Moon Palace.'],
   ['ryu','Granite Blast!'], ['ryu','Maximum… Granite Blast!'], ['ryu','Let\'s see your output.'],
+  ['toji','I\'ll take it seriously, then.'], ['toji','Got you.'], ['toji','Bye.'], ['toji','I\'m not a sorcerer. Just a monkey.'],
   ['geto','Go.'], ['geto','Kuchisake-Onna.'], ['geto','Maximum: Uzumaki.'], ['geto','Rainbow Dragon.'],
   ['yuki','Garuda!'], ['yuki','Garuda — go!'], ['yuki','Star Rage.'], ['yuki','Lighter.'], ['yuki','Back to normal.'], ['yuki','I\'ll take you with me.'],
   ['megumi','Rabbit Escape.'], ['megumi','Bottomless Well.'], ['megumi','Divine Dog: Totality.'], ['megumi','Domain Expansion. Chimera Shadow Garden.'], ['megumi','Max Elephant.'], ['megumi','Nue.'],
   ['meguna','This body is mine now.'], ['meguna','Nue.'], ['meguna','Agito.'], ['meguna','Dismantle.'], ['meguna','With this treasure I summon. Eight-Handled Sword Divergent Sila Divine General Mahoraga.'],
   ['kenjaku','Maximum. Uzumaki.'], ['kenjaku','Anti-Gravity System.'], ['kenjaku','Domain Expansion. Womb Profusion.']
 ];
-const VL_NAMES = {ryu:'Ryu', geto:'Geto', sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', megumi:'Megumi', meguna:'Meguna (feat)', yuki:'Yuki', kenjaku:'Kenjaku (feat)'};
+const VL_NAMES = {toji:'Toji', ryu:'Ryu', geto:'Geto', sukuna:'Sukuna', gojo:'Gojo', yuji:'Yuji', yuta:'Yuta', mechamaru:'Mechamaru', todo:'Todo', choso:'Choso', higuruma:'Higuruma', judge:'The Judge (court)', hakari:'Hakari', meimei:'Mei Mei', jogo:'Jogo', dagon:'Dagon', hanami:'Hanami', mahito:'Mahito', takaba:'Takaba', naoya:'Naoya', naoyac:'Naoya (curse)', megumi:'Megumi', meguna:'Meguna (feat)', yuki:'Yuki', kenjaku:'Kenjaku (feat)'};
 const vlId = (who, text) => who+'|'+text;
 const VL = { blobs:{}, bufs:{}, db:null, rec:null, recId:'', stream:null, playing:null };
 
@@ -2042,6 +2064,7 @@ const MOVE_PASSIVES = {
   todo:     {spd:0.94, jmp:1.06, name:'Heavyweight Landing',   desc:'A bit slower, but landing from a high fall cracks the ground and stuns anyone close (5 damage).'},
   choso:    {spd:1.00, jmp:1.00, name:'Blood Rush',            desc:'Below half health his blood boils: 20% faster.'},
   naoya:    {spd:1.28, jmp:0.90, name:'Projection Sorcery',    desc:'The fastest fighter (28% faster, up to 50% after a second of running) but jumps 10% lower. Every 3rd hit of a quick string freezes the foe in a frame for 0.6s.'},
+  toji:     {spd:1.18, jmp:1.12, name:'Heavenly Restriction', desc:'Not a drop of cursed energy: no move costs CE and he gives off no aura, but his moves recharge slower. A superhuman body — one of the fastest runners, with high jumps.'},
   ryu:      {spd:0.98, jmp:1.00, name:'Cursed Energy Output', desc:'Each press of his special adds 10% to his Output bar: up to 80% more damage, but up to 20% more taken on top of his base +20%.'},
   geto:     {spd:1.02, jmp:1.00, name:'Stingray',              desc:'He has no dash: dash (or double-tap left / right) mounts a stingray curse for 3s — fly in any direction with the movement keys (6s cooldown).'},
   yuki:     {spd:1.04, jmp:1.04, name:'Star Rage',             desc:'Her mass shift (special) changes how she moves: extreme mass is 28% slower and jumps lower, light mass is 45% faster and jumps 25% higher.'},
@@ -4938,7 +4961,8 @@ function terFill(mat, x, y, w, h){           // fills cells whose centre is insi
 // ═══════════════════════════════════════════════════════════════════
 const MAT_METAL = 5, MAT_TILE = 6, MAT_BEAM = 7, MAT_LEAF = 8, MAT_PILLAR = 9;
 // One-way materials: walk through them sideways, jump up through, stand on their top surface
-const T_ONEWAY = [0,0,0,1,0,0,0,1,1,1,0,0,0,0,1,0,0,1];
+const T_ONEWAY = [0,0,0,1,0,0,0,1,1,1,0,0,0,0,1,0,0,1,1];   // 18 = MAT_SEAT (theatre seat rows, Oct 23)
+const MAT_SEAT = 18;
 let terMap = 0;
 let mapIdx = 0;
 
@@ -5359,6 +5383,120 @@ function paintShinjukuBig(g, R){
   g.strokeStyle='rgba(200,195,185,.35)'; g.lineWidth=1.5; g.beginPath(); g.moveTo(0,G); g.lineTo(W,G); g.stroke();
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// TOKYO NO. 1 COLONY THEATER (Oct 23) — the Ikebukuro theatre Higuruma uses as his base in the Culling Game, where Yuji finds
+// him lying fully clothed in a bathtub in the middle of the stage. The house lights are dead: the only light is a follow spot
+// from the booth at the back of the balcony, pooled on the tub, and the green glow of the emergency-exit signs.
+//  Left → right: lobby doors and balcony (with the spotlight booth) · raked stalls with rows of red seats · the front aisle ·
+//  the stage (110px up, steps at the side) with the bathtub · a fly-gallery catwalk and lighting batten above it
+// ═══════════════════════════════════════════════════════════════════
+const THR = { W:2400, H:1100, GND:1020, stage:110, spot:[180, 1020-470], pool:[1800, 1020-110] };
+function thrRake(x){ const G = THR.GND; return G - Math.max(12, Math.min(130, 12 + (1180 - x)/(1180 - 140)*118)); }   // the stalls floor, rising toward the back
+function buildTheater(){
+  const G = THR.GND, SG = G - THR.stage;
+  // raked stalls (solid, a gentle walkable slope) with rows of seats on it (one-way: walk through them, stand on the seat backs)
+  terFillPoly(MAT_WOOD, [[0,G],[0,G-130],[140,G-130],[1180,G-12],[1180,G]]);
+  for(let i=0;i<11;i++){ const x = 1110 - i*88; terFill(MAT_SEAT, x, thrRake(x+30) - 26, 58, 22); }
+  // balcony (one-way) on two support columns, with two rows of seats and stairs up from the stalls
+  terFill(MAT_SLAB, 0, G-310, 760, 14);
+  for(const x of [300, 600]) terFill(MAT_PILLAR, x, G-296, 18, 296);
+  for(const x of [120, 300, 480]) terFill(MAT_SEAT, x, G-336, 120, 22);
+  terFill(MAT_SLAB, 10, G-225, 80, 8); terFill(MAT_SLAB, 680, G-200, 80, 8);   // ledges up to the balcony (a box ledge at the back wall, one by the balcony front)
+  // stage: solid boards 110px up, steps at the side, the bathtub in the middle
+  terFill(MAT_WOOD, 1300, SG, W-1300, THR.stage);
+  terFillPoly(MAT_STAIR, [[1222,G],[1300,SG],[1300,SG+14],[1240,G]]);
+  terFill(MAT_METAL, 1762, SG-32, 78, 32);                               // the bathtub
+  // fly gallery: ledges up the stage-right wall to a catwalk, and a lighting batten above it
+  for(const y of [SG-100, SG-200, SG-300]) terFill(MAT_SLAB, 2290, y, 80, 8);
+  terFill(MAT_SLAB, 1480, SG-310, 760, 10);
+  terFill(MAT_METAL, 1640, SG-440, 360, 8);
+}
+function paintTheater(g, R){
+  const G = THR.GND, SG = G - THR.stage, [sx, sy] = THR.spot, [px, py] = THR.pool;
+  // the auditorium in the dark: maroon walls fading to black, a coffered ceiling and a dead chandelier
+  let gr = g.createLinearGradient(0, 0, 0, G); gr.addColorStop(0, '#050304'); gr.addColorStop(0.5, '#120709'); gr.addColorStop(1, '#1a0b0d');
+  g.fillStyle = gr; g.fillRect(0, 0, W, G);
+  g.strokeStyle = 'rgba(160,120,70,0.08)'; g.lineWidth = 2;
+  for(let x=0; x<1290; x+=120){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x+60, 120); g.stroke(); }
+  g.beginPath(); g.moveTo(0, 120); g.lineTo(1290, 120); g.stroke();
+  g.strokeStyle = 'rgba(190,160,110,0.18)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(640, 0); g.lineTo(640, 150); g.stroke();
+  g.fillStyle = 'rgba(70,60,50,0.45)'; for(let k=0;k<5;k++){ g.beginPath(); g.ellipse(640, 160 + k*14, 70 - k*12, 7, 0, 0, Math.PI*2); g.fill(); }
+  for(let k=0;k<16;k++){ g.fillStyle = 'rgba(150,140,120,0.18)'; g.beginPath(); g.arc(580 + R()*120, 170 + R()*60, 2, 0, Math.PI*2); g.fill(); }
+  // side boxes along the house wall (unlit sconces)
+  for(const [bx, by] of [[860, G-560], [1040, G-560], [860, G-420], [1040, G-420]]){
+    g.fillStyle = '#1e0c0f'; g.fillRect(bx, by, 150, 90); g.fillStyle = '#0a0405'; g.fillRect(bx+10, by+10, 130, 60);
+    g.strokeStyle = 'rgba(190,150,80,0.35)'; g.lineWidth = 2; g.beginPath(); g.moveTo(bx, by+70); g.quadraticCurveTo(bx+75, by+95, bx+150, by+70); g.stroke();
+    g.fillStyle = 'rgba(180,150,90,0.25)'; g.fillRect(bx+70, by-14, 10, 12); }
+  // proscenium arch: gilded frame, heavy red house curtains drawn open, a scalloped valance
+  const pl = 1290, pr = W, top = SG - 560;
+  g.fillStyle = '#060304'; g.fillRect(pl, top, pr-pl, SG-top);                                      // the dark stage house
+  g.fillStyle = 'rgba(60,50,46,0.35)'; for(let x=pl+40; x<pr; x+=90) g.fillRect(x, top+40, 3, SG-top-40);   // backdrop seams
+  g.fillStyle = '#5a3a18'; g.fillRect(pl-26, top-40, 26, SG-top+40); g.fillRect(pl-26, top-40, pr-pl+26, 30);
+  g.strokeStyle = 'rgba(220,180,90,0.45)'; g.lineWidth = 3; g.strokeRect(pl-20, top-34, pr-pl+14, SG-top+34);
+  const drape = (x0, w, dir) => { for(let k=0;k<7;k++){ const x = x0 + dir*k*w/7, c = 70 + (k%2)*30;
+      const grd = g.createLinearGradient(x, 0, x + dir*w/7, 0); grd.addColorStop(0, `rgb(${c+40},10,18)`); grd.addColorStop(1, `rgb(${c},6,12)`);
+      g.fillStyle = grd; g.beginPath(); g.moveTo(x, top-10); g.lineTo(x + dir*w/7, top-10); g.quadraticCurveTo(x + dir*w/7 + dir*14*(k/7), SG*0.7 + top*0.3, x + dir*w/7 - dir*10, SG); g.lineTo(x - dir*6, SG); g.closePath(); g.fill(); } };
+  drape(pl, 150, 1); drape(pr, 170, -1);
+  for(let x=pl; x<pr; x+=70){ g.fillStyle = '#7a0c16'; g.beginPath(); g.moveTo(x, top-12); g.quadraticCurveTo(x+35, top+44, x+70, top-12); g.fill();
+    g.strokeStyle = 'rgba(220,180,90,0.5)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, top-12); g.quadraticCurveTo(x+35, top+44, x+70, top-12); g.stroke(); }
+  // stage lighting rig above: a row of dark par cans on the batten, two of them still glowing amber
+  for(let x=1660; x<2000; x+=40){ g.fillStyle = '#18161a'; g.fillRect(x, SG-436, 18, 22); }
+  for(const x of [1700, 1900]){ const rg = g.createRadialGradient(x+9, SG-412, 2, x+9, SG-412, 26); rg.addColorStop(0, 'rgba(255,190,110,0.6)'); rg.addColorStop(1, 'rgba(255,160,80,0)'); g.fillStyle = rg; g.fillRect(x-20, SG-440, 58, 60); }
+  // balcony front (gilt rail) and the follow-spot booth at the back
+  g.fillStyle = '#24100f'; g.fillRect(0, G-310, 760, 40); g.strokeStyle = 'rgba(210,170,90,0.4)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, G-312); g.lineTo(760, G-312); g.stroke();
+  for(let x=10; x<760; x+=22){ g.fillStyle = 'rgba(200,160,80,0.22)'; g.fillRect(x, G-300, 3, 26); }
+  g.fillStyle = '#0c0708'; g.fillRect(110, sy-40, 150, 70); g.fillStyle = '#1c1416'; g.fillRect(sx-14, sy-10, 40, 20);
+  g.fillStyle = '#fff4dc'; g.beginPath(); g.arc(sx+28, sy, 7, 0, Math.PI*2); g.fill();
+  // the spotlight's beam (the live overlay adds the light on the fighters)
+  { const ang = Math.atan2(py - sy, px - sx), L = Math.hypot(px - sx, py - sy);
+    g.save(); g.translate(sx+28, sy); g.rotate(ang); const bg2 = g.createLinearGradient(0, 0, L, 0); bg2.addColorStop(0, 'rgba(255,244,220,0.10)'); bg2.addColorStop(1, 'rgba(255,236,200,0.03)');
+    g.fillStyle = bg2; g.beginPath(); g.moveTo(0, -5); g.lineTo(L, -95); g.lineTo(L, 95); g.lineTo(0, 5); g.closePath(); g.fill(); g.restore(); }
+  // emergency-exit signs (green, Japanese pictogram style) over the lobby doors and by the stage steps
+  const exit = (x, y) => { g.fillStyle = 'rgba(40,220,120,0.18)'; g.beginPath(); g.arc(x+24, y+10, 34, 0, Math.PI*2); g.fill();
+    g.fillStyle = '#1fbf6a'; g.fillRect(x, y, 48, 20); g.fillStyle = '#e8fff0'; g.fillRect(x+4, y+4, 12, 12); g.fillStyle = '#1fbf6a'; g.fillRect(x+8, y+6, 3, 9);
+    g.fillStyle = '#e8fff0'; g.font = '700 10px Rajdhani, sans-serif'; g.textAlign = 'left'; g.fillText('非常口', x+19, y+14); };
+  exit(40, G-470); exit(40, G-250); exit(1210, G-240);
+  g.fillStyle = '#0b0607'; g.fillRect(0, G-430, 34, 300); g.fillRect(0, G-230, 34, 100);   // lobby doors (dark)
+  // a few broken and dust-sheeted seats in the dark, and the colony notice taped to the wall
+  g.fillStyle = '#d8d2c0'; g.fillRect(1150, G-360, 70, 46); g.fillStyle = '#2a1a10'; g.font = '700 9px Rajdhani, sans-serif'; g.textAlign = 'center';
+  g.fillText('TOKYO No.1', 1185, G-342); g.fillText('COLONY', 1185, G-330); g.fillText('死滅回游', 1185, G-318);
+  // stage floor edge (lip) and the orchestra-side wall below it
+  g.fillStyle = '#2a1608'; g.fillRect(1300, SG, W-1300, 6);
+  g.fillStyle = '#100808'; g.fillRect(0, G, W, H-G); g.fillStyle = 'rgba(120,30,36,0.25)'; g.fillRect(0, G, 1300, 6);   // carpet
+  g.strokeStyle = 'rgba(160,110,90,.3)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(0, G); g.lineTo(W, G); g.stroke();
+}
+// the live lighting: everything outside the spotlight's pool sinks into the dark, and the beam lights whoever stands in it
+function drawTheaterLight(t){
+  const G = THR.GND, [sx, sy] = THR.spot, [px, py] = THR.pool;
+  // Higuruma's bathtub (drawn over its terrain block while it's still standing)
+  { const SG = G - THR.stage, tx = 1762, ty = SG - 32;
+    if(terAt(tx + 39, ty + 16)){ ctx.save();
+      ctx.fillStyle = '#e9e6de'; ctx.strokeStyle = '#8a8478'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(tx - 2, ty + 2); ctx.lineTo(tx + 80, ty + 2); ctx.quadraticCurveTo(tx + 80, ty + 28, tx + 66, ty + 28); ctx.lineTo(tx + 12, ty + 28); ctx.quadraticCurveTo(tx - 2, ty + 28, tx - 2, ty + 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#6a8fa6'; ctx.fillRect(tx + 2, ty + 1, 74, 4);   // water
+      ctx.fillStyle = '#b8a070'; for(const fx of [tx + 6, tx + 66]){ ctx.beginPath(); ctx.ellipse(fx + 3, ty + 30, 4, 3, 0, 0, Math.PI*2); ctx.fill(); }   // clawed feet
+      ctx.restore(); } }
+  const flick = 1 - 0.04*Math.max(0, Math.sin(t*0.017) + Math.sin(t*0.043) - 1.2);
+  ctx.save();
+  ctx.translate(px, py - 40); ctx.scale(3.4, 1);
+  const g = ctx.createRadialGradient(0, 0, 40, 0, 0, 300); g.addColorStop(0, 'rgba(4,2,6,0)'); g.addColorStop(0.5, 'rgba(4,2,6,0.25)'); g.addColorStop(1, `rgba(4,2,6,${Math.min(0.75, 0.62/flick)})`);
+  ctx.fillStyle = g; ctx.fillRect(-px/3.4 - 400, -py - 200, W/3.4 + 800, H + 400);
+  ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const ang = Math.atan2(py - sy, px - sx), L = Math.hypot(px - sx, py - sy);
+  ctx.translate(sx+28, sy); ctx.rotate(ang);
+  const bg2 = ctx.createLinearGradient(0, 0, L, 0); bg2.addColorStop(0, `rgba(255,240,210,${0.05*flick})`); bg2.addColorStop(1, `rgba(255,230,190,${0.09*flick})`);
+  ctx.fillStyle = bg2; ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(L, -95); ctx.lineTo(L, 95); ctx.lineTo(0, 5); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(px, py); ctx.scale(2.6, 0.45);
+  const pg = ctx.createRadialGradient(0, 0, 10, 0, 0, 120); pg.addColorStop(0, `rgba(255,236,200,${0.22*flick})`); pg.addColorStop(1, 'rgba(255,236,200,0)');
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(0, 0, 120, 0, Math.PI*2); ctx.fill(); ctx.restore();
+}
+function drawMapFore(i){
+  if(activeDomain) return;
+  if(i===5) drawTheaterLight(Date.now());
+}
 const MAPS = [
   { name:'SHIBUYA STATION', sub:'Street to B5F · the Shibuya Incident', w:SHB.W, h:SHB.H, gnd:SHB.GND,
     spawns:[[640, SHB.street], [1560, SHB.street]], build(){ buildShibuya(); } },
@@ -5369,10 +5507,12 @@ const MAPS = [
   { name:'TRAINING ROOM', sub:'Flat floor · distance markers · training only', w:1600, h:640, gnd:560, training:true,
     spawns:[[640, 560], [900, 560]], build(){ /* nothing: a perfectly flat floor */ } },
   { name:'SENDAI', sub:'Sendai Colony · station deck, zelkova avenue, a torn sky', w:SND.W, h:SND.H, gnd:SND.GND,
-    spawns:[[560, SND.GND], [1640, SND.GND]], build(){ buildSendai(); } }
+    spawns:[[560, SND.GND], [1640, SND.GND]], build(){ buildSendai(); } },
+  { name:'TOKYO NO. 1 COLONY THEATER', sub:'Ikebukuro · the dark theatre where Higuruma waits in a bathtub on the stage', w:THR.W, h:THR.H, gnd:THR.GND,
+    spawns:[[1236, THR.GND], [2060, THR.GND - THR.stage]], build(){ buildTheater(); } }
 ];
 const TRAINING_MAP = 3;
-function mapChoices(){ return (typeof gameMode!=='undefined' && gameMode==='training') ? [TRAINING_MAP, 0, 1, 2, 4] : MAPS.map((m, i) => i).filter(i => !MAPS[i].training); }
+function mapChoices(){ return (typeof gameMode!=='undefined' && gameMode==='training') ? [TRAINING_MAP, 0, 1, 2, 4, 5] : MAPS.map((m, i) => i).filter(i => !MAPS[i].training); }
 function paintTrainingRoom(g){
   const w = W, h = H, gnd = GND;
   const bg = g.createLinearGradient(0, 0, 0, gnd); bg.addColorStop(0, '#1b1f26'); bg.addColorStop(1, '#2a303a');
@@ -5419,7 +5559,7 @@ function getMapBG(i){
   const [mw, mh, mg] = mapDims(i);
   const cv = document.createElement('canvas'); cv.width = mw; cv.height = mh;
   const g = cv.getContext('2d');
-  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom, paintSendai][i](g, _rng(1337+i*101)));
+  withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom, paintSendai, paintTheater][i](g, _rng(1337+i*101)));
   _mapBG[i] = cv;
   return cv;
 }
@@ -5574,6 +5714,13 @@ function drawMapAmbient(i, t){
       ctx.fillStyle = `rgba(150,210,255,${0.25+0.2*Math.sin(m.a)})`; ctx.fillRect(m.x + Math.sin(m.a)*6, m.y, 2, 2); }
     { const sg = ctx.createRadialGradient(1750, 260, 20, 1750, 260, 320); sg.addColorStop(0, `rgba(120,190,255,${0.07+0.04*Math.sin(t*0.0015)})`); sg.addColorStop(1, 'rgba(120,190,255,0)');
       ctx.fillStyle = sg; ctx.fillRect(1430, -60, 640, 640); }   // soft pulse around the torn sky (was a hard-edged 600×600 rectangle)
+  } else if(i===5){
+    // dust turning in the follow spot's beam
+    const [sx, sy] = THR.spot, [px, py] = THR.pool;
+    if(_mapAmb.length < 70) _mapAmb.push({k:Math.random(), o:(Math.random()-0.5), a:Math.random()*6, sp:0.0004 + Math.random()*0.0006});
+    for(const m of _mapAmb){ m.k += m.sp; m.a += 0.02; if(m.k > 1){ m.k = 0.05; m.o = Math.random()-0.5; }
+      const x = sx+28 + (px - sx - 28)*m.k, y = sy + (py - sy)*m.k + m.o*2*(5 + 90*m.k) + Math.sin(m.a)*4;
+      ctx.fillStyle = `rgba(255,240,215,${(0.25+0.25*Math.sin(m.a))*Math.min(1, m.k*3)})`; ctx.fillRect(x, y, 1.6, 1.6); }
   } else if(i===2){
     // rising embers
     if(_mapAmb.length < 40) _mapAmb.push({x:Math.random()*W, y:GND, vx:(Math.random()-.5)*0.4, vy:-(0.4+Math.random()*0.9), life:1});
@@ -5907,6 +6054,7 @@ function _terCell(g, r, c){ {
     else if(v===MAT_WOOD)  col = (r%3===0) ? '#2e1f15' : `rgb(${76+n*14|0},${52+n*10|0},${36+n*8|0})`;
     else if(v===MAT_PLASTER) col = (r%9===0) ? '#3a3530' : `rgb(${210+n*14|0},${205+n*12|0},${192+n*10|0})`;
     else if(v===MAT_ROAD)  col = `rgb(${54+n*8|0},${54+n*8|0},${62+n*8|0})`;
+    else if(v===18)        col = (r%4===0) ? '#2a080c' : (c%3===0 ? '#4a1016' : `rgb(${104+n*22|0},${18+n*8|0},${26+n*8|0})`);   // seat rows
     else if(v===15)        col = (r%2===0) ? '#8b929e' : (c%6===0 ? '#e7eaee' : '#aab1bc');
     else if(v===14)        col = ((c+r)%5===0) ? '#3a2614' : (r%4===0 && n>0.7) ? '#6f9a48' : `rgb(${96+n*18|0},${66+n*12|0},${40+n*8|0})`;
     else                   col = `rgb(${82+n*12|0},${83+n*12|0},${88+n*12|0})`;
@@ -8108,7 +8256,7 @@ class Player {
     if(isNaoya(this)){ this._hp = NAO_HP; this.maxHp = NAO_HP; }
     this.naoDashCd=0; this.naoComboCd=0; this.naoRocketCd=0; this.naoFieldCd=0; this.naoCharge=0; this.naoTrail=[]; this.framedT=0; this.frameMax=0; this.naoRunT=0; this.naoAng=0; this.naoHitN=0;
     this.megRabCd=0; this.megWellCd=0; this.megNueCd=0; this.megAgiCd=0; this.megCharge=0; this.gardenT=0; this.rabbitT=0; this.wellT=0; this.mahoTurns=0; this.wcsDone=false;
-    this.ryuPunchCd=0; this.ryuBeamCd=0; this.ryuOut=0; this.getoCentCd=0; this.getoKuchiCd=0; this.getoCharge=0; this.rayT=0; this.rayCd=0; this.swarmT=0; if(this.getoPool===undefined) this.getoPool=30;   // GETO_POOL (defined later in the file)
+    this.ryuPunchCd=0; this.ryuBeamCd=0; this.ryuOut=0; this.tojiFlCd=0; this.tojiRushCd=0; this.tojiUltT=0; this.tojiGunT=0; this.tojiInvis=false; this.getoCentCd=0; this.getoKuchiCd=0; this.getoCharge=0; this.rayT=0; this.rayCd=0; this.swarmT=0; if(this.getoPool===undefined) this.getoPool=30;   // GETO_POOL (defined later in the file)
     this.yukiGrapCd=0; this.yukiThrowCd=0; this.yukiMass=0; this.holeT=0; this.grapHit=false;
     this.takRpsCd=0; this.takKanCd=0; this.takCharge=0; this.counterT=0; this.kanHit=false; this.lastCombatT=0; this.swapCd=0;
     this.guard=undefined; this.oaKind=null; this.oaChain=0; this.oaHitAt=null; this.hitsTaken=0; this.cmbHits=0; this.frsT=0; this.adT=0; this.adName=null; this.confiscT=0;
@@ -8238,7 +8386,8 @@ class Player {
     if(this.mechUltPhase===1 || this.mechUltPhase===2) d = 0;
     else if(this.mechUltPhase===3 && !this._mechSelfKill) d *= MECH_ULT_ARMOR;
     { const oppM = this===p1 ? p2 : this===p2 ? p1 : null;
-      if(v > 0 && !this._mechSelfKill){ d *= this._dmgIn(); if(oppM){ d *= oppM._dmgOut(); d *= balMul(this, oppM); } }
+      // _rawHit: Toji's killing blow lands at full value; _noDR: the Spear of Heaven ignores the target's damage reduction
+      if(v > 0 && !this._mechSelfKill && !this._rawHit){ if(!this._noDR) d *= this._dmgIn(); if(oppM){ d *= oppM._dmgOut(); d *= balMul(this, oppM); } }
       // Naoya's combos fall off: past 25 damage in one string his hits do half, past 40 a fifth (stops wall loops)
       if(d > 0 && oppM && isNaoya(oppM) && !this._rawDmg){
         if(terClock - (this.naoCmbT||-1e9) > 1400) this.naoCmb = 0;
@@ -8354,6 +8503,8 @@ class Player {
     if(this.isPuppet || this.state===S.DEAD){ this._evaPrev = 0; return; }
     if(this.eva===undefined) this.eva = 0;
     this.eva = Math.min(EVA_MAX, this.eva + EVA_REGEN*dt*([S.STUN, S.RAGD, S.SLAM].includes(this.state) ? EVA_STUCK_MUL : 1));
+    // Oct 23: the moment the Evasive bar fills up, the dash comes back too
+    { const full = this.eva >= EVA_MAX; if(full && !this._evaFull && this.dashCd > 0){ this.dashCd = 0; if(olOn()) olTag(this, 'DASH READY', '#cfe3ff', 600); } this._evaFull = full; }
     const c = this.ctrl, ol = olOn();
     const m = (keys[c.dash] ? 1 : 0) | (keys[c.block] ? 2 : 0) | ((!ol && keys[c.down] && keys[c.jmp]) ? 4 : 0), fresh = m & ~(this._evaPrev||0); this._evaPrev = m;
     if(!fresh || this.eva < EVA_MAX) return;
@@ -8697,6 +8848,7 @@ class Player {
     // ── GETO ──
     if(isGeto(this) && !this.isPuppet) this._getoAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     if(this.type==='ryu') this._ryuAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
+    if(this.type==='toji') this._tojiAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── MEGUMI / MEGUNA ──
     if(isMeg(this) && !this.isPuppet) this._megAbilities(dt, ab1Edge, ab2Edge, ab3Edge, domEdge, abilityBlocked);
     // ── TAKABA: 1 = Rock Paper Scissors, 2 = 1000 Years of Death, 3 = Counter, F = The Truck ──
@@ -8740,7 +8892,7 @@ class Player {
       if(this.ibdkT>0){
         // Instant Spirit Body of Distorted Killing: Tendril Grab, Sky Crash, Counter
         if(ab1Edge && free && !(this.ibdkTenCd>0)){ this.ibdkTenCd = IBDK_TEN_CD; this.mkPh = 'ten'; this.mkRef = null; this.vx = 0; this.ss(S.MAHIIBDK, 900); snd('swing', this.x); sayFor(this, 'Got you!'); }
-        if(ab2Edge && free && !(this.ibdkSlamCd>0)){ const [x,y,w,h] = olFront(this, IBDK_SLAM_REACH), d = olArea(this, x, y, w, h)[0];
+        if(ab2Edge && free && !(this.ibdkSlamCd>0)){ const [x,y,w,h] = olFront(this, IBDK_SLAM_REACH), d = olAreaR(this, x, y, w, h)[0];
           this.ibdkSlamCd = IBDK_SLAM_CD;
           if(d){ this.mkPh = 'fly'; this.mkRef = netRef(d) || d; this.vx = 0; this.vy = -16; this.onGround = false; this.ss(S.MAHIIBDK, 1600); olHit(this, d, 2, {any:true, stun:1600, col:'#c9a0ff'}); addSpeech(d.x+PW/2, d.y-24, 'GRABBED', '#c9a0ff', 700); snd('heavy', this.x); }
           else { addSpeech(this.x+PW/2, this.y-20, 'MISSED', '#999', 600); } }
@@ -9239,6 +9391,10 @@ class Player {
       case S.RYUPUNCH:   this._tickRyuPunch(dt); break;
       case S.RYUBEAM:    this._tickRyuBeam(dt); break;
       case S.RYUCHARGE:  this._tickRyuCharge(dt); break;
+      case S.TODOGRAB:   this._tickTodoGrab(dt); break;
+      case S.TOJIFLURRY: this._tickTojiFlurry(dt); break;
+      case S.TOJIRUSH:   this._tickTojiRush(dt); break;
+      case S.TOJIFIN:    this._tickTojiFin(dt); break;
       case S.FRAMED:     this.vx = 0; this.vy = 0; if(!(this.framedT>0)){ if(this.mechUltPhase>0) this.state = S.MECHULT; else this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.TAKACTR:    this.vx *= 0.6; this._phys(dt); if(this.sTimer >= this.sDur){ this.counterT = 0; this.ss(this.onGround ? S.IDLE : S.AIR); } break;
       case S.DAGONSWARM: this._tickDagonSwarm(dt); break;
@@ -10881,7 +11037,7 @@ class Player {
     const mine = this===p1 ? p1lives : this===p2 ? p2lives : 3;
     return mine <= 1 ? 1.25 : 0.8;                  // working hours vs. overtime (your last life)
   }
-  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.type==='mahito' && !(this.ibdkT>0)) m *= mahiHpMul(this); if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
+  _dmgOut(){ let m = this._overtimeMult(); if(this.type==='yuki') m *= yukiMass(this).dmg; if(this.bmT>0) m *= 1.35; if(isNaoya(this)) m *= NAO_DMG_OUT; if(this.type==='mahito' && !(this.ibdkT>0)) m *= mahiHpMul(this); if(this.zonedT>0) m *= zoneMul(this); if(this.moduloT>0) m *= MODULO_DMG; if(this.mahiTf) m *= mahiMul(this, 'dmg'); if(this.type==='ryu') m *= 1 + RYU_OUT_DMG*(this.ryuOut||0); if(this.tojiUltT>0) m *= TOJI_ULT_DMG; if(this.frsT>0) m *= 1.2; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.9; if(this._vow('heavenly')) m *= 1.5; if(this._vow('laststand') && this._hp < 30) m *= 1.6; return m; }
   _dmgIn(){ let m = 1; if(this.type==='todo') m *= 0.9; if(this.type==='ryu') m *= RYU_DMG_IN * (1 + RYU_OUT_TAKEN*(this.ryuOut||0)); if(this.infT>0) m *= 0.25; if(this.rikaHeldT>0) m *= RIKA_GRAB_DMG_IN; if(this.type==='meguna' && megMaho(this)) m *= Math.max(0.4, MEG_MAHO_DR - 0.05*(this.mahoTurns||0)); if(this.framedT>0) m *= NAO_FRAME_DMG_IN; if(this.reshapeT>0) m *= 1.2; if(this.mahiFormT>0) m *= 0.85; if(this._vow('glass')) m *= 1.35; if(this._vow('iron')) m *= 0.75; if(this._vow('heavenly')) m *= 0.85; return m; }
   _loadoutPre(dt){
     if(!this.lo || this.isPuppet) return;
@@ -11246,6 +11402,7 @@ class Player {
     if(this.reshapeT>0) spd *= 0.7;
     if(this.bmT>0) spd *= 0.8;
     if(this.ibdkT>0) spd *= IBDK_SPD; else if(this.mahiFormT>0) spd *= 1.2;
+    if(this.tojiUltT>0) spd *= TOJI_ULT_SPD;
     if(this.mahiSTOn){ spd *= MAHI_ST_SPD; jmp *= MAHI_ST_JMP; }
     if(this.moduloT>0) spd *= MODULO_SPD;
     if(this.mahiTf){ spd *= mahiMul(this, 'spd'); jmp *= mahiMul(this, 'jmp'); }
@@ -11463,7 +11620,10 @@ class Player {
         carveCircle(fx, fy, 22);
         const box = {x: this.facing>0 ? this.x+PW : this.x-TODO_PUNCH_RANGE, y:this.y-6, w:TODO_PUNCH_RANGE, h:PH+12};
         for(const def of [other, puppet && puppet.owner!==this && puppet!==this ? puppet : null]){
-          if(!def || !def.hittable || !overlaps(box, def.bodyBox())) continue;
+          if(!def) continue;
+          const rg = !def.hittable && ragHittable(def);   // Oct 23: it can hit a ragdolled foe
+          if((!def.hittable && !rg) || !overlaps(box, rg ? ragBox(def) : def.bodyBox())) continue;
+          if(rg) ragPrep(def);
           this.todoPunchHit = true;
           const mx = def.x+PW/2, my = def.y+PH/2;
           def.hp = Math.max(0, def.hp-TODO_PUNCH_DMG); def.flash = 420;
@@ -11522,7 +11682,10 @@ class Player {
     const ox = phys ? tgt.rdX : tgt.x, oy = phys ? tgt.rdY : tgt.y;
     if(Math.hypot(ox-ax, oy-ay) > TODO_BW_RANGE){ addSpeech(cx, this.y-40, 'TOO FAR', '#999', 800); return; }
     safeTeleport(this, ox, oy, true); safeTeleport(tgt, ax, ay);
-    this.facing = tgt.x > this.x ? 1 : -1; if(!phys) tgt.facing = -this.facing;
+    // Oct 23: Todo turns to face them; they keep facing the way they were (so they've just had their back turned) and reel for 1.5s
+    this.facing = tgt.x > this.x ? 1 : -1;
+    if(!phys && tgt.state!==S.DEAD && !tgt.isPuppet && terClock - (tgt._bwStunAt||-1e9) > TODO_BW_STUN_IMM){
+      tgt._bwStunAt = terClock; tgt.vx = 0; tgt.ss(S.STUN, TODO_BW_STUN); addSpeech(tgt.x+PW/2, tgt.y-26, '?!', '#ffe08a', 800); }
     for(const [x,y] of [[ax+PW/2, ay+PH/2],[ox+PW/2, oy+PH/2]]){ addRing(x, y, '#ffe08a', 46); addParts(x, y, '#ffe08a', 8, 3); }
     this.flash = 120; tgt.flash = 120;
     // Their own attacks already in the air now belong to Todo — so they fly into their owner
@@ -11954,6 +12117,7 @@ class Player {
 
   draw(){
     if(this.state===S.MAHISPLIT){ drawMahiSplit(this); return; }   // Mahito's split: only the heads are drawn
+    if(this.tojiInvis && this.state!==S.DEAD) return;   // Toji hidden in his Fly Heads
     const phys=[S.RAGD,S.SLAM,S.DEAD].includes(this.state);
     // KO'd and waiting to respawn: fade out quickly, then stay invisible until the sky drop
     let _koA = 1;
@@ -12110,6 +12274,7 @@ class Player {
     if(isYuki(this)) drawYukiBody(this);
     if(isGeto(this)) drawGetoBody(this);
     if(this.type==='ryu'){ drawRyuBody(this); ryuDrawCharge(this); }
+    if(this.type==='toji') drawTojiBody(this);
     if(this.state===S.FUGA && !this.isPuppet){
       // Fuga aim guide: where the arrow will fly
       const a = this.aimAng||0, f = this.facing, sx = this.x+PW/2, sy = this.y+PH*0.28;
@@ -13123,6 +13288,29 @@ class Player {
       ctx.fillStyle = ready ? '#0c1620' : '#8fb0c8'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
       ctx.fillText(ready ? `MAXIMUM GRANITE BLAST [${keyLbl(this,'ult')}]` : `ULTIMATE ${Math.floor(pct*100)}%`, bx+bw/2, domY+10);
     }
+    // Toji HUD
+    if(this.type==='toji'){
+      const T = tojiTool(this), ult = this.tojiUltT>0;
+      const names = [`FLURRY [${keyLbl(this,'ab1')}]`, `FOUR-STEP STAB [${keyLbl(this,'ab2')}]`, `${T.short} [${keyLbl(this,'ab3')}]`];
+      const fills = [Math.max(0,1-(this.tojiFlCd||0)/TOJI_FLURRY_CD), Math.max(0,1-(this.tojiRushCd||0)/TOJI_RUSH_CD), 1];
+      const abY = y+bh+38;
+      for(let i=0;i<3;i++){
+        const aw=86, gap=4, ax = flip ? bx+bw-(i+1)*(aw+gap)+gap : bx+i*(aw+gap);
+        const ready = fills[i]>=1;
+        ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(ax,abY,aw,22);
+        ctx.fillStyle = i===2 ? T.col : (ready?'#a8b49a':'#2a3024');
+        ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
+        ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
+        ctx.fillStyle = !ready ? '#555' : '#f2f2ea'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+      }
+      const domY = abY+30, pct = ult ? this.tojiUltT/TOJI_ULT_MS : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1 || ult;
+      ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
+      ctx.fillStyle = ult ? '#a83a3a' : ready ? `rgba(232,226,208,${0.7+0.3*Math.abs(Math.sin(Date.now()*0.005))})` : '#2a2a26';
+      ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx, domY, Math.floor(bw*pct), 14);
+      ctx.strokeStyle='rgba(232,226,208,0.6)'; ctx.lineWidth=1; ctx.strokeRect(bx,domY,bw,14);
+      ctx.fillStyle = ult ? '#fff' : ready ? '#141410' : '#b0aa98'; ctx.font=`700 9px 'Rajdhani',sans-serif`; ctx.textAlign='center';
+      ctx.fillText(ult ? `UNLEASHED ${Math.ceil(this.tojiUltT/1000)}s · KILLING BLOW [${keyLbl(this,'ult')}]` : ready ? `UNLEASHED [${keyLbl(this,'ult')}]` : `ULTIMATE ${Math.floor(pct*100)}%`, bx+bw/2, domY+10);
+    }
     // Geto HUD
     if(isGeto(this)){
       const names = [`CENTIPEDES [${keyLbl(this,'ab1')}]`, `KUCHISAKE [${keyLbl(this,'ab2')}]`, `MIRROR CURSE [${keyLbl(this,'ab3')}]`];
@@ -14020,6 +14208,13 @@ const CHARACTERS = [
     color: '#c98a4b',
     dimColor: '#3a2614',
     description: 'Cursed Energy Output · Granite Blast'
+  },
+  {
+    name: 'TOJI',
+    type: 'toji',
+    color: '#a8b49a',
+    dimColor: '#232a1e',
+    description: 'Heavenly Restriction · Cursed Tools'
   }
   // ── ADD YOUR CHARACTER HERE ──────────────────────────────
   // {
@@ -14163,7 +14358,7 @@ function olOn(){ return !!window._olForce || (typeof NET!=='undefined' && (NET.r
 const OL = {
   GUARD_MAX:100, GUARD_REGEN:0.035, GUARD_DELAY:900, CHIP:0.2, GUARD_COST:4.5, BREAK_MS:1000,
   PARRY_WIN:160, PARRY_LOCK:480, PARRY_STAGGER:650,
-  DASH_MS:190, DASH_SPD:2.8, DASH_IF:0, DASH_CD:620, TAP_MS:230,
+  DASH_MS:190, DASH_SPD:2.8, DASH_IF:0, DASH_CD:6000, TAP_MS:230,   // Oct 23: dash cooldown 0.62s → 6s (the Evasive bar filling up gives it back early)
   EARLY:60, PERF0:150, PERF1:255, LATE:540, MASH_LOCK:360,
   VAR_CD:8000, AD_CD:25000, AD_MS:5000,
 };
@@ -14219,10 +14414,23 @@ function olArea(owner, x, y, w, h){
   rikaAreaHit(owner, x, y, w, h);
   return olFoes(owner).filter(d => { if(!d.hittable) return false; const b = d.bodyBox(); return b.x < x+w && b.x+b.w > x && b.y < y+h && b.y+b.h > y; });
 }
+
+// ── Ragdoll hits (Oct 23): a few heavy moves can hit a fighter who's ragdolled / knocked down ──
+//  (Toji's Flurry, Four-Step Stab and killing blow; Todo's Haymaker, Shoulder Tackle and Grab & Slam; Mahito's Sky Crash)
+function ragHittable(d){ return !!d && (d.state===S.RAGD || d.state===S.SLAM) && !(d.iframes>0) && !(d.respawnT>0); }
+function ragBox(d){ return {x:d.rdX, y:d.rdY, w:PW, h:PH}; }
+function ragPrep(d){ if(ragHittable(d)){ d.x = Math.max(10, Math.min(W-PW-10, d.rdX)); d.y = Math.min(GND-PH, d.rdY); } }
+function olAreaR(owner, x, y, w, h){
+  const a = olArea(owner, x, y, w, h);
+  for(const d of olFoes(owner)){ if(a.includes(d) || !ragHittable(d)) continue;
+    const b = ragBox(d); if(b.x < x+w && b.x+b.w > x && b.y < y+h && b.y+b.h > y){ ragPrep(d); a.push(d); } }
+  return a;
+}
+function olHitR(owner, d, dmg, o){ if(ragHittable(d)){ ragPrep(d); o = Object.assign({}, o, {any:true}); } return olHit(owner, d, dmg, o); }
 function olFront(p, reach, yo, h){ const f = p.facing; return [f>0 ? p.x+PW-4 : p.x+4-reach, p.y+(yo||4), reach, h||PH-8]; }
 function olNearest(owner, maxD){
   let best = null, bd = maxD||1e9;
-  for(const d of olFoes(owner)){ if(!d.hittable) continue; const dd = Math.hypot(d.x-owner.x, d.y-owner.y); if(dd < bd){ bd = dd; best = d; } }
+  for(const d of olFoes(owner)){ if(!d.hittable || d.tojiInvis) continue; const dd = Math.hypot(d.x-owner.x, d.y-owner.y); if(dd < bd){ bd = dd; best = d; } }
   return best;
 }
 // Generic hit used by every variant. Returns true if it connected (blocked hits count).
@@ -14404,15 +14612,17 @@ const OL_VARS = {
       addParts(p.x+PW/2+p.facing*18, p.y+PH*0.42, '#ff9a3a', 12, 4); snd('boom', p.x); doShake(4); }},
   },
   todo: {
-    1:{name:'Feint Clap', desc:'Claps without swapping. The opponent (within 600px) flinches for the swap that never comes: turned around and frozen for 0.4s.', lock:200, run(p){
-      const d = olNearest(p, 600); snd('clap', p.x); addSpeech(p.x+PW/2, p.y-8, 'CLAP!', '#b07a1e', 700); addRing(p.x+PW/2, p.y+PH/2, '#d9a441', 36);
-      if(d){ d.facing = -d.facing; olHit(p, d, 0.01, {ubk:true, stun:400, col:'#ffcf6a'}); addSpeech(d.x+PW/2, d.y-20, '?!', '#ddd', 600); } }},
-    2:{block:true, name:'Shoulder Tackle', desc:'Todo lowers his shoulder and charges up to 230px: the first foe in his path takes 10 and is sent flying (blockable).', lock:320, run(p){
+    1:{name:'Grab & Slam', desc:'Grabs the foe in front of him (even one knocked down), hoists them over his head and slams them into the ground: 14 and a knockdown. Can\'t be blocked.', lock:200, run(p){
+      const [x,y,w,h] = olFront(p, TODO_GRAB_REACH, -10, PH+14), d = olAreaR(p, x, y, w, h)[0];
+      if(!d){ addSpeech(p.x+PW/2, p.y-20, 'WHIFF', '#999', 600); return; }
+      p.tgRef = netRef(d) || d; p.tgDone = false; p.vx = 0; p.ss(S.TODOGRAB, TODO_GRAB_LIFT + 520);
+      d.vx = 0; d.vy = 0; d.ss(S.STUN, TODO_GRAB_LIFT + 700); addSpeech(d.x+PW/2, d.y-26, 'GRABBED', '#ffcf6a', 700); snd('heavy', p.x); sayFor(p, 'Up you go!'); }},
+    2:{block:true, name:'Shoulder Tackle', desc:'Todo lowers his shoulder and charges up to 230px: the first foe in his path (even one knocked down) takes 12 and is sent flying (blockable).', lock:320, run(p){
       const f = p.facing, x0 = p.x;
-      const d = olArea(p, f>0 ? p.x+PW-4 : p.x-230, p.y+4, 234, PH-8).sort((a, b) => Math.abs(a.x-p.x) - Math.abs(b.x-p.x))[0];
+      const d = olAreaR(p, f>0 ? p.x+PW-4 : p.x-230, p.y+4, 234, PH-8).sort((a, b) => Math.abs(a.x-p.x) - Math.abs(b.x-p.x))[0];
       safeTeleport(p, d ? d.x - f*(PW+4) : p.x + f*230, p.y);
       olShot(p, {kind:'streak', x:x0+PW/2, y:p.y+PH*0.5, x2:p.x+PW/2, life:240, dmg:0, col:'#d9a441'}); snd('dash', p.x); doShake(6);
-      if(d && olHit(p, d, 10, {rag:[15,-8,RAGD_MS*1.1], dir:f, col:'#ffcf6a'})){ addRing(d.x+PW/2, d.y+PH/2, '#ffcf6a', 60); addParts(d.x+PW/2, d.y+PH/2, '#d9a441', 18, 6); snd('heavy', d.x); addSpeech(d.x+PW/2, d.y-24, 'TACKLE!', '#b07a1e', 700); } }},
+      if(d && olHitR(p, d, 12, {rag:[15,-8,RAGD_MS*1.1], dir:f, col:'#ffcf6a'})){ addRing(d.x+PW/2, d.y+PH/2, '#ffcf6a', 60); addParts(d.x+PW/2, d.y+PH/2, '#d9a441', 18, 6); snd('heavy', d.x); addSpeech(d.x+PW/2, d.y-24, 'TACKLE!', '#b07a1e', 700); } }},
   },
   choso: {
     1:{name:'Blood Meteorite', desc:'Clots blood in his fists until they\'re hard as rock: for 6s he hits 35% harder and his hits smash straight through blocks — but the clotting slows him by 20%.', lock:300, run(p){
@@ -14526,6 +14736,20 @@ const OL_VARS = {
       const [x,y,w,h] = olFront(p, 80); snd('slash', p.x);
       for(const d of olArea(p, x, y, w, h)){ olHit(p, d, 11, {rag:[11,-6,RAGD_MS], col:'#ff4a5a'}); addParts(d.x+PW/2, d.y+PH/2, '#a00010', 14, 6); } }},
   },
+  toji: {
+    1:{name:'Fly Heads', desc:'Lets loose a swarm of tiny fly-head curses around him for 6s. While Toji stays inside the cloud he\'s invisible — and nothing can lock on to him. It does no damage. 16s cooldown.', lock:260, cd:16000, run(p){
+      for(let i=tojiClouds.length-1;i>=0;i--) if(tojiClouds[i].owner===p) tojiClouds.splice(i,1);
+      const heads = []; for(let k=0;k<26;k++) heads.push({a:Math.random()*Math.PI*2, r:30 + Math.random()*(TOJI_FLY_R-20), s:(0.5+Math.random())*(Math.random()<0.5 ? -1 : 1), y:(Math.random()-0.5)*20});
+      tojiClouds.push({owner:p, x:p.x+PW/2, y:p.y+PH/2, t:0, life:TOJI_FLY_MS, heads});
+      addParts(p.x+PW/2, p.y+PH/2, '#3a3240', 30, 6); snd('spin', p.x); }},
+    2:{block:true, name:'Gun', desc:'Draws a pistol and fires one bullet straight at the opponent: 14 and a stagger (blockable). 12s cooldown.', lock:380, cd:12000, run(p, other){
+      const d = olNearest(p, 1400) || (other && other.state!==S.DEAD && !other.tojiInvis ? other : null);
+      const hx = p.x+PW/2 + p.facing*16, hy = p.y+PH*0.42;
+      if(d) p.facing = Math.sign(d.x - p.x) || p.facing;
+      const a = d ? Math.atan2(d.y+PH*0.4 - hy, d.x+PW/2 - hx) : (p.facing>0 ? 0 : Math.PI);
+      olShot(p, {kind:'bullet', x:hx, y:hy, vx:Math.cos(a)*TOJI_GUN_SPD, vy:Math.sin(a)*TOJI_GUN_SPD, r:5, life:1000, dmg:TOJI_GUN_DMG, col:'#ffe9a0', o:{stun:380, push:2}});
+      p.tojiGunT = 520; addParts(hx + p.facing*8, hy, '#ffe9a0', 8, 4); snd('gunshot', p.x); doShake(5); }},
+  },
   ryu: {
     1:{block:true, name:'Output Burst', desc:'Releases his output as 5 homing lasers that curve after the opponent (5 each, more with a higher Output bar).', lock:300, run(p){
       const cx = p.x+PW/2, cy = p.y+PH*0.4, o = p.ryuOut||0; addRing(cx, cy, '#bfe6ff', 70); addParts(cx, cy, '#bfe6ff', 16, 6); snd('beam', p.x); doShake(5);
@@ -14595,7 +14819,7 @@ const CE_CD_MULT = 0.75, CE_VAR_CD = 6000, CE_AD_COST = 10, CE_SPECIAL = 0.5, CE
 const CE_PROFILE = {
   // special grades (sorcerers and curses) get bigger pools; Gojo + Sukuna refill far faster; Yuta + Mechamaru dwarf everyone
   gojo:[220,26], sukuna:[230,24], yuta:[480,14], mechamaru:[420,12], kenjaku:[220,9], jogo:[200,8], dagon:[190,7], hanami:[190,7], mahito:[180,8],
-  naoya:[130,6], naoyac:[220,8], megumi:[150,7], meguna:[240,22], yuki:[260,13], geto:[250,12], ryu:[320,10],
+  naoya:[130,6], naoyac:[220,8], megumi:[150,7], meguna:[240,22], yuki:[260,13], geto:[250,12], ryu:[320,10], toji:[1,0],
   yuji:[110,5], choso:[110,5], higuruma:[110,5], hakari:[120,5], meimei:[110,5], todo:[100,5], takaba:[90,4]
 };
 const CE_LORE = {
@@ -14611,6 +14835,7 @@ const CE_LORE = {
   naoya:'Special grade 1 of the Zen\'in clan: a solid pool, average refill.', naoyac:'As a vengeful cursed spirit his pool swells to special-grade size.',
   geto:'A special-grade sorcerer holding thousands of curses: a big pool and a good refill.',
   ryu:'The biggest cursed energy output in the Culling Game: a huge pool.',
+  toji:'Heavenly Restriction: none at all. Nothing he does costs cursed energy — but his moves recharge slower.',
   yuki:'One of the few special-grade sorcerers: a huge pool. Extreme mass costs 50% more per move and burns 6 CE a second; light mass costs 70% less.',
   megumi:'Grade 2 with special-grade potential: an above-average pool.', meguna:'Sukuna in Megumi\'s body: a special-grade pool and the King of Curses\' fast refill.'
 };
@@ -14637,6 +14862,7 @@ const CE_SLOTS = {
   yuki:{ab1:['yukiGrapCd','YUKI_GRAP_CD'], ab2:['yukiThrowCd','YUKI_THROW_CD']},
   geto:{ab1:['getoCentCd','GETO_CENT_CD'], ab2:['getoKuchiCd','GETO_KUCHI_CD']},
   ryu:{ab1:['ryuPunchCd','RYU_PUNCH_CD'], ab2:['ryuBeamCd','RYU_BEAM_CD']},
+  toji:{ab1:['tojiFlCd','TOJI_FLURRY_CD'], ab2:['tojiRushCd','TOJI_RUSH_CD']},
   meguna:{ab1:['megNueCd','MEG_NUE_CD'], ab2:['megAgiCd','MEG_AGI_CD']},
   kenjaku:{ab1:['kenUzuCd','KEN_UZU_CD'], ab2:['kenSpiritCd','KEN_SPIRIT_CD']},
 };
@@ -14695,7 +14921,7 @@ function ceRegenPaused(p){
 }
 function ceFollow(p, slot){ const f = CE_FOLLOW[p.type] && CE_FOLLOW[p.type][slot]; try{ return !!(f && f(p)); }catch(e){ return false; } }
 const CE_VAR_MAX = 18;
-function ceVarCost(p, n){ return Math.max(3, Math.round(CE_VAR_MAX*(p._feat ? ceCostMult(p) : 1))); }
+function ceVarCost(p, n){ if(p.type==='toji') return 0; return Math.max(3, Math.round(CE_VAR_MAX*(p._feat ? ceCostMult(p) : 1))); }
 function ceVarCostOld(p, n){ const mx = p.ceMax || (CE_PROFILE[p.type]||[100])[0]; return Math.min(Math.round(mx*0.7), Math.max(30, Math.round(2*ceBaseCost(p.type, 'ab'+n)*(p._feat ? ceCostMult(p) : 1)))); }
 // CE needed to use a slot right now (0 = free)
 // melee moves (punches, sword / axe / hammer swings) stay free
@@ -14707,7 +14933,7 @@ const CE_DEFAULT_LIGHT = 5, CE_SUPER_FRAC = 0.12, CE_SUPER_MIN = 12, CE_SUPER_MA
 const CE_OWN = {ryu:{ab3:1}, yuki:{ab3:1}, yuta:{ab2:1}};
 const CE_TYPE_MULT = {ryu:1.3};   // Oct 18: Ryu's moves cost more cursed energy (balance pass: 1.6 → 1.3)
 function ceNeed(p, slot){
-  if(ceInfinite(p)) return 0;
+  if(ceInfinite(p) || p.type==='toji') return 0;   // Toji: Heavenly Restriction
   const t = p.type, pool = p.ceMax || (CE_PROFILE[ceProfKey(p)]||[100])[0];
   if(CE_OWN[t] && CE_OWN[t][slot]) return 0;
   if(slot==='ab1' || slot==='ab2'){
@@ -14803,7 +15029,7 @@ Player.prototype._cePost = function(dt){
 function drawCeHud(pl, x, flip){
   if(!pl || pl.ceMax===undefined || pl.isPuppet) return;
   const y = 16, bw = 278, bh = 20, bx = flip ? x-bw : x;
-  const cy = y+bh+21, ch = 9, pct = Math.max(0, Math.min(1, pl.ce/pl.ceMax)), inf = ceInfinite(pl);
+  const cy = y+bh+21, ch = 9, pct = pl.type==='toji' ? 0 : Math.max(0, Math.min(1, pl.ce/pl.ceMax)), inf = ceInfinite(pl);
   ctx.save();
   ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(bx, cy, bw, ch);
   const col = pl.varMode ? '#a77cf0' : inf ? '#ffe066' : '#4f9cf0';
@@ -14816,15 +15042,21 @@ function drawCeHud(pl, x, flip){
     ctx.fillStyle = full ? `rgba(255,255,255,${0.75+0.25*Math.sin(Date.now()*0.012)})` : '#8fa8c0'; ctx.fillRect(flip ? x0+hw*(1-e) : x0, ey, hw*e, 4);
     if(full){ ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left'; ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle';
       const k = olOn() ? keyLbl(pl,'dash') : `${keyLbl(pl,'down')}+${keyLbl(pl,'jump')}`;
-      ctx.fillText(`EVASIVE READY [${k}]`, flip ? x0-4 : x0+hw+4, ey+2.5); ctx.textBaseline = 'alphabetic'; } }   // centred on the bar (it used to sit on the ability boxes' top edge)
+      ctx.fillText(`EVASIVE READY [${k}]`, flip ? x0-4 : x0+hw+4, ey+2.5); ctx.textBaseline = 'alphabetic'; } }
+  // Oct 23: dash cooldown (online rules) — a short bar at the far end of the Evasive line
+  if(olOn() && pl.type!=='geto'){ const dc = Math.max(0, Math.min(1, 1 - (pl.dashCd||0)/OL.DASH_CD)), ey = cy+ch+2, dw = bw*0.18, dx0 = flip ? bx : bx+bw-dw;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(dx0, ey, dw, 4);
+    ctx.fillStyle = dc>=1 ? '#cfe3ff' : '#55708a'; ctx.fillRect(flip ? dx0+dw*(1-dc) : dx0, ey, dw*dc, 4);
+    ctx.font = `700 7px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'left' : 'right'; ctx.textBaseline = 'middle'; ctx.fillStyle = dc>=1 ? '#e8f2ff' : '#7f93a6';
+    if((pl.eva||0) < EVA_MAX) ctx.fillText(dc>=1 ? 'DASH' : `DASH ${Math.ceil((pl.dashCd||0)/1000)}s`, flip ? dx0+dw+4 : dx0-4, ey+2.5); ctx.textBaseline = 'alphabetic'; }   // (no label while EVASIVE READY is showing, so they don't overlap)   // centred on the bar (it used to sit on the ability boxes' top edge)
   // thresholds: special (50%) and ultimate (75%) — domains need it all
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  for(const t of CE_DOMAIN.has(pl.type) ? [CE_SPECIAL] : [CE_SPECIAL, CE_ULT]){ const tx = flip ? bx+bw-bw*t : bx+bw*t; ctx.fillRect(tx-0.5, cy, 1, ch); }
+  if(pl.type!=='toji') for(const t of CE_DOMAIN.has(pl.type) ? [CE_SPECIAL] : [CE_SPECIAL, CE_ULT]){ const tx = flip ? bx+bw-bw*t : bx+bw*t; ctx.fillRect(tx-0.5, cy, 1, ch); }
   ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.textBaseline = 'middle'; ctx.fillStyle = '#eaf3ff';
   ctx.textAlign = flip ? 'right' : 'left';
-  ctx.fillText(pl.varMode ? `MAXIMUM OUTPUT [${keyLbl(pl,'vtog')}]` : 'CURSED ENERGY', flip ? bx+bw-4 : bx+4, cy+ch/2+0.5);
+  ctx.fillText(pl.varMode ? `MAXIMUM OUTPUT [${keyLbl(pl,'vtog')}]` : pl.type==='toji' ? 'HEAVENLY RESTRICTION · NO CURSED ENERGY' : 'CURSED ENERGY', flip ? bx+bw-4 : bx+4, cy+ch/2+0.5);
   ctx.textAlign = flip ? 'left' : 'right';
-  ctx.fillText(inf ? '∞' : `${Math.floor(pl.ce)} / ${pl.ceMax}`, flip ? bx+4 : bx+bw-4, cy+ch/2+0.5);
+  if(pl.type!=='toji') ctx.fillText(inf ? '∞' : `${Math.floor(pl.ce)} / ${pl.ceMax}`, flip ? bx+4 : bx+bw-4, cy+ch/2+0.5);
   ctx.textBaseline = 'alphabetic';
   // ability boxes (same layout every fighter uses)
   const abY = y+bh+38, aw = 86, gap = 4, info = (typeof MOVE_INFO!=='undefined' && MOVE_INFO[pl.type]) || [];
@@ -14977,6 +15209,11 @@ Player.prototype._olTickCustom = function(dt){
   if(this.state===S.BLOCK){
     const opp = this===p1 ? p2 : p1; if(opp) this.facing = Math.sign(opp.x - this.x) || this.facing;
     this.vx *= 0.7; this._phys(dt); if(this.state===S.IDLE || this.state===S.WALK) this.state = S.BLOCK;
+  } else if(this.state===S.DASH && this.tojiUltT>0){
+    // Toji Unleashed: dashes go straight through any terrain
+    this.vy = 0; this.x = Math.max(4, Math.min(W-PW-4, this.x + this.dashDir*SPD*OL.DASH_SPD*1.5*f));
+    if(Math.random()<0.8) addParts(this.x+PW/2-this.dashDir*12, this.y+PH*(0.3+Math.random()*0.6), 'rgba(232,226,208,0.7)', 1, 1);
+    if(this.sTimer >= this.sDur){ if(terSolid(this.x, this.y+0.5, PW, PH-1)) this._unstick(); this.vx = this.dashDir*SPD*0.5; this.onGround = false; this.ss(S.AIR); }
   } else if(this.state===S.DASH){
     this.vx = this.dashDir * SPD * OL.DASH_SPD; this.vy = this.onGround ? this.vy : Math.min(this.vy, 0.4);
     if(Math.random()<0.6) addParts(this.x+PW/2-this.dashDir*12, this.y+PH*(0.3+Math.random()*0.6), 'rgba(220,220,230,0.6)', 1, 1);
@@ -15234,6 +15471,9 @@ function drawOlShots(){
         ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(-10, -9, 20, 18, 5); else ctx.rect(-10,-9,20,18); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#ff9a3a'; ctx.beginPath(); ctx.moveTo(-10, -5); ctx.lineTo(-24 - Math.random()*8, 0); ctx.lineTo(-10, 5); ctx.fill(); break;
       case 'ball': ctx.fillStyle = '#d8dde6'; ctx.strokeStyle = '#7a8090'; ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(s.x-1.5, s.y-1.5, 1.6, 0, Math.PI*2); ctx.fill(); break;
+      case 'bullet': { const a = Math.atan2(s.vy, s.vx); ctx.translate(s.x, s.y); ctx.rotate(a); ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(255,233,160,0.45)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-36, 0); ctx.lineTo(0, 0); ctx.stroke();
+        ctx.fillStyle = '#fff6d0'; ctx.beginPath(); ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI*2); ctx.fill(); break; }
       case 'ryulaser': { const a = Math.atan2(s.vy, s.vx); ctx.translate(s.x, s.y); ctx.rotate(a); ctx.lineCap = 'round';
         ctx.strokeStyle = 'rgba(80,150,255,0.55)'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(-46, 0); ctx.lineTo(0, 0); ctx.stroke();
         ctx.strokeStyle = '#bff4ff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(0, 0); ctx.stroke();
@@ -17118,6 +17358,29 @@ function drawRyu(){
     ctx.save(); ctx.globalAlpha = 0.9*a; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(b.x, b.y, Math.min(26, w*0.45), 0, Math.PI*2); ctx.fill(); ctx.restore();
   }
 }
+
+// Todo's Grab & Slam (Oct 23): the foe is held over his head, then driven into the ground in front of him
+Player.prototype._tickTodoGrab = function(dt){
+  const f = this.facing, d = typeof this.tgRef==='string' ? netRes(this.tgRef) : this.tgRef;
+  this.vx = 0; this._phys(dt);
+  if(!this.tgDone){
+    if(!d || d.state===S.DEAD){ this.ss(this.onGround ? S.IDLE : S.AIR); return; }
+    const k = Math.min(1, this.sTimer/TODO_GRAB_LIFT), hx = this.x, hy = this.y - PH*0.95*k;
+    if(!terSolid(hx, hy, PW, PH)){ d.x = hx; d.y = hy; }
+    d.vx = 0; d.vy = 0; if(d.state===S.STUN) d.sTimer = Math.min(d.sTimer, 200); else if(d.state!==S.DEAD) d.ss(S.STUN, 600);
+    if(this.sTimer >= TODO_GRAB_LIFT){
+      this.tgDone = true;
+      let nx = this.x + f*(PW+6); if(terSolid(nx, this.y, PW, PH)) nx = this.x;
+      d.x = Math.max(4, Math.min(W-PW-4, nx)); d.y = this.y;
+      olHit(this, d, TODO_GRAB_DMG, {any:true, ubk:true, rag:[4,-4,RAGD_MS*1.3], dir:f, col:'#ffcf6a'});
+      const mx = d.x+PW/2, my = d.y+PH; addRing(mx, my, '#ffcf6a', 90); addParts(mx, my, '#c8a070', 24, 7); doShake(18); snd('boom', mx);
+      if(!IS_GUEST) carveCircle(mx, my+6, 26);
+      addSpeech(mx, d.y-30, 'SLAM!', '#b07a1e', 800);
+    }
+    return;
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
 Player.prototype._ryuAbilities = function(dt, e1, e2, e3, eD, blocked){
   for(const k of ['ryuPunchCd','ryuBeamCd','ryuOutCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
   const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state), f = this.facing;
@@ -17230,6 +17493,212 @@ function drawRyuBody(pl){
     ctx.globalAlpha = 0.4; ctx.fillStyle = '#6fb8ff'; ctx.beginPath(); ctx.arc(hx, hy2, r*1.8, 0, Math.PI*2); ctx.fill();
     if(pl.state===S.RYUBEAM){ const a = pl.aimAng||0; ctx.globalAlpha = 0.7; ctx.setLineDash([10, 8]); ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(hx, hy2); ctx.lineTo(hx + f*Math.cos(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN), hy2 + Math.sin(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN)); ctx.stroke(); ctx.setLineDash([]); }
+  }
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOJI FUSHIGURO (Oct 23) — Heavenly Restriction: not a drop of cursed energy, a superhuman body and an arsenal of cursed tools
+//  R swaps tools (no cooldown): Inverted Spear of Heaven · Chain of a Thousand Miles · Playful Cloud
+//  Q Flurry · E Four-Step Stab · Max Output: Fly Heads (hides him) · Gun · F Unleashed (+50% speed, +500% damage, dashes go
+//  through anything); F again while Unleashed = the killing blow
+// ═══════════════════════════════════════════════════════════════════
+const TOJI_TOOLS = [
+  {k:'spear', name:'INVERTED SPEAR OF HEAVEN', short:'SPEAR', col:'#9cc3dc', reach:96,  dmg:1.0,  kb:1.0},   // cuts the soul: unblockable, ignores damage reduction, drains CE
+  {k:'chain', name:'CHAIN OF A THOUSAND MILES', short:'CHAIN', col:'#c8ccd8', reach:250, dmg:0.75, kb:0.8},   // reach
+  {k:'cloud', name:'PLAYFUL CLOUD',             short:'CLOUD', col:'#e0533f', reach:88,  dmg:1.45, kb:1.6},   // raw strength
+];
+const TOJI_FLURRY_CD = 6000, TOJI_FLURRY_N = 6, TOJI_FLURRY_GAP = 95, TOJI_FLURRY_START = 110, TOJI_FLURRY_DMG = 2.6, TOJI_FLURRY_FIN = 6;
+const TOJI_RUSH_CD = 9000, TOJI_RUSH_R = 820, TOJI_RUSH_STEP = 130, TOJI_RUSH_DMG = 16, TOJI_RUSH_REC = 320;
+const TOJI_SPEAR_CE = 8, TOJI_SPEAR_CE_BIG = 30, TOJI_SPEAR_CD_ADD = 1500;
+const TOJI_FLY_CD = 16000, TOJI_FLY_MS = 6000, TOJI_FLY_R = 150, TOJI_GUN_CD = 12000, TOJI_GUN_DMG = 14, TOJI_GUN_SPD = 30;
+const TOJI_ULT_MS = 8000, TOJI_ULT_SPD = 1.5, TOJI_ULT_DMG = 6, TOJI_FIN_R = 520, TOJI_FIN_DMG = 95;
+const tojiClouds = [];   // synced: Fly Heads swarms {owner, x, y, t, life, heads:[{a, r, s, y}]}
+function isToji(p){ return !!p && p.type==='toji'; }
+function tojiTool(p){ return TOJI_TOOLS[(p && p.tojiTool)||0] || TOJI_TOOLS[0]; }
+// one hit with the tool in his hand. Spear: unblockable, ignores damage reduction (it cuts the soul), drains CE; the big stab also
+// pushes their cooldowns back and shatters a domain they're holding
+function tojiHit(p, d, dmg, o){
+  const T = tojiTool(p), spear = T.k==='spear', big = !!(o && o.big);
+  const opts = Object.assign({col:T.col, dir:p.facing}, o||{}); delete opts.big;
+  if(spear) opts.ubk = true;
+  if(ragHittable(d)){ ragPrep(d); opts.any = true; }
+  if(spear) d._noDR = true;
+  const ok = olHit(p, d, dmg*T.dmg, opts);
+  d._noDR = false;
+  if(ok && spear && d.state!==S.DEAD){
+    if(d.ceMax && !ceInfinite(d)) d.ce = Math.max(0, (d.ce||0) - (big ? TOJI_SPEAR_CE_BIG : TOJI_SPEAR_CE));
+    if(big){
+      for(const k of Object.keys(d)) if(/Cooldown$|Cd$/.test(k) && typeof d[k]==='number' && k!=='swapCd' && k!=='dashCd') d[k] = Math.max(d[k], 0) + TOJI_SPEAR_CD_ADD;
+      addSpeech(d.x+PW/2, d.y-10, `-${TOJI_SPEAR_CE_BIG} CE`, '#4d7c96', 700);
+      if(activeDomain && activeDomain.owner===d){ domainCancelled(d); activeDomain = null; domainClash = null; domainFlash = 0; showTxt('DOMAIN SHATTERED', 1000); addRing(d.x+PW/2, d.y+PH/2, '#9cc3dc', 120); doShake(12); }
+    }
+  }
+  return ok;
+}
+Player.prototype._tojiAbilities = function(dt, e1, e2, e3, eD, blocked){
+  for(const k of ['tojiFlCd','tojiRushCd']) if(this[k]>0) this[k] = Math.max(0, this[k]-dt);
+  if(this.tojiGunT>0) this.tojiGunT = Math.max(0, this.tojiGunT-dt);
+  if(this.tojiUltT>0){ this.tojiUltT = Math.max(0, this.tojiUltT-dt); this.dashCd = 0; this.airDashUsed = false;
+    if(this.tojiUltT<=0) addSpeech(this.x+PW/2, this.y-20, 'UNLEASHED ENDS', '#999', 800); }
+  const busy = [S.TOJIFLURRY, S.TOJIRUSH, S.TOJIFIN].includes(this.state);
+  const free = !blocked && [S.IDLE,S.WALK,S.AIR].includes(this.state);
+  // R: next cursed tool (no cooldown)
+  if(e3 && !blocked && !busy && !this.isPuppet){
+    this.tojiTool = ((this.tojiTool||0) + 1) % TOJI_TOOLS.length; const T = tojiTool(this);
+    addSpeech(this.x+PW/2, this.y-26, T.name, T.col, 900); addRing(this.x+PW/2, this.y+PH*0.45, T.col, 34); snd('tick', this.x);
+  }
+  // Q: Flurry
+  if(e1 && free && !(this.tojiFlCd>0)){
+    this.tojiFlCd = TOJI_FLURRY_CD; this.tfN = 0; this.vx = 0; this.tfLash = 0;
+    this.ss(S.TOJIFLURRY, TOJI_FLURRY_START + TOJI_FLURRY_N*TOJI_FLURRY_GAP + 180); snd('swing', this.x);
+  }
+  // E: Four-Step Stab
+  if(e2 && free && !(this.tojiRushCd>0)){
+    const d = olNearest(this, TOJI_RUSH_R);
+    this.tojiRushCd = TOJI_RUSH_CD; this.trRef = d ? (netRef(d) || d) : null; this.trN = 0; this.trStab = false; this.vx = 0;
+    this.ss(S.TOJIRUSH, TOJI_RUSH_STEP*4 + 160 + TOJI_RUSH_REC); snd('dash', this.x);
+  }
+  // F: Unleashed — and while it lasts, F again is the killing blow
+  if(eD && !blocked && !busy){
+    if(this.tojiUltT>0 && [S.IDLE,S.WALK,S.AIR,S.DASH,S.ATCK,S.BLOCK].includes(this.state)){
+      this.tfRef = null; const d = olNearest(this, TOJI_FIN_R) || olFoes(this).find(q => ragHittable(q) && Math.abs(q.rdX - this.x) < TOJI_FIN_R);
+      if(d) this.tfRef = netRef(d) || d;
+      this.tojiUltT = 0; this.tfDone = false; this.vx = 0; this.ss(S.TOJIFIN, 760);
+      this._ubUntil = Math.max(this._ubUntil||0, terClock + 900); doShake(8); snd('charge', this.x); sayFor(this, 'Bye.');
+    } else if(free && !(this.tojiUltT>0) && this.domainCharge>=DOMAIN_CHARGE_REQ){
+      this.domainCharge = 0; this.tojiUltT = TOJI_ULT_MS; this.dashCd = 0;
+      showTxt('HEAVENLY RESTRICTION: UNLEASHED', 1300); sayFor(this, 'I\'ll take it seriously, then.');
+      addRing(this.x+PW/2, this.y+PH/2, '#e8e2d0', 90); addRing(this.x+PW/2, this.y+PH/2, '#a83a3a', 140); addParts(this.x+PW/2, this.y+PH/2, '#c8b8a0', 24, 7); doShake(12); snd('charge', this.x);
+    }
+  }
+};
+Player.prototype._tickTojiFlurry = function(dt){
+  const T = tojiTool(this), f = this.facing;
+  this.vx = this.sTimer < 120 ? f*3 : 0; this._phys(dt);
+  const due = Math.floor((this.sTimer - TOJI_FLURRY_START)/TOJI_FLURRY_GAP) + 1;
+  while((this.tfN||0) < Math.min(TOJI_FLURRY_N, due)){
+    this.tfN = (this.tfN||0) + 1; const fin = this.tfN===TOJI_FLURRY_N;
+    const [x,y,w,h] = olFront(this, T.reach + (fin ? 12 : 0), -10, PH+14);
+    for(const d of olAreaR(this, x, y, w, h)){
+      tojiHit(this, d, fin ? TOJI_FLURRY_FIN : TOJI_FLURRY_DMG, fin ? {rag:[10*T.kb, -6, RAGD_MS*Math.min(1.5, T.kb)]} : {stun:300, push:1.1*T.kb});
+      addParts(d.x+PW/2 - f*6, d.y+PH*0.45, T.col, fin ? 10 : 4, fin ? 5 : 3);
+    }
+    this.tfLash = terClock; snd(fin ? 'slash' : 'swing', this.x);
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+Player.prototype._tickTojiRush = function(dt){
+  const d = typeof this.trRef==='string' ? netRes(this.trRef) : this.trRef, T = tojiTool(this);
+  this.vx = 0; this.vy = Math.min(this.vy||0, 1); this._phys(dt);
+  const step = Math.floor(this.sTimer / TOJI_RUSH_STEP);
+  while((this.trN||0) < Math.min(4, step+1)){
+    this.trN = (this.trN||0) + 1; const k = this.trN, live = d && d.state!==S.DEAD;
+    const tx = live ? (ragHittable(d) ? d.rdX : d.x) : this.x + this.facing*90;
+    const dir = Math.sign(tx - this.x) || this.facing; this.facing = dir;
+    // each dash closes more of what's left; the last one lands right next to them (or at chain's length)
+    const stop = T.k==='chain' ? T.reach - 60 : PW + 14, gap = Math.max(0, Math.abs(tx - this.x) - stop);
+    const nx = live ? this.x + dir*gap*[0.4, 0.5, 0.67, 1][k-1] : this.x + dir*90;
+    const x0 = this.x; safeTeleport(this, nx, this.y);
+    olShot(this, {kind:'streak', x:x0+PW/2, y:this.y+PH*0.5, x2:this.x+PW/2, life:200, dmg:0, col:'rgba(232,232,240,0.85)'});
+    addParts(x0+PW/2, this.y+PH*0.7, 'rgba(220,220,230,0.8)', 6, 3); snd('dash', this.x);
+  }
+  if(!this.trStab && this.sTimer >= TOJI_RUSH_STEP*4 + 60){
+    this.trStab = true; this.tfLash = terClock;
+    if(live2(d)) this.facing = Math.sign((ragHittable(d) ? d.rdX : d.x) - this.x) || this.facing;
+    const [x,y,w,h] = olFront(this, T.reach + 34, -10, PH+14); let hit = false;
+    for(const q of olAreaR(this, x, y, w, h)) if(tojiHit(this, q, TOJI_RUSH_DMG, {rag:[16*T.kb, -8, RAGD_MS*1.3], big:true})){
+      hit = true; const mx = q.x+PW/2, my = q.y+PH/2; addRing(mx, my, '#ffffff', 60); addRing(mx, my, T.col, 100); addParts(mx, my, T.col, 18, 7); doShake(14); snd('heavy', mx); }
+    if(!hit) addSpeech(this.x+PW/2, this.y-20, 'MISSED', '#999', 600); else sayFor(this, 'Got you.');
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+function live2(d){ return !!d && typeof d==='object' && d.state!==S.DEAD; }
+Player.prototype._tickTojiFin = function(dt){
+  this.vx = 0; this._phys(dt);
+  if(!this.tfDone && this.sTimer >= 200){
+    this.tfDone = true; const d = typeof this.tfRef==='string' ? netRes(this.tfRef) : this.tfRef;
+    if(live2(d) && (d.hittable || ragHittable(d))){
+      ragPrep(d); const dir = Math.sign(d.x - this.x) || this.facing, x0 = this.x; this.facing = dir;
+      safeTeleport(this, d.x - dir*(PW+10), d.y);
+      olShot(this, {kind:'streak', x:x0+PW/2, y:this.y+PH*0.5, x2:this.x+PW/2, life:260, dmg:0, col:'rgba(255,255,255,0.9)'});
+      d._rawHit = true; olHit(this, d, TOJI_FIN_DMG, {any:true, ubk:true, rag:[20,-12,RAGD_MS*1.6], dir, col:'#ffffff'}); d._rawHit = false;
+      const mx = d.x+PW/2, my = d.y+PH/2; addRing(mx, my, '#ffffff', 140); addRing(mx, my, '#a83a3a', 200); addParts(mx, my, '#ffffff', 40, 12); doShake(26); snd('boom', mx);
+      showTxt('KILLING BLOW', 1100); this.tfLash = terClock;
+    } else addSpeech(this.x+PW/2, this.y-20, 'NO ONE IN REACH', '#999', 800);
+  }
+  if(this.sTimer >= this.sDur) this.ss(this.onGround ? S.IDLE : S.AIR);
+};
+function tickToji(dt){
+  for(let i=tojiClouds.length-1;i>=0;i--){ const c = tojiClouds[i]; c.t += dt;
+    if(c.t >= c.life || !c.owner || c.owner.state===S.DEAD) tojiClouds.splice(i,1); }
+  for(const pl of [p1, p2]){ if(!pl) continue;
+    const c = tojiClouds.find(q => q.owner===pl);
+    pl.tojiInvis = !!c && pl.state!==S.DEAD && Math.abs(pl.x+PW/2 - c.x) < TOJI_FLY_R && Math.abs(pl.y+PH/2 - c.y) < TOJI_FLY_R*0.8; }
+}
+function drawToji(){
+  const t = Date.now();
+  for(const c of tojiClouds){
+    const a = Math.min(1, c.t/250) * Math.min(1, (c.life - c.t)/500);
+    ctx.save(); ctx.globalAlpha = 0.35*a;
+    const g = ctx.createRadialGradient(c.x, c.y, 10, c.x, c.y, TOJI_FLY_R*1.15); g.addColorStop(0, 'rgba(40,30,50,0.9)'); g.addColorStop(1, 'rgba(40,30,50,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(c.x, c.y, TOJI_FLY_R*1.15, TOJI_FLY_R*0.95, 0, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = a;
+    for(const h of c.heads){ const ang = h.a + h.s*t*0.003, x = c.x + Math.cos(ang)*h.r, y = c.y + Math.sin(ang*1.3)*h.r*0.7 + h.y;
+      // a fly head: a little round curse with a bug's wings and big eyes
+      ctx.fillStyle = 'rgba(210,220,230,0.55)'; ctx.beginPath(); ctx.ellipse(x-4, y-5, 4, 2, -0.6 + Math.sin(t*0.08 + h.a)*0.5, 0, Math.PI*2); ctx.ellipse(x+4, y-5, 4, 2, 0.6 - Math.sin(t*0.08 + h.a)*0.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#3a3240'; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#e8d8a0'; ctx.fillRect(x-3, y-1.5, 2, 2); ctx.fillRect(x+1, y-1.5, 2, 2); }
+    ctx.restore();
+  }
+}
+// tools in his hand: the Spear and Playful Cloud reuse the item art; the chain is drawn as links
+function drawTojiChain(x0, y0, x1, y1, sag){
+  const n = Math.max(4, Math.round(Math.hypot(x1-x0, y1-y0)/9));
+  ctx.strokeStyle = '#8c909c'; ctx.lineWidth = 2;
+  for(let i=0;i<n;i++){ const k = i/n, k2 = (i+1)/n, x = x0 + (x1-x0)*k, y = y0 + (y1-y0)*k + Math.sin(k*Math.PI)*sag, yy = y0 + (y1-y0)*k2 + Math.sin(k2*Math.PI)*sag, xx = x0 + (x1-x0)*k2;
+    ctx.beginPath(); ctx.ellipse((x+xx)/2, (y+yy)/2, 4, 2.4, Math.atan2(yy-y, xx-x), 0, Math.PI*2); ctx.stroke(); }
+}
+function drawTojiBody(pl){
+  if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
+  const cx = pl.x+PW/2, hy = pl.y+HEAD_R+2, f = pl.facing, t = Date.now(), T = tojiTool(pl), ult = pl.tojiUltT>0;
+  ctx.save();
+  // Unleashed: a heat-haze shimmer (no cursed energy, so no aura) and red afterimages
+  if(ult){ ctx.globalAlpha = 0.18 + 0.08*Math.sin(t*0.02); const g = ctx.createRadialGradient(cx, pl.y+PH/2, 8, cx, pl.y+PH/2, 46);
+    g.addColorStop(0, 'rgba(255,240,220,0.7)'); g.addColorStop(1, 'rgba(168,58,58,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, pl.y+PH/2, 46, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 0.25; ctx.strokeStyle = '#a83a3a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - (pl.vx||0)*3, pl.y+6); ctx.lineTo(cx - (pl.vx||0)*3, pl.y+PH-4); ctx.stroke(); ctx.globalAlpha = 1; }
+  // short, messy black hair
+  ctx.fillStyle = '#111114';
+  ctx.beginPath(); ctx.ellipse(cx, hy - HEAD_R*0.4, HEAD_R*1.05, HEAD_R*0.62, 0, Math.PI, Math.PI*2); ctx.fill();
+  for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.moveTo(cx + k*HEAD_R*0.42 - 3, hy - HEAD_R*0.7); ctx.lineTo(cx + k*HEAD_R*0.42 + f*4, hy - HEAD_R*1.35 - (k%2 ? 2 : 4)); ctx.lineTo(cx + k*HEAD_R*0.42 + 3, hy - HEAD_R*0.7); ctx.fill(); }
+  // the scar at the corner of his mouth
+  ctx.strokeStyle = '#e8d6c8'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx + f*HEAD_R*0.15, hy + HEAD_R*0.35); ctx.lineTo(cx + f*HEAD_R*0.55, hy + HEAD_R*0.15); ctx.stroke();
+  if(ult){ ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#ff6a6a'; ctx.shadowBlur = 6; ctx.fillRect(cx + f*HEAD_R*0.35 - 1, hy - HEAD_R*0.15, 3, 2); ctx.shadowBlur = 0; }
+  // tight black shirt
+  ctx.fillStyle = '#1a1b20'; ctx.globalAlpha = 0.92;
+  ctx.beginPath(); ctx.moveTo(cx-8, pl.y+HEAD_R*2+3); ctx.lineTo(cx+8, pl.y+HEAD_R*2+3); ctx.lineTo(cx+7, pl.y+PH*0.6); ctx.lineTo(cx-7, pl.y+PH*0.6); ctx.closePath(); ctx.fill();
+  ctx.globalAlpha = 1;
+  // the inventory curse coiled over his shoulders
+  ctx.strokeStyle = '#6a5a7a'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.ellipse(cx, pl.y+HEAD_R*2+6, 13, 5, 0, Math.PI*0.05, Math.PI*1.95); ctx.stroke();
+  ctx.strokeStyle = 'rgba(30,20,40,0.5)'; ctx.lineWidth = 1; for(let k=0;k<6;k++){ const a = Math.PI*(0.2 + k*0.3); ctx.beginPath(); ctx.arc(cx + Math.cos(a)*13, pl.y+HEAD_R*2+6 + Math.sin(a)*5, 2.5, 0, Math.PI*2); ctx.stroke(); }
+  // the tool in his hand
+  const h = pl._hand, hx = h ? h.x : cx + f*12, hy2 = h ? h.y : pl.y+PH*0.48;
+  const swinging = [S.TOJIFLURRY, S.TOJIRUSH, S.TOJIFIN].includes(pl.state), sinceLash = terClock - (pl.tfLash||-1e9);
+  if(pl.tojiGunT>0){
+    ctx.fillStyle = '#2a2a30'; ctx.fillRect(hx - (f<0 ? 14 : 0), hy2-3, 14, 5); ctx.fillRect(hx + (f>0 ? 0 : -4), hy2, 4, 7);
+    if(pl.tojiGunT > 300){ ctx.fillStyle = '#ffe9a0'; ctx.beginPath(); ctx.arc(hx + f*17, hy2-1, 5, 0, Math.PI*2); ctx.fill(); }
+  } else if(T.k==='chain'){
+    const lash = swinging && sinceLash < 160, reach = lash ? T.reach*(1 - sinceLash/320) : 26;
+    const ex = hx + f*reach, ey = hy2 + (lash ? -6 + Math.sin(sinceLash*0.05)*10 : 18);
+    drawTojiChain(hx, hy2, ex, ey, lash ? 6 : 10);
+    drawItemIcon('isoh', ex, ey, 0.45, f>0 ? 0.2 : Math.PI-0.2);
+  } else {
+    const ang = swinging ? (-1.2 + ((sinceLash % 190)/190)*2.4) : -0.6;
+    ctx.save(); if(f<0){ ctx.translate(hx, hy2); ctx.scale(-1,1); ctx.translate(-hx, -hy2); }
+    drawItemIcon(T.k==='spear' ? 'isoh' : 'cloud', hx+6, hy2, 0.8, ang); ctx.restore();
+    if(swinging && sinceLash < 120){ ctx.globalAlpha = 0.6*(1 - sinceLash/120); ctx.strokeStyle = T.col; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(cx, pl.y+PH*0.45, T.reach*0.7, f>0 ? -1 : Math.PI-0.4, f>0 ? 0.4 : Math.PI+1); ctx.stroke(); ctx.globalAlpha = 1; }
   }
   ctx.restore();
 }
@@ -17497,8 +17966,8 @@ Player.prototype._yutaEndCopy = function(){
   this.yCopy = null;
 };
 
-// ── Rika as her own fighter: 75 HP, follows Yuta (she flies, so she never gets stuck), three modes ──
-const RIKA_NPC_MS = 45000, RIKA_HP = 75, RIKA_SLAM_DMG = 10, RIKA_SLAM_CD = 3200, RIKA_BITE_DMG = 6, RIKA_BITE_CD = 2000;
+// ── Rika as her own fighter: 50 HP (Oct 23, was 75), follows Yuta (she flies, so she never gets stuck), three modes ──
+const RIKA_NPC_MS = 45000, RIKA_HP = 50, RIKA_SLAM_DMG = 10, RIKA_SLAM_CD = 3200, RIKA_BITE_DMG = 6, RIKA_BITE_CD = 2000;
 const RIKA_SUP_GRAB_MS = 2500, RIKA_SUP_GRAB_CD = 9000, RIKA_JUMP_CD = 3000, RIKA_PUSH_CD = 700, RIKA_LEASH = 900;
 const RIKA_MODE_NAMES = {off:'OFFENSIVE', def:'DEFENSIVE', sup:'SUPPORT'}, RIKA_MODE_COL = {off:'#ff6a8a', def:'#8ac8ff', sup:'#9fe0a0'};
 const METAL_RANGE = 86, METAL_CHOKE_MS = 2000, METAL_THROW_DMG = 10, METAL_PARRY_MS = 450, YUTA_METAL_CD = 6000;
@@ -18034,6 +18503,7 @@ function guideBlock(title, body, x, y, w, col){
   return wrapText(body, x, y+14, w, 13) + 6;
 }
 const CHAR_TIPS = {
+  toji:     ['No cursed energy: nothing costs CE, but everything recharges slower. {ab3} swaps tools with no cooldown — the Spear of Heaven goes through blocks, the chain hits from far away, Playful Cloud hits hardest.', 'Four-Step Stab ({ab2}) dashes in four times, closer each time — great for chasing. Flurry and the stab both hit knocked-down foes.', 'Maximum Output: Fly Heads hides you (nothing can lock on), the Gun is a long-range poke.', 'Ultimate {ult}: 8s Unleashed (+50% speed, +500% damage, dash through anything). Press {ult} again near them for the killing blow (95).'],
   ryu:      ['Each press of {ab3} adds 10% Output: everything hits harder and Granite Blasts get bigger — but you take more damage too (and you already take 20% more).', 'Granite Punch ({ab1}) whiffs are punished hard: only throw it point-blank.', 'Aim Granite Blast with {jump} / {down} during the wind-up. Maximum Granite Blast ({ult}) crosses the whole map.'],
   geto:     ['Dash (or double-tap {left} / {right}) rides a stingray for 3s (up to 200px above where you got on, 11s cooldown): fly over walls and away from trouble.', 'Kuchisake-Onna only works point-blank — the victim gets one key to press; on one keyboard, watch the prompt.', 'The Mirror Curse sends every projectile back at its owner for 6s: summon it against zoners and Gojo.', 'Maximum: Uzumaki uses your whole curse pool (30 to start). Hold {ult} to sacrifice a curse every second: the rest get +3% damage, speed and size. Dead curses are gone for the match.'],
   sukuna:   ['In the air, Dismantle and Fuga aim with {jump} / {down}.', 'Cleave used in the air turns into a diving spike.', 'Land a Dismantle and press {ab1} again within 1.5s to chain it (10 CE each, up to 3 links) — but when the chain ends, Dismantle AND Cleave are locked for a long time.', 'Cleave reaches out for a moment first — they can dash or perfect-block it. Press {ab1} + {ab2} together with high CE for Spider Web.'],
@@ -18619,7 +19089,7 @@ const CPU_BOT = (function(){
     if(S.ult >= 1 && S.hittable){ S.tap('ult'); return; }
     if(S.special >= 1 && S.hittable){ S.tap('ab3'); return; }
     if(!me.onGround && S.dy > 40 && S.ax < 60 && S.ready1){ S.tap('ab1'); return; }
-    if(S.ax < 110 && S.sameLevel && S.hittable && useMO(S, 1)){ m.feintT = S.t; return; }
+    if(S.ax < 80 && S.sameLevel && (S.hittable || /ragd|slam/.test(S.op.state)) && useMO(S, 1)){ m.feintT = S.t; return; }
     if(S.ready1 && S.ax < 95 && S.sameLevel && S.hittable && facing(S)){ S.tap('ab1'); return; }
     // Boogie to drag a far opponent in when they zone us
     if(S.ready2 && S.ax > 220 && S.ax < 700 && S.t - (m.boogieT || 0) > 2500){ S.tap('ab2'); m.boogieT = S.t; return; }
@@ -18863,6 +19333,24 @@ const CPU_BOT = (function(){
     brawl(S, 60);
   };
 
+  P.toji = function(S){
+    const m = S.m, me = S.me, X = me.x_ || {};
+    if(/tojiflurry|tojirush|tojifin/.test(me.state)) return;
+    // Unleashed: close in and land the killing blow
+    if(X.tojiUlt){ if(S.ax < 420 && S.ady < 200 && (S.t - (m.ultT||0) > 2200 || S.op.hp <= 95)){ S.tap('ult'); return; }
+      if(S.ready1 && S.ax < 120 && S.sameLevel){ face(S); S.tap('ab1'); return; } brawl(S, 60); return; }
+    if(S.ult >= 1 && S.hittable && S.ax < 500){ S.tap('ult'); m.ultT = S.t; return; }
+    // tool: the chain at range, the Spear against blockers / big pools, Playful Cloud up close
+    const want = S.ax > 190 ? 1 : (S.op.state === 'block' || (S.op.ceMax||0) > 180) ? 0 : 2;
+    if((X.tool||0) !== want && S.t - (m.toolT||0) > 220){ S.tap('ab3'); m.toolT = S.t; return; }
+    if(S.ready2 && S.ax < 760 && S.ax > 60 && (S.hittable || /ragd|slam/.test(S.op.state))){ face(S); S.tap('ab2'); return; }
+    const reach = [96, 250, 88][X.tool||0];
+    if(S.ready1 && S.ax < reach + 10 && S.ady < 90 && (S.hittable || /ragd|slam/.test(S.op.state))){ face(S); if(facing(S)){ S.tap('ab1'); return; } }
+    if(S.ax > 300 && S.ax < 1100 && S.hittable && facing(S) && useMO(S, 2)) return;
+    if((me.hp < 40 || incoming(S)) && useMO(S, 1)) return;
+    brawl(S, 60);
+  };
+
   const DIG = {takaba: ['ab2'], mechamaru: ['ab1','ab2'], yuki: ['ab2'], naoya: ['ab3'], meimei: ['ab1','ab2'], higuruma: ['ab2','ab1'], megumi: ['ab3','ab2'], mahito: ['ab2'], todo: ['ab1'], yuta: ['ab2','ab1']};
   function dig(S){
     const m = S.m;
@@ -18923,6 +19411,8 @@ const CPU_BOT = (function(){
   function act(o){
     const m = o.mem; m.f = (m.f || 0) + 1;
     if(!o.me || !o.opp) return {};
+    // Toji hiding in his Fly Heads: all the bot knows is where the swarm is
+    if(o.opp.x_ && o.opp.x_.invis && o.opp.x_.fogX!=null){ const fx = o.opp.x_.fogX, fy = o.opp.x_.fogY; o.opp = Object.assign({}, o.opp, {x:fx-o.opp.w/2, y:fy-o.opp.h/2, cx:fx, cy:fy, vx:0, vy:0}); o.dx = o.opp.x - o.me.x; o.dy = o.opp.y - o.me.y; }
     const S = makeCtx(o);
     // grid / platform learning
     if(!m.grid || S.f - (m.gridF || 0) > 90){ try { buildGrid(S); } catch(e){ m.grid = null; } m.gridF = S.f; }
@@ -19268,6 +19758,7 @@ function cpuPub(p, lives, opp){
     bfRing: p.bfEvt && !p.bfEvt.res ? p.bfEvt.t : null, bfAt: BF_EVT_MS*BF_EVT_AT,
     curseRing: p.state===S.MAHICURSE && p.mcPh==='ring' ? p.sTimer - p.mcT0 : null,
     ad: !!OL_AD[p.type], modulo: p.moduloT>0, modDisCd: p.modDisCd>0, rika: p.rikaOnT>0, copyOk: !!(p.yCopyReady || (typeof yutaCopyTier==='function' && yutaCopyTier(p) && (p.rikaDmg||0) > 0)),
+    tool: p.tojiTool||0, tojiUlt: p.tojiUltT>0, invis: !!p.tojiInvis, fogX: (tojiClouds.find(c => c.owner===p) || {}).x, fogY: (tojiClouds.find(c => c.owner===p) || {}).y,
     katanaCopy: !!p.yKatanaCopy, out: p.ryuOut||0, humans: p.mahiHumans, ibdk: p.ibdkT>0, depCd: p.mahiPalmCd>0, curseCd: p.mahiIsoCd>0,
     tenCd: p.ibdkTenCd>0, slamCd: p.ibdkSlamCd>0, ctrCd: p.ibdkCtrCd>0,
     ibdkReady: p.type==='mahito' && !(p.ibdkT>0) && (p.bfLife||0) >= IBDK_BF && (p.domainCharge||0) >= DOMAIN_CHARGE_REQ*IBDK_ULT,
@@ -19448,7 +19939,7 @@ function clearProjectiles(){
   piercingBeams.length=0;
   mechLasers.length=0; mechFx.length=0;
   chosoBeams.length=0; bloodOrbs.length=0; bloodRings.length=0; chosoBursts.length=0;
-  mahiMinis.length=0; mahiWalls.length=0; mahiLips.length=0; mapHaz.length=0; mapHazT=0; gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; ryuBeams.length=0; yujiBloods.length=0; yujiCleaves.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
+  tojiClouds.length=0; mahiMinis.length=0; mahiWalls.length=0; mahiLips.length=0; mapHaz.length=0; mapHazT=0; gavelThrows.length=0; pachinkoBalls.length=0; for(const D of shutterDoors) if(D.cells) rootUnfill(D.cells, 1e9, MAT_DOOR); shutterDoors.length=0; uzumakis.length=0; kenSpirits.length=0; kenSlams.length=0; for(let i=uiuis.length-1;i>=0;i--) if(uiuis[i].owner.state===S.DEAD) uiuis.splice(i,1); crows.length=0; emberBugs.length=0; fireTowers.length=0; floods.length=0; waterJets.length=0; fishes.length=0; hanaBuds.length=0; for(let i=flowerFields.length-1;i>=0;i--) if(zoneOwnerGone(flowerFields[i].owner)) flowerFields.splice(i,1); for(const arr of [waterPs, lavaGround]) for(let i=arr.length-1;i>=0;i--) if(zoneOwnerGone(arr[i].owner||arr[i].o)) arr.splice(i,1); isomers.length=0; mahiBlobs.length=0; ryuBeams.length=0; yujiBloods.length=0; yujiCleaves.length=0; kamuBolts.length=0; olShots.length=0; olTimers.length=0; trucks.length=0; brothers.length=0; rpsGame=null; fallChunks.length=0; if(!IS_GUEST){ rootUnfill(rootCellsBy.p1, 1e9); rootUnfill(rootCellsBy.p2, 1e9); } for(let i=jogoMounds.length-1;i>=0;i--) if(jogoMounds[i].owner.state===S.DEAD) jogoMounds.splice(i,1);
   despawnPuppet();
 }
 
@@ -19598,6 +20089,8 @@ const MOVE_INFO = {
              ['ab3','Lava Mound · super','A trap that fades nearly invisible: step on it = fire tower (26). Not in water.'], ['ult','Coffin of the Iron Mountain','Domain: burning + lava geysers. Max Output: giant Maximum: Meteor (38, 70 CE).'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
   meimei:   [['ab1','Axe Chop','Overhead chop (20) floors them; spikes them out of the air.'], ['ab2','Axe Spin','Spinning axe, 3 hits around you (18 total).'],
              ['ab3','Ui Ui','Place him, then teleport to him. Down + this key moves him.'], ['ult','Bird Strike','Steer a crow, press again: it dives and explodes (90).'], ['move','Axe Momentum','Full speed while swinging.']],
+  toji:     [['ab1','Flurry','Six quick hits with the tool in hand (about 19 with the Spear, 14 from far with the chain, 28 with Playful Cloud); hits knocked-down foes.'], ['ab2','Four-Step Stab','Four dashes, each closer, then a huge stab (16 × tool) that knocks them away; hits knocked-down foes.'],
+             ['ab3','Cursed Tools','No cooldown: Spear of Heaven (unblockable, ignores damage reduction, drains CE, shatters domains) → Chain of a Thousand Miles (long reach) → Playful Cloud (hardest hits).'], ['ult','Unleashed','8s: +50% speed, +500% damage, dash through terrain (no dash cooldown). Press again: the killing blow (95).'], ['move','Heavenly Restriction','No cursed energy at all: nothing costs CE, longer cooldowns, no aura. Very fast, high jumps.']],
   ryu:      [['ab1','Granite Punch','A lunging punch. Lands = he steps back, charges, and blasts them (18). Whiff = long end lag.'], ['ab2','Granite Blast','Aimable beam (18), bigger with more Output.'],
              ['ab3','Output · special','Each press: +10% Output (up to +80% damage dealt, +20% taken).'], ['ult','Maximum Granite Blast','Aimable, twice as big: a beam across the whole map (30 + up to 30).'], ['move','Cursed Energy Output','Biggest CE pool, takes 20% more. Max Output: homing Output Burst, Granite Barrage.']],
   geto:     [['ab1','Centipedes','3 red centipedes rush the foe (4 each).'], ['ab2','Kuchisake-Onna','Close range: trapped in her simple domain — press the shown key or get cut (15).'],
@@ -19680,7 +20173,7 @@ const CHAR_ROLE = { sukuna:'Ranged slashes · deadly domain', gojo:'Space contro
   mechamaru:'Lasers · puppet · mech', todo:'Brawler · place swaps', choso:'Blood beams · blood pools', higuruma:'Hammer sizes · trial domain',
   hakari:'Gambler · jackpot fever', meimei:'Axe · teleport · crows', jogo:'Zoner · fire & lava', dagon:'Zoner · flood water', hanami:'Zoner · flowers & roots',
   mahito:'Soul damage · transfigured humans', takaba:'Comedian · counters', naoya:'Fastest · frames · 4 lives', megumi:'Shikigami summoner', yuki:'Mass shifts · black hole',
-  geto:'Curse summoner · swarm', ryu:'Output beams · glass cannon' };
+  geto:'Curse summoner · swarm', ryu:'Output beams · glass cannon', toji:'Sorcerer killer · cursed tools' };
 let charBans = {1:null, 2:null};      // synced: the character type each player has banned (Character Bans unlock)
 function bansEnabled(){ if(isTraining()) return false; const has = s => { const l = loadoutFor(s); return !!(l && l.feats && l.feats.includes('bans')); }; return has(1) || has(2); }
 function isBanned(type){ return !!type && (charBans[1]===type || charBans[2]===type); }   // !!type: the Random tile (type null) is never banned
@@ -20393,7 +20886,7 @@ function netDec(v){
   const o = {}; for(const k in v) o[k] = netDec(v[k]); return o;
 }
 
-const SYNC_ARR = { cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
+const SYNC_ARR = { tojiClouds, cleaves, giantCleaves, redOrbs, lapseOrbs, reversalShots, hollowShots, fugaShots,
                    piercingBeams, blackFlashes, slashMarks, mechLasers, mechFx, worldItems, speechFx,
                    mapHaz, mahiMinis, mahiWalls, mahiLips, chosoBeams, bloodOrbs, bloodRings, bloodPools, chosoBursts, gavelThrows, pachinkoBalls, shutterDoors, uzumakis, kenSpirits, uiuis, crows, emberBugs, jogoMounds, fireTowers, floods, waterJets, fishes, hanaBuds, flowerFields, isomers, mahiBlobs, kamuBolts, ryuBeams, yujiBloods, yujiCleaves, olShots, trucks, brothers, naoFrames, shikis, garudas, meiBlasts, yutaBeams, waterPs, lavaGround, steamClouds, getoCurses };
 const NET_G = {
@@ -21082,7 +21575,7 @@ function simFight(dt){
     tickRedOrbs(fdt, p1, p2);
     if(domainClash) tickClash(fdt); else tickDomain(fdt, p1, p2);
     if(domainFlash>0) domainFlash=Math.max(0,domainFlash-dt);
-    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickRyu(fdt); if(!IS_GUEST) tickHanaWalls(fdt); tickMapHaz(fdt); tickAdEffects(fdt); tickYujiProj(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
+    terrainProjectilePass(); tickTerrain(fdt); tickItems(fdt); tickChoso(fdt); tickHiguruma(fdt); tickHakari(fdt); tickKenjaku(fdt); tickMeiMei(fdt); tickJogo(fdt); tickDagon(fdt); tickHanami(fdt); tickMahito(fdt); tickYuji(fdt); tickOlShots(fdt); tickTakaba(fdt); tickNaoya(fdt); tickMegumi(fdt); tickYuki(fdt); tickGeto(fdt); tickRyu(fdt); tickToji(fdt); if(!IS_GUEST) tickHanaWalls(fdt); tickMapHaz(fdt); tickAdEffects(fdt); tickYujiProj(fdt); tickMeiBlasts(fdt); tickRika(fdt); tickYutaBeams(fdt); tickZones(fdt); tickBrothers(fdt); terGravityTick(fdt);
     tickParts(); tickRings(); tickDmgNums(); tickDismantleEvents(fdt); tickSlashMarks(fdt);
 
     // Round end check
@@ -21125,7 +21618,7 @@ function simFight(dt){
 function drawFight(dt){
     drawDomain(); drawLoveKatanas(); if(!activeDomain) drawMapHaz(); drawAdEffects();   // the domain is the backdrop: every projectile and effect is drawn on top of it
     drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
-    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawYujiProj(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
+    drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawToji(); drawYujiProj(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet(); drawSteam();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawCourtUI(); drawClash(); drawGambleReels();
@@ -21277,6 +21770,7 @@ function loopFrame(ts){
       if(phase==='roundend'){ drawFlameTrails(); drawExplosions(); }
       p1.draw(); p2.draw(); drawPuppet();
     }
+    safeDraw(() => drawMapFore(mapIdx), 'drawMapFore');
     drawNetMarker();
     ctx.restore();
     withView(() => {
