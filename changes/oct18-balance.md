@@ -1,6 +1,6 @@
 # Oct 18 — balance pass (hard-CPU tuned)
 
-**Status: local branch `balance-oct18`, not pushed.** Built from `2c6bd14`.
+**Status: live (merged into main Oct 23).** Built from `2c6bd14`.
 
 Eleven rounds of "change → 800/1,600-match hard-CPU tournament → adjust". Passes 1–7 flattened everyone into 40–60%; passes 8–11 then **tipped the scale by grade**: special grades on top, stepping down to grade 2 and below, each fighter aimed at a target win rate (targets average 50%).
 Rules for every tournament: hard CPU vs hard CPU, online rules, 2 lives, 90s, maps rotating Shibuya / Sister School / Shinjuku / Sendai, mirrors excluded.
