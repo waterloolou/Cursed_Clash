@@ -102,3 +102,4 @@ Tier averages: special grade 54%, special-grade curses 54%, grade 1 (special-gra
   was reverted. Without the Spear he was 51%, so the item's every-punch nullify was the cause: with the user's OK, Toji's own Spear keeps
   the item's +2 damage and +22 reach but its nullify (30 CE drain, +2.5s cooldowns, domain shatter) lands on the same target at most once
   every `TOJI_NULL_CD` (3s tested at 62%, set to 6s) (`_itemOnHit`, `def._tojiNullAt`). A real ISOH item in anyone else's hands is unchanged.
+- Result with the 6s limit: **Toji 55.6%** (160 focused matches), on his special-grade target (56%).
