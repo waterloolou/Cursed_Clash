@@ -438,6 +438,9 @@ canvas {
           <li>The host picks the mode and map; each player picks their own character.</li>
         </ol>
         <p>Anyone else who joins with the same code watches as a spectator. The host's computer runs the match, so keep the host's tab visible.</p>
+        <h2>Lag (Oct 23)</h2>
+        <p>The host's computer runs the match, so the joiner's moves have to travel to the host and back. To hide that, the joiner's screen now <b>predicts their own movement</b>: walking, jumping and falling happen the instant you press the key, then quietly line up with the host. Attacks and abilities still come from the host (it decides every hit), so they can still feel a little late on a slow connection.</p>
+        <p>The line at the bottom of the screen shows your ping and whether you're <b>DIRECT</b> or <b>VIA RELAY</b>. The relay (used when a network blocks a direct link — school Wi-Fi, strict routers) is much slower: if it says VIA RELAY, try home Wi-Fi or a phone hotspot. The player with the better connection should host.</p>
         <h2>If joining gets stuck</h2>
         <p>The join screen shows which step failed. "Can't reach the matchmaking server" usually means the network (often school Wi-Fi or a school laptop) is blocking it — try home Wi-Fi or a phone hotspot.</p>
         <h2>Local 2 player</h2>
@@ -20553,7 +20556,7 @@ function netReset(){
   try{ NET.peer && NET.peer.destroy(); }catch(e){}
   try{ relayStopAll(); }catch(e){}
   NET.role='none'; NET.spectator=false; NET.peer=null; NET.conns=[]; NET.guest=null; NET.host=null;
-  NET.remote={h:0,p:0}; NET.fx=[]; IS_GUEST=false; NET.relaySeen={};
+  NET.remote={h:0,p:0}; NET.fx=[]; IS_GUEST=false; NET.relaySeen={}; NET.q=0; NET.hist=[]; NET.auth=null; NET.predPrev=null;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -20783,7 +20786,7 @@ function netAccept(conn){
   conn.on('data', d => {
     conn.lastSeen = performance.now();
     d = netParse(d); if(!d) return;
-    if(d.t==='in' && conn===NET.guest){ NET.remote.h = d.h; NET.remote.p |= d.p; if(d.mx!==undefined){ NET.remote.mx = d.mx; NET.remote.my = d.my; NET.remote.mt = performance.now(); } }
+    if(d.t==='in' && conn===NET.guest){ NET.remote.h = d.h; NET.remote.p |= d.p; if(d.q!==undefined) NET.remote.q = d.q; if(d.mx!==undefined){ NET.remote.mx = d.mx; NET.remote.my = d.my; NET.remote.mt = performance.now(); } }
     else if(d.t==='sel' && conn===NET.guest){ if(p2 && p2.type==='todo') p2.swapSel = d.sel; }
     else if(d.t==='ping') netSend(conn, {t:'pong', ts:d.ts});
     else if(d.t==='rs'){ if(conn.cache) conn.cache.dref = null; }
@@ -20875,8 +20878,11 @@ function netSendInput(LI){
   if(NET.spectator) return;
   const h = toBits(LI.held); NET.pAcc |= toBits(LI.pressed);
   const ms = (p2 && p2.type==='hanami' && p2.rampT>0 && mouseW.in) ? Math.round(mouseW.x)+','+Math.round(mouseW.y) : '';
-  if(h!==NET.lastH || NET.pAcc || now-NET.lastInT > 200 || (ms && ms!==NET.lastMs && now-NET.lastInT > 45)){
-    const msg = {t:'in', h, p:NET.pAcc};
+  // Oct 23: during a fight every frame's input goes out with its frame number, so the host can say exactly which of our
+  // frames it has played — that's what lets this side predict its own movement (see netPredictTick)
+  const fight = phase==='fight' && !paused, every = fight && (NET.host.relay ? now - NET.lastInT >= 33 : true);
+  if(every || h!==NET.lastH || NET.pAcc || now-NET.lastInT > 200 || (ms && ms!==NET.lastMs && now-NET.lastInT > 45)){
+    const msg = {t:'in', h, p:NET.pAcc, q:NET.q|0};
     if(ms){ msg.mx = Math.round(mouseW.x); msg.my = Math.round(mouseW.y); NET.lastMs = ms; }
     netSend(NET.host, msg);
     NET.pAcc = 0; NET.lastH = h; NET.lastInT = now;
@@ -20981,6 +20987,7 @@ function netSnapshot(conn){
     m.T = {map:terMap, rl, br, bm};
   } else if(conn.pendTer.length){ m.T = {ch:conn.pendTer}; conn.pendTer = []; }
   if(conn.pendFx.length){ m.E = conn.pendFx; conn.pendFx = []; }
+  if(conn===NET.guest && NET.remote.q!==undefined) m.q = NET.remote.q;   // the guest frame this state already includes
   return m;
 }
 
@@ -21025,6 +21032,51 @@ const FX_FN = { fallChunkFx:(...a)=>fallChunkFx(...a), snd:(...a)=>snd(...a), vo
   addExplosion:(...a)=>addExplosion(...a), spawnFlameTrail:(...a)=>spawnFlameTrail(...a),
   addReversalExplosion:(...a)=>addReversalExplosion(...a), addHollowExplosion:(...a)=>addHollowExplosion(...a) };
 
+
+// ═══════════════════════════════════════════════════════════════════
+// CLIENT-SIDE PREDICTION (Oct 23) — the joiner's own movement
+// The host runs the game, so without this the joiner waits a full round trip before their fighter takes a step. Now the
+// joiner's screen moves their fighter at once (walking, jumping, falling — the same code the host runs), records every frame's
+// input, and whenever a snapshot arrives it snaps to the host's position and re-plays the inputs the host hasn't seen yet. Small
+// differences are eased in instead of snapped. Attacks and abilities still come from the host (they decide hits).
+// ═══════════════════════════════════════════════════════════════════
+const PRED_FIELDS = ['x', 'y', 'vx', 'vy', 'onGround', 'facing', 'state', 'jmpDown'];
+const PRED_SNAP = 70;   // a correction bigger than this snaps instead of easing in
+function netCanPredict(pl){
+  return !!pl && NET.role==='guest' && !NET.spectator && phase==='fight' && !paused && !NET.predOff
+    && [S.IDLE, S.WALK, S.AIR].includes(pl.state) && pl.type!=='mechamaru' && !pl.isPuppet && !(pl.respawnT>0)
+    && !(pl.framedT>0) && !(pl.rayT>0) && !(pl.varMode && pl.type==='dagon') && !domainClash && !(activeDomain && activeDomain.owner!==pl)
+    && (typeof timeScale==='undefined' || timeScale===1);
+}
+// one frame of plain movement, exactly as the host's free-state code does it
+function predStep(pl, e){
+  const mv = pl._moveStats(), f = e.dt;
+  if(e.l){ pl.vx = -SPD*mv.spd; pl.facing = -1; }
+  else if(e.r){ pl.vx = SPD*mv.spd; pl.facing = 1; }
+  else { pl.vx *= .7; if(Math.abs(pl.vx) < .15) pl.vx = 0; }
+  if(e.j && pl.onGround){ pl.vy = JUMP_V*mv.jmp; pl.onGround = false; }
+  pl._phys(f);
+  if(pl.type==='gojo' && !pl.onGround && e.jh && pl.vy > 1.7) pl.vy = 1.7;   // Infinity Float
+}
+// every guest frame: predict our fighter one step and remember the input
+function netPredictTick(dt){
+  if(NET.role!=='guest' || NET.spectator) return;
+  if(phase!=='fight'){ NET.hist = []; return; }
+  NET.q = (NET.q|0) + 1;
+  const LI = NET.lastLI || {held:{}, pressed:{}};
+  const e = {q:NET.q, dt, l:!!LI.held.left, r:!!LI.held.right && !LI.held.left, j:!!LI.pressed.jump, jh:!!LI.held.jump};
+  (NET.hist || (NET.hist = [])).push(e); if(NET.hist.length > 240) NET.hist.shift();
+  if(netCanPredict(p2)) predStep(p2, e);
+}
+// a snapshot arrived: start from the host's position, re-play the frames it hasn't seen, ease in the difference
+function netReconcile(ack){
+  const H = NET.hist || []; while(H.length && H[0].q <= ack) H.shift();
+  const pl = p2, A = NET.auth; if(!pl || !A || !netCanPredict(pl)) return;
+  for(const k of PRED_FIELDS) if(k in A) pl[k] = A[k];
+  for(const e of H) predStep(pl, e);
+  const pv = NET.predPrev; if(!pv) return;
+  const dx = pl.x - pv.x; if(Math.abs(dx) < PRED_SNAP && Math.abs(pl.y - pv.y) < PRED_SNAP) pl.x = pv.x + dx*0.45;
+}
 // ── Viewer side ──
 function netOnHostData(d){
   NET.lastSnap = performance.now();
@@ -21051,11 +21103,14 @@ function netApply(m){
         if(ref==='p1') p1 = pl; else if(ref==='p2') p2 = pl; else puppet = pl;
       }
     }
+    const pv = p2 ? {x:p2.x, y:p2.y} : null;
     for(const ref of ['p1','p2','pup']){
       const e = m.P[ref]; if(!e) continue;
       const pl = netRes(ref); if(!pl) continue;
       for(const k in e.f) pl[k] = netDec(e.f[k]);
+      if(ref==='p2'){ const A = NET.auth || (NET.auth = {}); for(const k of PRED_FIELDS) if(k in e.f) A[k] = pl[k]; if(pl.nid!==A.nid){ A.nid = pl.nid; for(const k of PRED_FIELDS) A[k] = pl[k]; } }
     }
+    NET.predPrev = pv;
   }
   if(m.g) for(const k in m.g) if(NET_GREF[k]) NET_GREF[k][1](netRes(m.g[k]));
   if(m.A) for(const name in m.A){ const arr = SYNC_ARR[name]; const sf = arr._screenFlash; arr.length = 0;
@@ -21091,6 +21146,7 @@ function netApply(m){
     }
   }
   if(m.E) for(const [n,a] of m.E){ const f = FX_FN[n]; if(f) f(...a); }
+  if(m.q!==undefined) netReconcile(m.q);
 }
 
 // ── Lobby UI ──
@@ -21264,7 +21320,7 @@ function drawNetOverlay(){
   ctx.globalAlpha = 0.6; ctx.fillStyle = '#c8c3b9';
   let line = '';
   if(NET.role==='host') line = `HOSTING · CODE ${NET.code}` + (NET.specN||NET.conns.length>1 ? ` · ${Math.max(0,NET.conns.length-1)} watching` : '');
-  else line = (NET.spectator ? 'SPECTATING' : 'ONLINE') + ` · ${NET.code} · ${Math.round(NET.rtt)} ms`;
+  else line = (NET.spectator ? 'SPECTATING' : 'ONLINE') + ` · ${NET.code} · ${Math.round(NET.rtt)} ms` + (NET.host && NET.host.relay ? ' · VIA RELAY (slower — home Wi-Fi or a hotspot usually links directly)' : ' · DIRECT');
   ctx.fillText(line, W/2, H-8);
   ctx.restore();
 }
@@ -21748,7 +21804,7 @@ function loopFrame(ts){
   } else {
   const LI = readLocalInput();
   liveHeld = NET.role==='guest' ? [{}, LI.held] : [LI.held, {}];
-  if(NET.role==='guest'){ netSendInput(LI); }
+  if(NET.role==='guest'){ NET.lastLI = LI; netSendInput(LI); }
   else {
     setSlotKeys(1, LI.held, LI.pressed);
     const rp = fromBits(NET.remote.p);
@@ -21769,7 +21825,7 @@ function loopFrame(ts){
   else if(phase==='charSelect'){ if(sim) logicCharSelect(dt); }
   else if(phase==='fight'){
     if(sim && (MI1.back || MI2.back)) togglePause(MI1.back ? 1 : 2);
-    if(!paused){ try{ if(sim) simFight(dt); else guestFx(dt*timeScale); }catch(e){ loopErr(sim ? 'simFight' : 'guestFx', e); } }
+    if(!paused){ try{ if(sim) simFight(dt); else { guestFx(dt*timeScale); netPredictTick(dt); } }catch(e){ loopErr(sim ? 'simFight' : 'guestFx', e); } }
   }
   else if(phase==='roundend'){ tickParts(); tickRings(); tickExplosions(dt); tickFlameTrails(dt); if(sim) logicRoundEnd(dt); }
   else if(phase==='end'){ tickParts(); tickRings(); if(sim) logicMatchEnd(); }
