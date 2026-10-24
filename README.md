@@ -22,6 +22,9 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Own relay server on Cloudflare (Oct 24)
+When a network blocks a direct link, online matches now go through **our own Cloudflare TURN relay** instead of overloaded public ones. A tiny Cloudflare Worker ([`server/turn-worker.js`](server/turn-worker.js)) hands out 24-hour logins. If it's down, the game falls back to the old relays. The status line now says **DIRECT**, **VIA CLOUDFLARE**, **VIA RELAY** or **VIA BACKUP RELAY**. Setup steps: [`server/README.md`](server/README.md). Details: [`changes/oct24-turn.md`](changes/oct24-turn.md).
+
 ## Fix: missing terrain online (Oct 24)
 - Over the relay a single lost message could leave a player with **no terrain** (or the wrong map's) for the whole match. Snapshots are now numbered and a gap triggers a full resend.
 - The stage select kept full-size copies of every map (~112MB of canvas memory), enough to make tablets and Chromebooks draw the terrain blank. It now uses ~17MB.

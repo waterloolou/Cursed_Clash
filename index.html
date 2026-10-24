@@ -440,7 +440,7 @@ canvas {
         <p>Anyone else who joins with the same code watches as a spectator. The host's computer runs the match, so keep the host's tab visible.</p>
         <h2>Lag (Oct 23)</h2>
         <p>The host's computer runs the match, so the joiner's moves have to travel to the host and back. To hide that, the joiner's screen now <b>predicts their own movement</b>: walking, jumping and falling happen the instant you press the key, then quietly line up with the host. Attacks and abilities still come from the host (it decides every hit), so they can still feel a little late on a slow connection.</p>
-        <p>The line at the bottom of the screen shows your ping and whether you're <b>DIRECT</b> or <b>VIA RELAY</b>. The relay (used when a network blocks a direct link — school Wi-Fi, strict routers) is much slower: if it says VIA RELAY, try home Wi-Fi or a phone hotspot. The player with the better connection should host.</p>
+        <p>The line at the bottom of the screen shows your ping and how you're linked: <b>DIRECT</b> (best), <b>VIA CLOUDFLARE</b> or <b>VIA RELAY</b> (a network blocked the direct link — school Wi-Fi, strict routers — so the game goes through a relay server; a little slower), or <b>VIA BACKUP RELAY</b> (the last resort, and much slower: try home Wi-Fi or a phone hotspot). The player with the better connection should host.</p>
         <h2>If joining gets stuck</h2>
         <p>The join screen shows which step failed. "Can't reach the matchmaking server" usually means the network (often school Wi-Fi or a school laptop) is blocking it — try home Wi-Fi or a phone hotspot.</p>
         <h2>Local 2 player</h2>
@@ -20549,14 +20549,55 @@ const INPUT_BITS = [...ACTIONS, 'confirm', 'back'];
 const toBits = o => { let b=0; INPUT_BITS.forEach((a,i)=>{ if(o[a]) b|=(1<<i); }); return b; };
 const fromBits = b => { const o={}; INPUT_BITS.forEach((a,i)=>{ o[a]=!!(b&(1<<i)); }); return o; };
 
+// ── Cloudflare TURN relay (Oct 24) ──
+// When two players can't link directly, WebRTC sends the traffic through a TURN relay. The free public ones below are shared
+// with the whole internet and often overloaded, so the game asks our own Worker (server/turn-worker.js) for a short-lived login
+// to Cloudflare's TURN network. Fetched once when the page loads (and again before hosting / joining if it's missing or old);
+// if the Worker can't be reached the game just uses the public list. ?turn=<url> overrides the Worker, ?turn=0 turns it off.
+const TURN_ENDPOINT = '';   // set to the Worker's URL, e.g. 'https://cursed-clash-turn.<you>.workers.dev'
+const TURN = {ice:null, at:0, busy:null};
+function turnURL(){ const q = new URLSearchParams(location.search).get('turn'); if(q==='0') return ''; return q || TURN_ENDPOINT; }
+function turnFetch(){
+  const url = turnURL(); if(!url) return Promise.resolve(null);
+  if(TURN.ice && performance.now() - TURN.at < 12*3600e3) return Promise.resolve(TURN.ice);   // logins last 24h
+  if(TURN.busy) return TURN.busy;
+  const ctl = typeof AbortController!=='undefined' ? new AbortController() : null;
+  const to = setTimeout(() => { try{ ctl && ctl.abort(); }catch(e){} }, 4000);
+  TURN.busy = fetch(url, {cache:'no-store', signal: ctl ? ctl.signal : undefined}).then(r => r.ok ? r.json() : null).then(j => {
+    const ice = j && Array.isArray(j.iceServers) ? j.iceServers.filter(x => x && x.urls) : null;
+    if(ice && ice.length){ TURN.ice = ice; TURN.at = performance.now(); }
+    return TURN.ice;
+  }).catch(() => TURN.ice).finally(() => { clearTimeout(to); TURN.busy = null; });
+  return TURN.busy;
+}
+// wait for the login for at most `ms`, then go ahead either way
+function turnReady(ms){ return Promise.race([turnFetch(), new Promise(r => setTimeout(r, ms))]); }
+try{ turnFetch(); }catch(e){}
 function peerOpts(){
-  const q = new URLSearchParams(location.search), o = {debug:0, config:{iceServers:[
-    {urls:'stun:stun.l.google.com:19302'}, {urls:'stun:stun1.l.google.com:19302'}, {urls:'stun:stun.cloudflare.com:3478'},
+  const q = new URLSearchParams(location.search), cf = TURN.ice || [], o = {debug:0, config:{iceServers:[
+    ...cf,
+    {urls:'stun:stun.l.google.com:19302'}, {urls:'stun:stun1.l.google.com:19302'}, ...(cf.length ? [] : [{urls:'stun:stun.cloudflare.com:3478'}]),
     {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'], username:'peerjs', credential:'peerjsp'},
-    {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'], username:'openrelayproject', credential:'openrelayproject'}
+    ...(cf.length ? [] : [{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'], username:'openrelayproject', credential:'openrelayproject'}])
   ], sdpSemantics:'unified-plan'}};
+  if(q.get('turnonly')==='1') o.config.iceTransportPolicy = 'relay';   // test switch: only relayed routes, to check the TURN relay works
   if(q.get('peerhost')){ o.host=q.get('peerhost'); o.port=+(q.get('peerport')||9000); o.path=q.get('peerpath')||'/'; o.secure=q.get('peersecure')==='1'; }
   return o;
+}
+// after a link opens, look at the route WebRTC picked (a 'relay' candidate means it goes through a TURN server)
+function netRouteCheck(conn){
+  const pc = conn && conn.peerConnection; if(!pc || !pc.getStats) return;
+  setTimeout(() => { pc.getStats().then(st => {
+    let pair = null; const byId = {};
+    st.forEach(r => { byId[r.id] = r; });
+    st.forEach(r => { if(r.type==='transport' && r.selectedCandidatePairId) pair = byId[r.selectedCandidatePairId]; });
+    if(!pair) st.forEach(r => { if(r.type==='candidate-pair' && (r.selected || (r.nominated && r.state==='succeeded'))) pair = pair || r; });
+    if(!pair) return;
+    const l = byId[pair.localCandidateId], rm = byId[pair.remoteCandidateId];
+    const relay = (l && l.candidateType==='relay') || (rm && rm.candidateType==='relay');
+    const url = (l && l.candidateType==='relay' && (l.url || '')) || '';
+    conn.route = relay ? (/cloudflare/.test(url) || (!url && TURN.ice) ? 'cf' : 'turn') : 'direct';
+  }).catch(() => {}); }, 1500);
 }
 function genCode(){ const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<5;i++) s+=A[Math.random()*A.length|0]; return s; }
 
@@ -20762,6 +20803,9 @@ function netHost(){
   relayHostStart(code, show);
   const sto = setTimeout(() => { if(NET.code===code && NET.role==='host' && !shown){ netReset(); lbView('main'); lbStatus(MSG_SERVER); } }, 12000);
   if(peerDead) return;
+  turnReady(TURN.ice || !turnURL() ? 0 : 1500).then(() => { if(NET.role==='host' && NET.code===code && !NET.peer) netHostPeer(code, sto, show); });
+}
+function netHostPeer(code, sto, show){
   const peer = new Peer(PEER_PREFIX+code, peerOpts()); NET.peer = peer;
   peer.on('open', () => { show(); });
   peer.on('connection', conn => netAccept(conn));
@@ -20777,7 +20821,7 @@ function netHost(){
   });
 }
 function netAccept(conn){
-  conn.on('open', () => { try{ netOnOpen(conn); }catch(e){ console.error('netOnOpen', e); } });
+  conn.on('open', () => { try{ netRouteCheck(conn); netOnOpen(conn); }catch(e){ console.error('netOnOpen', e); } });
   function netOnOpen(conn){
     conn.cache = {g:{}, p:{}, a:{}, dref:null, dk:{}}; conn.pendFx=[]; conn.pendTer=[]; conn.terGen=-1;
     if(NET.guest && NET.guest!==conn){          // the player reloaded the page / re-clicked the invite: their old link is dead weight
@@ -20824,9 +20868,11 @@ function parseJoinCode(v){
   const m = v.match(/[?&#]join=([A-Za-z0-9]+)/i); if(m) v = m[1];      // a whole pasted invite link works too
   return v.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
 }
-function netJoin(code){
+function netJoin(code, turnWaited){
   code = parseJoinCode(code);
   if(code.length < 5){ lbStatus('Enter the 5-character game code (or paste the invite link).'); return; }
+  // give the TURN login (normally already fetched at page load) up to 1.5s to arrive before connecting
+  if(!turnWaited && !TURN.ice && turnURL()){ const tk = NET.joinTk = (NET.joinTk|0) + 1; lbStatus('Connecting…', true); turnReady(1500).then(() => { if(NET.joinTk===tk) netJoin(code, true); }); return; }
   netReset(); NET.role='guest'; NET.code=code; IS_GUEST=true; NET.lastSnap=0;
   const forceRelay = new URLSearchParams(location.search).get('relay')==='1';
   const alive = () => NET.role==='guest' && NET.code===code;
@@ -20871,7 +20917,7 @@ function netJoin(code){
         if((st==='failed' || st==='disconnected') && !conn.open) fallback('ice '+st);
       });
       const to = setTimeout(() => { if(!conn.open) fallback('link timeout'); }, 9000);
-      conn.on('open', () => { clearTimeout(to); if(fellBack || attached || !alive()){ try{ conn.close(); }catch(e){} return; } attach(conn, ''); });
+      conn.on('open', () => { clearTimeout(to); if(fellBack || attached || !alive()){ try{ conn.close(); }catch(e){} return; } netRouteCheck(conn); attach(conn, ''); });
     });
     // once the game link is up, a hiccup on the matchmaking socket must NOT tear it down
     peer.on('error', err => { if(NET.peer===peer && !attached) fallback('peer '+err.type); });
@@ -21333,7 +21379,8 @@ function drawNetOverlay(){
   ctx.globalAlpha = 0.6; ctx.fillStyle = '#c8c3b9';
   let line = '';
   if(NET.role==='host') line = `HOSTING · CODE ${NET.code}` + (NET.specN||NET.conns.length>1 ? ` · ${Math.max(0,NET.conns.length-1)} watching` : '');
-  else line = (NET.spectator ? 'SPECTATING' : 'ONLINE') + ` · ${NET.code} · ${Math.round(NET.rtt)} ms` + (NET.host && NET.host.relay ? ' · VIA RELAY (slower — home Wi-Fi or a hotspot usually links directly)' : ' · DIRECT');
+  else line = (NET.spectator ? 'SPECTATING' : 'ONLINE') + ` · ${NET.code} · ${Math.round(NET.rtt)} ms` + (NET.host && NET.host.relay ? ' · VIA BACKUP RELAY (slow — home Wi-Fi or a hotspot usually links directly)'
+      : NET.host && NET.host.route==='cf' ? ' · VIA CLOUDFLARE' : NET.host && NET.host.route==='turn' ? ' · VIA RELAY' : ' · DIRECT');
   ctx.fillText(line, W/2, H-8);
   ctx.restore();
 }
