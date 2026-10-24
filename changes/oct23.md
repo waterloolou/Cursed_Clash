@@ -97,3 +97,8 @@ Tier averages: special grade 54%, special-grade curses 54%, grade 1 (special-gra
 - **Four-Step Stab rework** (`_tickTojiRush`): dashes alternate sides of the target — past them, back in front, past them again — each
   landing at 55% of the previous distance (`TOJI_RUSH_MAX` 6 dashes, `TOJI_RUSH_STEP` 120ms), until he's in reach, then a hard stab:
   `TOJI_RUSH_DMG` 24 + 2.5× the item bonus, big knockback. If there's no room past them (map edge) he stays on his side.
+- Tuning from focused tests (Toji vs every fighter, 160 matches each): item-exact Spear + natural stats = 74%. Flurry `TOJI_FLURRY_CD`
+  5s → 7s, Four-Step Stab `TOJI_RUSH_CD` 7.5s → 10s, Unleashed `TOJI_ULT_MS` 8s → 6s → 65%. Trimming his move damage did nothing (64%) and
+  was reverted. Without the Spear he was 51%, so the item's every-punch nullify was the cause: with the user's OK, Toji's own Spear keeps
+  the item's +2 damage and +22 reach but its nullify (30 CE drain, +2.5s cooldowns, domain shatter) lands on the same target at most once
+  every `TOJI_NULL_CD` 3s (`_itemOnHit`, `def._tojiNullAt`). A real ISOH item in anyone else's hands is unchanged.
