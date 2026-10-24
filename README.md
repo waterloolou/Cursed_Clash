@@ -22,6 +22,11 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Fix: missing terrain online (Oct 24)
+- Over the relay a single lost message could leave a player with **no terrain** (or the wrong map's) for the whole match. Snapshots are now numbered and a gap triggers a full resend.
+- The stage select kept full-size copies of every map (~112MB of canvas memory), enough to make tablets and Chromebooks draw the terrain blank. It now uses ~17MB.
+Details in [`changes/oct24-perf.md`](changes/oct24-perf.md).
+
 ## Latest: less lag for the joiner (Oct 24)
 The host's computer runs online matches, so the joiner used to wait a full round trip for every step. Now the joiner's own movement is **predicted** on their screen (walking, jumping and falling respond instantly, then line up with the host). In a test with 120ms of delay each way, the joiner's fighter started moving after 14ms instead of 311ms. The status line also says whether you're **DIRECT** or **VIA RELAY** (much slower). Details in [`changes/oct24-netcode.md`](changes/oct24-netcode.md).
 
