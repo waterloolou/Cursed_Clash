@@ -22,6 +22,16 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Latest: Toji rework, Maximum: Uzumaki, fixes (Oct 27)
+- **Toji**: 150 health and a **stamina bar** that is his speed and jump height (starts at 150%, max 200%). It drains slowly, misses cost 20, hits give 5, full combos refund their damage.
+  - No binding vows, feats or Black Flash. The Spear's nullify only lands at the end of a full combo.
+  - The chain reaches 3× as far for 30% damage with a slower windup. Fly Heads covers half the map (with an outline on a shared screen). The Gun shoots straight.
+  - New ultimate, **Scope**: 10s of invulnerable aiming. Click the opponent once and they die.
+- **Geto**: Maximum: Uzumaki stays until the opponent or every curse dies. Holding the key grows the curses, and after 15 sacrifices they break through terrain.
+- **Todo** Boogie Woogie stun 1.5s → 0.75s · **Mechamaru** flight capped at 300px up · **Hanami** flower damage 5 → 3 · **Dagon** Max Output only in water · **Jogo** burn 3 → 2 a tick · **Yuji** can no longer chain Modulos (bug).
+
+Details in [`changes/oct27.md`](changes/oct27.md).
+
 ## Own relay server on Cloudflare (Oct 24)
 When a network blocks a direct link, online matches now go through **our own Cloudflare TURN relay** instead of overloaded public ones. A tiny Cloudflare Worker ([`server/turn-worker.js`](server/turn-worker.js)) hands out 24-hour logins. If it's down, the game falls back to the old relays. The status line now says **DIRECT**, **VIA CLOUDFLARE**, **VIA RELAY** or **VIA BACKUP RELAY**. Setup steps: [`server/README.md`](server/README.md). Details: [`changes/oct24-turn.md`](changes/oct24-turn.md).
 
