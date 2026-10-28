@@ -723,7 +723,7 @@ canvas {
           <tr><td>Q</td><td>Water Prison</td><td>The nearest foe within 380px flashes white for 0.4s, then a bubble traps them for 1.2s (4 damage). <b>Block during the flash</b> and the prison bursts into a splash of water instead. 6s cooldown.</td></tr>
           <tr><td>E</td><td>Water Jet</td><td>A short charge (aim with up / down), then a high-pressure jet of water: 10 damage and a knockback. Cuts a line through terrain. 4.5s cooldown.</td></tr>
           <tr><td>R</td><td>Flood <em>(super, 40)</em></td><td>Pours out <b>real water</b> that flows, runs off ledges, falls through holes and <b>piles up</b>. It isn't permanent: <b>every drop can hurt someone 10 times</b>, then it's gone — pour enough and it rises high enough to spill over walls. The <b>deeper</b> the water around someone, the slower they go (down to 30%) and the faster Dagon goes (up to 2×); opponents in it take 2 damage every 0.6s, and anyone else in deep water falls slowly. Dagon jumps 30% higher out of his own water. Water <b>puts out Jogo's lava</b> (making steam) and stops his mounds; Hanami's flowers <b>drink it</b>. <b>Zoner rule:</b> it stays until a domain opens, its counter removes it, or its owner dies. Charges from 40 damage dealt, like every super.</td></tr>
-          <tr><td>Max Output</td><td>Octopus body</td><td><b>Only while he's standing in water</b> (Oct 27). Turning Maximum Output on transforms Dagon into his huge octopus body. Its two moves: <b>Death Swarm</b> (hold the key to aim with up / down for up to 1.5s, then a stream of 8 fish that home in for 1.5s and fly straight after that, 5 each) and <b>Whirlwind</b> (he spins his tentacles and rockets forward at huge speed: 9 damage and a knockdown to everyone he passes through).</td></tr>
+          <tr><td>Max Output</td><td>Octopus body</td><td><b>Only while he's wet</b>: standing in water, or up to <b>6s after he leaves it</b> (he drips while he's soaked; Oct 27). Turning Maximum Output on transforms Dagon into his huge octopus body. Its two moves: <b>Death Swarm</b> (hold the key to aim with up / down for up to 1.5s, then a stream of 8 fish that home in for 1.5s and fly straight after that, 5 each) and <b>Whirlwind</b> (he spins his tentacles and rockets forward at huge speed: 9 damage and a knockdown to everyone he passes through).</td></tr>
           <tr><td>F</td><td>Horizon of the Captivating Skandha <em>(domain, 150)</em></td><td>A beach under a bright sky for 10 seconds. Giant fish shikigami keep leaping out from every side at the opponent: 8 damage and a knockback each.</td></tr>
           <tr><td>Movement</td><td>Tidal Body</td><td>A little slower on land, but much faster in his own water — the deeper it is, the faster.</td></tr>
         </table>
@@ -3789,8 +3789,8 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:0.942, dagon:1.11, geto:0.955, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:0.93, yuji:1.235, yuki:1.346, yuta:0.96},
-  in:     {higuruma:0.92, mahito:1.25, yuji:0.9},
+  out:    {choso:0.942, dagon:1.3, geto:0.91, gojo:1.254, hakari:0.78, higuruma:1.303, jogo:1.151, mahito:0.754, mechamaru:0.985, megumi:0.886, meimei:0.972, naoya:0.985, ryu:1.199, sukuna:0.848, takaba:1.051, todo:0.93, yuji:1.235, yuki:1.346, yuta:0.96},
+  in:     {dagon:0.85, higuruma:0.92, mahito:1.25, yuji:0.9},   // Oct 27b: dagon out 1.11 → 1.3 + in 0.85 (Max Output needs water), geto out 0.955 → 0.91 (Uzumaki no longer times out)
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
 };
@@ -14595,8 +14595,9 @@ for(const t in OL_AD){ const A = OL_AD[t]; if(A.kind && AD_KIND_TXT[A.kind]) A.n
 
 
 // ── Variants: hold ATTACK and press an ability ──
-// Oct 27: Dagon's Maximum Output only works while he stands in water (any of his Flood water)
-function dagonInWater(p){ return ((p._wOwn||0) + (p._wFoe||0)) > 0; }
+// Oct 27: Dagon's Maximum Output only works while he's in water — Oct 27b: or still soaked from it (DAGON_SOAK_MS after he leaves)
+const DAGON_SOAK_MS = 6000;
+function dagonInWater(p){ return ((p._wOwn||0) + (p._wFoe||0)) > 0 || (p.dagonSoakT||0) > 0; }
 const OL_VARS = {
   sukuna: {
     1:{block:true, name:'Dismantle: Ground Rend', desc:'Dismantle runs through the ground ahead: slashes erupt under anyone within 260px (10, stun).', lock:320, run(p){
@@ -14710,10 +14711,10 @@ const OL_VARS = {
       addParts(p.x+PW/2, p.y, '#ff7a2a', 16, 6); snd('boom', p.x); doShake(4); }},
   },
   dagon: {
-    1:{name:'Death Swarm', req:dagonInWater, reqTxt:'NEEDS WATER', desc:'Only while standing in water. Octopus form. Hold the key to aim with up / down (up to 1.5s), then a stream of 8 fish shikigami that home in on the foe for 1.5s and then fly straight: 5 damage each with a flinch.', lock:SWARM_N*SWARM_EVERY+220, run(p){
+    1:{name:'Death Swarm', req:dagonInWater, reqTxt:'NEEDS WATER', desc:'Only while he\'s wet: in water, or up to 6s after leaving it. Octopus form. Hold the key to aim with up / down (up to 1.5s), then a stream of 8 fish shikigami that home in on the foe for 1.5s and then fly straight: 5 damage each with a flinch.', lock:SWARM_N*SWARM_EVERY+220, run(p){
       p.swarmN = 0; p.aimAng = 0; p.swarmAim = true; p.swarmT0 = 0; p.ss(S.DAGONSWARM, SWARM_AIM_MAX + SWARM_N*SWARM_EVERY + 220); p.vx = 0;
       sayFor(p, 'Death Swarm!'); addSpeech(p.x+PW/2, p.y-10, 'DEATH SWARM', '#7fc8ff', 800); }},
-    2:{name:'Whirlwind', req:dagonInWater, reqTxt:'NEEDS WATER', desc:'Only while standing in water. Octopus form. Dagon spins his tentacles and rockets forward at huge speed for 0.4s: 9 damage and a knockdown to everyone he passes through.', lock:WHIRL_MS, run(p){
+    2:{name:'Whirlwind', req:dagonInWater, reqTxt:'NEEDS WATER', desc:'Only while he\'s wet: in water, or up to 6s after leaving it. Octopus form. Dagon spins his tentacles and rockets forward at huge speed for 0.4s: 9 damage and a knockdown to everyone he passes through.', lock:WHIRL_MS, run(p){
       p.whirlHit = {}; p.ss(S.DAGONWHIRL, WHIRL_MS); snd('dash', p.x); addRing(p.x+PW/2, p.y+PH/2, '#7fc8ff', 60); addSpeech(p.x+PW/2, p.y-16, 'WHIRLWIND', '#7fc8ff', 700); }},
   },
   hanami: {
@@ -18402,7 +18403,9 @@ function tickZones(dt){
   for(const pl of [p1, p2]){ if(!pl) continue; let nF = 0, nO = 0;
     if(waterPs.length){ const fx = pl.x+PW/2, fy = pl.y+PH;
       for(const w of waterPs){ if(Math.abs(w.x-fx) < PW/2+6 && w.y > fy-PH-10 && w.y < fy+8){ if(w.o===pl) nO++; else nF++; } } }
-    pl._wFoe = nF; pl._wOwn = nO; }
+    pl._wFoe = nF; pl._wOwn = nO;
+    // Oct 27b: Dagon stays soaked for DAGON_SOAK_MS after he leaves water — his Maximum Output works while he's wet
+    if(pl.type==='dagon'){ if(nF + nO > 0) pl.dagonSoakT = DAGON_SOAK_MS; else if(pl.dagonSoakT>0){ pl.dagonSoakT = Math.max(0, pl.dagonSoakT - dt); if(Math.random()<0.25) addParts(pl.x+PW/2 + (Math.random()-0.5)*16, pl.y+PH*0.5, '#7fc8ff', 1, 1); } } }
   // steam clouds fade out
   for(let i=steamClouds.length-1;i>=0;i--){ steamClouds[i].t += dt; if(steamClouds[i].t >= STEAM_MS) steamClouds.splice(i,1); }
   // water damages / slows foes standing in it (slow handled in _moveStats through inFlood)
@@ -20064,6 +20067,7 @@ function playerEffects(pl){
   const E = [], add = (label, ms, good) => E.push({label, ms, good});
   if(!pl || pl.state===S.DEAD) return E;
   if(pl.burnT>0) add('Burning', pl.burnT, false);
+  if(pl.type==='dagon' && pl.dagonSoakT>0 && !(((pl._wOwn||0)+(pl._wFoe||0)) > 0)) add('Soaked', pl.dagonSoakT, true);   // Oct 27b
   if(pl.emberT>0) add('Ember: +1s cooldowns', pl.emberT, false);
   if(pl.reshapeT>0) add('Reshaped', pl.reshapeT, false);
   if(pl.confiscT>0 && !(pl.adAmp && pl.adT>0)) add('Sealed', pl.confiscT, false);
@@ -20273,7 +20277,7 @@ const MOVE_INFO = {
   hanami:   [['ab1','Cursed Buds','3 seeds (7 each); each hit drains ~8% of their ultimate bar.'], ['ab2','Root Grab','Aimable root lash: grabs the foe and drags them to you (10).'],
              ['ab3','Flower Field · super','Flowers: stun + 3; she heals in them. Wilt after 30s untouched / 2.5 min.'], ['ult','Root Rampage','12s: a root follows your mouse (14) and leaves walkable roots.'], ['move','Nature\'s Spring','Jumps 10% higher.']],
   dagon:    [['ab1','Water Prison','A flash, then a bubble traps the nearest foe (4). Block the flash = splash.'], ['ab2','Water Jet','Aimable high-pressure jet (10) that knocks back.'],
-             ['ab3','Flood · super','Real water that piles up; deeper = slower foes. Each drop hurts 10 times, then dries.'], ['ult','Captivating Skandha','Domain: giant fish leap at the foe from all sides.'], ['move','Octopus Body','Max Output (only standing in water): Death Swarm + Whirlwind. Leaps out of his own water.']],
+             ['ab3','Flood · super','Real water that piles up; deeper = slower foes. Each drop hurts 10 times, then dries.'], ['ult','Captivating Skandha','Domain: giant fish leap at the foe from all sides.'], ['move','Octopus Body','Max Output (only while wet: in water or 6s after): Death Swarm + Whirlwind. Leaps out of his own water.']],
   jogo:     [['ab1','Ember Insects','A straight fan of 5 fire bugs (3 each): +1s on their cooldowns for 10s.'], ['ab2','Flame Dash','Dash through them (6, burning); scorches the ground into lava.'],
              ['ab3','Lava Mound · super','A trap that fades nearly invisible: step on it = fire tower (26). Not in water.'], ['ult','Coffin of the Iron Mountain','Domain: burning + lava geysers. Max Output: giant Maximum: Meteor (38, 70 CE).'], ['move','Volcanic Body','Immune to burning, 5% faster.']],
   meimei:   [['ab1','Axe Chop','Overhead chop (20) floors them; spikes them out of the air.'], ['ab2','Axe Spin','Spinning axe, 3 hits around you (18 total).'],
