@@ -28,7 +28,7 @@ That's it. Everything is in that one file.
   - The chain reaches 3× as far for 30% damage with a slower windup. Fly Heads covers half the map (with an outline on a shared screen). The Gun shoots straight.
   - New ultimate, **Scope**: 10s of invulnerable aiming. Click the opponent once and they die.
 - **Geto**: Maximum: Uzumaki stays until the opponent or every curse dies. Holding the key grows the curses, and after 15 sacrifices they break through terrain.
-- **Todo** Boogie Woogie stun 1.5s → 0.75s · **Mechamaru** flight capped at 300px up · **Hanami** flower damage 5 → 3 · **Dagon** Max Output only while wet (in water or 6s after; rebalanced to ~50%) · **Geto** retuned to ~56% · **Jogo** burn 3 → 2 a tick · **Yuji** can no longer chain Modulos (bug).
+- **Todo** Boogie Woogie stun 1.5s → 0.75s · **Mechamaru** flight capped at 300px up · **Hanami** flower damage 5 → 3 · **Dagon** Max Output / octopus form only while wet (in water or 6s after; rebalanced to ~50%) · **Geto** retuned to ~56% · **Jogo** burn 3 → 2 a tick · **Yuji** can no longer chain Modulos (bug).
 
 Details in [`changes/oct27.md`](changes/oct27.md).
 

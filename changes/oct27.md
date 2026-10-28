@@ -100,3 +100,7 @@ branch, from git history (commit before this one).
   With the soak rule, Dagon ×1.3 / in 0.85 and Geto ×0.91 → **Dagon 50.0%** (target 52), **Geto 56.2%** (target 56).
 - Confirmation on new seeds: Dagon 50.0% again (160 matches in all). Geto at ×0.91 came out 65% (≈61% over 160), so he was trimmed
   to ×0.86 → **Geto 56.2% over 160 matches**.
+
+## Oct 27c — Dagon: no octopus form while dry
+- `_vToggle`: while `dagonInWater()` is false, Dagon can't switch Maximum Output on ("NEEDS WATER"). If it's on when he dries off,
+  it switches itself off ("DRIED OFF") — unless he's in the middle of Death Swarm / Whirlwind, which finish first.
