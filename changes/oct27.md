@@ -104,3 +104,4 @@ branch, from git history (commit before this one).
 ## Oct 27c — Dagon: no octopus form while dry
 - `_vToggle`: while `dagonInWater()` is false, Dagon can't switch Maximum Output on ("NEEDS WATER"). If it's on when he dries off,
   it switches itself off ("DRIED OFF") — unless he's in the middle of Death Swarm / Whirlwind, which finish first.
+- Re-check with this rule (80 hard-CPU matches): **Dagon 48.8%** (was 50.0%), still inside his range (target 52).
