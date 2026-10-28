@@ -95,6 +95,8 @@ branch, from git history (commit before this one).
 - **Dagon's water rule loosened**: Maximum Output works while he's **wet** — in water, or for `DAGON_SOAK_MS` (6s) after he leaves it
   (`dagonSoakT`, set in `tickZones` while he stands in any water; he drips while soaked, and the status list shows "Soaked").
   `dagonInWater()` covers both. Revert: drop the `dagonSoakT` clause.
-- **Multipliers** (`BAL`): Dagon `out` 1.11 → **1.3** and new `in` **0.85** (takes 15% less); Geto `out` 0.955 → **0.91**.
+- **Multipliers** (`BAL`): Dagon `out` 1.11 → **1.3** and new `in` **0.85** (takes 15% less); Geto `out` 0.955 → **0.86**.
 - Passes (80 hard-CPU matches each, every opponent): water-only + Dagon ×1.45 / in 0.8, Geto ×0.88 → Dagon 42.5%, Geto 53.8%.
   With the soak rule, Dagon ×1.3 / in 0.85 and Geto ×0.91 → **Dagon 50.0%** (target 52), **Geto 56.2%** (target 56).
+- Confirmation on new seeds: Dagon 50.0% again (160 matches in all). Geto at ×0.91 came out 65% (≈61% over 160), so he was trimmed
+  to ×0.86 → **Geto 56.2% over 160 matches**.
