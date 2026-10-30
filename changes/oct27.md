@@ -120,3 +120,13 @@ each fighter's own plan (`stylePre`) and after it (`stylePost`), and the shared 
 - Measured (each fighter vs three all-rounders, average distance, before → after): Mahito 419 → 266, Yuki 340 → 253, Yuji 280 → 250;
   Mechamaru 215 → 288, Geto 216 → 278, Megumi 249 → 280, Hanami 235 → 277; Naoya 180 → 266 (in-and-out), Toji 232 → 300.
   Rangers back off more but a same-speed chaser still closes on them (Ryu's time up close went from 48% to 31%).
+
+## Oct 30 — Rebalance for the playstyle CPUs
+The new CPU behaviour moved most win rates (Toji 72.5%, Dagon 71%, Mahito 67.5%, Ryu 62.5% … Choso 34%), so the `BAL.out` multipliers
+were retuned against the tier targets over six full tournaments (passes 14–19 in `loop/`, the last two with 1,680 matches each, 0 errors),
+then a focused check on the last three.
+- Final `BAL.out`: choso 1.144, dagon 1.089, geto 0.905, gojo 1.133, hakari 0.801, hanami 1.02, higuruma 1.285, jogo 1.256, mahito 0.743,
+  mechamaru 1.109, megumi 0.914, meimei 0.931, naoya 0.963, ryu 0.973, sukuna 1.12, takaba 1.093, todo 0.933, **toji 0.851** (new),
+  yuji 1.52, yuki 1.362, yuta 1.218. `in` / `lingOut` / `lingIn` unchanged.
+- Pass 19 (160 matches each): everyone 34–58%, 18 of 21 within ±5 of target. The three outside were then nudged and re-checked
+  (80–160 matches): Megumi 34.4 → 45.0% (target 42), Jogo 47.5 → 51.2% (53), Sukuna → see below.
