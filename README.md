@@ -22,6 +22,13 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Latest: CPU playstyles + rebalance (Oct 30)
+- Every fighter has a **playstyle**, and the CPU plays to it. **Rushdown** (Naoya, Toji) darts in and out. **Zoners** (Jogo, Dagon, Hanami) fight from their traps and water. **Brawlers** (Yuji, Todo, Hakari, Mahito, Yuki) stay in your face. **Rangers** (Gojo, Choso, Ryu, Sukuna) keep their distance and kite. **Summoners** (Megumi, Geto, Yuta, Mechamaru) summon first and hang back. **All-rounders** (Higuruma, Mei Mei, Takaba) play balanced.
+- Everyone rebalanced for the new CPUs, over six full tournaments: all fighters now win **34–63%**, and nearly all are within ±5 of their tier target.
+- **Toji**: every Four-Step Stab dash lands level with the opponent (follows them onto ledges and into the air).
+
+Details in [`changes/oct27.md`](changes/oct27.md) (Oct 30 sections).
+
 ## Latest: Toji rework, Maximum: Uzumaki, fixes (Oct 27)
 - **Toji**: 150 health and a **stamina bar** that is his speed and jump height (starts at 150%, max 200%). It drains slowly, misses cost 20, hits give 5, full combos refund their damage.
   - No binding vows, feats or Black Flash. The Spear's nullify only lands at the end of a full combo.

@@ -126,7 +126,7 @@ The new CPU behaviour moved most win rates (Toji 72.5%, Dagon 71%, Mahito 67.5%,
 were retuned against the tier targets over six full tournaments (passes 14–19 in `loop/`, the last two with 1,680 matches each, 0 errors),
 then a focused check on the last three.
 - Final `BAL.out`: choso 1.144, dagon 1.089, geto 0.905, gojo 1.133, hakari 0.801, hanami 1.02, higuruma 1.285, jogo 1.256, mahito 0.743,
-  mechamaru 1.109, megumi 0.914, meimei 0.931, naoya 0.963, ryu 0.973, sukuna 1.12, takaba 1.093, todo 0.933, **toji 0.851** (new),
+  mechamaru 1.109, megumi 0.914, meimei 0.931, naoya 0.963, ryu 0.973, sukuna 1.08, takaba 1.093, todo 0.933, **toji 0.851** (new),
   yuji 1.52, yuki 1.362, yuta 1.218. `in` / `lingOut` / `lingIn` unchanged.
 - Pass 19 (160 matches each): everyone 34–58%, 18 of 21 within ±5 of target. The three outside were then nudged and re-checked
-  (80–160 matches): Megumi 34.4 → 45.0% (target 42), Jogo 47.5 → 51.2% (53), Sukuna → see below.
+  (80–160 matches): Megumi 34.4 → 45.0% (target 42), Jogo 47.5 → 51.2% (53), Sukuna 53.8 → **63.1%** (60; ×1.12 overshot to 68%, settled on ×1.08).
