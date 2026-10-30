@@ -846,7 +846,7 @@ canvas {
           <tr><th>Key</th><th>Move</th><th>Details</th></tr>
           <tr><td>R</td><td>Cursed Tools</td><td>Swaps to the next tool, <b>no cooldown</b>. The <b>Inverted Spear of Heaven</b> and <b>Playful Cloud</b> are exactly the items (same stats, they just never run out) and they power his punches too: the Spear gives +22 reach and +2 a hit, and its nullify — drain 30 CE, add 2.5s to their cooldowns, <b>shatter a domain</b> they're holding — lands <b>only on the finisher of a full combo</b> (two hits, then the finisher; Oct 27); Playful Cloud gives +34 reach, +3 a hit and faster punches. <b>Chain of a Thousand Miles</b> (for his moves): <b>750px reach</b> but only <b>30% damage</b>, and his moves wind up 0.28s longer with it. He <b>can't pick up</b> the Spear or Playful Cloud items (he already carries them).</td></tr>
           <tr><td>Q</td><td>Flurry</td><td>Six fast hits with the tool in hand, the last one knocks them away: 24 plus the tool's bonus (the Spear: about 37, Playful Cloud: about 44, the chain: about 7 from up to 750px). <b>Hits fighters who are knocked down</b> (they bounce, they don't get launched again). 7s cooldown.</td></tr>
-          <tr><td>E</td><td>Four-Step Stab</td><td>He dashes <b>back and forth around</b> the nearest foe (up to 820px) — past them, back in front, past them again — each dash landing about half as close, until he's in reach (up to 6 dashes), then <b>stabs them as hard as he can</b>: 24 plus 2.5× the tool's bonus, and a huge knockback. <b>Hits fighters who are knocked down.</b> 10s cooldown.</td></tr>
+          <tr><td>E</td><td>Four-Step Stab</td><td>He dashes <b>back and forth around</b> the nearest foe (up to 820px), <b>each dash landing level with them</b> (even up on a ledge or in the air) — past them, back in front, past them again — each dash landing about half as close, until he's in reach (up to 6 dashes), then <b>stabs them as hard as he can</b>: 24 plus 2.5× the tool's bonus, and a huge knockback. <b>Hits fighters who are knocked down.</b> 10s cooldown.</td></tr>
           <tr><td>F</td><td>Scope <em>(ultimate, 150)</em></td><td>Oct 27: he takes aim. For up to <b>10 seconds</b> he can't move — and <b>can't be hurt</b> — while the screen goes dark around a sniper scope. Aim with the <b>mouse</b> (or steer the crosshair with the movement keys) and <b>click</b> (or press attack / F) <b>once</b>. The opponent can run the whole time (they see the crosshair too). Hit them and they're <b>pinned</b>, he crosses the map like lightning and <b>kills them outright</b>. Miss and it's gone.</td></tr>
           <tr><td>Max Output</td><td>Fly Heads · Gun</td><td><b>Fly Heads</b>: a swarm of fly-head curses covers <b>half the map</b> around him for 6s; while he stays inside it he's <b>invisible</b> and nothing can lock on to him (no damage, 16s cooldown). When both players share one screen, he shows as a faint outline with a HIDDEN marker. <b>Gun</b> (blockable): one shot <b>straight ahead</b>, no aim assist, 14 and a stagger (12s cooldown).</td></tr>
           <tr><td>Items</td><td>Inventory Curse</td><td>Holding <b>Kamutoke</b> or <b>Inumaki's Recording</b>? Press the pick-up key (G) or dash to stuff it into the curse around his shoulders — its timer stops (and Kamutoke keeps its strikes). Press G with empty hands to pull it back out. (Like Megumi's shadow, but only for those two tools.)</td></tr>
@@ -17752,19 +17752,22 @@ Player.prototype._tickTojiRush = function(dt){
     } else {
       // the next dash: alternate sides of them, each landing about half as far away as the last
       this.trN = (this.trN||0) + 1; const k = this.trN, x0 = this.x;
-      let nx;
+      let nx, ny = this.y;
       if(live){
+        ny = ragHittable(d) ? d.rdY : d.y;                                                       // Oct 30: every dash lands level with them
         const start = this.trSide || (this.trSide = Math.sign(this.x - tx) || -this.facing);   // the side he started on
         const side = k % 2 ? -start : start;                                                     // odd dashes go past them
         const dist0 = this.trD0 || (this.trD0 = Math.max(reach + 40, Math.abs(this.x - tx)));
         const dist = Math.max(reach, dist0 * Math.pow(0.55, k));
         nx = tx + side*dist;
-        if(!tpInArena(nx, this.y)) nx = tx - side*dist;                                          // no room past them: stay on this side
+        if(!tpInArena(nx, ny)) nx = tx - side*dist;                                              // no room past them: stay on this side
       } else nx = this.x + this.facing*110*(k % 2 ? 1 : -0.4);
-      safeTeleport(this, Math.max(4, Math.min(W-PW-4, nx)), this.y);
+      const y0 = this.y;
+      safeTeleport(this, Math.max(4, Math.min(W-PW-4, nx)), ny);
+      if(this.y !== y0){ this.vy = 0; this.onGround = false; }
       this.facing = live ? (Math.sign(tx - this.x) || this.facing) : this.facing;
       const midY = this.y + PH*0.5;
-      olShot(this, {kind:'streak', x:x0+PW/2, y:midY - 18, x2:this.x+PW/2, life:220, dmg:0, col:'rgba(232,232,240,0.85)'});
+      olShot(this, {kind:'streak', x:x0+PW/2, y:midY - 18, x2:this.x+PW/2, life:220, dmg:0, col:'rgba(232,232,240,0.85)'});   // (drawn level at his new height)
       addParts(x0+PW/2, this.y+PH*0.7, 'rgba(220,220,230,0.8)', 6, 3); snd('dash', this.x);
     }
   }
