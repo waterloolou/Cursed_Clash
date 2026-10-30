@@ -18835,6 +18835,20 @@ function isLocalPair(){ return NET.role==='local' && !isTraining(); }
 
 // CPU opponent (Oct 17): the bot from the Oct 14 playtest (it won 553 of 800 matches), updated for the new kits.
 // CPU_BOT.act(obs) -> held buttons for this frame.
+// ── Oct 30: playstyles. Every fighter belongs to one; the CPU plays to it (spacing, when it goes in and out — see stylePre) ──
+//  rushdown: in fast, hit, get straight back out · zoner: lays traps / owns part of the map and fights from it
+//  brawler: closes in and stays in their face · ranger: keeps its distance and shoots, backs off when rushed
+//  summoner: hangs back at mid range and lets its summons work · default: good at both, no special plan
+const PLAYSTYLE = {
+  naoya:'rushdown', toji:'rushdown',
+  jogo:'zoner', dagon:'zoner', hanami:'zoner',
+  yuji:'brawler', todo:'brawler', hakari:'brawler', mahito:'brawler', yuki:'brawler',
+  gojo:'ranger', choso:'ranger', ryu:'ranger', sukuna:'ranger',
+  megumi:'summoner', geto:'summoner', yuta:'summoner', mechamaru:'summoner',
+  higuruma:'default', meimei:'default', takaba:'default',
+};
+const PLAYSTYLE_NAME = {rushdown:'Rushdown', zoner:'Zoner', brawler:'Brawler', ranger:'Ranger', summoner:'Summoner', default:'All-rounder'};
+function playstyleOf(type){ return PLAYSTYLE[type] || PLAYSTYLE[String(type||'').replace(/c$/, '')] || 'default'; }
 const CPU_BOT = (function(){
   'use strict';
   const EDGE_KEYS = ['atk','ab1','ab2','ab3','ult','vtog','pick','feat','jump','dash'];
@@ -18885,6 +18899,7 @@ const CPU_BOT = (function(){
     S.busy = !PASSIVE[me.state];
     S.locked = !!LOCKED[me.state];
     S.oppBusy = !PASSIVE[op.state];
+    S.style = playstyleOf(me.type);   // Oct 30
     return S;
   }
 
@@ -19069,11 +19084,84 @@ const CPU_BOT = (function(){
     const away = -S.dir; const o = S.o;
     const nearWall = S.me.cx + away * 120 < 30 || S.me.cx + away * 120 > o.map.w - 30;
     let blocked = false; try { blocked = o.solid(S.me.cx + away * 40 - 5, S.me.y + 10, 10, S.me.h - 20); } catch(e){}
-    if(nearWall || blocked){ return false; }
+    if(nearWall || blocked){ S.m.cornered = S.t; return false; }
     move(S, away); return true;
+  }
+  // ------------------------------------------------------------ playstyles (Oct 30)
+  // runs before the fighter's own plan; true = it decided this beat on its own
+  const SUMMON_KEY = {megumi:'ab3', yuta:'ab3', mechamaru:'ab3', geto:'ab1'};   // the move that brings out a summon
+  // a foe I should stay and hit (not just one who's swinging at me)
+  function punishable(S){ const st = S.op.state; return st === 'stun' || st === 'framed'; }
+  function stylePre(S){
+    const m = S.m, st = S.style, op = S.op;
+    if(m.cornered && S.t - m.cornered > 1500) m.cornered = 0;
+    const opHp = num(op.hp, 100), dealt = m.styHp != null && opHp < m.styHp - 0.5; m.styHp = opHp;
+    if(dealt && S.ax < 180) m.hitT = S.t;
+    if(S.busy || S.locked || S.oppDomain) return false;
+    const away = -S.dir, canDash = S.online;
+    if(st === 'rushdown'){
+      // hit and run: after a string lands, get out right away (dash if I can), then come back in fast
+      if(m.hitT && S.t - m.hitT > 500 && S.t - m.hitT < 950 && S.ax < 210){   // the string is over (no hit for 0.5s): out
+        if(canDash && S.ax < 150 && S.t - (m.outDashT || 0) > 1400){ move(S, away); S.tap('dash'); m.outDashT = S.t; return true; }
+        if(retreat(S)){ if(S.me.onGround && S.f - (m.styJ || 0) > 50 && S.ax < 120){ doJump(S); m.styJ = S.f; } return true; }
+      }
+      if(S.sameLevel && S.hittable && S.ax > 170 && S.ax < 560 && (!m.hitT || S.t - m.hitT > 950)){
+        if(canDash && S.t - (m.inDashT || 0) > 1300){ move(S, S.dir); S.tap('dash'); m.inDashT = S.t; return true; }
+        move(S, S.dir);   // never stand around at mid range
+      }
+      return false;
+    }
+    if(st === 'brawler'){
+      // close the gap and stay there; dash in from mid range
+      if(S.sameLevel && S.hittable && S.ax > 230 && S.ax < 560 && canDash && S.t - (m.inDashT || 0) > 2200){ move(S, S.dir); S.tap('dash'); m.inDashT = S.t; return true; }
+      return false;
+    }
+    if(st === 'ranger' || st === 'zoner'){
+      // backed into a wall with them on top of me: jump over them to get out
+      if(m.cornered && S.t - m.cornered < 600 && S.ax < 130 && S.me.onGround && !punishable(S) && S.f - (m.crossF || 0) > 70){ move(S, S.dir); doJump(S); m.crossF = S.f; return true; }
+    }
+    if(st === 'ranger'){
+      // rushed and they're not open: back off (hop away) instead of trading up close — unless cornered, then fight
+      // start backing off early, as soon as they come inside ~260px — walking away at the same speed only keeps the gap you had
+      const comingIn = S.ax < 170 || (S.ax < 270 && sgn(num(op.vx, 0)) === -S.dir);
+      if(comingIn && S.ady < 120 && !punishable(S) && !m.cornered){
+        if(canDash && S.ax < 130 && S.t - (m.outDashT || 0) > 2500){ move(S, away); S.tap('dash'); m.outDashT = S.t; return true; }
+        if(retreat(S)){ if(S.ax < 150 && S.me.onGround && S.f - (m.styJ || 0) > 45){ doJump(S); m.styJ = S.f; } return !(S.ready1 || S.ready2); }
+      }
+      return false;
+    }
+    if(st === 'zoner'){
+      // fight from my own setup: when they're far away, drift back to my traps / zone (Dagon: his water)
+      let home = null;
+      for(const p of (S.o.projectiles || [])){ if(p.mine && STATIC_KINDS[p.kind] && (home == null || Math.abs(p.x - S.me.cx) < Math.abs(home - S.me.cx))) home = p.x; }
+      const X = S.me.x_ || {}; if(home == null && X.wetX != null) home = X.wetX;
+      if(home != null && S.ax > 320 && Math.abs(home - S.me.cx) > 140 && Math.abs(home - S.me.cx) < 900){ move(S, sgn(home - S.me.cx)); return !(S.ready1 || S.ready2 || S.special >= 1); }
+      // too close with nothing set up: make room
+      if(S.ax < 150 && !punishable(S) && !m.cornered && S.special < 1){ if(retreat(S)) return !(S.ready1 || S.ready2); }
+      return false;
+    }
+    if(st === 'summoner'){
+      // summon first, then hang back and let it work
+      const k = SUMMON_KEY[S.me.type], X = S.me.x_ || {};
+      const ok = k === 'ab1' ? S.ready1 : (S.special >= 1 && !X.rika);
+      if(k && ok && S.ax < 700 && S.hittable && !m.sumT){ face(S); S.tap(k); m.sumT = S.t; return true; }
+      if(m.sumT && S.t - m.sumT > 4000) m.sumT = 0;
+      if((S.ax < 140 || (S.ax < 220 && sgn(num(op.vx, 0)) === -S.dir)) && !punishable(S) && !m.cornered){ if(retreat(S)) return !(S.ready1 || S.ready2); }
+      return false;
+    }
+    return false;
   }
   // hold a distance band; hysteresis so I don't jitter at the edge of it
   function keepRange(S, lo, hi){
+    // Oct 30: the playstyle bends the band a plan asks for — brawlers don't hang back, rangers / zoners / summoners keep further out
+    const st = S.style;
+    if(st === 'brawler') return brawl(S, 60);
+    if(st === 'ranger'){ lo = Math.max(lo, 280); hi = Math.max(hi, 560); }
+    else if(st === 'zoner'){ lo = Math.max(lo, 230); hi = Math.max(hi, 480); }
+    else if(st === 'summoner'){ lo = Math.max(lo, 200); hi = Math.max(hi, 430); }
+    return bandRange(S, lo, hi);
+  }
+  function bandRange(S, lo, hi){
     const m = S.m;
     if(!S.sameLevel || S.ax > hi){ m.backing = false; approach(S); return; }
     if(S.ax < lo) m.backing = true;
@@ -19133,6 +19221,9 @@ const CPU_BOT = (function(){
   }
   function brawl(S, reach){ // walk in and punch
     reach = reach || 60;
+    // Oct 30: rangers and summoners only brawl when it's already close (or they're cornered / the foe is open); otherwise hold their band
+    if((S.style === 'ranger' || S.style === 'summoner') && S.ax > 110 && !punishable(S) && !S.m.cornered){
+      return S.style === 'ranger' ? bandRange(S, 280, 560) : bandRange(S, 200, 430); }
     if(S.ax > reach - 8 || !S.sameLevel) approach(S);
     else face(S);
     // don't punch into a guard (a timed block stuns me): wait for them to drop it
@@ -19680,6 +19771,8 @@ const CPU_BOT = (function(){
     if(m.speechT && S.t - m.speechT < 4500 && S.op.state === 'stun' && S.special >= 1 && ATTACK_SUPER[me.type] && !S.busy && (S.ax < 300 || me.type === 'megumi' || me.type === 'todo')){
       face(S); if(facing(S)){ S.tap('ab3'); m.speechT = 0; setAim(S, 1500, 0.3); } return finish(S); }
     const plan = P[me.type] || P[String(me.type).replace(/c$/, '')] || ((S) => brawl(S, 60));
+    // Oct 30: the playstyle gets the first say (spacing, hit-and-run, kiting, going home to my traps)
+    if(stylePre(S)) return finish(S);
     // watchdog: if my plan has left me standing around doing nothing for 1.5s, just go fight
     if(m.wakeUntil && S.t < m.wakeUntil){ brawl(S, 60); if(S.ax < 70 && S.sameLevel) punch(S); }
     else plan(S);
@@ -19689,11 +19782,12 @@ const CPU_BOT = (function(){
         const ty = me.type, moOK = !(m.cfg && m.cfg.noMO);
         if(S.ult >= 1 && !S.o.domain && S.ce > S.ceMax*0.45 && ty!=='yuki'){ S.tap('ult'); m.abT = S.t; }
         else if(S.special >= 1 && S.ax < 520 && ty!=='ryu'){ face(S); S.tap('ab3'); m.abT = S.t; }
-        else if(S.ready1 && S.ax < 480 && S.ady < 160){ face(S); S.tap('ab1'); m.abT = S.t; }
-        else if(S.ready2 && S.ax < 320 && S.ady < 140){ face(S); S.tap('ab2'); m.abT = S.t; }
+        else if(S.ready1 && S.ax < (S.style === 'ranger' ? 760 : 480) && S.ady < 160){ face(S); S.tap('ab1'); m.abT = S.t; }
+        else if(S.ready2 && S.ax < (S.style === 'ranger' ? 600 : 320) && S.ady < 140){ face(S); S.tap('ab2'); m.abT = S.t; }
         else if(moOK && S.ax < 320 && S.ce > 45 && useMO(S, ty==='mahito' ? 1 : (m.moAlt = (m.moAlt||1) === 1 ? 2 : 1))) m.abT = S.t;
       } }
     if(m.jetF && S.f < m.jetF && !S.want.down) S.hold('jump');
+    stylePost(S);
     // stuck: trying to move but not moving -> hop
     const moving = S.want.left || S.want.right;
     if(moving && me.onGround && !S.busy){ m.stuckF = (m.stuckF || 0) + 1; if(m.stuckF === 1) m.stuckX = me.x;
@@ -19701,6 +19795,13 @@ const CPU_BOT = (function(){
     return finish(S);
   }
 
+  // Oct 30: after the plan — rangers / zoners / summoners don't walk into the foe when they're already inside their band
+  function stylePost(S){
+    const st = S.style, lo = st === 'ranger' ? 260 : st === 'zoner' ? 210 : st === 'summoner' ? 180 : 0;
+    if(!lo || S.busy || S.locked || punishable(S) || S.m.cornered || !S.sameLevel || S.ax >= lo) return;
+    const toward = S.dir > 0 ? 'right' : 'left';
+    if(S.want[toward] && !S.want.atk && !S.want.ab1 && !S.want.ab2 && !S.want.ab3 && !S.want.ult){ S.drop(toward); retreat(S); }
+  }
   function finish(S){
     const m = S.m, prev = m.prev || {}, out = {};
     for(const k in S.want){

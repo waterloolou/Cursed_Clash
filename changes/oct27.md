@@ -105,3 +105,18 @@ branch, from git history (commit before this one).
 - `_vToggle`: while `dagonInWater()` is false, Dagon can't switch Maximum Output on ("NEEDS WATER"). If it's on when he dries off,
   it switches itself off ("DRIED OFF") — unless he's in the middle of Death Swarm / Whirlwind, which finish first.
 - Re-check with this rule (80 hard-CPU matches): **Dagon 48.8%** (was 50.0%), still inside his range (target 52).
+
+## Oct 30 — CPU playstyles
+Every fighter has a playstyle (`PLAYSTYLE`, just above `CPU_BOT`; `playstyleOf(type)`), and the CPU plays to it. A style layer runs before
+each fighter's own plan (`stylePre`) and after it (`stylePost`), and the shared movement helpers bend to it (`keepRange` → `bandRange`, `brawl`).
+| Style | Fighters | What the CPU does |
+|---|---|---|
+| Rushdown | Naoya, Toji | Dashes in from mid range, and once a string ends (no hit for 0.5s) gets straight back out (dash or hop away), then comes back in. Never idles at mid range. |
+| Zoner | Jogo, Dagon, Hanami | Drifts back to its own traps / water when the foe is far; makes room when rushed with nothing set up; jumps over the foe when cornered. |
+| Brawler | Yuji, Todo, Hakari, Mahito, Yuki | Never hangs back: any "keep range" in its plan becomes "walk in and fight"; dashes in from mid range. |
+| Ranger | Gojo, Choso, Ryu, Sukuna | Holds 280–560px, starts backing off (hopping away, dashing out) as soon as the foe comes inside ~270px, jumps over them when cornered, throws moves from further out. Only stays in to hit a stunned foe. |
+| Summoner | Megumi, Geto, Yuta, Mechamaru | Brings out its summon first (Divine Dog / Centipedes / Rika / Puppet), then hangs back at 200–430px and lets it work. |
+| All-rounder (default) | Higuruma, Mei Mei, Takaba | Unchanged. |
+- Measured (each fighter vs three all-rounders, average distance, before → after): Mahito 419 → 266, Yuki 340 → 253, Yuji 280 → 250;
+  Mechamaru 215 → 288, Geto 216 → 278, Megumi 249 → 280, Hanami 235 → 277; Naoya 180 → 266 (in-and-out), Toji 232 → 300.
+  Rangers back off more but a same-speed chaser still closes on them (Ryu's time up close went from 48% to 31%).
