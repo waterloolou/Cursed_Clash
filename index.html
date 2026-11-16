@@ -936,6 +936,8 @@ canvas {
         <button class="hm-it" id="auMusic">MUSIC</button>
         <button class="hm-it" id="auSfx">SOUND FX</button>
         <button class="hm-it" id="auVoice">VOICES</button>
+        <button class="hm-it" id="gfxBtn">GRAPHICS: AUTO</button>
+        <button class="hm-it" id="fpsBtn">FPS METER</button>
         <button class="hm-it hm-small" id="auFile">PLAY MY OWN MUSIC FILE</button>
         <button class="hm-it hm-small" id="auLab">VOICE LAB</button>
         <input type="file" id="auFileIn" accept="audio/*" hidden>
@@ -965,7 +967,8 @@ canvas {
 'use strict';
 
 const canvas = document.getElementById('c');
-const ctx    = canvas.getContext('2d');
+let ctx      = canvas.getContext('2d');   // (let: Low graphics points it at an off-screen layer while a domain backdrop is redrawn)
+const mainCtx = ctx;
 let W = 960, H = 520;            // WORLD size (changes per map)
 const VW = 960, VH = 520;        // VIEW size (screen / HUD space)
 function withDims(w, h, g, fn){ const a=W, b=H, c=GND; W=w; H=h; GND=g; try{ return fn(); } finally{ W=a; H=b; GND=c; } }
@@ -973,14 +976,25 @@ const withView = fn => withDims(VW, VH, 430, fn);
 
 let LITE = false;   // auto-enabled when the frame rate stays low: drops shadow blur and halves particles
 { const d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'shadowBlur');
-  if(d && d.set) Object.defineProperty(ctx, 'shadowBlur', {configurable:true, get(){ return d.get.call(ctx); }, set(v){ d.set.call(ctx, LITE ? 0 : v); }}); }
+  if(d && d.set) Object.defineProperty(mainCtx, 'shadowBlur', {configurable:true, get(){ return d.get.call(mainCtx); }, set(v){ d.set.call(mainCtx, LITE ? 0 : v); }}); }
+// ── Graphics setting (Nov 16): High / Low / Auto, saved in the browser. Low draws the game at a smaller size (the page stretches
+// it), turns glow and smoothing off and halves particles — nothing that matters for gameplay. Auto starts High and drops to Low
+// when the frame rate stays low. `meter` is the FPS / ping read-out.
+const GFX = {mode:'auto', low:false, autoLow:false, meter:false};
+try{ const st = JSON.parse(localStorage.getItem('cc_gfx')||'null');
+  if(st && ['high','low','auto'].includes(st.mode)) GFX.mode = st.mode; if(st && typeof st.meter==='boolean') GFX.meter = st.meter; }catch(e){}
+{ let q = null; try{ q = new URLSearchParams(location.search).get('gfx'); }catch(e){} if(['high','low','auto'].includes(q)) GFX.mode = q; }
+const GFX_LOW_W = 960, GFX_LOW_H = 540;
+function gfxSave(){ try{ localStorage.setItem('cc_gfx', JSON.stringify({mode:GFX.mode, meter:GFX.meter})); }catch(e){} }
+function gfxApply(){ GFX.low = GFX.mode==='low' || (GFX.mode==='auto' && GFX.autoLow); LITE = GFX.low; resize(); }
+function gfxSet(mode){ if(!['high','low','auto'].includes(mode)) mode = 'auto'; GFX.mode = mode; GFX.autoLow = false; gfxSave(); gfxApply(); }
 function resize() {
   // The backing store is capped (the CSS stretches it to the window): filling a 4K canvas every frame was a big cost on large screens
-  const w = Math.max(1, window.innerWidth), h = Math.max(1, window.innerHeight), k = Math.min(1, 1600/w, 1000/h);
+  const w = Math.max(1, window.innerWidth), h = Math.max(1, window.innerHeight), k = GFX.low ? Math.min(1, GFX_LOW_W/w, GFX_LOW_H/h) : Math.min(1, 1600/w, 1000/h);
   canvas.width  = Math.max(1, Math.round(w*k));
   canvas.height = Math.max(1, Math.round(h*k));
 }
-resize();
+gfxApply();
 window.addEventListener('resize', resize);
 // The game is drawn at a fixed 960×520 and scaled UNIFORMLY to fit any screen (letterboxed), so nothing gets stretched
 // on 4:3 tablets, phones, ultrawide monitors or a resized window.
@@ -5497,21 +5511,30 @@ function drawTheaterLight(t){
       ctx.fillStyle = '#b8a070'; for(const fx of [tx + 6, tx + 66]){ ctx.beginPath(); ctx.ellipse(fx + 3, ty + 30, 4, 3, 0, 0, Math.PI*2); ctx.fill(); }   // clawed feet
       ctx.restore(); } }
   const flick = 1 - 0.04*Math.max(0, Math.sin(t*0.017) + Math.sin(t*0.043) - 1.2);
-  ctx.save();
-  ctx.translate(px, py - 40); ctx.scale(3.4, 1);
-  const g = ctx.createRadialGradient(0, 0, 40, 0, 0, 300); g.addColorStop(0, 'rgba(4,2,6,0)'); g.addColorStop(0.5, 'rgba(4,2,6,0.25)'); g.addColorStop(1, `rgba(4,2,6,${Math.min(0.75, 0.62/flick)})`);
-  ctx.fillStyle = g; ctx.fillRect(-px/3.4 - 400, -py - 200, W/3.4 + 800, H + 400);
-  ctx.restore();
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  const ang = Math.atan2(py - sy, px - sx), L = Math.hypot(px - sx, py - sy);
-  ctx.translate(sx+28, sy); ctx.rotate(ang);
-  const bg2 = ctx.createLinearGradient(0, 0, L, 0); bg2.addColorStop(0, `rgba(255,240,210,${0.05*flick})`); bg2.addColorStop(1, `rgba(255,230,190,${0.09*flick})`);
-  ctx.fillStyle = bg2; ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(L, -95); ctx.lineTo(L, 95); ctx.lineTo(0, 5); ctx.closePath(); ctx.fill();
-  ctx.restore();
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(px, py); ctx.scale(2.6, 0.45);
-  const pg = ctx.createRadialGradient(0, 0, 10, 0, 0, 120); pg.addColorStop(0, `rgba(255,236,200,${0.22*flick})`); pg.addColorStop(1, 'rgba(255,236,200,0)');
-  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(0, 0, 120, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  // Nov 16 (performance): the darkness, the beam and the pool of light are painted once into a quarter-size layer and stretched over
+  // the stage (they were three full-screen gradients every frame — the theater was the slowest stage). The flicker fades the layer.
+  if(!_thrLight || _thrLight._w!==W){
+    const K = 4, c = document.createElement('canvas'); c.width = Math.ceil(W/K); c.height = Math.ceil((H + 200)/K); c._w = W; const g = c.getContext('2d'); g.scale(1/K, 1/K); g.translate(0, 100);
+    g.save(); g.translate(px, py - 40); g.scale(3.4, 1);
+    const dg = g.createRadialGradient(0, 0, 40, 0, 0, 300); dg.addColorStop(0, 'rgba(4,2,6,0)'); dg.addColorStop(0.5, 'rgba(4,2,6,0.25)'); dg.addColorStop(1, 'rgba(4,2,6,0.62)');
+    g.fillStyle = dg; g.fillRect(-px/3.4 - 400, -py - 200, W/3.4 + 800, H + 400); g.restore();
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const ang = Math.atan2(py - sy, px - sx), L = Math.hypot(px - sx, py - sy);
+    g.translate(sx+28, sy); g.rotate(ang);
+    const bg2 = g.createLinearGradient(0, 0, L, 0); bg2.addColorStop(0, 'rgba(255,240,210,0.05)'); bg2.addColorStop(1, 'rgba(255,230,190,0.09)');
+    g.fillStyle = bg2; g.beginPath(); g.moveTo(0, -5); g.lineTo(L, -95); g.lineTo(L, 95); g.lineTo(0, 5); g.closePath(); g.fill(); g.restore();
+    g.save(); g.globalCompositeOperation = 'lighter'; g.translate(px, py); g.scale(2.6, 0.45);
+    const pg = g.createRadialGradient(0, 0, 10, 0, 0, 120); pg.addColorStop(0, 'rgba(255,236,200,0.22)'); pg.addColorStop(1, 'rgba(255,236,200,0)');
+    g.fillStyle = pg; g.beginPath(); g.arc(0, 0, 120, 0, Math.PI*2); g.fill(); g.restore();
+    _thrLight = c;
+  }
+  ctx.save(); ctx.globalAlpha = Math.min(1, 0.94 + 0.06/flick); const sm = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = !GFX.low;
+  ctx.drawImage(_thrLight, 0, -100, _thrLight.width*4, _thrLight.height*4);
+  // beyond the layer's edges (camera zoomed out past the stage): plain darkness
+  ctx.fillStyle = 'rgba(4,2,6,0.62)'; ctx.fillRect(-3000, -3000, 3000, H + 6000); ctx.fillRect(W, -3000, 3000, H + 6000); ctx.fillRect(0, -3000, W, 2900); ctx.fillRect(0, H + 100, W, 3000);
+  ctx.imageSmoothingEnabled = sm; ctx.restore();
 }
+let _thrLight = null;
 function drawMapFore(i){
   if(activeDomain) return;
   if(i===5) drawTheaterLight(Date.now());
@@ -5759,7 +5782,9 @@ function drawMapBG(){
   ctx.fillStyle = bgc._edge[0]; ctx.fillRect(-3000, -3000, W+6000, 3000);      // sky beyond the top edge
   ctx.fillStyle = bgc._edge[1]; ctx.fillRect(-3000, H, W+6000, 3000);          // ground beyond the bottom edge
   if(cam.x < 0 || cam.x + VW/cam.z > W){ ctx.drawImage(bgc, 0, 0, 1, H, -3000, 0, 3000, H); ctx.drawImage(bgc, W-1, 0, 1, H, W, 0, 3000, H); }   // zoomed out past the sides (Shibuya): stretch the edge column instead of black bars
-  ctx.drawImage(bgc, 0, 0);
+  // Nov 16 (performance): the two full-screen layers (background, terrain) are drawn without smoothing — filtering them was about half
+  // of a frame's cost on software rendering. Sprites and effects keep smoothing on High.
+  ctx.imageSmoothingEnabled = false; ctx.drawImage(bgc, 0, 0); ctx.imageSmoothingEnabled = !GFX.low;
   drawMapAmbient(mapIdx, Date.now());
 }
 
@@ -5768,7 +5793,7 @@ const _mapPrev = [];
 // Oct 24: previews are drawn at most 960px wide (they used to be full map size — 6 canvases of up to 2600×1200), and building one
 // no longer leaves that map's full-size background in memory. Tablets and Chromebooks cap total canvas memory; past the cap new
 // canvases silently come out blank, which is how the terrain canvas went missing for some players.
-const MAP_PREV_W = 960;
+const MAP_PREV_W = 640;   // Nov 16: 960 → 640 (the previews are shown at most ~780px wide; frees ~4 MB of canvas memory)
 function getMapPreview(i){
   if(_mapPrev[i]) return _mapPrev[i];
   const [mw, mh] = mapDims(i), k = Math.min(1, MAP_PREV_W/mw);
@@ -6120,7 +6145,7 @@ function _terCell(g, r, c){ {
 }
 function drawTerrain(){
   if(terDirty) rebuildTerrainCanvas();
-  ctx.drawImage(terCanvas, 0, 0);
+  ctx.imageSmoothingEnabled = false; ctx.drawImage(terCanvas, 0, 0); ctx.imageSmoothingEnabled = !GFX.low;
   // Faint outline of terrain that is about to come back (last 4s)
   if(terBrokenList.length){
     ctx.save();
@@ -6970,18 +6995,32 @@ function drawDomain(){
   if(big){ const y0 = Math.min(0, T_TOP) - 120, spanH = (H + 60) - y0, sc = Math.max(W/VW, spanH/VH);
     ctx.translate((W - VW*sc)/2, y0 + (spanH - VH*sc)/2); ctx.scale(sc, sc); }
   else ctx.translate(fr.x, fr.y);
-  withView(() => {
-    if(activeDomain.type === 'shrine') drawShrineDomain();
-    else if(activeDomain.type === 'love') drawLoveDomain();
-    else if(activeDomain.type === 'court') drawCourtDomain();
-    else if(activeDomain.type === 'womb') drawWombDomain();
-    else if(activeDomain.type === 'volcano') drawVolcanoDomain();
-    else if(activeDomain.type === 'ocean') drawOceanDomain();
-    else if(activeDomain.type === 'soul') drawSoulDomain();
-    else if(activeDomain.type === 'moon') drawMoonDomain();
-    else drawVoidDomain();
-  });
+  if(GFX.low || activeDomain.type==='soul'){
+    // Nov 16 (performance): the backdrop is painted into a view-sized layer and that layer is stretched over the map, instead of
+    // rasterising the art at map scale. Low graphics does it for every domain, 15 times a second. High does it only for Mahito's
+    // domain (40 detailed hands: by far the heaviest backdrop), every frame. It is only scenery — everything that can hit you is
+    // drawn on top, every frame — so nothing about the fight changes.
+    const LK = GFX.low ? 1 : 1.5;   // layer resolution: view size on Low, 1.5× on High (keeps the outlines crisp)
+    if(!_domLayer || _domLayer._k!==LK){ _domLayer = _domLayer || document.createElement('canvas'); _domLayer.width = VW*LK; _domLayer.height = VH*LK; _domLayer._k = LK; _domLayerCtx = _domLayer.getContext('2d'); _domLayerFor = null; }
+    if(_domLayerFor!==activeDomain || !GFX.low || (_domLayerN++ % 4)===0){ _domLayerFor = activeDomain;
+      const g = _domLayerCtx; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, VW*LK, VH*LK); g.setTransform(LK, 0, 0, LK, 0, 0);
+      ctx = g; let depth = 0; const sv = g.save.bind(g), rs = g.restore.bind(g); g.save = () => { depth++; sv(); }; g.restore = () => { if(depth > 0){ depth--; rs(); } };
+      try{ withView(drawDomainScene); }catch(e){ loopErr('domainLayer', e); } finally { while(depth > 0) g.restore(); delete g.save; delete g.restore; ctx = mainCtx; } }
+    ctx.drawImage(_domLayer, 0, 0, VW, VH);
+  } else withView(drawDomainScene);
   ctx.restore();
+}
+let _domLayer = null, _domLayerCtx = null, _domLayerFor = null, _domLayerN = 0;
+function drawDomainScene(){
+  if(activeDomain.type === 'shrine') drawShrineDomain();
+  else if(activeDomain.type === 'love') drawLoveDomain();
+  else if(activeDomain.type === 'court') drawCourtDomain();
+  else if(activeDomain.type === 'womb') drawWombDomain();
+  else if(activeDomain.type === 'volcano') drawVolcanoDomain();
+  else if(activeDomain.type === 'ocean') drawOceanDomain();
+  else if(activeDomain.type === 'soul') drawSoulDomain();
+  else if(activeDomain.type === 'moon') drawMoonDomain();
+  else drawVoidDomain();
 }
 // soften the arena's edges into the map-wide wash so the domain reads as one space
 // Yuta's domain katanas, drawn where they really are on the map
@@ -21586,6 +21625,10 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   for(const [id, k] of [['auMusic','music'],['auSfx','sfx'],['auVoice','voice']])
     $(id).onclick = () => { audInit(); AUD.on[k] = !AUD.on[k]; if(k==='voice' && !AUD.on.voice){ try{ speechSynthesis.cancel(); }catch(e){} } audApply(); auSync(); sfxLocal('uiok'); };
   $('auLab').onclick = () => { audInit(); vlUI.open(); };
+  const gfxSync = () => { $('gfxBtn').textContent = 'GRAPHICS: ' + GFX.mode.toUpperCase() + (GFX.mode==='auto' && GFX.autoLow ? ' (LOW NOW)' : ''); $('fpsBtn').textContent = 'FPS METER: ' + (GFX.meter ? 'ON' : 'OFF'); $('fpsBtn').classList.toggle('off', !GFX.meter); };
+  $('gfxBtn').onclick = () => { gfxSet({auto:'high', high:'low', low:'auto'}[GFX.mode]); gfxSync(); sfxLocal('uiok'); };
+  $('fpsBtn').onclick = () => { GFX.meter = !GFX.meter; gfxSave(); gfxSync(); sfxLocal('uiok'); };
+  gfxSync(); window.gfxSync = gfxSync;
   $('acChip').onclick = () => accUI.open();
   $('btnAcct').onclick = () => accUI.open();
   $('btnTut').onclick = () => tutStart();
@@ -22104,14 +22147,17 @@ function updateCamera(dt){
 let last=0;
 // Count save()/restore() so a draw routine that throws can be unwound instead of killing the whole frame loop
 let _cd = 0;
-{ const _sv = ctx.save.bind(ctx), _rs = ctx.restore.bind(ctx); ctx.save = () => { _cd++; _sv(); }; ctx.restore = () => { if(_cd > 0){ _cd--; _rs(); } }; }
+{ const _sv = mainCtx.save.bind(mainCtx), _rs = mainCtx.restore.bind(mainCtx); mainCtx.save = () => { _cd++; _sv(); }; mainCtx.restore = () => { if(_cd > 0){ _cd--; _rs(); } }; }
 const _errT = {};
 function loopErr(tag, e){ const n = performance.now(); if(n - (_errT[tag]||-1e9) > 3000){ _errT[tag] = n; console.error('[Cursed Clash] '+tag+' error:', e); } }
 function safeDraw(fn, tag){ const d0 = _cd; try{ fn(); }catch(e){ loopErr(tag||'draw', e); while(_cd > d0) ctx.restore(); } }
 let _ftAvg = 16.7, _slowN = 0, _lastTs = 0;
 function loop(ts){
   if(_lastTs){ const ft = ts - _lastTs; if(ft > 0 && ft < 250) _ftAvg += (ft - _ftAvg) * 0.05;
-    if(!LITE && _ftAvg > 23 && ++_slowN > 150){ LITE = true; console.info('[Cursed Clash] low frame rate — switched to lite effects'); } else if(_ftAvg <= 23) _slowN = 0; }
+    // Auto graphics: about 2.5s of frames slower than ~43 fps during a fight → Low for the rest of the session, and say so
+    if(GFX.mode==='auto' && !GFX.autoLow && phase==='fight' && !paused && _ftAvg > 23 && ++_slowN > 150){ GFX.autoLow = true; gfxApply();
+      try{ showTxt('LOW GRAPHICS ON · change it in Settings', 2600); }catch(e){} console.info('[Cursed Clash] low frame rate — switched to Low graphics'); }
+    else if(_ftAvg <= 23) _slowN = 0; }
   _lastTs = ts;
   try{ loopFrame(ts); }
   catch(e){ loopErr('frame', e); try{ canvas.width = canvas.width; _cd = 0; }catch(e2){} }
@@ -22172,6 +22218,7 @@ function loopFrame(ts){
 
   // ── Rendering ──
   ctx.save();
+  if(ctx.imageSmoothingEnabled === GFX.low) ctx.imageSmoothingEnabled = !GFX.low;
   { const f = viewFit(canvas.width, canvas.height);
     if(phase==='home'){ try{ drawHomeSky(canvas.width, canvas.height); }catch(e){} }
     else if(f.ox > 0.5 || f.oy > 0.5){ ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
@@ -22210,8 +22257,22 @@ function loopFrame(ts){
       ctx.restore();
     });
   }
-  withView(() => { try{ drawToasts(dt); }catch(e){} });
+  withView(() => { try{ drawToasts(dt); }catch(e){} try{ drawMeter(); }catch(e){} });
   ctx.restore();
+}
+// FPS / ping meter (Settings → FPS METER): frame rate, frame time, graphics mode; online also ping and how you're linked
+function meterText(){
+  const fps = Math.max(1, Math.min(240, Math.round(1000/_ftAvg)));
+  let t = `${fps} FPS · ${_ftAvg.toFixed(1)} ms · ${GFX.low ? 'LOW' : 'HIGH'}${GFX.mode==='auto' ? ' (AUTO)' : ''}`;
+  if(NET.role==='guest') t += ` · PING ${Math.round(NET.rtt||0)} ms · ` + (NET.host && NET.host.relay ? 'BACKUP RELAY' : NET.host && NET.host.route==='cf' ? 'CLOUDFLARE' : NET.host && NET.host.route==='turn' ? 'RELAY' : 'DIRECT');
+  else if(NET.role==='host' && NET.guest) t += ` · PING ${Math.round(NET.guest.rtt||NET.rtt||0)} ms`;
+  return t;
+}
+function drawMeter(){
+  if(!GFX.meter) return;
+  const t = meterText(); ctx.save(); ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.textAlign = 'left';
+  const w = ctx.measureText(t).width + 10; ctx.fillStyle = 'rgba(8,8,12,0.72)'; ctx.fillRect(4, VH - 34, w, 15);
+  ctx.fillStyle = _ftAvg > 23 ? '#ff8a6a' : _ftAvg > 18 ? '#ffd36a' : '#9be29b'; ctx.fillText(t, 9, VH - 23); ctx.restore();
 }
 requestAnimationFrame(loop);
 </script>
