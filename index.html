@@ -4223,6 +4223,16 @@ function drawMahitoBody(pl){
     ctx.restore();
   }
 }
+// Nov 16 (performance): the names of a fighter's cooldown / charge fields, re-listed every 20 frames instead of testing every
+// property against a regex every frame (that was ~40% of the simulation's time)
+function plKeys(pl){
+  const c = pl._kc || (pl._kc = {n:0, cd:[], ch:[]});
+  if(c.n-- <= 0){ c.n = 20; c.cd.length = 0; c.ch.length = 0;
+    for(const k in pl){ const e = k.charCodeAt(k.length-1);
+      if(e===100 || e===110){ if((k.endsWith('Cd') || k.endsWith('Cooldown')) && k!=='kenToggleCd') c.cd.push(k); }   // …d / …n
+      else if(e===101 && k.endsWith('Charge')) c.ch.push(k); } }
+  return c;
+}
 // Burning + ember insects on any fighter (called from Player.update)
 function tickStatus(pl, dt){
   if(pl.burnT > 0){
@@ -4234,8 +4244,8 @@ function tickStatus(pl, dt){
   } else pl.burnAcc = 0;
   // Ember insect: every cooldown that starts while it clings on is 1s longer
   const last = pl._cdLast || (pl._cdLast = {});
-  for(const k in pl){
-    if(!/(Cooldown|Cd)$/.test(k) || k==='kenToggleCd' || typeof pl[k]!=='number') continue;
+  for(const k of plKeys(pl).cd){
+    if(typeof pl[k]!=='number') continue;
     if(pl.emberT > 0 && pl[k] > (last[k]||0) + 50) pl[k] += EMBER_CD_ADD;
     last[k] = pl[k];
   }
@@ -11102,7 +11112,7 @@ class Player {
     if(this.rctGlow>0) this.rctGlow -= dt;
     // Six Eyes (and Domain Sacrifice) speed up every cooldown
     const rate = (this._feat('sixeyes') ? 1 : 0) + (this._vow('sacrifice') ? 1/3 : 0);
-    if(rate > 0) for(const k in this){ if(/(Cooldown|Cd)$/.test(k) && k!=='kenToggleCd' && typeof this[k]==='number' && this[k] > 0) this[k] = Math.max(0, this[k] - dt*rate); }
+    if(rate > 0) for(const k of plKeys(this).cd){ if(typeof this[k]==='number' && this[k] > 0) this[k] = Math.max(0, this[k] - dt*rate); }
     // Faster charging from Overtime / Domain Sacrifice
     const caps = {domainCharge:DOMAIN_CHARGE_REQ, fugaCharge:FUGA_CHARGE_REQ, hollowCharge:HOLLOW_CHARGE_REQ, yutaCopyUltCharge:YUTA_COPY_ULT_REQ,
       puppetCharge:PUPPET_REQ, todoCharge:TODO_SUPER_REQ, chosoCharge:CHOSO_RING_REQ, higuCharge:HIGU_THROW_REQ, hakCharge:HAK_PUNCH_REQ, yujiBfCharge:YUJI_BF_REQ, kenCharge:KEN_AG_REQ};
@@ -15053,7 +15063,7 @@ Player.prototype._cePre = function(dt){
     }
   }
   const cds = {}; for(const f of ceFields(this.type)) cds[f] = this[f]||0;
-  const ch = {}; for(const k in this) if(/Charge$/.test(k) && typeof this[k]==='number') ch[k] = this[k];
+  const ch = {}; for(const k of plKeys(this).ch) if(typeof this[k]==='number') ch[k] = this[k];
   this._ceSnap = {type:this.type, st:this.state, cds, ch, n:ceSyncLen(), dom:activeDomain, clash:domainClash, rps:typeof rpsGame!=='undefined' ? rpsGame : null, press, rel, pay};
 };
 Player.prototype._cePost = function(dt){
