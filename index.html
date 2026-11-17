@@ -4433,8 +4433,8 @@ function readableText(on, outline){ const C = CanvasRenderingContext2D.prototype
 }
 function drawToasts(dt){
   if(typeof paused!=='undefined' && paused && phase==='fight') return;   // Nov 16: toasts wait while the pause screen is up (they showed through it)
-  // in a fight: centred below both HUDs (it used to cover the ability rows); on menus and the results screen: in the right-hand corner, clear of titles
-  const inFight = phase==='fight', w = 330, cx = inFight ? W/2 : W - w/2 - 12; let y = inFight ? 176 : (phase==='end' || phase==='roundend' ? H - 100 : 50);
+  // in a fight: top centre, in the gap between the two HUD blocks; on menus and the results screen: in the right-hand corner, clear of titles
+  const inFight = phase==='fight', w = 330, cx = inFight ? W/2 : W - w/2 - 12; let y = inFight ? 6 : (phase==='end' || phase==='roundend' ? H - 100 : 50);
   const up = !inFight && (phase==='end' || phase==='roundend');   // results: stack upwards from above the play-again button
   for(let i=TOASTS.length-1;i>=0;i--){ const T = TOASTS[i]; T.t += dt||16; if(T.t > 4200){ TOASTS.splice(i,1); continue; } }
   for(const T of TOASTS){ const a = Math.min(1, T.t/200, (4200 - T.t)/400);
@@ -20657,8 +20657,8 @@ function drawFightText(dt){
   fightTxtT=Math.max(0,fightTxtT-dt);
   const life=fightTxtT/900;
   ctx.save(); ctx.globalAlpha=Math.min(1,life*2.5); ctx.textAlign='center';
-  ctx.translate(W/2,H/2-50); ctx.scale(1+(1-life)*.1,1+(1-life)*.1);
-  ctx.font=`700 62px 'Rajdhani',sans-serif`;
+  ctx.translate(W/2,214); ctx.scale(1+(1-life)*.1,1+(1-life)*.1);   // Nov 16: just under the HUD, not over the middle of the fight
+  ctx.font=`700 ${ctx.measureText ? 44 : 44}px 'Rajdhani',sans-serif`; { const tw = ctx.measureText(fightTxt).width; if(tw > W - 340) ctx.font = `700 ${Math.floor(44*(W-340)/tw)}px 'Rajdhani',sans-serif`; }
   ctx.strokeStyle='rgba(0,0,0,.8)'; ctx.lineWidth=5; ctx.strokeText(fightTxt,0,0);
   ctx.fillStyle='#d8d4cc'; ctx.fillText(fightTxt,0,0);
   ctx.restore();
