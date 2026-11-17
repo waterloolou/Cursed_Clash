@@ -13,7 +13,7 @@ const SCEN = [['gojo','sukuna',1],['geto','megumi',2],['dagon','jogo',0],['hanam
   const heap = async () => { await cdp.send('HeapProfiler.collectGarbage'); return (await cdp.send('Runtime.getHeapUsage')).usedSize/1048576; };
   await pg.evaluate(() => { for(let i = 0; i < 30; i++) loopFrame(performance.now()); });
   const heap0 = await heap();
-  // each scenario runs RUNS times (default 2, --runs=N) and keeps the best run: the test machine is a shared 2-core VM whose
+  // each scenario runs RUNS times (default 2, --runs=N) and keeps the best value of each timing: the test machine is a shared 2-core VM whose
   // neighbours only ever add time, so the minimum is the closest to what the game itself costs
   const RUNS = +((process.argv.find(x => x.startsWith('--runs=')) || '').split('=')[1] || 2);
   for(const [a, o, map] of (quick ? SCEN.slice(0, 4) : SCEN)){ let best = null;
@@ -31,7 +31,7 @@ const SCEN = [['gojo','sukuna',1],['geto','megumi',2],['dagon','jogo',0],['hanam
       return {avg: t.reduce((x, y) => x + y, 0)/t.length, p50:q(0.5), p95:q(0.95), p99:q(0.99), max:t[t.length-1], over16: t.filter(x => x > 16.7).length, over33: t.filter(x => x > 33.4).length, firstFrames:build, canvasMB: window.__canvasMB(), lite: LITE};
     }, [a, o, map, FR]);
     r.cpu = (cpuMs() - c0)/FR;
-    if(!best || r.cpu < best.cpu) best = r; }
+    if(!best) best = r; else { for(const k of ['cpu', 'avg', 'p50', 'p95', 'p99', 'max', 'over16', 'over33']) best[k] = Math.min(best[k], r[k]); best.canvasMB = Math.max(best.canvasMB, r.canvasMB); } }   // best value of each statistic; memory: the worst
     const r = best; r.name = `${a} vs ${o} · map ${map}`; out.push(r);
     if(!asJson) console.log(r.name.padEnd(30), `cpu ${r.cpu.toFixed(2)}  avg ${r.avg.toFixed(2)}  p95 ${r.p95.toFixed(2)}  p99 ${r.p99.toFixed(2)}  max ${r.max.toFixed(1)}  >16.7ms ${r.over16}  >33ms ${r.over33}  first ${r.firstFrames.toFixed(0)}ms  canvas ${r.canvasMB}MB`);
   }

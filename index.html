@@ -4147,7 +4147,7 @@ function drawBigHandSprite(x, y, ang, s, fill, line, hi, curl, key, q){
   let sp = _handSpr[id];
   if(!sp){ sp = document.createElement('canvas'); sp.width = Math.ceil(218*q); sp.height = Math.ceil(64*q); const g = sp.getContext('2d'), keep = ctx;
     g.setTransform(q, 0, 0, q, 154*q, 38*q); ctx = g; try{ drawBigHand(0, 0, 0, 1, fill, line, hi, 0.35 + cb*0.5/3); } finally { ctx = keep; } _handSpr[id] = sp; }
-  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.imageSmoothingEnabled = false; ctx.drawImage(sp, -154*s, -38*s, 218*s, 64*s); ctx.restore();
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.imageSmoothingEnabled = true; ctx.drawImage(sp, -154*s, -38*s, 218*s, 64*s); ctx.restore();
 }
 function drawBigHand(x, y, ang, s, fill, line, hi, curl){
   ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.scale(s, s);
@@ -4216,7 +4216,7 @@ function drawSoulDomain(){
       const dist = _lerp(ly.d0, ly.d1, _hh(k, L+7)) * (1 - ly.close*prog) * (1.5 - 0.5*r) + Math.sin(t*0.0018 + k*1.3)*6;
       const hx = cx + Math.cos(a)*dist, hy = cy + Math.sin(a)*dist*0.85;
       const s = _lerp(ly.s0, ly.s1, _hh(k, L+3));
-      drawBigHandSprite(hx, hy, Math.atan2(cy-hy, cx-hx) + Math.sin(t*0.0013+k)*0.04, s, ly.fill, ly.line, ly.hi, 0.35 + 0.5*prog*_hh(k, L+11), 'L'+L, ly.s1*0.55);
+      drawBigHandSprite(hx, hy, Math.atan2(cy-hy, cx-hx) + Math.sin(t*0.0013+k)*0.04, s, ly.fill, ly.line, ly.hi, 0.35 + 0.5*prog*_hh(k, L+11), 'L'+L, ly.s1*0.65);
     }
   }
   // the crushing stack overhead: huge hands piled on top of each other, pressing down
@@ -7101,7 +7101,7 @@ function drawDomain(){
     // rasterising the art at map scale. Low graphics does it for every domain, 15 times a second. High does it only for Mahito's
     // domain (40 detailed hands: by far the heaviest backdrop), every other frame. It is only scenery — everything that can hit you is
     // drawn on top, every frame — so nothing about the fight changes.
-    const LK = GFX.low ? 1 : 1.25;   // layer resolution: view size on Low, 1.25× on High (keeps the outlines crisp)
+    const LK = GFX.low || activeDomain.type==='soul' ? 1 : 1.25;   // layer resolution: view size on Low and for Mahito's domain (it needs two layers), 1.25× otherwise
     if(!_domLayer || _domLayer._k!==LK){ _domLayer = _domLayer || document.createElement('canvas'); _domLayer.width = VW*LK; _domLayer.height = VH*LK; _domLayer._k = LK; _domLayerCtx = _domLayer.getContext('2d'); _domLayerFor = null; }
     // Nov 16: the backdrop is drawn into a back layer in three parts, one per frame, then swapped in, so no single frame pays for the
     // whole picture (Mahito's 40 hands are split across the parts; the other domains draw in the first part). Low redraws every 4th frame.

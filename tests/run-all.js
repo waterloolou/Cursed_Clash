@@ -11,7 +11,7 @@ const steps = [
   ['B8 replay',           'replay.js', [quick ? '12' : '40']],
   ['Q5 online',           'net.js', [quick ? '2' : '5']],
   ['Q5 online, 15% loss', 'net.js', [quick ? '2' : '5', '--loss=15']],
-  ['P  performance',      'perf.js', quick ? ['--quick', '--check'] : ['--check']],
+  ['P  performance High', 'perf.js', quick ? ['--quick', '--check'] : ['--check', '--runs=3']],
   ...(quick ? [] : [['Q2 every move', 'abilities.js', []], ['B7 difficulty ladder', 'ladder.js', []]]),
 ];
 let bad = 0; const t0 = Date.now();
