@@ -49,6 +49,12 @@ const PAIRS = [['gojo','geto'],['mechamaru','megumi'],['dagon','hanami'],['toji'
     }
     await Hp.evaluate(() => window.__netBot(false));
   }
+  // F2 / F4 online: both meters show a real ping and the link type; a finished match gives both screens the same results table
+  { const [hm, gm] = [await Hp.evaluate(() => meterText()), await Gp.evaluate(() => meterText())];
+    for(const [who, m] of [['host', hm], ['joiner', gm]]) if(!/PING [1-9]\d* ms · (DIRECT|RELAY|CLOUDFLARE|BACKUP RELAY)/.test(m)) fail(`${who} meter shows no ping / link: ${m}`);
+    await Hp.evaluate(() => { paused = false; p2lives = 1; p2.hp = 0; }); await Hp.waitForFunction(() => phase==='end', null, {timeout: 15000}).catch(() => {}); await Gp.waitForTimeout(1500);
+    const [hr, gr] = [await Hp.evaluate(() => JSON.stringify(mstPub())), await Gp.evaluate(() => phase==='end' && typeof MST!=='undefined' ? JSON.stringify(MST.pub || null) : 'joiner not on the results screen')];
+    if(!gr || gr==='null' || JSON.stringify(JSON.parse(hr))!==JSON.stringify(JSON.parse(gr.startsWith('{') ? gr : '{}'))) fail(`results differ — host ${hr} joiner ${gr}`); }
   if(errs.H.length || errs.G.length) fail('errors — host: ' + errs.H.slice(0, 3).join(' | ') + ' — joiner: ' + errs.G.slice(0, 3).join(' | '));
   console.log(bad ? `NET FAILED (${bad})` : `NET OK (${N} matchups × 4 exact comparisons${LOSS ? `, ${LOSS}% of snapshots dropped` : ''})`);
   await b.close(); srv.close(); try{ ps.close && ps.close(); }catch(e){} process.exit(bad ? 1 : 0); })();

@@ -209,12 +209,15 @@ canvas {
   text-shadow:0 0 18px rgba(190,140,255,0.55), 0 0 40px rgba(140,80,220,0.35), 0 3px 0 rgba(30,10,50,0.9); }
 .hm-logo span { color:#f4d77c; text-shadow:0 0 18px rgba(255,200,120,0.5), 0 3px 0 rgba(60,30,0,0.9); }
 .hm-list { display:flex; flex-direction:column; align-items:center; gap:2px; }
+/* Nov 16: the menu sits on the same dark, gold-edged card as the canvas menus (mode / stage / fighter select) */
+.hm-list:not([hidden]) { background:linear-gradient(160deg, rgba(20,14,30,0.82), rgba(10,9,16,0.86)); border:1.5px solid rgba(214,182,74,0.55); padding:12px 10px 14px; clip-path:polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+.hm-it.sel, .hm-it:focus-visible { background:rgba(214,182,74,0.12); box-shadow:inset 0 0 0 1.5px #d6b64a; }
 .hm-list[hidden] { display:none; }
-.hm-head { font:700 14px 'Cinzel',serif; letter-spacing:5px; color:rgba(232,210,122,0.85); margin-bottom:6px; }
+.hm-head { font:700 16px 'Rajdhani',sans-serif; letter-spacing:4px; color:#17120a; background:#d6b64a; padding:4px 34px; margin-bottom:8px; clip-path:polygon(0 0, 100% 0, calc(100% - 12px) 100%, 12px 100%); }   /* Nov 16: the same gold banner as the canvas menus */
 .hm-it { position:relative; background:none; border:0; cursor:pointer; font:700 28px 'Rajdhani',sans-serif; letter-spacing:4px; color:#ece6f5; padding:6px 54px;
   text-shadow:0 2px 6px rgba(0,0,0,0.85), 0 0 12px rgba(120,80,200,0.35); transition:color .12s, transform .12s; }
 .hm-it.hm-small { font-size:17px; padding:5px 30px; }
-.hm-it.hm-back { font-size:18px; color:rgba(220,210,235,0.7); margin-top:8px; }
+.hm-it.hm-back { font-size:18px; color:rgba(226,218,240,0.92); margin-top:8px; }
 .hm-it.off { opacity:0.45; text-decoration:line-through; }
 .hm-it::before, .hm-it::after { content:''; position:absolute; left:8%; right:8%; height:1px; opacity:0; transition:opacity .12s;
   background:linear-gradient(90deg, transparent, #e8d27a 18%, #fff2b8 50%, #e8d27a 82%, transparent); }
@@ -230,7 +233,7 @@ canvas {
   font:700 13px 'Rajdhani',sans-serif; letter-spacing:1px; padding:6px 12px; cursor:pointer; }
 .hm-chip:hover { border-color:#f4d77c; }
 .hm-ver { position:fixed; top:14px; right:16px; font:600 12px 'Rajdhani',sans-serif; color:rgba(220,210,235,0.6); letter-spacing:1px; }
-.hm-tip { margin-top:16px; font:600 12px 'Rajdhani',sans-serif; letter-spacing:2px; color:rgba(220,210,235,0.5); }
+.hm-tip { margin-top:16px; font:600 12px 'Rajdhani',sans-serif; letter-spacing:2px; color:rgba(226,218,240,0.9); text-shadow:0 1px 3px rgba(0,0,0,0.9); }   /* Nov 16: 4.5:1 */
 #lbStatus { min-height:0; color:#f4d77c; text-shadow:0 2px 4px #000; }
 #lbHosting, #lbQueue { text-align:center; }
 #lbHosting .hm-it, #lbQueue .hm-it { display:block; margin:6px auto; }
@@ -331,7 +334,7 @@ canvas {
           <a data-p="ryu" style="--c:#c98a4b"><b>Ryu</b><span>Granite Punch · Granite Blast · Output · Maximum Granite Blast</span></a>
           <a data-p="toji" style="--c:#a8b49a"><b>Toji</b><span>Flurry · Four-Step Stab · Cursed Tools · Scope</span></a>
         </div>
-        <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras and the Inverted Spear of Heaven by <b>ThEndNite</b>.</p>
+        <p style="opacity:.75;font-size:13px">Art credits: cursed energy auras, the Inverted Spear of Heaven and Hakari's pachinko ball by <b>ThEndNite</b>.</p>
       </section>
 
       <section data-p="playstyles">
@@ -1918,7 +1921,7 @@ function drawItems(){
     ctx.fillStyle='rgba(0,0,0,0.55)'; const tw = ctx.measureText(d.short).width + 10; ctx.fillRect(it.x-tw/2, y-36, tw, 13);
     ctx.fillStyle = d.col; ctx.fillText(d.short, it.x, y-26); ctx.restore();
   }
-  const _placed = [];   // Nov 16: bubbles that would overlap are pushed up so every line stays readable
+  const _placed = dmgNums.filter(d => d.life > 0.25).map(d => ({x:d.x-24, y:d.y-14, w:48}));   // Nov 16: bubbles that would overlap another bubble or a damage number are pushed up
   for(let si=speechFx.length-1; si>=0; si--){ const s = speechFx[si];
     const a = Math.min(1, s.life/300), rise = (1 - s.life/s.max)*16;
     ctx.save(); ctx.globalAlpha = a; ctx.font=`700 14px 'Rajdhani',sans-serif`; ctx.textAlign='center';
@@ -2742,7 +2745,13 @@ function drawHakari(){
   }
   for(const D of shutterDoors){
     if(D.wall){ const a = Math.min(1, D.t/150); ctx.save(); ctx.globalAlpha = 0.5*a*(D.t > HAK_WALL_MS-500 ? 0.5+0.5*Math.sin(D.t*0.04) : 1);
-      ctx.strokeStyle = '#9fe8c8'; ctx.lineWidth = 2; ctx.strokeRect(D.x-HAK_WALL_W/2, D.y-HAK_WALL_H, HAK_WALL_W, HAK_WALL_H); ctx.restore(); continue; }
+      // Nov 16: drawn as a translucent rolling shutter (slats, frame and a jackpot-green glow) instead of a bare outline
+      { const x0 = D.x-HAK_WALL_W/2, y0 = D.y-HAK_WALL_H, w = HAK_WALL_W, h = HAK_WALL_H;
+        ctx.fillStyle = 'rgba(70,84,92,0.55)'; ctx.fillRect(x0, y0, w, h);
+        ctx.strokeStyle = 'rgba(190,210,215,0.55)'; ctx.lineWidth = 1; for(let yy = y0 + 6; yy < y0 + h; yy += 7){ ctx.beginPath(); ctx.moveTo(x0+1, yy); ctx.lineTo(x0+w-1, yy); ctx.stroke(); }
+        ctx.fillStyle = '#3c4048'; ctx.fillRect(x0-2, y0-4, w+4, 5); ctx.fillRect(x0-2, y0, 2, h); ctx.fillRect(x0+w, y0, 2, h);
+        ctx.shadowColor = '#7fffd0'; ctx.shadowBlur = LITE ? 0 : 8; ctx.strokeStyle = 'rgba(127,255,208,0.7)'; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, w, h); ctx.shadowBlur = 0; }
+      ctx.restore(); continue; }
     if(D.pad){
       const a = Math.min(1, D.t/120, (3000 - D.t)/300), spring = D.used ? Math.max(0, 1 - (D.t - D.ut)/400) : 0;
       ctx.save(); ctx.globalAlpha = Math.max(0, a);
@@ -4395,13 +4404,43 @@ function accMigrate(P){
 function accLevelUnlocks(P){ const lv = levelOf(P.xp), got = []; for(const [kind, id, it] of shopItems()) if(!P.owned[id] && (it.lvl||99) <= lv){ P.owned[id] = true; got.push(it.name); } return got; }
 const TOASTS = [];
 function toast(title, sub, col){ TOASTS.push({title, sub:sub||'', col:col||'#ffe066', t:0}); if(TOASTS.length > 4) TOASTS.shift(); try{ sfxLocal('jackpot'); }catch(e){} }
+// ── Nov 16: readable canvas text. While on, fillText lifts dim colours to a luminance of at least 0.30 (≥ 4.5:1 on the game's dark
+// panels) and, for the HUD, draws a dark outline first so labels on bright bars and stages stay readable. Fading text (globalAlpha) keeps its fade.
+const _ftOrig = CanvasRenderingContext2D.prototype.fillText, _rtCache = new Map(), _rtDark = new Set();
+function _rtLift(st){
+  if(typeof st!=='string') return st; let v = _rtCache.get(st); if(v!==undefined) return v;
+  let r, g, b, a = 1, m;
+  if((m = /^#([0-9a-f]{3})$/i.exec(st))){ r = parseInt(m[1][0]+m[1][0], 16); g = parseInt(m[1][1]+m[1][1], 16); b = parseInt(m[1][2]+m[1][2], 16); }
+  else if((m = /^#([0-9a-f]{6})$/i.exec(st))){ r = parseInt(m[1].slice(0,2), 16); g = parseInt(m[1].slice(2,4), 16); b = parseInt(m[1].slice(4,6), 16); }
+  else if((m = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/i.exec(st))){ r = +m[1]; g = +m[2]; b = +m[3]; a = m[4]===undefined ? 1 : +m[4]; }
+  else { _rtCache.set(st, st); return st; }
+  const lin = c => { c /= 255; return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4); }, L = (r, g, b) => 0.2126*lin(r) + 0.7152*lin(g) + 0.0722*lin(b);
+  // text drawn at partial alpha over a dark panel reads as a darker colour: fold the alpha in, then lift towards white until bright enough
+  if(a > 0.9 && L(r, g, b) < 0.02){ _rtDark.add(st); _rtCache.set(st, st); return st; }   // near-black text is dark-on-light on purpose (gold banners, light cards): leave it
+  r *= a; g *= a; b *= a; let k = 0; while(L(r + (255-r)*k, g + (255-g)*k, b + (255-b)*k) < 0.30 && k < 1) k += 0.04;
+  v = `rgb(${Math.round(r + (255-r)*k)},${Math.round(g + (255-g)*k)},${Math.round(b + (255-b)*k)})`; if(_rtCache.size > 400) _rtCache.clear(); _rtCache.set(st, v); return v;
+}
+function readableText(on, outline){ const C = CanvasRenderingContext2D.prototype;
+  if(!on){ C.fillText = _ftOrig; return; }
+  const ol = outline!==false;
+  C.fillText = function(t, x, y, mw){ const fs = this.fillStyle, lifted = _rtLift(fs);
+    if(ol && this.globalAlpha > 0.2 && !_rtDark.has(fs)){ const px = parseFloat(/(\d+(?:\.\d+)?)px/.exec(this.font) || [0, 12])[1] || 12, ss = this.strokeStyle, lw = this.lineWidth, lj = this.lineJoin, sb = this.shadowBlur;
+      this.shadowBlur = 0; this.strokeStyle = 'rgba(6,6,10,0.9)'; this.lineWidth = Math.max(2, px*0.28); this.lineJoin = 'round';
+      if(mw===undefined) this.strokeText(t, x, y); else this.strokeText(t, x, y, mw); this.strokeStyle = ss; this.lineWidth = lw; this.lineJoin = lj; this.shadowBlur = sb; }
+    if(lifted!==fs) this.fillStyle = lifted;
+    if(mw===undefined) _ftOrig.call(this, t, x, y); else _ftOrig.call(this, t, x, y, mw);
+    if(lifted!==fs) this.fillStyle = fs; };
+}
 function drawToasts(dt){
-  let y = 70;
+  if(typeof paused!=='undefined' && paused && phase==='fight') return;   // Nov 16: toasts wait while the pause screen is up (they showed through it)
+  // in a fight: centred below both HUDs (it used to cover the ability rows); on menus and the results screen: in the right-hand corner, clear of titles
+  const inFight = phase==='fight', w = 330, cx = inFight ? W/2 : W - w/2 - 12; let y = inFight ? 176 : (phase==='end' || phase==='roundend' ? H - 100 : 50);
+  const up = !inFight && (phase==='end' || phase==='roundend');   // results: stack upwards from above the play-again button
   for(let i=TOASTS.length-1;i>=0;i--){ const T = TOASTS[i]; T.t += dt||16; if(T.t > 4200){ TOASTS.splice(i,1); continue; } }
-  for(const T of TOASTS){ const a = Math.min(1, T.t/200, (4200 - T.t)/400), w = 330;
-    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = 'rgba(12,10,18,0.92)'; ctx.fillRect(W/2 - w/2, y, w, 40); ctx.strokeStyle = T.col; ctx.lineWidth = 2; ctx.strokeRect(W/2 - w/2, y, w, 40);
-    ctx.textAlign = 'center'; ctx.fillStyle = T.col; ctx.font = "700 15px 'Rajdhani',sans-serif"; ctx.fillText(T.title, W/2, y+17);
-    ctx.fillStyle = 'rgba(232,226,214,0.85)'; ctx.font = "500 11px 'Rajdhani',sans-serif"; ctx.fillText(T.sub, W/2, y+32); ctx.restore(); y += 46; }
+  for(const T of TOASTS){ const a = Math.min(1, T.t/200, (4200 - T.t)/400);
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = 'rgba(12,10,18,0.92)'; ctx.fillRect(cx - w/2, y, w, 40); ctx.strokeStyle = T.col; ctx.lineWidth = 2; ctx.strokeRect(cx - w/2, y, w, 40);
+    ctx.textAlign = 'center'; ctx.fillStyle = T.col; ctx.font = "700 15px 'Rajdhani',sans-serif"; ctx.fillText(T.title, cx, y+17);
+    ctx.fillStyle = 'rgba(232,226,214,0.85)'; ctx.font = "500 11px 'Rajdhani',sans-serif"; ctx.fillText(T.sub, cx, y+32); ctx.restore(); y += up ? -46 : 46; }
 }
 function accGiveXp(n, why){
   const P = ACC.prof; if(!P || !(n>0)) return; accMigrate(P);
@@ -5392,7 +5431,7 @@ function paintSendai(g, R){
   // station facade sign + deck lamps
   g.fillStyle='#e9e4d8'; g.fillRect(20, G-300, 190, 34); g.fillStyle='#1f6b3a'; g.font='700 24px Rajdhani, sans-serif'; g.textAlign='center'; g.fillText('仙台駅  SENDAI', 115, G-275);
   for(let x=440; x<1300; x+=110){ g.fillStyle='rgba(255,226,160,0.16)'; g.beginPath(); g.arc(x, G-170, 34, 0, Math.PI*2); g.fill(); g.fillStyle='#3a3a44'; g.fillRect(x-2, G-196, 4, 46); g.fillStyle='#ffe2a0'; g.fillRect(x-5, G-200, 10, 5); }
-  g.fillStyle='#2c3d6a'; g.fillRect(824, G-306, 82, 22); g.fillStyle='#e9eefc'; g.font='700 12px Rajdhani, sans-serif'; g.fillText('CULLING GAME', 865, G-290);
+  g.fillStyle='#2c3d6a'; g.fillRect(805, G-352, 120, 24); g.fillStyle='#e9eefc'; g.font='700 12px Rajdhani, sans-serif'; g.fillText('CULLING GAME', 865, G-335);   // Nov 16: wider plate, raised clear of the platform
   // street, crosswalks, rubble on the right
   g.fillStyle='#22232b'; g.fillRect(0, G, W, H-G);
   g.fillStyle='rgba(235,235,230,0.55)'; for(let x=460; x<1300; x+=26) g.fillRect(x, G+26, 14, 30);
@@ -5840,7 +5879,8 @@ const _mapAmb = [];
 function drawMapAmbient(i, t){
   if(i===0){
     // flickering tube + drifting dust
-    if(Math.sin(t*0.013)+Math.sin(t*0.031) > 1.55){ ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(1020,SHB.b3+30,160,90); }
+    { const fl = Math.max(0, Math.sin(t*0.013)+Math.sin(t*0.031) - 1.2)/0.8; if(fl > 0){   // Nov 16: the tube dims as a soft pool, not a hard black box
+      const g = ctx.createRadialGradient(1100, SHB.b3+60, 10, 1100, SHB.b3+60, 150); g.addColorStop(0, `rgba(0,0,0,${0.28*fl})`); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(950, SHB.b3-90, 300, 300); } }
     ctx.fillStyle=`rgba(150,70,200,${0.04+0.03*Math.sin(t*0.002)})`; ctx.fillRect(0,GND-90,W,90);
   } else if(i===1){
     // falling leaves
@@ -8277,17 +8317,19 @@ let _fxSeed = 0x2F6E2B1;
 function fxRnd(){ _fxSeed ^= _fxSeed << 13; _fxSeed ^= _fxSeed >>> 17; _fxSeed ^= _fxSeed << 5; return ((_fxSeed >>> 0) % 1000003) / 1000003; }
 // Nov 16 — hit feedback safety net. Some of the ~100 places that take HP off did it silently; after every tick any HP that went
 // down without a damage number or a spark gets one here, 15+ damage in one tick always shakes the screen, and a KO gets its own finish.
-let _fxDmgN = 0, _fxPartN = 0, koFlash = 0;
+let _fxDmgN = 0, _fxPartN = 0, koFlash = 0; const _fxPartAt = [], _fxDmgAt = [];
 function hitFxNet(){
   for(const pl of [p1, p2]){ if(!pl) continue;
     const hp = pl.hp, last = pl._fxHp===undefined ? hp : pl._fxHp; pl._fxHp = hp;
     const d = last - hp; if(!(d >= 0.5) || pl.state===S.DEAD && last<=0) continue;
     const cx = pl.x+PW/2;
-    if(!_fxDmgN) addDmg(cx, pl.y-14, Math.max(1, Math.round(d)), '#ffd9a0');
-    if(!_fxPartN) addParts(cx, pl.y+PH*0.4, '#ffffff', Math.min(14, 4+Math.round(d/3)), 3+Math.min(5, d/6));
+    let shown = false; for(let k=0;k<_fxDmgAt.length;k+=2) if(Math.abs(_fxDmgAt[k]-cx) < 90 && Math.abs(_fxDmgAt[k+1]-(pl.y+PH/2)) < 140){ shown = true; break; }
+    if(!shown) addDmg(cx, pl.y-14, Math.max(1, Math.round(d)), '#ffd9a0');
+    let near = false; for(let k=0;k<_fxPartAt.length;k+=2) if(Math.abs(_fxPartAt[k]-cx) < 90 && Math.abs(_fxPartAt[k+1]-(pl.y+PH/2)) < 110){ near = true; break; }   // a spark already near this fighter this tick?
+    if(!near) addParts(cx, pl.y+PH*0.4, '#ffffff', Math.min(14, 4+Math.round(d/3)), 3+Math.min(5, d/6));
     if(d >= 15) doShake(Math.min(16, 5+d*0.3));
   }
-  _fxDmgN = 0; _fxPartN = 0;
+  _fxDmgN = 0; _fxPartN = 0; _fxPartAt.length = 0; _fxDmgAt.length = 0;
 }
 function koFinish(pl, final){
   const cx = pl.x+PW/2, cy = pl.y+PH/2, col = pl.charColor || '#fff';
@@ -8296,7 +8338,7 @@ function koFinish(pl, final){
   doShake(final ? 24 : 16); koFlash = Date.now() + (final ? 320 : 180);
 }
 function addParts(x,y,col,n,pwr){
-  _fxPartN++;
+  _fxPartN++; _fxPartAt.push(x, y);
   if(parts.length > 700) return;
   if(LITE) n = Math.ceil(n/2);
   for(let i=0;i<n;i++){
@@ -8335,7 +8377,9 @@ function drawRings(){
 
 // Damage numbers
 const dmgNums=[];
-function addDmg(x,y,val,col){ _fxDmgN++; dmgNums.push({x,y,vy:-2,val,col,life:1}); if(typeof val==='string') return; const v = +val||0; sfxLocal(v>=20 ? 'heavy' : v>=9 ? 'hit2' : 'hit', x); }
+function addDmg(x,y,val,col){ _fxDmgN++; _fxDmgAt.push(x, y);
+  for(let g=0; g<5; g++){ if(!dmgNums.some(d => d.life > 0.55 && Math.abs(d.x - x) < 34 && Math.abs(d.y - y) < 15)) break; y -= 16; }   // Nov 16: stack instead of printing over a fresh number
+  dmgNums.push({x,y,vy:-2,val,col,life:1}); if(typeof val==='string') return; const v = +val||0; sfxLocal(v>=20 ? 'heavy' : v>=9 ? 'hit2' : 'hit', x); }
 function tickDmgNums(){
   let w = 0;
   for(let i=0;i<dmgNums.length;i++){
@@ -13368,7 +13412,7 @@ class Player {
         const labelCol = !ready ? '#555' : isUlt ? '#ffe066' : '#ccc';
         ctx.fillStyle = labelCol;
         ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-        ctx.fillText(abilityNames[i], ax+aw/2, abY+13);
+        ctx.fillText(abilityNames[i], ax+aw/2, abY+13, aw-6);
       }
 
       // Domain charge bar
@@ -13432,7 +13476,7 @@ class Player {
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#f0b0b8';
-        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, n = bloodPools.length, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13456,7 +13500,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?col:'#3a3428');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#f4f1e6'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#f4f1e6'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13488,7 +13532,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?col:'#26304a');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#eef2ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#eef2ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = mg ? !!(activeDomain && activeDomain.owner===this) : this.gardenT>0, pct = on ? (mg ? 1 : this.gardenT/MEG_GARDEN_MS) : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13516,7 +13560,7 @@ class Player {
         ctx.fillStyle = i===2 ? '#bfe6ff' : (ready?'#c98a4b':'#3a2614');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : '#fff3e0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : '#fff3e0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13539,7 +13583,7 @@ class Player {
         ctx.fillStyle = i===2 ? T.col : (ready?'#a8b49a':'#2a3024');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : '#f2f2ea'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : '#f2f2ea'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const scope = this.state===S.TOJISCOPE; const ult2 = scope;
       const domY = abY+30, pct = scope ? Math.max(0, 1 - this.sTimer/TOJI_SCOPE_MS) : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1 || scope;
@@ -13562,7 +13606,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#cfe8ff':'#3a4a5a') : (ready?'#9a86d6':'#2a2240');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : '#efeaff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : '#efeaff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, out = getoCurses.filter(q => q.owner===this && q.kind==='swarm').length, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13586,7 +13630,7 @@ class Player {
         ctx.fillStyle = isUlt ? M.col : (ready?'#f2d36b':'#3a3418');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? M.col : '#fff6d8'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? M.col : '#fff6d8'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = this.holeT>0, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13608,7 +13652,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?'#e8c547':'#4a3a10');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#fff6d0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#fff6d0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = trucks.some(t => t.owner===this), pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13633,7 +13677,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?'#c9a0ff':'#2c3642');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#e8e0ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#e8e0ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = activeDomain && activeDomain.owner===this, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13656,7 +13700,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?'#9bc46a':'#2f4a1e');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#e4f4d0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#e4f4d0'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = this.rampT>0, pct = on ? this.rampT/RAMPAGE_MS : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = !on && pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13678,7 +13722,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?'#7fc8ff':'#1c3a5a');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#d8f0ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#d8f0ff'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = activeDomain && activeDomain.owner===this, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13701,7 +13745,7 @@ class Player {
         ctx.fillStyle = isUlt ? (ready?'#ffe066':'#886600') : (ready?'#ff8a3a':'#5a2a10');
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#ffd0a8'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#ffd0a8'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = activeDomain && activeDomain.owner===this, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13724,7 +13768,7 @@ class Player {
         ctx.fillStyle = ready ? (i===2 && out ? '#ffffff' : '#c9c2e6') : '#3e3a52';
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
-        ctx.fillStyle = ready ? '#ece8ff' : '#555'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillStyle = ready ? '#ece8ff' : '#555'; ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13747,7 +13791,7 @@ class Player {
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#dcc8ff';
-        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, on = activeDomain && activeDomain.owner===this, pct = Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
       ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(bx,domY,bw,14);
@@ -13772,7 +13816,7 @@ class Player {
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#c8fff0';
-        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, gm = activeDomain && activeDomain.type==='gamble' && activeDomain.owner===this;
       const pct = jp ? this.jackpotT/JACKPOT_DUR : gm ? Math.max(0, activeDomain.timer/GAMBLE_DUR) : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
@@ -13797,7 +13841,7 @@ class Player {
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#f1e2b0';
-        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const domY = abY+30, sw = this.higuSwordT>0, inCourt = activeDomain && activeDomain.type==='court' && activeDomain.owner===this;
       const pct = sw ? this.higuSwordT/HIGU_SWORD_DUR : inCourt ? 1 : Math.min(1, this.domainCharge/DOMAIN_CHARGE_REQ), ready = pct>=1;
@@ -13826,7 +13870,7 @@ class Player {
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ffe066' : '#ccc';
         ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-        ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       // Unlimited Boogie (ultimate) bar
       const domY = abY+30, kQ = keyLbl(this,'ult');
@@ -13865,7 +13909,7 @@ class Player {
         ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#c9a0ff' : inMech ? '#ffcf8a' : '#ccc';
         ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-        ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       if(!this.mechUltPhase){
         // Domain bar → Ultimate Mechamaru
@@ -13919,7 +13963,7 @@ class Player {
         const labelCol = !ready ? '#556' : i===0?'#adf':i===1?'#faa':'#e0b0ff';
         ctx.fillStyle = labelCol;
         ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-        ctx.fillText(abilityNames[i], ax+aw/2, abY+13);
+        ctx.fillText(abilityNames[i], ax+aw/2, abY+13, aw-6);
       }
 
       // Gojo domain charge bar
@@ -13958,7 +14002,7 @@ class Player {
         ctx.fillRect(flip?ax+aw-Math.floor(aw*fills[i]):ax, abY+18, Math.floor(aw*fills[i]), 4);
         ctx.strokeStyle = isUlt && ready ? `rgba(255,40,40,${0.5+0.5*Math.abs(Math.sin(Date.now()*0.008))})` : 'rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.strokeRect(ax,abY,aw,22);
         ctx.fillStyle = !ready ? '#555' : isUlt ? '#ff6060' : '#ffd38a';
-        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13);
+        ctx.font=`700 8px 'Rajdhani',sans-serif`; ctx.textAlign='center'; ctx.fillText(names[i], ax+aw/2, abY+13, aw-6);
       }
       const cm = this.yujiCM||0, modulo = cm >= YUJI_ENCHAIN;
       const ultY = abY+30, ultPct = Math.min(1, this.yujiUltCharge/YUJI_ULT_COST), cd = this.yujiUltCooldown>0;
@@ -14032,7 +14076,7 @@ class Player {
         if(i===0)      label = `SLICE [${k1}]`;
         else if(i===1) label = `DISCHARGE [${k2}]`;
         else label = this.rikaOnT>0 && this.rk ? `RIKA ${Math.ceil(this.rikaOnT/1000)}s · MODE [${k3}]` : `SUMMON RIKA [${k3}]`;
-        ctx.fillText(label, ax+aw/2, abY+13);
+        ctx.fillText(label, ax+aw/2, abY+13, aw-6);
       }
 
       // Domain charge bar (moved up — no subtext between panels and bar)
@@ -14527,8 +14571,8 @@ function drawHUDOverlay(){
   // soft dark scrim behind both HUD blocks, so dimmed labels stay readable on the bright maps (Sister School, Shinjuku)
   if(!drawHUDOverlay._g || drawHUDOverlay._w!==W){ const g = ctx.createLinearGradient(0, 0, 0, 150); g.addColorStop(0, 'rgba(8,8,14,0.6)'); g.addColorStop(0.75, 'rgba(8,8,14,0.36)'); g.addColorStop(1, 'rgba(8,8,14,0)'); drawHUDOverlay._g = g; drawHUDOverlay._w = W; }
   ctx.fillStyle = drawHUDOverlay._g; ctx.fillRect(0, 0, W, 150);
-  ctx.textAlign='center'; ctx.font=`700 14px 'Rajdhani',sans-serif`;
-  ctx.fillStyle='rgba(200,195,185,.2)'; ctx.fillText('CURSED CLASH',W/2,30);
+  ctx.fillStyle = 'rgba(8,8,14,0.66)'; ctx.fillRect(10, 0, 302, 136); if(!isTraining()) ctx.fillRect(W-312, 0, 302, 136);   // Nov 16: a solid backing under each HUD block, so stage signs and art never show between its rows
+  readableText(true);   // Nov 16: every HUD label gets a dark outline and at least 4.5:1 contrast (the faint "CURSED CLASH" watermark is gone)
   p1.drawHUD(22,false); if(!isTraining()) p2.drawHUD(W-22,true);
   drawCeHud(p1, 22, false); if(!isTraining()) drawCeHud(p2, W-22, true);
   drawEffects(p1, 22, false); if(!isTraining()) drawEffects(p2, W-22, true);
@@ -14568,6 +14612,7 @@ function drawHUDOverlay(){
       ctx.beginPath(); ctx.arc(px, livesY, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     }
   }
+  readableText(false);
 }
 
 let phase='home', homeT=0, winner=null;
@@ -18993,6 +19038,14 @@ function togglePause(by){
   paused = !paused; pausedBy = paused ? by : 0;
   snd('ui', W/2);
 }
+function wrapLines(t, maxW){ const out = []; let cur = ''; for(const word of String(t).split(' ')){ const nx = cur ? cur + ' ' + word : word; if(cur && ctx.measureText(nx).width > maxW){ out.push(cur); cur = word; } else cur = nx; } if(cur) out.push(cur); return out; }
+// Nov 16: one look for every menu button drawn on the canvas — dark card, gold frame (as the mode / stage / fighter cards)
+function drawMenuButton(text, cx, cy, opt){ opt = opt || {};
+  ctx.save(); ctx.font = `700 ${opt.size||14}px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(text).width + 34, h = (opt.size||14) + 14, x = cx - w/2, y = cy - h/2;
+  ctx.fillStyle = opt.danger ? 'rgba(60,14,18,0.92)' : 'rgba(14,12,22,0.92)'; ctx.beginPath(); ctx.moveTo(x+8, y); ctx.lineTo(x+w, y); ctx.lineTo(x+w-8, y+h); ctx.lineTo(x, y+h); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = opt.danger ? '#e07a7a' : '#d6b64a'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = opt.danger ? '#ffd0d0' : '#f4e6b0'; ctx.fillText(text, cx, cy + 1); ctx.restore(); return w; }
 function drawPauseColumn(pl, slot, binds, x, y, w, title){
   const online = olOn(), held = liveHeld[slot-1] || {};
   const info = {}; for(const [k, n] of (MOVE_INFO[pl.type] || [])) info[k] = n;
@@ -19010,11 +19063,11 @@ function drawPauseColumn(pl, slot, binds, x, y, w, title){
     ctx.font = `500 11px 'Rajdhani',sans-serif`; ctx.fillStyle = on ? '#fff6c8' : 'rgba(220,215,205,0.85)'; ctx.fillText(nm, x + w*0.36, yy);
     yy += 19;
   }
-  ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.6)';
+  ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.8)';
   const extra = online
     ? ['V = Maximum Output (Q / E become stronger versions; super and domain still work) · hold ATTACK + F = anti-domain technique (if your fighter has one)', 'Combos: attack ×3, press again as the ring closes for a PERFECT · hold TAB in a fight for the full move list']
     : ['Hold TAB in a fight for the full move list'];
-  for(const t of extra){ ctx.fillText(t, x, yy+4); yy += 14; }
+  for(const t of extra) for(const line of wrapLines(t, w - 6)){ ctx.fillText(line, x, yy+4); yy += 12; }   // Nov 16: wrapped to the column (the lines ran into each other)
   return yy;
 }
 
@@ -19132,39 +19185,39 @@ function drawFighterGuide(pl, x, y, w, twoCol){
 function drawPauseHeader(){
   ctx.textAlign = 'center'; ctx.font = `700 12px 'Rajdhani',sans-serif`;
   const total = PAUSE_PAGES.length, gap = 150, x0 = W/2 - gap*(total-1)/2;
-  PAUSE_PAGES.forEach((n, i) => { ctx.fillStyle = i===pausePage ? '#ffe066' : 'rgba(220,215,205,0.45)'; ctx.fillText((i===pausePage ? '● ' : '') + n, x0 + i*gap, 106); });
+  PAUSE_PAGES.forEach((n, i) => { ctx.fillStyle = i===pausePage ? '#ffe066' : 'rgba(220,215,205,0.45)'; ctx.fillText((i===pausePage ? '● ' : '') + n, x0 + i*gap, 80); });
   ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.55)';
-  ctx.fillText(isLocalPair() ? 'A / D  or  ← / →  to change page' : 'A / D to change page', W/2, 120);
+  ctx.fillText(isLocalPair() ? 'A / D  or  ← / →  to change page' : 'A / D to change page', W/2, 94);
 }
 
 function drawPauseMenu(){
   if(!paused) return;
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.78)'; ctx.fillRect(0, 0, W, H);
-  ctx.textAlign = 'center'; ctx.font = `700 34px 'Rajdhani',sans-serif`; ctx.fillStyle = '#f4ecd8'; ctx.fillText('PAUSED', W/2, 50);
+  ctx.fillStyle = 'rgba(6,5,12,0.92)'; ctx.fillRect(0, 0, W, H);   // Nov 16: darker, so the stage behind never competes with the text
+  drawMenuBanner('PAUSED');
   ctx.font = `500 13px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.75)';
   const local = isLocalPair();
-  ctx.fillText((pausedBy && !isTraining() ? `Paused by player ${pausedBy} · ` : '') + (local ? 'ESC (P1) or BACKSPACE (P2) to resume' : isTraining() ? 'ESC to resume · training mode' : 'ESC to resume — the game is paused for both players'), W/2, 72);
+  ctx.fillText((pausedBy && !isTraining() ? `Paused by player ${pausedBy} · ` : '') + (local ? 'ESC (P1) or BACKSPACE (P2) to resume' : isTraining() ? 'ESC to resume · training mode' : 'ESC to resume — the game is paused for both players'), W/2, 58);
   drawPauseHeader();
-  ctx.textAlign = 'center'; ctx.font = `700 13px 'Rajdhani',sans-serif`; ctx.fillStyle = '#ff8a8a'; ctx.fillText('M — LEAVE MATCH (back to the menu)', W/2, 136);
+  drawMenuButton('M — LEAVE MATCH (back to the menu)', W/2, H-16, {size:12, danger:true});   // Nov 16: moved to the bottom (it sat on the column titles)
   const meN = local || isTraining() ? 1 : NET.spectator ? 1 : NET.role==='host' ? 1 : 2, mePl = meN===2 ? p2 : p1;
   if(pausePage===1){
     const w = Math.min(980, W-80);
-    fitGuide(w2 => drawCombatGuide(mePl, W/2 - w/2, 148, w2), W/2 - w/2, 148, w, H-10);
+    fitGuide(w2 => drawCombatGuide(mePl, W/2 - w/2, 120, w2), W/2 - w/2, 120, w, H-36);
   } else if(pausePage===2){
-    if(local){ const w = W/2 - 70; fitGuide(w2 => drawFighterGuide(p1, 50, 150, w2, false), 50, 150, w, H-10); fitGuide(w2 => drawFighterGuide(p2, W/2 + 30, 150, w2, false), W/2 + 30, 150, w, H-10); }
-    else { const w = Math.min(980, W-80); fitGuide(w2 => drawFighterGuide(mePl, W/2 - w/2, 150, w2, true), W/2 - w/2, 150, w, H-10); }
+    if(local){ const w = W/2 - 70; fitGuide(w2 => drawFighterGuide(p1, 50, 120, w2, false), 50, 120, w, H-36); fitGuide(w2 => drawFighterGuide(p2, W/2 + 30, 120, w2, false), W/2 + 30, 120, w, H-36); }
+    else { const w = Math.min(980, W-80); fitGuide(w2 => drawFighterGuide(mePl, W/2 - w/2, 120, w2, true), W/2 - w/2, 120, w, H-36); }
   } else if(local){
     const w = W/2 - 70;
-    drawPauseColumn(p1, 1, BINDS_L1, 50, 146, w, 'PLAYER 1 · LEFT SIDE');
-    drawPauseColumn(p2, 2, BINDS_L2, W/2 + 30, 146, w, 'PLAYER 2 · RIGHT SIDE');
+    drawPauseColumn(p1, 1, BINDS_L1, 50, 124, w, 'PLAYER 1 · LEFT SIDE');
+    drawPauseColumn(p2, 2, BINDS_L2, W/2 + 30, 124, w, 'PLAYER 2 · RIGHT SIDE');
   } else {
     const me = isTraining() ? 1 : NET.spectator ? null : NET.role==='host' ? 1 : 2;
     const pl = me===2 ? p2 : p1, w = Math.min(760, W-120);
-    if(me) drawPauseColumn(pl, me, BINDS, W/2 - w/2, 146, w, 'YOUR CONTROLS');
+    if(me) drawPauseColumn(pl, me, BINDS, W/2 - w/2, 124, w, 'YOUR CONTROLS');
     else { ctx.textAlign = 'center'; ctx.fillStyle = '#ddd'; ctx.fillText('You are spectating.', W/2, 160); }
     ctx.textAlign = 'center'; ctx.font = `500 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,215,205,0.55)';
-    ctx.fillText('Gamepad: A jump · X attack · LB / RB abilities · Y special · RT domain · LT block · R-stick click Maximum Output · B pick up', W/2, H-14);
+    ctx.fillText('Gamepad: A jump · X attack · LB / RB abilities · Y special · RT domain · LT block · R-stick click Maximum Output · B pick up', W/2, H-36);
   }
   ctx.restore();
 }
@@ -20651,10 +20704,14 @@ function drawHome(){
 
 // menu screens share one look: dark diagonal bands and a gold banner title
 function drawMenuBackdrop(title){
-  const t = Date.now(), g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#120c18'); g.addColorStop(1, '#0a0d16'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // Nov 16: the same night sky as the home screen, under a dark veil, so every menu shares one look
+  const t = Date.now(); try{ drawHomeSky(W, H); }catch(e){} ctx.fillStyle = 'rgba(8,6,16,0.62)'; ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.globalAlpha = 0.07; for(let k=0;k<9;k++){ ctx.fillStyle = k%2 ? '#d24a5a' : '#4a7ad2'; ctx.beginPath(); const x0 = -200 + k*150 + (t*0.01 % 150); ctx.moveTo(x0, 0); ctx.lineTo(x0+60, 0); ctx.lineTo(x0-140, H); ctx.lineTo(x0-200, H); ctx.closePath(); ctx.fill(); } ctx.restore();
-  ctx.fillStyle = '#d6b64a'; ctx.beginPath(); ctx.moveTo(W/2-190, 8); ctx.lineTo(W/2+190, 8); ctx.lineTo(W/2+176, 40); ctx.lineTo(W/2-176, 40); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#17120a'; ctx.font = `700 22px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(title, W/2, 32);
+  drawMenuBanner(title);
+}
+function drawMenuBanner(title){
+  ctx.save(); ctx.fillStyle = '#d6b64a'; ctx.beginPath(); ctx.moveTo(W/2-190, 8); ctx.lineTo(W/2+190, 8); ctx.lineTo(W/2+176, 40); ctx.lineTo(W/2-176, 40); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#17120a'; ctx.font = `700 22px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(title, W/2, 32); ctx.restore();
 }
 function drawModeSelect(){
   ctx.save();
@@ -20690,11 +20747,7 @@ function drawModeSelect(){
 
   // Confirm prompt
   const pulse = 0.6 + 0.4*Math.abs(Math.sin(Date.now()*0.005));
-  ctx.globalAlpha = pulse;
-  ctx.font=`700 14px 'Rajdhani',sans-serif`;
-  ctx.fillStyle='#d8d4cc';
-  ctx.fillText(NET.role==='guest' ? '' : 'PRESS SPACE TO CONFIRM', W/2, H-40);
-  ctx.globalAlpha=1;
+  if(NET.role!=='guest') drawMenuButton('PRESS SPACE OR CLICK TO CONFIRM', W/2, H-40, {size:14});   // Nov 16: the shared menu button
 
   ctx.restore();
 }
@@ -21161,9 +21214,8 @@ function drawMatchEnd(){
     const bw = 260; ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(W/2-bw/2, yx+32, bw, 6); ctx.fillStyle = '#7fe0ff'; ctx.fillRect(W/2-bw/2, yx+32, bw*L.cur/L.need, 6);
     if(a.ach && a.ach.length){ ctx.fillStyle = '#ffe066'; ctx.font=`700 13px 'Rajdhani',sans-serif`; ctx.fillText('🏆 ' + a.ach.join(' · '), W/2, yx+60); }
   }
-  ctx.font=`600 15px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(225,220,210,.85)';
-  ctx.fillText(ARC.on ? 'Press SPACE / ENTER / CLICK for the ladder' : NET.role==='guest' ? 'The host picks what happens next · ✕ MENU to leave'
-    : NET.role==='local' && !CPU.on ? 'Press F or / to play again · ✕ MENU to leave' : 'Press SPACE / ENTER / CLICK to play again · ✕ MENU to leave', W/2, H-36);
+  // Nov 16: the next step as the shared menu button; the ✕ MENU button (top corner) is how you leave
+  drawMenuButton(ARC.on ? 'SPACE / ENTER / CLICK — BACK TO THE LADDER' : NET.role==='guest' ? 'THE HOST PICKS WHAT HAPPENS NEXT' : NET.role==='local' && !CPU.on ? 'F OR /  —  PLAY AGAIN' : 'SPACE / ENTER / CLICK  —  PLAY AGAIN', W/2, H-36, {size:14});
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -21593,7 +21645,7 @@ function netAccept(conn){
     if(d.t==='in' && conn===NET.guest){ NET.remote.h = d.h; NET.remote.p |= d.p; if(d.q!==undefined) NET.remote.q = d.q; if(d.mx!==undefined){ NET.remote.mx = d.mx; NET.remote.my = d.my; NET.remote.mt = performance.now(); } }
     else if(d.t==='sel' && conn===NET.guest){ if(p2 && p2.type==='todo') p2.swapSel = d.sel; }
     else if(d.t==='tclick' && conn===NET.guest){ NET.remote.click = {n:d.n, x:d.x, y:d.y, t:performance.now()}; }   // Toji's Scope shot (Oct 27)
-    else if(d.t==='ping') netSend(conn, {t:'pong', ts:d.ts});
+    else if(d.t==='ping'){ netSend(conn, {t:'pong', ts:d.ts}); if(typeof d.rtt==='number' && isFinite(d.rtt) && d.rtt >= 0 && d.rtt < 60000) conn.rtt = d.rtt; }
     else if(d.t==='rs'){ if(d.full){ conn.cache = {g:{}, p:{}, a:{}, dref:null, dk:{}}; conn.terGen = -1; conn.pendTer = []; } else if(conn.cache) conn.cache.dref = null; }   // full: everything (incl. terrain) goes out whole next time
     else if(d.t==='chat') chatRecv(d, conn);
     else if(d.t==='lo' && conn===NET.guest && d.lo){
@@ -21681,7 +21733,7 @@ function netSendInput(LI){
   if(!NET.host || !NET.host.open) return;
   const now = performance.now();
   if(NET.lastSnap && now - NET.lastSnap > 15000){ netReset(); backToLobby('Lost connection to the host.', false); return; }
-  if(now - NET.lastPing > 1000){ NET.lastPing = now; netSend(NET.host, {t:'ping', ts:now}); }
+  if(now - NET.lastPing > 1000){ NET.lastPing = now; netSend(NET.host, {t:'ping', ts:now, rtt:Math.round(NET.rtt||0)}); }   // Nov 16: carries the joiner's measured round trip, so the host's meter can show it
   if(NET.spectator) return;
   const h = toBits(LI.held); NET.pAcc |= toBits(LI.pressed);
   const ms = (p2 && ((p2.type==='hanami' && p2.rampT>0) || (p2.type==='toji' && p2.state===S.TOJISCOPE)) && mouseW.in) ? Math.round(mouseW.x)+','+Math.round(mouseW.y) : '';
@@ -22736,8 +22788,8 @@ function loopFrame(ts){
     ctx.restore();
     withView(() => {
       ctx.save(); ctx.translate(sx,sy);
-      if(phase==='fight'){ safeDraw(() => drawFightScreen(dt), 'drawFightScreen'); safeDraw(drawTut, 'drawTut'); try{ if(!paused) drawMovesOverlay(dt); }catch(e){} safeDraw(drawPauseMenu, 'drawPauseMenu'); }
-      else { drawHUDOverlay(); if(phase==='roundend'){ if(roundWinner) drawRoundEnd(); } else if(winner) drawMatchEnd(); }
+      if(phase==='fight'){ safeDraw(() => drawFightScreen(dt), 'drawFightScreen'); safeDraw(drawTut, 'drawTut'); try{ if(!paused) drawMovesOverlay(dt); }catch(e){} safeDraw(() => { readableText(true); try{ drawPauseMenu(); } finally { readableText(false); } }, 'drawPauseMenu'); }
+      else { drawHUDOverlay(); readableText(true); try{ if(phase==='roundend'){ if(roundWinner) drawRoundEnd(); } else if(winner) drawMatchEnd(); } finally { readableText(false); } }
       drawNetOverlay();
       ctx.restore();
     });
@@ -22746,15 +22798,16 @@ function loopFrame(ts){
       ctx.save(); ctx.translate(sx,sy);
       drawBG();
       if(phase==='home') drawHomeBackdrop();
-      else if(phase==='modeSelect'){ drawModeSelect(); drawWaitingFor(); }
-      else if(phase==='mapSelect') drawMapSelect();
-      else if(phase==='charSelect') drawCharSelect();
-      else if(phase==='arcade') drawArcade();
+      else { readableText(true); try{   // Nov 16: menu text outlined and lifted to 4.5:1 like the HUD
+        if(phase==='modeSelect'){ drawModeSelect(); drawWaitingFor(); }
+        else if(phase==='mapSelect') drawMapSelect();
+        else if(phase==='charSelect') drawCharSelect();
+        else if(phase==='arcade') drawArcade(); } finally { readableText(false); } }
       drawNetOverlay();
       ctx.restore();
     });
   }
-  withView(() => { try{ drawToasts(dt); }catch(e){} try{ drawMeter(); }catch(e){} });
+  withView(() => { readableText(true); try{ drawToasts(dt); }catch(e){} try{ drawMeter(); }catch(e){} readableText(false); });
   ctx.restore();
 }
 // FPS / ping meter (Settings → FPS METER): frame rate, frame time, graphics mode; online also ping and how you're linked
@@ -22762,7 +22815,7 @@ function meterText(){
   const fps = Math.max(1, Math.min(240, Math.round(1000/_ftAvg)));
   let t = `${fps} FPS · ${_ftAvg.toFixed(1)} ms · ${GFX.low ? 'LOW' : 'HIGH'}${GFX.mode==='auto' ? ' (AUTO)' : ''}`;
   if(NET.role==='guest') t += ` · PING ${Math.round(NET.rtt||0)} ms · ` + (NET.host && NET.host.relay ? 'BACKUP RELAY' : NET.host && NET.host.route==='cf' ? 'CLOUDFLARE' : NET.host && NET.host.route==='turn' ? 'RELAY' : 'DIRECT');
-  else if(NET.role==='host' && NET.guest) t += ` · PING ${Math.round(NET.guest.rtt||NET.rtt||0)} ms`;
+  else if(NET.role==='host' && NET.guest){ const g = NET.guest; t += ` · PING ${g.rtt ? Math.round(g.rtt) + ' ms' : '…'} · ` + (g.relay ? 'BACKUP RELAY' : g.route==='cf' ? 'CLOUDFLARE' : g.route==='turn' ? 'RELAY' : 'DIRECT'); }
   return t;
 }
 function drawMeter(){
