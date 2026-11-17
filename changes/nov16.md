@@ -37,6 +37,7 @@ Each entry: what changed → how to revert.
 | Maximum Output shots grow and fade in over 90 ms and leave a trail in the owner's colour. | Remove the `si` / trail lines in `drawOlShots`. |
 | Ghost trails behind Hollow Purple, Reversal Red, Choso's blood rings, the gavel, pachinko balls, crows and Hanami's buds (`drawTrails`). | Remove `drawTrails()`. |
 | Start tells: domain casts show closing rings and light at the hand sign; Fuga shows embers gathering through its wind-up (`drawCastTells`). | Remove `drawCastTells()`. |
+| Round 2: Black Flash screen tint rises over ~3 frames and peaks at 0.45 (was a 1.0 flicker that hid the fighters); Fuga's pillar grows in and is drawn as soft, wavering flame columns; the blast swells in; Dagon's water jet and Choso's beams shoot out over ~4 frames; truck lane and Toji's Scope fade out as well as in; laser heads fade in; Garuda gets a trail; Maximum Output shot trails start on the first frame (they never started before); cast tells end in a release flash; punch smear for Gojo and Dagon's octopus form too. | Revert the named blocks (`drawBlackFlashes`, `drawExplosions`, `drawDagon`, `drawChoso`, `drawPiercingBeams`, `drawTruck`, Scope pass in `drawToji`, `drawMechLasers`, `TRAIL_SRC`, `drawOlShots`, `drawCastTells`, `drawPunchSmear`). |
 | KO flash rises over ~3 frames; Toji's Scope darkness closes in over 200 ms; Takaba's truck lane fades in with soft edges and a moving dashed centre line. | Restore the three lines. |
 
 ## Performance
@@ -63,7 +64,7 @@ Each entry: what changed → how to revert.
 Revert any of these by undoing the named line; none changes a move's numbers.
 
 ## Balancing
-Damage multipliers (`BAL.out`) re-tuned on the fixed build with the pooled method (`tests/retarget.js`), five passes of 1,680
+Damage multipliers (`BAL.out`, and `BAL.in` for Geto 1.03 / Mahito 1.12) re-tuned on the fixed build with the pooled method (`tests/retarget.js`), five passes of 1,680
 matches, then verified with 5,040 matches (480 per fighter). Old → new:
 
 | Fighter | Oct 30 | Nov 16 | | Fighter | Oct 30 | Nov 16 |
