@@ -22,6 +22,18 @@ That's it. Everything is in that one file.
 - **🎲 Random**: pick the die on the character select screen to get a random fighter (never a banned one).
 - **🧪 Training (solo)** — just you, to test any character against a target that stands still and can't die. Includes the **Training Room**, a flat map with distance markers that only appears in training. Number keys: **1** infinite meters · **2** infinite cursed energy · **3** reset · **4** next fighter · **5** online vs classic combat · **0** hide the bar. Shows your combo damage live. No XP.
 
+## Latest: quality gates update (Nov 16, v1.9)
+Built against written pass criteria in [`GATES.md`](GATES.md) for art, performance, quality, balancing and new features; every check is a script in [`tests/`](tests/README.md). Full log with revert notes: [`changes/nov16.md`](changes/nov16.md).
+- **Arcade Ladder** (VS CPU → ARCADE LADDER): six CPU fights in a row, Easy to Hard, ending on a special-grade boss with an extra life. Best run and clears are saved.
+- **Match results screen**: damage, hits, best combo and Black Flashes for both fighters, also online.
+- **Graphics setting** (Auto / High / Low) and an **FPS + ping meter** in Settings. Auto drops to Low by itself on a slow machine.
+- **Playstyles shown** on the fighter select and in the wiki.
+- **Mouse in the menus**: point to select, click to confirm, right click to go back.
+- **Art**: every fighter has their own hair, face and outfit; readable green/amber/red health bars; lighting on every stage; a damage number and spark on every hit, screen shake on big ones, a KO finish.
+- **Performance**: about half the frame cost on machines without a fast graphics card; the host uploads less than half as much online.
+- **Fixes**: Hanami's Rampage after a rematch, the joiner's fighter drifting during moves, doubled speech bubbles online, quick taps of M on the pause screen, ENTER skipping the mode screen.
+- **Balance**: damage multipliers re-tuned and checked over 5,040 CPU matches.
+
 ## Latest: CPU playstyles + rebalance (Oct 30)
 - Every fighter has a **playstyle**, and the CPU plays to it. **Rushdown** (Naoya, Toji) darts in and out. **Zoners** (Jogo, Dagon, Hanami) fight from their traps and water. **Brawlers** (Yuji, Todo, Hakari, Mahito, Yuki) stay in your face. **Rangers** (Gojo, Choso, Ryu, Sukuna) keep their distance and kite. **Summoners** (Megumi, Geto, Yuta, Mechamaru) summon first and hang back. **All-rounders** (Higuruma, Mei Mei, Takaba) play balanced.
 - Everyone rebalanced for the new CPUs, over six full tournaments: all fighters now win **34–63%**, and nearly all are within ±5 of their tier target.

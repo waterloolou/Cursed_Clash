@@ -33,4 +33,17 @@ const SCEN = [['gojo','sukuna',1],['geto','megumi',2],['dagon','jogo',0],['hanam
   const heap1 = await heap();
   const sum = {cpu: +Math.max(...out.map(r => r.cpu)).toFixed(2), avg: Math.max(...out.map(r => r.avg)), p95: Math.max(...out.map(r => r.p95)), p99: Math.max(...out.map(r => r.p99)), max: Math.max(...out.map(r => r.max)), over33: out.reduce((s, r) => s + r.over33, 0), canvasMB: Math.max(...out.map(r => r.canvasMB)), heapStartMB:+heap0.toFixed(1), heapEndMB:+heap1.toFixed(1), heapGrowthMB:+(heap1 - heap0).toFixed(1), errors: errs.length};
   console.log(asJson ? JSON.stringify({sum, out}) : 'WORST ' + JSON.stringify(sum)); if(errs.length && !asJson) console.log(errs.slice(0, 5));
-  await b.close(); })();
+  let rc = 0;
+  if(process.argv.includes('--check')){   // the limits from GATES.md (P1–P4); run on a quiet machine
+    const low = /gfx=low/.test(process.env.QUERY || ''), each = low ? 6.0 : 11.0, meanMax = low ? 4.5 : 8.5, mean = out.reduce((s, r) => s + r.cpu, 0)/out.length, why = [];
+    for(const r of out) if(r.cpu > each) why.push(`${r.name}: ${r.cpu.toFixed(2)} ms CPU per frame (limit ${each})`);
+    if(mean > meanMax) why.push(`mean ${mean.toFixed(2)} ms (limit ${meanMax})`);
+    if(!low && sum.p99 > 25) why.push(`p99 ${sum.p99.toFixed(1)} ms (limit 25)`);
+    if(!low && sum.max > 50) why.push(`slowest frame ${sum.max.toFixed(1)} ms (limit 50)`);
+    if(sum.canvasMB > 32) why.push(`canvas memory ${sum.canvasMB} MB (limit 32)`);
+    if(sum.heapGrowthMB > 15) why.push(`heap grew ${sum.heapGrowthMB} MB (limit 15)`);
+    if(errs.length) why.push(`${errs.length} page errors`);
+    for(const w of why) console.log('OVER', w);
+    console.log(why.length ? `PERF FAILED (${low ? 'Low' : 'High'}): ${why.length}` : `PERF OK (${low ? 'Low' : 'High'}): worst ${sum.cpu} ms, mean ${mean.toFixed(2)} ms CPU per frame, p99 ${sum.p99.toFixed(1)} ms, canvas ${sum.canvasMB} MB`); rc = why.length ? 1 : 0;
+  }
+  await b.close(); process.exit(rc); })();
