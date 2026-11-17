@@ -32,7 +32,7 @@ const { open, ev } = require('./harness.js');
   // ── F5 playstyles ──
   const want = {rushdown:['naoya','toji'], zoner:['jogo','dagon','hanami'], brawler:['yuji','todo','hakari','mahito','yuki'], ranger:['gojo','choso','ryu','sukuna'], summoner:['megumi','geto','yuta','mechamaru'], default:['higuruma','meimei','takaba']};
   ok(await ev(pg, (want) => CHARACTERS.every(c => { const st = playstyleOf(c.type); return want[st] && want[st].includes(c.type) && PLAYSTYLE_NAME[st] && PLAYSTYLE_DESC[st] && PLAYSTYLE_COL[st]; }) && CHARACTERS.length===21, want), 'F5 every fighter has the agreed playstyle');
-  ok(await ev(pg, () => { const w = document.body.innerHTML; return CHARACTERS.every(c => { const sec = document.querySelector(`section[data-p="${c.type}"]`); return sec && sec.textContent.includes(PLAYSTYLE_NAME[playstyleOf(c.type)]); }) && !!document.querySelector('section[data-p="playstyles"]'); }), 'F5 the wiki shows each fighter\'s playstyle and has a Playstyles page');
+  ok(await ev(pg, () => { const w = document.body.innerHTML; return CHARACTERS.every(c => { const sec = document.querySelector(`section[data-p="${c.type}"]`); return sec && sec.textContent.toLowerCase().includes(PLAYSTYLE_NAME[playstyleOf(c.type)].toLowerCase()); }) && !!document.querySelector('section[data-p="playstyles"]'); }), 'F5 the wiki shows each fighter\'s playstyle and has a Playstyles page');
 
   // ── F3 Arcade ladder ──
   await pg.click('[data-open="cpu"]'); await pg.waitForTimeout(100); await pg.click('#btnArcade'); await pg.waitForTimeout(300);

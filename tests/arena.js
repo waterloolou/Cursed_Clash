@@ -40,6 +40,8 @@
     o = o || {}; const L = CPU_LEVELS[o.lvl || 'hard'], STEP = 1000/60, maxMs = o.maxMs || 240000;
     const R = Math.random, DN = Date.now, PN = performance.now.bind(performance), ST = window.setTimeout;
     let vt = 0; const base = 1.7e12, timers = [];
+    // sound and voice lines are switched off for the run: once audio is unlocked they roll dice of their own, which would change results
+    const AUD = {}; for(const k of ['snd', 'sayFor', 'sfxLocal', 'toast']) if(typeof window[k]==='function'){ AUD[k] = window[k]; window[k] = function(){}; }
     Math.random = rng((o.seed|0) * 7919 + 13);
     Date.now = () => base + vt; performance.now = () => vt + 1000;
     window.setTimeout = (fn, ms) => { timers.push([vt + (ms||0), fn]); return 0; };
@@ -74,6 +76,7 @@
       delete res.dSum; delete res.dN; delete res.close; delete res.far;
     } finally {
       Math.random = R; Date.now = DN; performance.now = PN; window.setTimeout = ST;
+      for(const k in AUD) window[k] = AUD[k];
       setSlotKeys(1, {}, {}); setSlotKeys(2, {}, {}); CPU.on = wasCpu; window._olForce = wasForce;
       try{ clearProjectiles(); }catch(e){} activeDomain = null; domainClash = null; timeScale = 1; phase = 'home'; winner = null; roundWinner = null;
     }
