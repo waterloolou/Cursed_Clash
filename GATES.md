@@ -1,6 +1,6 @@
 # Cursed Clash — quality gates
 
-Set on Nov 16, 2026, before any of the work started. The game has to pass **all five gates on the same build**.
+Set on Nov 16, 2026, before any of the work started. The game has to pass **all six gates on the same build** (VFX, section 6, was added on Nov 17).
 Each gate is checked by an independent reviewer agent that did not write the code. A reviewer either approves or rejects with a
 list of what failed; rejections get fixed and the gate is run again.
 
@@ -124,3 +124,29 @@ and item sprites are ThEndNite's work: they are never edited here, and anything 
 | N4 | Each feature has an automated test in `tests/features.js`, and it passes. |
 | N5 | With every feature at its default, CPU match results are identical to the same build with the features unused (no balance side effects). |
 | N6 | Settings survive a page reload; a broken or missing saved setting falls back to the default. |
+
+---
+
+## 6. VFX (added Nov 17 at the user's request)
+
+Added after the first review round, with its own specialist reviewer. The other five gates are unchanged; the game must now pass
+all **six** on the same build. "Effect" means anything drawn for a move or a hit: wind-ups, projectiles, beams, trails, sparks,
+rings, slashes, bursts, flashes, domain entrances. ThEndNite's auras and sprites are not touched (A9 still applies).
+
+**Guidelines**
+- **Crisp**: effects are drawn at the screen's resolution with clean edges, never as blurry stretched bitmaps or hard-edged boxes.
+- **Flowing**: an effect has a start, a life and an end — it grows in, moves with what made it, and fades or scatters out; nothing pops.
+- **Readable**: effects show what is happening (who hit whom, which way, how hard) and never hide the fighters or the HUD.
+- **Identity**: each fighter's effects use their own colours, the same way every time.
+
+**Pass criteria**
+| # | Criterion |
+|---|---|
+| V1 | **Coverage**: every move of all 21 fighters (punch, both abilities, super, ultimate, Maximum Output versions) shows an effect when it starts and, if it can hit, an effect where it hits. Checked by instrumenting `tests/abilities.js`-style runs: 0 moves without a start effect, 0 hitting moves without an impact effect. |
+| V2 | **Crisp**: on High at 1280×720 and 1920×1080, no move effect is drawn from a bitmap stretched more than 1.5× without smoothing, and none shows a hard rectangular edge that is not part of its design (reviewer screenshots, zoomed crops). |
+| V3 | **No pops**: every effect that lasts longer than 120 ms fades or scales in and out (opacity or size changes over at least 3 frames at both ends). Checked frame by frame on a sample of at least 30 moves across at least 10 fighters. |
+| V4 | **Direction and weight**: hit sparks fly away from the attacker (the mean particle direction points away from the attacker on ≥ 90% of hits); hits of 15+ damage add a heavier impact than light hits (bigger burst, ring or flash, and the screen shake already required by A5). |
+| V5 | **Trails**: every projectile and beam that travels more than 150 px leaves a trail or motion streak behind it. |
+| V6 | **Identity**: each fighter's move effects use colours from that fighter's palette (`charColor` family or their documented technique colour); reviewer check per fighter, 0 fighters with mismatched effects. |
+| V7 | **Readable**: no move effect covers more than 60% of a fighter's body for longer than 0.5 s (domains, Rika and other summons excepted), and no effect is drawn over the HUD. |
+| V8 | **Budget**: with the effect changes, the Performance gate (P1–P4) still passes, and Low graphics keeps every effect's shape (fewer particles allowed). |
