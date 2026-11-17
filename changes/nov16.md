@@ -23,7 +23,7 @@ Each entry: what changed → how to revert.
 | Fighter-select tiles show the whole head (bust offset 0.30 → 0.42). | Put 0.3 back in `csDrawFighter`. |
 | **HP bars** green → amber → red (were grey), names in white with a dark outline; the account name sits above the bar instead of on top of the health fill. | Restore the old `col` line and the two `fillText` lines in `drawHUD`. |
 | **Speech bubbles** no longer overlap: a bubble that would cover another is pushed above it. | Remove the `_placed` lines in the bubble loop. |
-| **Stage lighting** on Shibuya, Sister School, Shinjuku and Sendai (the theater already had it): painted once into a quarter-size layer. High graphics only. | Remove `FORE_PAINT`, `drawStageLight`; `drawMapFore` back to the theater only. |
+| **Stage lighting** on Shibuya, Sister School, Shinjuku and Sendai (the theater already had it): painted once into the stage background, so it costs nothing per frame. | Remove `FORE_PAINT` and the one line that calls it in `getMapBG`. |
 | **Hit feedback safety net** (`hitFxNet`): any HP loss without a number or spark gets one; 15+ damage in one tick shakes the screen. **KO finish** (`koFinish`): white flash, two shock rings, burst. | Remove both functions and their two call sites in `simFight`. |
 | Home menu items use Rajdhani like every other menu (the logo stays in Cinzel). | `.hm-it` font back to `700 27px 'Cinzel',serif; letter-spacing:2px`. |
 
@@ -33,7 +33,10 @@ Each entry: what changed → how to revert.
 | Background and terrain layers drawn without bilinear filtering. | About half of a frame's cost on software rendering. | Remove the two `imageSmoothingEnabled = false` lines in `drawMapBG` / terrain draw. |
 | Cooldown / charge field names cached per fighter (`plKeys`). | Headless simulation 22× → ~54× real time. | Use `Object.keys(pl)` again in `tickStatus`, `_cePre`, the cooldown-rate loop. |
 | Theater lighting cached in a quarter-size layer. | Theater was the slowest stage; now in line with the rest. | Restore the three per-frame gradients in `drawTheaterLight`. |
-| Domain backdrops drawn through a layer (Low: every 4th frame; High: only Mahito's domain). | hanami vs mahito 15.2 → ~5 ms. | `drawDomainScene` back inline. |
+| Domain backdrops drawn through a cached layer on both settings (Low: a new picture every 4th frame; High: every 3rd). The domain's colour wash is painted into that layer instead of as its own full-screen pass. | Domain frames 8–9 ms cheaper. | `drawDomainScene` back inline in `drawDomain`; restore `drawDomainAmbient()` before it. |
+| Mahito's domain: its 40 hands are stamped from cached pictures, its two big gradients are cached, and on High the picture is built in three parts over six frames in a back layer, then swapped in (no single frame pays for all of it). | The worst stress-test frames 50+ → under 40 ms. | Restore `drawBigHand` calls in `drawSoulDomain`, remove `_scenePart`, `_domBack`. |
+| A terrain map emptied by a domain is just cleared, not redrawn cell by cell. | The frame a domain opens: −15 ms. | Remove the `!terCur.some(…)` line in `rebuildTerrainCanvas`. |
+| Effect layers (domain layer, hand pictures, theater light) are freed when not on screen. | Canvas memory stays under 32 MB. | Remove `freeFxLayers`. |
 | Stage-select previews 960 → 640 px wide. | Less canvas memory. | `MAP_PREV_W = 960`. |
 | **Online upload**: per-field array deltas, long arrays every other snapshot, host-only bookkeeping (`_kc`, `_cdLast`) left out. | 58–254 → 24–61 KB/s. | Restore whole-array sync in `netSnapshot` / `netApply`. |
 

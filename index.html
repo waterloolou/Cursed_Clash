@@ -434,7 +434,7 @@ canvas {
         <h2>Mouse in the menus</h2>
         <p>The mode, stage and fighter screens work with the mouse as well as the keys (Nov 16): <b>point</b> at a tile to move your cursor there, <b>left click</b> to confirm, <b>right click</b> to go back. In local 2 player the mouse belongs to Player 1. On the pause screen, <b>M</b> leaves the match.</p>
         <h2>Fighter looks, hit feedback and stage lighting</h2>
-        <p>Every fighter is drawn with their own hair, face and outfit (Nov 16) — Sukuna's markings and kimono, Jogo's volcano head and single eye, Dagon's tentacles, Mechamaru's plating, Mei Mei's braid and so on — in fights and on the fighter-select tiles. Health bars are <b>green, amber, then red</b> as they empty. Every hit shows a damage number and a spark, hits of <b>15 or more shake the screen</b>, and a KO ends in a white flash with shock rings. Each stage has its own lighting on <b>High</b> graphics (lamp pools in Shibuya, sun shafts and mist at the school, smoke and fire glow in Shinjuku, cold light from Sendai's torn sky).</p>
+        <p>Every fighter is drawn with their own hair, face and outfit (Nov 16) — Sukuna's markings and kimono, Jogo's volcano head and single eye, Dagon's tentacles, Mechamaru's plating, Mei Mei's braid and so on — in fights and on the fighter-select tiles. Health bars are <b>green, amber, then red</b> as they empty. Every hit shows a damage number and a spark, hits of <b>15 or more shake the screen</b>, and a KO ends in a white flash with shock rings. Each stage has its own lighting (lamp pools in Shibuya, sun shafts and mist at the school, smoke and fire glow in Shinjuku, cold light from Sendai's torn sky).</p>
         <h2>🎲 Random fighter</h2>
         <p>The last tile on the character select screen is <b>Random</b> (the die). Lock it in like any fighter — in VS CPU (for you or the CPU), local 2 player, online and training. When both players are locked in, the game rolls a fighter for each Random player and shows who came up during the <b>READY TO FIGHT!</b> countdown. <b>Banned fighters never come up.</b> Un-locking cancels the roll, so you get a fresh one next time.</p>
         <h2>Training (solo)</h2>
@@ -4138,6 +4138,17 @@ function tickSoul(d, dt){
     addParts(def.x+PW/2, def.y+PH/2, '#8a5ad0', 50, 10); addRing(def.x+PW/2, def.y+PH/2, '#c9a0ff', 130); doShake(18); showTxt('TRANSFIGURED', 1200); sayFor(own, 'Your soul has a new shape now.'); }
 }
 function _hh(k, n){ const v = Math.sin(k*127.1 + n*311.7)*43758.5453; return v - Math.floor(v); }
+// Nov 16 (performance): the 37 hands of Mahito's domain are stamped from small cached pictures (one per layer and finger-curl step)
+// instead of being drawn stroke by stroke every time — the backdrop went from about 17 ms to 3 ms per redraw.
+const _handSpr = {};
+function freeHandSprites(){ for(const k in _handSpr){ _handSpr[k].width = 1; _handSpr[k].height = 1; delete _handSpr[k]; } if(_soulBase){ for(const c of _soulBase){ c.width = 1; c.height = 1; } _soulBase = null; } }
+function drawBigHandSprite(x, y, ang, s, fill, line, hi, curl, key, q){
+  const cb = Math.max(0, Math.min(3, Math.round((curl - 0.35)/0.5*3))), id = key + '|' + cb;
+  let sp = _handSpr[id];
+  if(!sp){ sp = document.createElement('canvas'); sp.width = Math.ceil(218*q); sp.height = Math.ceil(64*q); const g = sp.getContext('2d'), keep = ctx;
+    g.setTransform(q, 0, 0, q, 154*q, 38*q); ctx = g; try{ drawBigHand(0, 0, 0, 1, fill, line, hi, 0.35 + cb*0.5/3); } finally { ctx = keep; } _handSpr[id] = sp; }
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.imageSmoothingEnabled = false; ctx.drawImage(sp, -154*s, -38*s, 218*s, 64*s); ctx.restore();
+}
 function drawBigHand(x, y, ang, s, fill, line, hi, curl){
   ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.scale(s, s);
   ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.lineWidth = 1.7; ctx.fillStyle = fill; ctx.strokeStyle = line;
@@ -4168,21 +4179,29 @@ function drawBigHand(x, y, ang, s, fill, line, hi, curl){
   ctx.beginPath(); ctx.ellipse(-60, -9, 40, 3, 0, 0, Math.PI*2); ctx.fill();
   ctx.restore();
 }
+let _soulBase = null, _scenePart = -1;
 function drawSoulDomain(){
   const d = activeDomain, r = d.soulRise||0, fade = Math.min(1, d.timer/1000), t = Date.now();
   const prog = Math.min(1, 1 - d.timer/d.totalDuration);
   const def = d.owner===p1 ? p2 : p1, fr = d.frame || {x:0, y:0};
   const cx = def ? def.x+PW/2 - fr.x : W/2, cy = def ? def.y+PH/2 - fr.y : H/2;
   ctx.save(); ctx.globalAlpha = r*fade;
-  const g = ctx.createRadialGradient(cx, cy-120, 30, cx, cy-120, W*0.8);
-  g.addColorStop(0, '#5a3a8e'); g.addColorStop(0.35, '#2a1648'); g.addColorStop(1, '#07030d');
-  ctx.fillStyle = g; ctx.fillRect(-200, -200, W+400, H+400);
+  const P = _scenePart;   // Nov 16: drawn in three parts over three frames (see drawDomain); -1 = all at once
+  if(P<=0){
+  // Nov 16 (performance): the two big radial gradients (the violet depth behind the hands, the vignette over them) are painted once
+  // into small pictures and stamped — computing them on every redraw was most of this backdrop's cost
+  if(!_soulBase){ _soulBase = [0, 1].map(i => { const c = document.createElement('canvas'); c.width = Math.ceil(W/4); c.height = Math.ceil(H/4); const q = c.getContext('2d'); q.scale(1/8, 1/8);   // smooth gradients: an eighth of the area is plenty
+      const g = i===0 ? q.createRadialGradient(W, H-120, 30, W, H-120, W*0.8) : q.createRadialGradient(W, H, 120, W, H, W*0.7);
+      if(i===0){ g.addColorStop(0, '#5a3a8e'); g.addColorStop(0.35, '#2a1648'); g.addColorStop(1, '#07030d'); } else { g.addColorStop(0, 'rgba(60,20,110,0)'); g.addColorStop(1, 'rgba(20,6,40,0.55)'); }
+      q.fillStyle = g; q.fillRect(0, 0, W*2, H*2); return c; }); }
+  { const sm = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true; ctx.drawImage(_soulBase[0], cx - W, cy - H, W*2, H*2); ctx.imageSmoothingEnabled = sm; }   // smoothed: it goes into the small domain layer, so filtering is cheap
   // soft violet light pouring down from above
   ctx.globalCompositeOperation = 'lighter';
   for(let k=0;k<7;k++){ const x0 = cx + (k-3)*120 + Math.sin(t*0.0005+k)*20;
     const lg = ctx.createLinearGradient(0, -100, 0, cy+120); lg.addColorStop(0, 'rgba(170,130,255,0.10)'); lg.addColorStop(1, 'rgba(170,130,255,0)');
     ctx.fillStyle = lg; ctx.beginPath(); ctx.moveTo(x0-30, -100); ctx.lineTo(x0+30, -100); ctx.lineTo(x0+90, cy+120); ctx.lineTo(x0-90, cy+120); ctx.fill(); }
   ctx.globalCompositeOperation = 'source-over';
+  }
   // three layers of hands (dark → light), all reaching for the target and closing in over the domain
   const layers = [
     {n:16, s0:2.4, s1:3.2, d0:430, d1:560, fill:'#3d2470', line:'#160a2c', hi:'#6a4ea8', close:0.25},
@@ -4190,27 +4209,28 @@ function drawSoulDomain(){
     {n:9,  s0:1.3, s1:1.8, d0:120, d1:200, fill:'#bba6ee', line:'#3b1d70', hi:'#ece4ff', close:0.55},
   ];
   for(let L=0; L<layers.length; L++){
+    if(P===0 || P===1 && L>1 || P===2 && L<2) continue;
     const ly = layers[L];
     for(let k=0;k<ly.n;k++){
       const a = (k/ly.n)*Math.PI*2 + L*0.37 + (_hh(k, L)-0.5)*0.3;
       const dist = _lerp(ly.d0, ly.d1, _hh(k, L+7)) * (1 - ly.close*prog) * (1.5 - 0.5*r) + Math.sin(t*0.0018 + k*1.3)*6;
       const hx = cx + Math.cos(a)*dist, hy = cy + Math.sin(a)*dist*0.85;
       const s = _lerp(ly.s0, ly.s1, _hh(k, L+3));
-      drawBigHand(hx, hy, Math.atan2(cy-hy, cx-hx) + Math.sin(t*0.0013+k)*0.04, s, ly.fill, ly.line, ly.hi, 0.35 + 0.5*prog*_hh(k, L+11));
+      drawBigHandSprite(hx, hy, Math.atan2(cy-hy, cx-hx) + Math.sin(t*0.0013+k)*0.04, s, ly.fill, ly.line, ly.hi, 0.35 + 0.5*prog*_hh(k, L+11), 'L'+L, ly.s1*0.55);
     }
   }
   // the crushing stack overhead: huge hands piled on top of each other, pressing down
+  if(P===-1 || P===2){
   for(let k=0;k<3;k++){
     const hx = cx + (k-1)*70, hy = cy - 330 + k*34 + prog*110 + Math.sin(t*0.0015+k)*4;
-    drawBigHand(hx, hy, Math.PI/2 + (k-1)*0.18, 3.3 - k*0.35, k===2 ? '#c8b6f4' : '#9a7cd8', '#2c1458', '#efe8ff', 0.8);
+    drawBigHandSprite(hx, hy, Math.PI/2 + (k-1)*0.18, 3.3 - k*0.35, k===2 ? '#c8b6f4' : '#9a7cd8', '#2c1458', '#efe8ff', 0.8, 'S'+(k===2 ? 1 : 0), 3.3*0.5);
   }
   // purple vignette
-  const v = ctx.createRadialGradient(cx, cy, 120, cx, cy, W*0.7);
-  v.addColorStop(0, 'rgba(60,20,110,0)'); v.addColorStop(1, 'rgba(20,6,40,0.55)');
-  ctx.fillStyle = v; ctx.fillRect(-200, -200, W+400, H+400);
+  { const sm = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true; ctx.drawImage(_soulBase[1], cx - W, cy - H, W*2, H*2); ctx.imageSmoothingEnabled = sm; }   // smoothed: it goes into the small domain layer, so filtering is cheap
   ctx.fillStyle = 'rgba(220,200,255,0.95)'; ctx.font = `700 10px 'Rajdhani',sans-serif`; ctx.textAlign = 'center';
   ctx.fillText('SELF-EMBODIMENT OF PERFECTION', W/2, 24);
   const pct = d.timer/d.totalDuration; ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(W/2-100, 8, 200, 5); ctx.fillStyle = '#c9a0ff'; ctx.fillRect(W/2-100, 8, 200*pct, 5);
+  }
   ctx.restore();
 }
 function drawIsomer(o){
@@ -5575,9 +5595,8 @@ function drawTheaterLight(t){
   ctx.imageSmoothingEnabled = sm; ctx.restore();
 }
 let _thrLight = null;
-// Nov 16: a lighting pass over every stage (the theater already had one). Each is painted once into a quarter-size layer and
-// stretched over the world, so it costs one blit per frame. High graphics only: nothing in it matters for play.
-const _foreLayers = {};
+// Nov 16: lighting for every stage (the theater already had its own pass). Painted once into the stage's background by getMapBG,
+// so it costs nothing per frame and looks the same on High and Low.
 const FORE_PAINT = {
   0(g, w, h, gnd){   // Shibuya: cold station gloom, warm pools under the street lamps, purple curse haze low down
     const v = g.createLinearGradient(0, 0, 0, h); v.addColorStop(0, 'rgba(10,8,24,0.42)'); v.addColorStop(0.35, 'rgba(10,8,24,0.05)'); v.addColorStop(0.8, 'rgba(10,8,24,0.08)'); v.addColorStop(1, 'rgba(30,8,44,0.40)');
@@ -5609,17 +5628,10 @@ const FORE_PAINT = {
     g.globalCompositeOperation = 'source-over';
   },
 };
-function drawStageLight(i, t){
-  const P = FORE_PAINT[i]; if(!P || GFX.low) return;
-  let c = _foreLayers[i];
-  if(!c || c._w!==W || c._h!==H){ const K = 4; c = document.createElement('canvas'); c.width = Math.ceil(W/K); c.height = Math.ceil(H/K); c._w = W; c._h = H;
-    const g = c.getContext('2d'); g.scale(1/K, 1/K); try{ P(g, W, H, GND); }catch(e){} _foreLayers[i] = c; }
-  ctx.save(); ctx.globalAlpha = 0.92 + 0.08*Math.sin(t*0.0011); ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(c, 0, 0, c.width*4, c.height*4); ctx.restore();
-}
 function drawMapFore(i){
+  freeFxLayers();
   if(activeDomain) return;
-  if(i===5) drawTheaterLight(Date.now()); else drawStageLight(i, Date.now());
+  if(i===5) drawTheaterLight(Date.now());
 }
 const MAPS = [
   { name:'SHIBUYA STATION', sub:'Street to B5F · the Shibuya Incident', w:SHB.W, h:SHB.H, gnd:SHB.GND,
@@ -5686,6 +5698,9 @@ function getMapBG(i){
   const cv = document.createElement('canvas'); cv.width = mw; cv.height = mh;
   const g = cv.getContext('2d');
   withDims(mw, mh, mg, () => [paintShibuyaBig, paintSisterBig, paintShinjukuBig, paintTrainingRoom, paintSendai, paintTheater][i](g, _rng(1337+i*101)));
+  // Nov 16: the stage's lighting (lamp pools, sun shafts, smoke, the torn sky's glow) is painted into the background once — as a separate
+  // full-screen layer it cost 2.3 ms every frame on software rendering
+  if(typeof FORE_PAINT!=='undefined' && FORE_PAINT[i]){ g.save(); try{ withDims(mw, mh, mg, () => FORE_PAINT[i](g, mw, mh, mg)); }catch(e){} g.restore(); }
   _mapBG[i] = cv;
   return cv;
 }
@@ -6117,6 +6132,8 @@ function rebuildTerrainCanvas(){
     }
   }
   g.clearRect(0,0,W,H);
+  // Nov 16 (performance): a map emptied by a domain is just cleared (redrawing every empty cell cost ~15 ms on the frame a domain opened)
+  if(terCur.indexOf ? !terCur.some(v => v) : false){ _terDrawn = new Uint8Array(terCur); _terDrawnKey = key; terDirty = false; return; }
   for(let r=0;r<T_ROWS;r++) for(let c=0;c<T_COLS;c++) _terCell(g, r, c);
   try{ _terRamps(g); }catch(e){}
   _terDrawn = new Uint8Array(terCur); _terDrawnKey = key;
@@ -7052,13 +7069,16 @@ function tickDomain(dt, p1, p2){
 // the domain floods the whole map: an ambient wash in the domain's colours behind the arena around the caster
 const DOMAIN_AMBIENT = {shrine:['#1c0306','#4a0a10'], void:['#01020c','#0a1440'], love:['#14060f','#3a1030'], court:['#0e0906','#2a1a0e'], womb:['#0c0418','#2a1048'],
   volcano:['#1a0602','#5a1804'], ocean:['#021220','#0a3a5a'], soul:['#09080c','#2a2234'], moon:['#000000','#16161c']};
+const _ambSpr = {};
 function drawDomainAmbient(){
   const d = activeDomain, C = DOMAIN_AMBIENT[d.type]; if(!C) return;
   const a = Math.max(0, Math.min(1, (d.totalDuration - d.timer)/900, d.timer/700));
   const fr = d.frame || {x:0, y:0}, cx = fr.x + VW/2, cy = fr.y + VH/2, t = Date.now();
   ctx.save(); ctx.globalAlpha = a*0.94;
-  const g = ctx.createRadialGradient(cx, cy, 80, cx, cy, Math.max(W, H)*1.1); g.addColorStop(0, C[1]); g.addColorStop(1, C[0]);
-  ctx.fillStyle = g; ctx.fillRect(-200, -600, W+400, H+1200);
+  // Nov 16 (performance): the wash is stamped from a small cached picture of the gradient (a 3,000×2,300 radial gradient every frame cost ~5 ms)
+  const key = d.type; if(!_ambSpr[key]){ const c = document.createElement('canvas'); c.width = 96; c.height = 96; const q = c.getContext('2d'), g = q.createRadialGradient(48, 48, 2, 48, 48, 48);
+    g.addColorStop(0, C[1]); g.addColorStop(1, C[0]); q.fillStyle = g; q.fillRect(0, 0, 96, 96); _ambSpr[key] = c; }
+  { const R = Math.max(W, H)*1.1, sm = ctx.imageSmoothingEnabled; ctx.fillStyle = C[0]; ctx.fillRect(-200, -600, W+400, H+1200); ctx.imageSmoothingEnabled = true; ctx.drawImage(_ambSpr[key], cx - R, cy - R, R*2, R*2); ctx.imageSmoothingEnabled = sm; }
   // a little life in the wash so it reads as the same space, not a backdrop
   ctx.globalAlpha = a*0.5;
   for(let k=0;k<60;k++){ const x = ((k*397.3 + t*0.01*(k%3+1)) % (W+200)) - 100, y = ((k*211.7) % (H+400)) - 200;
@@ -7072,27 +7092,46 @@ function drawDomain(){
   const fr = activeDomain.frame || {x:0, y:0};
   // the domain's art covers the ENTIRE map, wherever the fighters are: the view-sized scene is scaled up (uniformly) to cover the world
   const big = W > VW+1 || H > VH+1;
-  if(big) drawDomainAmbient();
   ctx.save();
   if(big){ const y0 = Math.min(0, T_TOP) - 120, spanH = (H + 60) - y0, sc = Math.max(W/VW, spanH/VH);
     ctx.translate((W - VW*sc)/2, y0 + (spanH - VH*sc)/2); ctx.scale(sc, sc); }
   else ctx.translate(fr.x, fr.y);
-  if(GFX.low || activeDomain.type==='soul'){
+  if(true){   // Nov 16: every domain, on both settings (High used to paint the art at map scale, 8–9 ms a frame)
     // Nov 16 (performance): the backdrop is painted into a view-sized layer and that layer is stretched over the map, instead of
     // rasterising the art at map scale. Low graphics does it for every domain, 15 times a second. High does it only for Mahito's
-    // domain (40 detailed hands: by far the heaviest backdrop), every frame. It is only scenery — everything that can hit you is
+    // domain (40 detailed hands: by far the heaviest backdrop), every other frame. It is only scenery — everything that can hit you is
     // drawn on top, every frame — so nothing about the fight changes.
-    const LK = GFX.low ? 1 : 1.5;   // layer resolution: view size on Low, 1.5× on High (keeps the outlines crisp)
+    const LK = GFX.low ? 1 : 1.25;   // layer resolution: view size on Low, 1.25× on High (keeps the outlines crisp)
     if(!_domLayer || _domLayer._k!==LK){ _domLayer = _domLayer || document.createElement('canvas'); _domLayer.width = VW*LK; _domLayer.height = VH*LK; _domLayer._k = LK; _domLayerCtx = _domLayer.getContext('2d'); _domLayerFor = null; }
-    if(_domLayerFor!==activeDomain || !GFX.low || (_domLayerN++ % 4)===0){ _domLayerFor = activeDomain;
-      const g = _domLayerCtx; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, VW*LK, VH*LK); g.setTransform(LK, 0, 0, LK, 0, 0);
-      ctx = g; let depth = 0; const sv = g.save.bind(g), rs = g.restore.bind(g); g.save = () => { depth++; sv(); }; g.restore = () => { if(depth > 0){ depth--; rs(); } };
-      try{ withView(drawDomainScene); }catch(e){ loopErr('domainLayer', e); } finally { while(depth > 0) g.restore(); delete g.save; delete g.restore; ctx = mainCtx; } }
-    ctx.drawImage(_domLayer, 0, 0, VW, VH);
+    // Nov 16: the backdrop is drawn into a back layer in three parts, one per frame, then swapped in, so no single frame pays for the
+    // whole picture (Mahito's 40 hands are split across the parts; the other domains draw in the first part). Low redraws every 4th frame.
+    const split = activeDomain.type==='soul' && !GFX.low;   // only Mahito's backdrop is heavy enough to need the back layer
+    if(!split && _domBack){ _domBack.width = 1; _domBack.height = 1; _domBack = null; }
+    if(split && (!_domBack || _domBack.width!==_domLayer.width || _domBack.height!==_domLayer.height)){ _domBack = _domBack || document.createElement('canvas'); _domBack.width = _domLayer.width; _domBack.height = _domLayer.height; _domBack._k = _domLayer._k; _domBackCtx = _domBack.getContext('2d'); }
+    const fresh = _domLayerFor!==activeDomain, step = fresh ? 0 : (_domLayerN++ % (GFX.low ? 4 : split ? 6 : 3)), parts = fresh ? [-1] : GFX.low ? (step===0 ? [-1] : []) : split ? (step % 2 ? [] : [step/2]) : [step];   // Mahito: one part every other frame (a new picture 10 times a second)
+    for(const part of parts){
+      const g = split ? _domBackCtx : _domLayerCtx; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+      if(part<=0){ g.clearRect(0, 0, g.canvas.width, g.canvas.height); g.setTransform(LK, 0, 0, LK, 0, 0);
+        // the domain's colour wash goes into the same layer, under the art (as its own full-screen pass it cost 3–5 ms a frame)
+        if(big){ const C = DOMAIN_AMBIENT[activeDomain.type]; if(C){ const d = activeDomain, a = Math.max(0, Math.min(1, (d.totalDuration - d.timer)/900, d.timer/700)), wg = g.createRadialGradient(VW/2, VH/2, 20, VW/2, VH/2, VW*0.75);
+          wg.addColorStop(0, C[1]); wg.addColorStop(1, C[0]); g.globalAlpha = a*0.94; g.fillStyle = wg; g.fillRect(0, 0, VW, VH); g.globalAlpha = 1; } } }
+      else g.setTransform(LK, 0, 0, LK, 0, 0);
+      if(part<=0 || activeDomain.type==='soul'){
+        ctx = g; _scenePart = part; let depth = 0; const sv = g.save.bind(g), rs = g.restore.bind(g); g.save = () => { depth++; sv(); }; g.restore = () => { if(depth > 0){ depth--; rs(); } };
+        try{ withView(drawDomainScene); }catch(e){ loopErr('domainLayer', e); } finally { while(depth > 0) g.restore(); delete g.save; delete g.restore; ctx = mainCtx; _scenePart = -1; }
+        if(part>=0) g.getImageData(0, 0, 1, 1);   // make the browser paint this part now (it would otherwise save all three for the frame that shows them)
+      }
+      if(split && (part===-1 || part===2)){ const t = _domLayer; _domLayer = _domBack; _domBack = t; const tc = _domLayerCtx; _domLayerCtx = _domBackCtx; _domBackCtx = tc; }
+    }
+    _domLayerFor = activeDomain;
+    { const sm = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = !GFX.low; ctx.drawImage(_domLayer, 0, 0, VW, VH); ctx.imageSmoothingEnabled = sm; }   // smoothed on High (about 2 ms), unfiltered on Low
   } else withView(drawDomainScene);
   ctx.restore();
 }
-let _domLayer = null, _domLayerCtx = null, _domLayerFor = null, _domLayerN = 0;
+let _domLayer = null, _domLayerCtx = null, _domLayerFor = null, _domLayerN = 0, _domBack = null, _domBackCtx = null;
+// Nov 16: the layers are released when they are not on screen (the domain layer after the domain, the theater light on other stages)
+function freeFxLayers(){ if(_domLayer && !activeDomain){ _domLayer.width = 1; _domLayer.height = 1; _domLayer = null; _domLayerFor = null; if(_domBack){ _domBack.width = 1; _domBack.height = 1; _domBack = null; } freeHandSprites(); }
+  if(_thrLight && mapIdx!==5){ _thrLight.width = 1; _thrLight.height = 1; _thrLight = null; } }
 function drawDomainScene(){
   if(activeDomain.type === 'shrine') drawShrineDomain();
   else if(activeDomain.type === 'love') drawLoveDomain();
