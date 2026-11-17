@@ -218,6 +218,9 @@ canvas {
   text-shadow:0 2px 6px rgba(0,0,0,0.85), 0 0 12px rgba(120,80,200,0.35); transition:color .12s, transform .12s; }
 .hm-it.hm-small { font-size:17px; padding:5px 30px; }
 .hm-it.hm-back { font-size:18px; color:rgba(226,218,240,0.92); margin-top:8px; }
+.vl-check { display:inline-flex; align-items:center; gap:8px; cursor:pointer; font:600 14px 'Rajdhani',sans-serif; letter-spacing:1px; color:#e8e2f4; }
+.vl-check input { appearance:none; -webkit-appearance:none; width:16px; height:16px; margin:0; border:1.5px solid #d6b64a; background:rgba(14,12,22,0.9); display:grid; place-content:center; clip-path:polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+.vl-check input:checked::after { content:''; width:8px; height:8px; background:#d6b64a; }   /* Nov 17: the game's own checkbox, not the browser's */
 .hm-it.off { opacity:0.78; text-decoration:line-through; }   /* Nov 17: still reads as off, and stays above 4.5:1 */
 .hm-it::before, .hm-it::after { content:''; position:absolute; left:8%; right:8%; height:1px; opacity:0; transition:opacity .12s;
   background:linear-gradient(90deg, transparent, #e8d27a 18%, #fff2b8 50%, #e8d27a 82%, transparent); }
@@ -912,7 +915,7 @@ canvas {
     <p class="vl-intro">Record your own call-outs; they play in the game whenever that move is used. Press <b>● REC</b>, say the line, then press <b>■ STOP</b> (it stops on its own after 4 seconds). Silence at the start and end is trimmed. You can also load a short audio clip with 📁. Clips are saved in this browser. Use <b>Export pack</b> to send them to a friend, who can then <b>Import pack</b>. Online, each player hears the voice pack on their own computer.</p>
     <div class="vl-bar">
       <button id="vlExport">⬇ EXPORT PACK</button><button id="vlImport">⬆ IMPORT PACK</button>
-      <label><input type="checkbox" id="vlTts"> Robot voice for lines I haven't recorded</label>
+      <label class="vl-check"><input type="checkbox" id="vlTts"> Robot voice for lines I haven't recorded</label>
       <span id="vlCount"></span>
     </div>
     <div id="vlMsg"></div>
@@ -1923,13 +1926,17 @@ function drawItems(){
     ctx.fillStyle='rgba(0,0,0,0.55)'; const tw = ctx.measureText(d.short).width + 10; ctx.fillRect(it.x-tw/2, y-36, tw, 13);
     ctx.fillStyle = d.col; ctx.fillText(d.short, it.x, y-26); ctx.restore();
   }
-  const _placed = dmgNums.filter(d => d.life > 0.25).map(d => ({x:d.x-24, y:d.y-14, w:48}));   // Nov 16: bubbles that would overlap another bubble or a damage number are pushed up
+}
+// Nov 17: speech bubbles are drawn after the fighters, summons and beams (they used to be drawn early, so a summon could cover them)
+let _bubRects = [];
+function drawSpeechBubbles(){
+  const _placed = dmgNums.filter(d => d.life > 0.25).map(d => ({x:d.x-24, y:d.y+(d.oy||0)-14, w:48}));   // bubbles that would overlap another bubble or a damage number are pushed up
   for(let si=speechFx.length-1; si>=0; si--){ const s = speechFx[si];
     const a = Math.min(1, s.life/300), rise = (1 - s.life/s.max)*16;
     ctx.save(); ctx.globalAlpha = a; ctx.font=`700 14px 'Rajdhani',sans-serif`; ctx.textAlign='center';
     const tw = ctx.measureText(s.text).width + 16; let bx = s.x - tw/2, by = s.y - 26 - rise;
     for(let g=0; g<6; g++){ const hit = _placed.find(q => bx < q.x+q.w+4 && bx+tw+4 > q.x && by < q.y+26 && by+26 > q.y); if(!hit) break; by = hit.y - 34; }
-    _placed.push({x:bx, y:by, w:tw});
+    _placed.push({x:bx, y:by, w:tw}); _bubRects.push({x:bx, y:by, w:tw, h:30});
     const dk = s.col!=='#fff' && bubbleLight(s.col);   // light text (yellow, peach, pale blue…) is unreadable on white: use a dark bubble for it
     ctx.fillStyle = dk ? 'rgba(18,16,26,0.94)' : 'rgba(255,255,255,0.95)'; ctx.strokeStyle = dk ? s.col : '#111'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.rect(bx, by, tw, 22); ctx.fill(); ctx.stroke();
@@ -8458,7 +8465,12 @@ function tickDmgNums(){
 function drawDmgNums(){
   ctx.textAlign='center';
   ctx.lineJoin='round'; ctx.strokeStyle='rgba(8,8,12,0.9)';
-  for(const d of dmgNums){ const t = typeof d.val==='string' ? d.val : `-${d.val}`, px = 14+(1-d.life)*6; ctx.globalAlpha=Math.min(1, d.life*1.6); ctx.font=`700 ${px}px 'Rajdhani',sans-serif`; ctx.lineWidth = Math.max(2.5, px*0.24); ctx.strokeText(t,d.x,d.y); ctx.fillStyle=d.col; ctx.fillText(t,d.x,d.y); }   // Nov 17: dark outline, and they stay solid longer before fading
+  // Nov 17: laid out every frame — oldest first, each pushed up (never back down) until it clears every number and bubble already placed
+  const placed = _bubRects.slice(); ctx.font = `700 20px 'Rajdhani',sans-serif`;
+  for(const d of dmgNums.slice().sort((p, q) => p.life - q.life)){ const t = typeof d.val==='string' ? d.val : `-${d.val}`, w = ctx.measureText(t).width + 6; d.oy = d.oy || 0;
+    for(let g = 0; g < 40; g++){ const y = d.y + d.oy, hit = placed.find(r => d.x - w/2 < r.x + r.w && d.x + w/2 > r.x && y - 18 < r.y + r.h && y + 3 > r.y); if(!hit) break; d.oy -= (y + 3) - hit.y + 1; }
+    placed.push({x:d.x - w/2, y:d.y + d.oy - 18, w, h:21}); }
+  for(const d of dmgNums){ const t = typeof d.val==='string' ? d.val : `-${d.val}`, px = 14+(1-d.life)*6; ctx.globalAlpha=Math.min(1, d.life/0.2); /* solid until the very end */ ctx.font=`700 ${px}px 'Rajdhani',sans-serif`; ctx.lineWidth = Math.max(2.5, px*0.24); ctx.strokeText(t,d.x,d.y+(d.oy||0)); ctx.fillStyle=d.col; ctx.fillText(t,d.x,d.y+(d.oy||0)); }   // Nov 17: dark outline, and they stay solid longer before fading
   ctx.globalAlpha=1;
 }
 
@@ -20735,8 +20747,8 @@ function drawEffects(pl, x, flip){
   const F = hudFeed[ref]; while(F.length && now - F[0].t > 2600) F.shift();
   ctx.font = `600 10px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'right' : 'left';
   const fy = 160 + hudItemOff(pl);   // notices go under the held-item line (they used to be drawn over it)
-  F.forEach((f, i) => { const a = Math.max(0, Math.min(1, (2600 - (now - f.t))/500));
-    ctx.globalAlpha = a; ctx.fillStyle = 'rgba(0,0,0,0.5)'; const w = ctx.measureText(f.text).width + 8;
+  F.forEach((f, i) => { const a = Math.max(0, Math.min(1, (2600 - (now - f.t))/160));   // Nov 17: solid until the last 160 ms, on a darker backing
+    ctx.globalAlpha = a; ctx.fillStyle = 'rgba(0,0,0,0.85)'; const w = ctx.measureText(f.text).width + 8;
     ctx.fillRect(flip ? x - w : x, fy + i*13 - 6, w, 12); ctx.fillStyle = '#e8e2d6'; ctx.fillText(f.text, flip ? x-4 : x+4, fy + i*13 + 0.5); });
   ctx.restore();
 }
@@ -20960,8 +20972,8 @@ function drawMovesOverlay(dt){
   moveHintT += dt;
   if(!showMoves){
     if(moveHintT < 9000){
-      ctx.save(); ctx.globalAlpha = Math.min(1, (9000-moveHintT)/800) * 0.8; ctx.textAlign = 'center';
-      ctx.fillStyle = '#d8d4cc'; ctx.font = `700 12px 'Rajdhani',sans-serif`; ctx.fillText(isLocalPair() ? 'Hold TAB to see what every move does · ESC / BACKSPACE to pause and check your keys' : isTraining() ? 'TRAINING · hold TAB for moves · ESC to pause' : 'Hold TAB to see what every move does · ESC to pause and check your keys', W/2, H-14); ctx.restore();
+      ctx.save(); ctx.globalAlpha = Math.min(1, (9000-moveHintT)/250); ctx.textAlign = 'center';   // Nov 17: on a dark pill, solid until it goes
+      ctx.fillStyle = '#e8e4dc'; ctx.font = `700 12px 'Rajdhani',sans-serif`; { const ht = isLocalPair() ? 'Hold TAB to see what every move does · ESC / BACKSPACE to pause and check your keys' : isTraining() ? 'TRAINING · hold TAB for moves · ESC to pause' : 'Hold TAB to see what every move does · ESC to pause and check your keys', hw = ctx.measureText(ht).width + 20, hy = H-14; ctx.fillStyle = 'rgba(8,8,14,0.82)'; ctx.fillRect(W/2 - hw/2, hy - 13, hw, 18); ctx.fillStyle = '#e8e4dc'; readableText(true); ctx.fillText(ht, W/2, hy); readableText(false); } ctx.restore();
     }
     return;
   }
@@ -22732,6 +22744,7 @@ function drawFight(dt){
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
     drawGhosts();
     drawCourtUI(); drawClash(); drawGambleReels();
+    _bubRects = []; drawSpeechBubbles();
     drawDmgNums();
 }
 function drawFightScreen(dt){
