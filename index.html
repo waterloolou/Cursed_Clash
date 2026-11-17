@@ -21321,7 +21321,7 @@ function netSnapshot(conn){
     if(!pc || pc.nid!==pl.nid) pc = c.p[ref] = {nid:pl.nid, f:{}, sent:false};
     const f = {}; let ch = false;
     for(const k of Object.keys(pl)){
-      if(k==='spriteAnim') continue;
+      if(k==='spriteAnim' || k==='_kc' || k==='_cdLast') continue;   // host-only bookkeeping (_cdLast alone was ~60% of the upload)
       const v = pl[k], tv = typeof v;
       if(tv==='number'){ const e = Number.isFinite(v) ? (Number.isInteger(v) ? v : Math.round(v*100)/100) : 0; if(pc.f[k]!==e){ pc.f[k]=e; f[k]=e; ch = true; } continue; }
       if(tv==='boolean' || tv==='string'){ if(pc.f[k]!==v){ pc.f[k]=v; f[k]=v; ch = true; } continue; }
@@ -21332,8 +21332,25 @@ function netSnapshot(conn){
   }
   if(P) m.P = P;
   // projectile / effect arrays
+  // Nov 16: per-element, per-field deltas (an array used to be resent whole whenever anything in it moved — Geto's swarm alone was
+  // ~150 KB/s). {z: start over, n: new length, d: {index: {f: changed fields, rm: removed fields} | {$v: whole value}}}
   let A = null;
-  for(const name in SYNC_ARR){ const e = netEnc(SYNC_ARR[name],0), s = JSON.stringify(e); if(c.a[name]!==s){ c.a[name]=s; (A||(A={}))[name]=e; } }
+  for(const name in SYNC_ARR){ const arr = SYNC_ARR[name]; let ca = c.a[name], u = null;
+    if(!ca || typeof ca!=='object'){ ca = c.a[name] = {n:0, e:[]}; u = {z:1}; }
+    if(ca.n!==arr.length){ ca.n = arr.length; ca.e.length = arr.length; (u||(u={})).n = arr.length; }
+    else if(arr.length > 12 && !u && (conn.snapN & 1)) continue;   // big swarms (Geto's curses, crows…): positions go out every other snapshot
+    for(let i=0;i<arr.length;i++){ const it = arr[i]; let ce = ca.e[i];
+      if(it===null || typeof it!=='object' || Array.isArray(it) || it instanceof Player){
+        const e = netEnc(it, 1), sv = JSON.stringify(e===undefined ? null : e);
+        if(!ce || ce.$v!==sv){ ca.e[i] = {$v:sv}; u = u||{}; (u.d||(u.d={}))[i] = {$v: e===undefined ? null : e}; } continue; }
+      if(!ce || ce.$v!==undefined) ce = ca.e[i] = {};
+      let f = null, rm = null;
+      for(const k in it){ if(k==='spriteAnim') continue; const e = netEnc(it[k], 2); if(e===undefined) continue;
+        const sv = (typeof e==='number' || typeof e==='boolean') ? e : '\u0001'+JSON.stringify(e);
+        if(ce[k]!==sv){ ce[k] = sv; (f||(f={}))[k] = e; } }
+      for(const k in ce) if(it[k]===undefined || typeof it[k]==='function'){ delete ce[k]; (rm||(rm=[])).push(k); }
+      if(f || rm){ u = u||{}; const o = {}; if(f) o.f = f; if(rm) o.rm = rm; (u.d||(u.d={}))[i] = o; } }
+    if(u){ u.n = arr.length; (A||(A={}))[name] = u; } }
   if(A) m.A = A;
   { const ad = activeDomain;
     if(!ad){ if(c.dref!==null){ c.dref = null; c.dk = {}; m.D = null; } }
@@ -21441,7 +21458,10 @@ function netPredictTick(dt){
 // a snapshot arrived: start from the host's position, re-play the frames it hasn't seen, ease in the difference
 function netReconcile(ack){
   const H = NET.hist || []; while(H.length && H[0].q <= ack) H.shift();
-  const pl = p2, A = NET.auth; if(!pl || !A || !netCanPredict(pl)) return;
+  const pl = p2, A = NET.auth; if(!pl || !A) return;
+  // Nov 16 fix: in a move, stunned, dead… (nothing to predict) the host's last word stands. Before, a position predicted a moment
+  // earlier could stick until the host's value next changed — the joiner saw their own fighter a few pixels off during attacks.
+  if(!netCanPredict(pl)){ for(const k of PRED_FIELDS) if(k in A) pl[k] = A[k]; return; }
   for(const k of PRED_FIELDS) if(k in A) pl[k] = A[k];
   for(const e of H) predStep(pl, e);
   const pv = NET.predPrev; if(!pv) return;
@@ -21488,8 +21508,14 @@ function netApply(m){
     NET.predPrev = pv;
   }
   if(m.g) for(const k in m.g) if(NET_GREF[k]) NET_GREF[k][1](netRes(m.g[k]));
-  if(m.A) for(const name in m.A){ const arr = SYNC_ARR[name]; const sf = arr._screenFlash; arr.length = 0;
-    for(const it of (m.A[name]||[])) arr.push(netDec(it)); if(sf!==undefined) arr._screenFlash = sf; }
+  if(m.A) for(const name in m.A){ const arr = SYNC_ARR[name], u = m.A[name]; if(!arr || !u) continue;
+    if(u.z) arr.length = 0;
+    if(u.n!==undefined) arr.length = u.n;
+    if(u.d) for(const i in u.d){ const e = u.d[i];
+      if('$v' in e){ arr[i] = netDec(e.$v); continue; }
+      let it = arr[i]; if(!it || typeof it!=='object' || Array.isArray(it)) it = arr[i] = {};
+      if(e.f) for(const k in e.f) it[k] = netDec(e.f[k]);
+      if(e.rm) for(const k of e.rm) delete it[k]; } }
   if('D' in m){
     const D = m.D;
     if(D===null) activeDomain = null;
@@ -21520,7 +21546,12 @@ function netApply(m){
       terDirty = true;
     }
   }
-  if(m.E) for(const [n,a] of m.E){ const f = FX_FN[n]; if(f) f(...a); }
+  if(m.E){
+    // replayed effects must not add to the synced arrays (the host's copy already arrived above — speech bubbles used to double up)
+    const len = {}; for(const k in SYNC_ARR) len[k] = SYNC_ARR[k].length;
+    for(const [n,a] of m.E){ const f = FX_FN[n]; if(f) f(...a); }
+    for(const k in SYNC_ARR) if(SYNC_ARR[k].length > len[k]) SYNC_ARR[k].length = len[k];
+  }
   if(m.q!==undefined) netReconcile(m.q);
 }
 

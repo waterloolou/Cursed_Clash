@@ -2,7 +2,7 @@
 //   GAME=/path/to/index.html overrides which build is tested (default: ../index.html)
 const path = require('path'), fs = require('fs');
 if(!process.env.PLAYWRIGHT_BROWSERS_PATH && fs.existsSync('/opt/pw-browsers')) process.env.PLAYWRIGHT_BROWSERS_PATH = '/opt/pw-browsers';
-let chromium; try{ ({chromium} = require('playwright')); }catch(e){ ({chromium} = require('/opt/npm-tools/node_modules/playwright')); }
+let chromium; try{ ({chromium} = require('/opt/npm-tools/node_modules/playwright')); }catch(e){ ({chromium} = require('playwright')); }   // a pre-installed copy first (its browser is already there)
 const GAME = path.resolve(process.env.GAME || path.join(__dirname, '..', 'index.html'));
 const IGNORE = /favicon|ERR_|Failed to load resource|net::|peerjs|mqtt|WebSocket|fonts\.g|AudioContext|autoplay/i;
 

@@ -1,0 +1,8 @@
+{
+  "name": "cursed-clash-tests",
+  "private": true,
+  "description": "Automated checks for Cursed Clash. See README.md.",
+  "scripts": { "test": "node run-all.js" },
+  "devDependencies": { "peer": "^1.0.2" },
+  "peerDependencies": { "playwright": ">=1.40" }
+}

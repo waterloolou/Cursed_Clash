@@ -89,6 +89,8 @@
     sides[1] = {mem:{}, prev:{}, f:0}; sides[2] = {mem:{}, prev:{}, f:0};
     setup(tA, tB, o.map, o.lives);
   };
+  // online tests: let the bot play this page's own fighter (slot 1 = the host's)
+  window.__netBot = function(on){ window.__live = !!on; window.__botBoth = !!on; sides[1] = {mem:{}, prev:{}, f:0}; };
   // feed __held into the game's key table every frame (after the game's own input pass cleared the slots)
   const ssk = setSlotKeys;
   setSlotKeys = function(n, held, pressed){
