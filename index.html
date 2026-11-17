@@ -3851,8 +3851,8 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:1.228, dagon:1.04, geto:0.775, gojo:1.308, hakari:0.741, hanami:0.80, higuruma:1.336, jogo:1.182, mahito:0.952, mechamaru:1.25, megumi:0.836, meimei:1.008, naoya:1.03, ryu:0.941, sukuna:1.042, takaba:1.153, todo:0.914, toji:0.865, yuji:1.672, yuki:1.566, yuta:1.17},
-  in:     {dagon:0.85, geto:1.08, higuruma:0.92, mahito:1.2, yuji:0.9},   // Nov 17: Geto takes 8% more (his damage cut barely moved him), Mahito 1.25 → 1.2
+  out:    {choso:1.228, dagon:1.04, geto:0.775, gojo:1.308, hakari:0.741, hanami:0.80, higuruma:1.336, jogo:1.182, mahito:0.952, mechamaru:1.19, megumi:0.836, meimei:1.008, naoya:1.03, ryu:0.941, sukuna:1.042, takaba:1.153, todo:0.914, toji:0.865, yuji:1.672, yuki:1.566, yuta:1.17},
+  in:     {dagon:0.85, geto:1.03, higuruma:0.92, mahito:1.12, yuji:0.9},   // Nov 17: Geto takes 8% more (his damage cut barely moved him), Mahito 1.25 → 1.2
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
 };
@@ -6919,6 +6919,36 @@ function addHollowExplosion(x, y, sc){ sfxLocal('boom', x); sc = sc||1;
   addRing(x,y,'#8800cc',45);
   doShake(16);
 }
+// Nov 17 (VFX): ghost trails behind thrown and fired objects. Positions live in a WeakMap (nothing extra goes over the network);
+// each object keeps its last 7 spots and they are drawn as fading, shrinking discs in the technique's colour, under the object itself.
+const _trails = new WeakMap(), drawTojiScopeT = new WeakMap();
+const TRAIL_SRC = () => [[hollowShots, '#a040ff', 18], [reversalShots, '#ff4a4a', 11], [bloodRings, '#c0182c', 9], [gavelThrows, '#e8c860', 8], [pachinkoBalls, '#7fffd0', 6], [crows, '#4a3a6a', 6], [hanaBuds, '#ff8fb8', 6]];
+// Nov 17 (VFX): start tells. A domain cast shows rings of the caster's colour closing in on them and light gathering at the hand sign
+// from the first frame; Fuga's bow-draw shows embers gathering at the hand for its whole wind-up.
+function drawCastTells(){
+  const now = Date.now();
+  for(const pl of [p1, p2]){ if(!pl || pl.state===S.DEAD) continue;
+    const cx = pl.x+PW/2, cy = pl.y+PH*0.42, col = pl.charColor || '#ffffff', h = pl._hand || {x:cx, y:cy};
+    if(pl.state===S.DOMAIN){ const k = Math.max(0, Math.min(1, pl.domainHandsign||0));
+      ctx.save(); ctx.lineWidth = 2.5;
+      for(let j = 0; j < 3; j++){ const q = ((now*0.0012 + j/3) % 1), r = 26 + (1 - q)*90; ctx.globalAlpha = Math.min(1, 0.15 + k)*Math.sin(q*Math.PI)*0.8; ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke(); }
+      const g = ctx.createRadialGradient(h.x, h.y, 1, h.x, h.y, 10 + 16*k); g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(0.4, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 0.35 + 0.55*k; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(h.x, h.y, 10 + 16*k, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+    if(pl.state===S.FUGA && (pl.sTimer||0) < FUGA_WINDUP){ const k = Math.max(0, Math.min(1, (pl.sTimer||0)/FUGA_WINDUP));
+      ctx.save(); for(let j = 0; j < 7; j++){ const a = j*0.9 + now*0.004, r = (1 - ((now*0.002 + j/7) % 1))*40*(1.2 - k*0.6);
+        ctx.globalAlpha = 0.25 + 0.6*k; ctx.fillStyle = j % 2 ? '#ffb347' : '#ff5a1f'; ctx.beginPath(); ctx.arc(h.x + Math.cos(a)*r, h.y + Math.sin(a)*r, 2 + 2*k, 0, Math.PI*2); ctx.fill(); }
+      const g = ctx.createRadialGradient(h.x, h.y, 1, h.x, h.y, 8 + 14*k); g.addColorStop(0, 'rgba(255,240,200,0.95)'); g.addColorStop(1, 'rgba(255,90,30,0)'); ctx.globalAlpha = 0.5 + 0.5*k; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(h.x, h.y, 8 + 14*k, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+  }
+}
+function drawTrails(){
+  for(const [arr, col, r] of TRAIL_SRC()){ if(!arr || !arr.length) continue;
+    for(const o of arr){ if(typeof o.x!=='number' || o.stuck) continue;
+      let tr = _trails.get(o); if(!tr){ tr = []; _trails.set(o, tr); }
+      const n = tr.length; if(!n || Math.hypot(o.x - tr[n-2], o.y - tr[n-1]) > 5){ tr.push(o.x, o.y); if(tr.length > 14) tr.splice(0, 2); }
+      if(tr.length < 4) continue; const rr = r*(o.sc||1);
+      ctx.save(); ctx.fillStyle = col; for(let k = 0; k < tr.length - 2; k += 2){ const q = (k/2 + 1)/(tr.length/2); ctx.globalAlpha = 0.32*q; ctx.beginPath(); ctx.arc(tr[k], tr[k+1], rr*(0.3 + 0.7*q), 0, Math.PI*2); ctx.fill(); }
+      ctx.restore(); } }
+}
 function drawHollowShots(t){
   for(const s of hollowShots){
     const sc = s.sc||1, pulse = 0.94 + 0.06*Math.sin(t*0.012);
@@ -8317,7 +8347,7 @@ let _fxSeed = 0x2F6E2B1;
 function fxRnd(){ _fxSeed ^= _fxSeed << 13; _fxSeed ^= _fxSeed >>> 17; _fxSeed ^= _fxSeed << 5; return ((_fxSeed >>> 0) % 1000003) / 1000003; }
 // Nov 16 — hit feedback safety net. Some of the ~100 places that take HP off did it silently; after every tick any HP that went
 // down without a damage number or a spark gets one here, 15+ damage in one tick always shakes the screen, and a KO gets its own finish.
-let _fxDmgN = 0, _fxPartN = 0, koFlash = 0; const _fxPartAt = [], _fxDmgAt = [];
+let _fxDmgN = 0, _fxPartN = 0, koFlash = 0, koFlashDur = 1, _fxTick = 0; const _fxPartAt = [], _fxDmgAt = [];
 function hitFxNet(){
   for(const pl of [p1, p2]){ if(!pl) continue;
     const hp = pl.hp, last = pl._fxHp===undefined ? hp : pl._fxHp; pl._fxHp = hp;
@@ -8326,16 +8356,20 @@ function hitFxNet(){
     let shown = false; for(let k=0;k<_fxDmgAt.length;k+=2) if(Math.abs(_fxDmgAt[k]-cx) < 90 && Math.abs(_fxDmgAt[k+1]-(pl.y+PH/2)) < 140){ shown = true; break; }
     if(!shown) addDmg(cx, pl.y-14, Math.max(1, Math.round(d)), '#ffd9a0');
     let near = false; for(let k=0;k<_fxPartAt.length;k+=2) if(Math.abs(_fxPartAt[k]-cx) < 90 && Math.abs(_fxPartAt[k+1]-(pl.y+PH/2)) < 110){ near = true; break; }   // a spark already near this fighter this tick?
-    if(!near) addParts(cx, pl.y+PH*0.4, '#ffffff', Math.min(14, 4+Math.round(d/3)), 3+Math.min(5, d/6));
+    const att = pl===p1 ? p2 : p1, dir = att ? (Math.sign(cx - (att.x+PW/2)) || (pl.facing ? -pl.facing : 1)) : 1;
+    if(!near){ const ac = att && att.charColor || '#ffffff'; addParts(cx, pl.y+PH*0.4, ac, Math.min(14, 4+Math.round(d/3)), 3+Math.min(5, d/6)); addParts(cx, pl.y+PH*0.4, '#ffffff', 3, 2.5); addRing(cx, pl.y+PH*0.4, ac, d >= 15 ? 56 : 30); }   // the attacker's colour: spark, white core, ring
+    // Nov 17 (VFX): every spark born this tick around the fighter who was hit flies away from the attacker, in a cone
+    for(let k = parts.length-1; k >= 0 && parts[k].tk===_fxTick; k--){ const q = parts[k]; if(Math.abs(q.x - cx) < 120 && Math.abs(q.y - (pl.y+PH/2)) < 130){ q.vx = dir*(Math.abs(q.vx)*1.15 + 0.9); q.vy *= 0.75; } }
     if(d >= 15) doShake(Math.min(16, 5+d*0.3));
   }
+  _fxTick++;
   _fxDmgN = 0; _fxPartN = 0; _fxPartAt.length = 0; _fxDmgAt.length = 0;
 }
 function koFinish(pl, final){
   const cx = pl.x+PW/2, cy = pl.y+PH/2, col = pl.charColor || '#fff';
   addRing(cx, cy, '#ffffff', final ? 260 : 170); addRing(cx, cy, col, final ? 360 : 240);
   addParts(cx, cy, '#ffffff', final ? 46 : 26, final ? 11 : 8); addParts(cx, cy, col, final ? 36 : 20, final ? 9 : 7);
-  doShake(final ? 24 : 16); koFlash = Date.now() + (final ? 320 : 180);
+  doShake(final ? 24 : 16); koFlash = Date.now() + (final ? 320 : 180); koFlashDur = final ? 320 : 180;
 }
 function addParts(x,y,col,n,pwr){
   _fxPartN++; _fxPartAt.push(x, y);
@@ -8343,19 +8377,20 @@ function addParts(x,y,col,n,pwr){
   if(LITE) n = Math.ceil(n/2);
   for(let i=0;i<n;i++){
     const a=fxRnd()*Math.PI*2, s=(.4+fxRnd())*pwr;
-    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1.5,life:1,decay:.026+fxRnd()*.024,r:1.5+fxRnd()*2.5,col});
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1.5,life:1,decay:.026+fxRnd()*.024,r:1.5+fxRnd()*2.5,col,tk:_fxTick,b:0});
   }
 }
 function tickParts(){
   let w = 0;
   for(let i=0;i<parts.length;i++){
-    const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.13; p.life-=p.decay;
+    const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.13; p.life-=p.decay; p.b++;
     if(p.life>0) parts[w++] = p;
   }
   parts.length = w;
 }
 function drawParts(){
-  for(const p of parts){ ctx.globalAlpha=p.life*.9; ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2); ctx.fill(); }
+  for(const p of parts){ const g = p.b===undefined || p.b >= 3 ? 1 : 0.45 + p.b*0.18;   // Nov 17: sparks grow in over 3 frames instead of popping in at full size
+    ctx.globalAlpha=p.life*.9*g; ctx.fillStyle=p.col; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.life*g,0,Math.PI*2); ctx.fill(); }
   ctx.globalAlpha=1;
 }
 
@@ -12355,7 +12390,7 @@ class Player {
       this.domainCharge=Math.min(DOMAIN_CHARGE_REQ,this.domainCharge+DMG_KB);
     } else {
       this.combo++; def.getStun(this); this._itemOnHit(def, 1);
-      addParts(mx,my,'#aaa',7,3); addRing(mx,my,'#888',28);
+      addParts(mx,my,this.charColor||'#aaa',7,3); addParts(mx,my,'#ffffff',3,2); addRing(mx,my,this.charColor||'#888',28);   // Nov 17: the puncher's colour with a white core
       addDmg(mx,def.y-14,DMG_HIT,'#ccc'); doShake(3);
       if(this.type==='sukuna') this.fugaCharge=Math.min(FUGA_CHARGE_REQ,this.fugaCharge+DMG_HIT);
       if(this.type==='gojo')   this.hollowCharge=Math.min(HOLLOW_CHARGE_REQ,this.hollowCharge+DMG_HIT);
@@ -13213,6 +13248,13 @@ class Player {
       ctx.beginPath(); ctx.moveTo(cx,cy+neckY+bob); ctx.lineTo(ex,ey); ctx.lineTo(hx,hy); ctx.stroke();
       if(cx!==0) this._hand = {x:hx, y:hy, sx:cx, sy:cy+neckY+bob};
       if(isAtk && this.type!=='yuta'){ ctx.fillStyle=main; ctx.beginPath(); ctx.arc(hx,hy,3.5,0,Math.PI*2); ctx.fill(); }
+      // Nov 17 (VFX): a punch draws a short crescent smear in the fighter's colour from wind-up to strike (bigger on the combo finisher)
+      if(isAtk && this.type!=='yuta' && this.state===S.ATCK && this.atkPhase>=1 && cx!==0){
+        const big = this._wasFinisher ? 1.5 : 1, k = this.atkPhase===1 ? Math.min(1, (this.atkTimer||0)/ATK_ACT) : 1, fade = this.atkPhase===1 ? 0.65 : Math.max(0, 0.65 - (this.atkTimer||0)/ATK_REC*0.9);
+        if(fade > 0.02){ const r = 20*big, sx = cx + f*4, sy = cy+neckY+16+bob, a0 = f > 0 ? -1.1 : Math.PI+1.1, a1 = f > 0 ? 0.35 : Math.PI-0.35;
+          ctx.save(); ctx.globalAlpha = fade; ctx.strokeStyle = this.charColor || main; ctx.lineCap = 'round';
+          for(let j = 0; j < 3; j++){ ctx.lineWidth = (6 - j*2)*big; ctx.globalAlpha = fade*(0.35 + j*0.3); ctx.beginPath(); ctx.arc(sx, sy, r + j*2, a0 + (a1 - a0)*(1 - k)*0.6*(f>0?1:1), a1, f < 0); ctx.stroke(); }
+          ctx.restore(); } }
       // Yuta melee: pink slash arc + sword tip glow
       if(isAtk && this.type==='yuta' && aa>0.05){
         const slashAlpha = Math.sin(aa*Math.PI)*0.8;
@@ -14567,7 +14609,7 @@ function drawBG(){
 }
 
 function drawHUDOverlay(){
-  { const kf = koFlash - Date.now(); if(kf > 0 && kf < 400){ ctx.save(); ctx.globalAlpha = Math.min(0.5, kf/320*0.5); ctx.fillStyle = '#fff'; ctx.fillRect(-50, -50, W+100, H+100); ctx.restore(); } }   // Nov 16: white flash on a KO
+  { const kf = koFlash - Date.now(); if(kf > 0 && kf < 400){ ctx.save(); ctx.globalAlpha = Math.min(0.5, kf/320*0.5)*Math.min(1, (koFlashDur - kf)/50); /* rises over ~3 frames */ ctx.fillStyle = '#fff'; ctx.fillRect(-50, -50, W+100, H+100); ctx.restore(); } }   // Nov 16: white flash on a KO
   // soft dark scrim behind both HUD blocks, so dimmed labels stay readable on the bright maps (Sister School, Shinjuku)
   if(!drawHUDOverlay._g || drawHUDOverlay._w!==W){ const g = ctx.createLinearGradient(0, 0, 0, 150); g.addColorStop(0, 'rgba(8,8,14,0.6)'); g.addColorStop(0.75, 'rgba(8,8,14,0.36)'); g.addColorStop(1, 'rgba(8,8,14,0)'); drawHUDOverlay._g = g; drawHUDOverlay._w = W; }
   ctx.fillStyle = drawHUDOverlay._g; ctx.fillRect(0, 0, W, 150);
@@ -15266,7 +15308,7 @@ Player.prototype._vToggle = function(){
   if(!vEdge) return;
   this.varMode = !this.varMode; this.pbChargeTime = 0;
   if(this.state===S.DEAD) addSpeech(this.x+PW/2, this.y-20, this.varMode ? 'MAXIMUM OUTPUT ON' : 'MAXIMUM OUTPUT OFF', this.varMode ? '#b07cff' : '#6fb8ff', 700);
-  else { addRing(this.x+PW/2, this.y+PH/2, this.varMode ? '#b07cff' : '#6fb8ff', 34); snd('swing', this.x); }
+  else { addRing(this.x+PW/2, this.y+PH/2, this.varMode ? (this.charColor||'#b07cff') : '#6fb8ff', 34); if(this.varMode){ addRing(this.x+PW/2, this.y+PH/2, '#ffffff', 20); addParts(this.x+PW/2, this.y+PH/2, this.charColor||'#b07cff', 10, 3); } snd('swing', this.x); }   // Nov 17: the fighter's own colour, with a cast flash
 };
 Player.prototype._cePre = function(dt){
   this._ceSnap = null; this._ceMask = null; this._ceHandled = false;
@@ -15610,7 +15652,7 @@ Player.prototype._olLandHit = function(def){
       def.vx = f*2;
       if(K.air || !def.onGround){ def.vy = -5.4; this.vy = Math.min(this.vy, -3.4); }
       def.ss(S.STUN, K.air ? 330 : 380);
-      addParts(mx, my, '#bbb', 7, 3); addRing(mx, my, '#888', 28); doShake(3); break;
+      addParts(mx, my, this.charColor||'#bbb', 7, 3); addParts(mx, my, '#ffffff', 3, 2); addRing(mx, my, this.charColor||'#888', 28); doShake(3); break;
     case 'heavy': case 'aheavy':
       def._initRd(f*10.5, -7, .13*f); def.ss(S.RAGD, RAGD_MS*(1 + 0.06*Math.min(6, Math.max(0, (this.cmbHits||1)-1))));
       addParts(mx, my, '#ccc', 14, 5); addRing(mx, my, '#aaa', 55); doShake(8); snd('hit2', mx); break;
@@ -15756,8 +15798,16 @@ function drawOlShots(){
       if(s.kind==='thorn'){ ctx.fillStyle = 'rgba(107,74,42,0.6)'; ctx.beginPath(); ctx.ellipse(s.x, s.y, s.r, 6, 0, 0, Math.PI*2); ctx.fill(); }
       ctx.restore(); continue;
     }
+    // Nov 17 (VFX): every Maximum Output shot grows and fades in over 90 ms, and leaves a fading trail in its owner's colour while it travels
+    const si = Math.min(1, (s.t - (s.delay||0))/90);
+    if(s.vx || s.vy){ let tr = _trails.get(s); if(!tr){ tr = []; _trails.set(s, tr); }   // kept off the object, so it is never sent online
+      const lx = tr.length ? tr[tr.length-2] : s.x, ly = tr.length ? tr[tr.length-1] : s.y;
+      if(Math.hypot(s.x - lx, s.y - ly) > 6){ tr.push(s.x, s.y); if(tr.length > 16) tr.splice(0, 2); }
+      if(tr.length >= 4){ const col = s.col || (s.owner && s.owner.charColor) || '#ffffff', rr = Math.max(3, Math.min(14, (s.r||8)*0.6));
+        ctx.save(); ctx.fillStyle = col; for(let k = 0; k < tr.length - 2; k += 2){ const q = (k/2 + 1)/(tr.length/2); ctx.globalAlpha = 0.35*q*si*Math.max(0, Math.min(1, (s.life - s.t)/200)); ctx.beginPath(); ctx.arc(tr[k], tr[k+1], rr*(0.4 + 0.6*q), 0, Math.PI*2); ctx.fill(); } ctx.restore(); } }
     ctx.save();
-    const a = Math.max(0, Math.min(1, (s.life - s.t)/200));
+    if(si < 1){ const sc = 0.35 + 0.65*si; ctx.translate(s.x, s.y); ctx.scale(sc, sc); ctx.translate(-s.x, -s.y); }
+    const a = Math.max(0, Math.min(1, (s.life - s.t)/200, 0.25 + si));
     switch(s.kind){
       case 'web': ctx.globalAlpha = a; ctx.strokeStyle = '#ff5a5a'; ctx.lineWidth = 2;
         for(let k=0;k<7;k++){ const ang = Math.PI + k*Math.PI/6; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x+Math.cos(ang)*130, s.y+Math.sin(ang)*40); ctx.stroke(); }
@@ -16430,7 +16480,11 @@ function drawTruck(tr){
     ctx.save(); ctx.globalAlpha = 0.5 + 0.5*Math.sin(t*0.03); ctx.fillStyle = '#ffe066';
     ctx.beginPath(); ctx.moveTo(ex+tr.dir*26, tr.y-60); ctx.lineTo(ex-tr.dir*10, tr.y-84); ctx.lineTo(ex-tr.dir*10, tr.y-36); ctx.fill();
     ctx.font = `700 14px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!! TRUCK !!', ex+tr.dir*80, tr.y-100);
-    ctx.globalAlpha = 0.18; ctx.fillRect(0, tr.y-TRUCK_H, W, TRUCK_H); ctx.restore();
+    { const ramp = Math.min(1, (tr.t||0)/150), g = ctx.createLinearGradient(0, tr.y-TRUCK_H, 0, tr.y);   // Nov 17: the lane fades in, with soft top and bottom edges
+      g.addColorStop(0, 'rgba(255,224,102,0)'); g.addColorStop(0.25, 'rgba(255,224,102,0.22)'); g.addColorStop(0.85, 'rgba(255,224,102,0.22)'); g.addColorStop(1, 'rgba(255,224,102,0)');
+      ctx.globalAlpha = ramp; ctx.fillStyle = g; ctx.fillRect(0, tr.y-TRUCK_H, W, TRUCK_H);
+      ctx.strokeStyle = 'rgba(255,224,102,0.5)'; ctx.setLineDash([18, 14]); ctx.lineDashOffset = -t*0.2*tr.dir; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, tr.y-TRUCK_H/2); ctx.lineTo(W, tr.y-TRUCK_H/2); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.restore();
     return;
   }
   ctx.save(); ctx.translate(tr.x, tr.y); ctx.scale(tr.dir, 1);
@@ -17765,7 +17819,7 @@ function ryuArtOk(k){ const im = RYU_ART[k]; return im && im.complete && im.natu
 // draws the beam tile along +x from (0,0), length len, core height h, frame f
 function ryuDrawBeamTile(len, h, f, alpha){
   const im = RYU_ART.beam, sc = h / RYU_BEAM_CORE, dh = RYU_BEAM_FH*sc, dw = RYU_BEAM_FW*sc;
-  ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = true;
   for(let x=0; x<len; x+=dw){ const w = Math.min(dw, len-x); ctx.drawImage(im, f*RYU_BEAM_FW, 0, RYU_BEAM_FW*(w/dw), RYU_BEAM_FH, x, -dh/2, w, dh); }
 }
 // Granite Blast start-up animation at his hand while he winds up
@@ -17781,7 +17835,7 @@ function ryuDrawCharge(pl){
   if(!ryuArtOk('charge')) return;
   const wind = pl.rbBig ? RYU_ULT_WIND : RYU_BEAM_WIND, fr = Math.min(RYU_CHG_N-1, Math.floor(pl.sTimer / wind * RYU_CHG_N));
   const sc = (pl.rbBig ? 1.5 : 0.75) * (1 + 0.5*(pl.ryuOut||0)), f = pl.facing;
-  ctx.save(); ctx.translate(pl.x+PW/2 + f*14, pl.y+PH*0.4); ctx.scale(f, 1); ctx.rotate(pl.aimAng||0); ctx.imageSmoothingEnabled = false;
+  ctx.save(); ctx.translate(pl.x+PW/2 + f*14, pl.y+PH*0.4); ctx.scale(f, 1); ctx.rotate(pl.aimAng||0); ctx.imageSmoothingEnabled = true;
   ctx.drawImage(RYU_ART.charge, fr*RYU_CHG_S, 0, RYU_CHG_S, RYU_CHG_S, -13*sc, -64*sc, RYU_CHG_S*sc, RYU_CHG_S*sc);
   ctx.restore();
 }
@@ -17808,12 +17862,19 @@ function tickRyu(dt){
 }
 function drawRyu(){
   for(const b of ryuBeams){
-    const a = Math.max(0, 1 - b.t/b.life), x2 = b.x + b.ux*b.len, y2 = b.y + b.uy*b.len, w = b.h*(0.75 + 0.25*a);
+    // Nov 17 (VFX): the beam shoots out to full length over 80 ms and fades in over 60 ms instead of appearing whole
+    const grow = Math.min(1, b.t/80), L = b.len*(1 - Math.pow(1 - grow, 3)), a = Math.max(0, 1 - b.t/b.life)*Math.min(1, 0.35 + b.t/60), x2 = b.x + b.ux*L, y2 = b.y + b.uy*L, w = b.h*(0.75 + 0.25*a);
     ctx.save(); ctx.lineCap = 'round';
-    ctx.globalAlpha = 0.25*a; ctx.strokeStyle = '#6fb8ff'; ctx.lineWidth = w*1.6; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
-    if(ryuArtOk('beam')){
+    ctx.globalAlpha = 0.25*a; ctx.strokeStyle = '#2f6bff'; ctx.lineWidth = w*1.6; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
+    if(ryuArtOk('beam') && w / RYU_BEAM_CORE <= 1.5){   // the pixel-art tile only where it stays crisp (≤ 1.5×, smoothed)
       ctx.translate(b.x, b.y); ctx.rotate(Math.atan2(b.uy, b.ux));
-      ryuDrawBeamTile(b.len, w, Math.floor(b.t/55) % RYU_BEAM_N, Math.min(1, a*1.4));
+      ryuDrawBeamTile(L, w, Math.floor(b.t/55) % RYU_BEAM_N, Math.min(1, a*1.4));
+    } else if(ryuArtOk('beam')){   // big blasts: drawn in clean layers (blue glow → cyan body → white core) with a rippling edge
+      const t = b.t*0.02;
+      for(const [col, k, al] of [['#2f6bff', 1.25, 0.35], ['#6fe8ff', 1.0, 0.75], ['#d8fbff', 0.62, 0.9], ['#ffffff', 0.32, 1]]){
+        ctx.globalAlpha = al*a; ctx.strokeStyle = col; ctx.lineWidth = w*k*(1 + 0.04*Math.sin(t*3 + k*5)); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke(); }
+      ctx.globalAlpha = 0.5*a; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; const nx = -b.uy, ny = b.ux;
+      for(let j = 0; j < 4; j++){ const off = (j - 1.5)*w*0.18, ph = (b.t*0.9 + j*170) % Math.max(1, L); ctx.beginPath(); ctx.moveTo(b.x + b.ux*ph + nx*off, b.y + b.uy*ph + ny*off); ctx.lineTo(b.x + b.ux*Math.min(L, ph + 90) + nx*off, b.y + b.uy*Math.min(L, ph + 90) + ny*off); ctx.stroke(); }   // energy streaks running down the beam
     } else {
       ctx.globalAlpha = 0.85*a; ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
       ctx.globalAlpha = a; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(2, w*0.35); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(x2, y2); ctx.stroke();
@@ -18210,12 +18271,15 @@ function drawToji(){
       ctx.fillStyle = '#e8d8a0'; ctx.fillRect(x-3, y-1.5, 2, 2); ctx.fillRect(x+1, y-1.5, 2, 2); }
     ctx.restore();
   }
+  const _scopeT = drawTojiScopeT;
   // the Scope: everyone sees the crosshair (so the target can run); Toji's own screen also goes dark outside the lens
   for(const pl of [p1, p2]){
     if(!pl || pl.type!=='toji' || pl.state!==S.TOJISCOPE || pl.scPh!=='aim') continue;
     const x = pl.scX, y = pl.scY, R = 70, mine = tojiSeesSelf(pl), left = Math.max(0, Math.ceil((TOJI_SCOPE_MS - pl.sTimer)/1000));
     ctx.save();
-    if(mine){ ctx.fillStyle = 'rgba(0,0,0,0.72)'; ctx.beginPath(); ctx.rect(-2000, -2000, W+4000, H+4000); ctx.arc(x, y, R, 0, Math.PI*2, true); ctx.fill('evenodd'); }
+    if(!_scopeT.has(pl) || Date.now() - _scopeT.get(pl).last > 300) _scopeT.set(pl, {t0:Date.now(), last:0}); _scopeT.get(pl).last = Date.now();
+    const ramp = Math.min(1, (Date.now() - _scopeT.get(pl).t0)/200);   // Nov 17: the darkness closes in over 200 ms
+    if(mine){ ctx.fillStyle = `rgba(0,0,0,${0.72*ramp})`; ctx.beginPath(); ctx.rect(-2000, -2000, W+4000, H+4000); ctx.arc(x, y, R, 0, Math.PI*2, true); ctx.fill('evenodd'); }
     ctx.strokeStyle = mine ? 'rgba(20,20,20,0.95)' : 'rgba(255,80,80,0.85)'; ctx.lineWidth = mine ? 6 : 2; ctx.beginPath(); ctx.arc(x, y, mine ? R : 22, 0, Math.PI*2); ctx.stroke();
     ctx.strokeStyle = mine ? 'rgba(255,60,60,0.9)' : 'rgba(255,80,80,0.85)'; ctx.lineWidth = 1.5; const L = mine ? R : 30;
     ctx.beginPath(); ctx.moveTo(x-L, y); ctx.lineTo(x-6, y); ctx.moveTo(x+6, y); ctx.lineTo(x+L, y); ctx.moveTo(x, y-L); ctx.lineTo(x, y-6); ctx.moveTo(x, y+6); ctx.lineTo(x, y+L); ctx.stroke();
@@ -22622,7 +22686,7 @@ function simFight(dt){
 }
 function drawFight(dt){
     drawDomain(); drawLoveKatanas(); if(!activeDomain) drawMapHaz(); drawAdEffects();   // the domain is the backdrop: every projectile and effect is drawn on top of it
-    drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
+    drawTrails(); drawCastTells(); drawParts(); drawRings(); drawCleaves(); drawGiantCleaves(); drawLapseOrbs(); drawRedOrbs(); drawReversalShots(); drawHollowShots(Date.now()); drawFlameTrails(); drawExplosions(); drawFugaShots();
     drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawToji(); drawYujiProj(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet(); drawSteam();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();

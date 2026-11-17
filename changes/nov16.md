@@ -27,6 +27,18 @@ Each entry: what changed → how to revert.
 | **Hit feedback safety net** (`hitFxNet`): any HP loss without a number or spark gets one; 15+ damage in one tick shakes the screen. **KO finish** (`koFinish`): white flash, two shock rings, burst. | Remove both functions and their two call sites in `simFight`. |
 | Home menu items use Rajdhani like every other menu (the logo stays in Cinzel). | `.hm-it` font back to `700 27px 'Cinzel',serif; letter-spacing:2px`. |
 
+## VFX (added Nov 17, gate 6)
+| Change | Revert |
+|---|---|
+| Hit sparks fly away from the attacker in a cone (every spark born on the tick of a hit, around the fighter who was hit) and grow in over 3 frames. | Remove the `parts[k].tk` loop in `hitFxNet`; `drawParts` back to `r*life`. |
+| Punches: a crescent smear in the fighter's colour; punch impacts in the puncher's colour with a white core (were grey). Fallback impacts use the attacker's colour plus a ring. | Remove the smear block in `_stick`; restore `'#aaa'/'#888'`. |
+| Maximum Output toggle ring in the fighter's colour, with a cast flash. | Back to `'#b07cff'`. |
+| Ryu's Granite Blast: the beam shoots out over 80 ms and fades in; the pixel tile is smoothed and only used up to 1.5×; Maximum Granite Blast is drawn as clean layered light. | `drawRyu`, `ryuDrawBeamTile`, `ryuDrawCharge` back. |
+| Maximum Output shots grow and fade in over 90 ms and leave a trail in the owner's colour. | Remove the `si` / trail lines in `drawOlShots`. |
+| Ghost trails behind Hollow Purple, Reversal Red, Choso's blood rings, the gavel, pachinko balls, crows and Hanami's buds (`drawTrails`). | Remove `drawTrails()`. |
+| Start tells: domain casts show closing rings and light at the hand sign; Fuga shows embers gathering through its wind-up (`drawCastTells`). | Remove `drawCastTells()`. |
+| KO flash rises over ~3 frames; Toji's Scope darkness closes in over 200 ms; Takaba's truck lane fades in with soft edges and a moving dashed centre line. | Restore the three lines. |
+
 ## Performance
 | Change | Result | Revert |
 |---|---|---|
