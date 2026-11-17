@@ -2,7 +2,7 @@
 const { open, ev } = require('./harness.js');
 (async () => { let bad = 0; const ok = (c, m) => { if(!c){ bad++; console.log('FAIL', m); } };
   let { b, ctx, pg, errs } = await open();
-  const key = async (k, wait = 120) => { await pg.keyboard.press(k); await pg.waitForTimeout(wait); };
+  const key = async (k, wait = 120) => { await pg.keyboard.press(k, {delay: 40}); await pg.waitForTimeout(wait); };
   const reload = async () => { await pg.reload(); await pg.waitForFunction(() => typeof CPU_BOT!=='undefined'); await pg.addScriptTag({path: __dirname + '/arena.js'}); };
   await pg.evaluate(() => { localStorage.removeItem('cc_gfx'); localStorage.removeItem('cc_arcade'); }); await reload();
 

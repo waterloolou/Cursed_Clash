@@ -7,7 +7,7 @@ const { open } = require('./harness.js');
     wiki:getComputedStyle(document.getElementById('wiki')).display!=='none', acct:getComputedStyle(document.getElementById('acct')).display!=='none', keys:!document.getElementById('keysPanel').hidden,
     gfx:document.getElementById('gfxBtn').textContent.replace(/[^\x20-\x7e]/g, ''), fps:document.getElementById('fpsBtn').textContent.replace(/[^\x20-\x7e]/g, '')}));
   const ok = async (label, fn) => { checks++; const s = await S(); let pass = false; try{ pass = !!fn(s); }catch(e){} if(!pass) fails.push(label + '  ← ' + JSON.stringify(s)); };
-  const key = async (k, w) => { await pg.keyboard.press(k); await pg.waitForTimeout(w || 350); };
+  const key = async (k, w) => { await pg.keyboard.press(k, {delay: 40}); await pg.waitForTimeout(w || 350); };
   const click = async (sel, w) => {   // a real mouse click on the middle of the element (it has to be visible and on top)
     const r = await pg.evaluate(sel => { const e = document.querySelector(sel); if(!e) return null; const q = e.getBoundingClientRect(), x = q.left + q.width/2, y = q.top + q.height/2, t = document.elementFromPoint(x, y); return q.width > 0 && t && (t===e || e.contains(t)) ? [x, y] : null; }, sel);
     if(!r) fails.push('not clickable: ' + sel); else await pg.mouse.click(r[0], r[1]); await pg.waitForTimeout(w || 350); };
