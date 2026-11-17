@@ -37,7 +37,7 @@
     return out;
   }
   window.__cpuArena = function(tA, tB, o){
-    o = o || {}; const L = CPU_LEVELS[o.lvl || 'hard'], STEP = 1000/60, maxMs = o.maxMs || 240000;
+    o = o || {}; const L = CPU_LEVELS[o.lvl || 'hard'], LA = CPU_LEVELS[o.lvlA || o.lvl || 'hard'], LB = CPU_LEVELS[o.lvlB || o.lvl || 'hard'], STEP = 1000/60, maxMs = o.maxMs || 240000;
     const R = Math.random, DN = Date.now, PN = performance.now.bind(performance), ST = window.setTimeout;
     let vt = 0; const base = 1.7e12, timers = [];
     // sound and voice lines are switched off for the run: once audio is unlocked they roll dice of their own, which would change results
@@ -53,7 +53,7 @@
       sides[1] = {mem:{}, prev:{}, f:0}; sides[2] = {mem:{}, prev:{}, f:0};
       let hA = p1.hp, hB = p2.hp, stuckA = 0, stuckB = 0;
       while(vt < maxMs && phase==='fight'){
-        setSlotKeys(1, botHeld(1, L), {}); setSlotKeys(2, botHeld(2, L), {});
+        setSlotKeys(1, botHeld(1, LA), {}); setSlotKeys(2, botHeld(2, LB), {});
         try{ simFight(STEP); }catch(e){ const s = String(e && e.stack || e).slice(0, 400); if(res.errs.length < 5 && !res.errs.includes(s)) res.errs.push(s); res.errN = (res.errN||0) + 1; if(res.errN > 600) break; }
         vt += STEP;
         for(let i = timers.length-1; i >= 0; i--) if(timers[i][0] <= vt){ const f = timers[i][1]; timers.splice(i, 1); try{ if(typeof f==='function') f(); }catch(e){} }

@@ -1092,6 +1092,7 @@ const DRILL_DASH_DIST    = W * 0.27;// quarter-ish map width
 const DRILL_DASH_SPD     = 18;      // px per frame during dash
 const DRILL_STUN_DUR     = 700;     // ms enemy stunned after move ends
 const DRILL_COOLDOWN     = 7000;    // ms cooldown
+const DRILL_DMG          = 25;      // balance Oct 18: 22 → 25
 
 // ── Aoi Todo ──
 const TODO_PUNCH_WINDUP  = 260;     // ms wind-up
@@ -3590,8 +3591,24 @@ const mouseW = {x:0, y:0, in:false, t:0};
 canvas.addEventListener('mousemove', e => {
   const { x:vx, y:vy } = cssToView(e);
   mouseW.x = cam.x + vx/cam.z; mouseW.y = cam.y + vy/cam.z; mouseW.in = true; mouseW.t = performance.now();
+  mouseV.x = vx; mouseV.y = vy; mouseV.in = true; mouseV.t = performance.now();
 });
-canvas.addEventListener('mouseleave', () => { mouseW.in = false; });
+canvas.addEventListener('mouseleave', () => { mouseW.in = false; mouseV.in = false; });
+canvas.addEventListener('mousedown', e => { const v = cssToView(e); mouseV.x = v.x; mouseV.y = v.y; mouseV.in = true; });
+// Nov 16 — mouse on the canvas menus (mode, stage, fighter select): pointing at a tile selects it, left click confirms, right click goes back.
+const mouseV = {x:0, y:0, in:false, t:0};
+let _menuPh = '';
+function menuMouseStep(){
+  if(phase==='fight' || phase==='home' || NET.role==='guest') return;
+  if(keyPulse.Mouse2) MI1.back = true;
+  if(keyPulse.Mouse0){ MI1.confirm = true; MI1.click = true; }
+}
+// which of n tiles the mouse is on (rect(i) → [x, y, w, h] in view units), or -1; only while the mouse is moving or clicking
+function menuHover(n, rect){
+  if(!mouseV.in || NET.role==='guest' || !(MI1.click || performance.now() - mouseV.t < 250)) return -1;
+  for(let i=0;i<n;i++){ const r = rect(i); if(mouseV.x >= r[0] && mouseV.x <= r[0]+r[2] && mouseV.y >= r[1] && mouseV.y <= r[1]+r[3]) return i; }
+  return -1;
+}
 
 function hanaTarget(pl){
   if(typeof NET!=='undefined' && NET.role==='host' && pl===p2){
@@ -3821,7 +3838,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:1.184, dagon:1.04, geto:0.831, gojo:1.259, hakari:0.765, hanami:1.066, higuruma:1.323, jogo:1.182, mahito:0.844, mechamaru:1.179, megumi:0.827, meimei:0.962, naoya:1.02, ryu:0.941, sukuna:1.042, takaba:1.106, todo:0.907, toji:0.869, yuji:1.579, yuki:1.485, yuta:1.15},
+  out:    {choso:1.228, dagon:1.04, geto:0.8, gojo:1.308, hakari:0.733, hanami:0.876, higuruma:1.336, jogo:1.182, mahito:0.936, mechamaru:1.155, megumi:0.836, meimei:0.994, naoya:1.03, ryu:0.941, sukuna:1.042, takaba:1.153, todo:0.926, toji:0.865, yuji:1.672, yuki:1.552, yuta:1.17},
   in:     {dagon:0.85, higuruma:0.92, mahito:1.25, yuji:0.9},
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -10537,7 +10554,7 @@ class Player {
         if(Math.sqrt(dx*dx+dy*dy) < 36){
           // Caught!
           this.drillTarget = other;
-          const dmg = 25;   // balance Oct 18: 22 → 25
+          const dmg = DRILL_DMG;
           other.hp = Math.max(0, other.hp - dmg);
           other.flash = 300;
           addDmg(ex, other.y-14, dmg, '#aaaaaa');
@@ -18959,11 +18976,11 @@ function drawPauseColumn(pl, slot, binds, x, y, w, title){
 }
 
 // ── Pause pages 2 + 3: the combat guide and a fighter-specific guide ──
-let pausePage = 0, _pnPrev = [{}, {}];
+let pausePage = 0, _pnPrev = [{}, {}], _pauseLeave = false;
 const PAUSE_PAGES = ['CONTROLS', 'COMBAT GUIDE', 'YOUR FIGHTER'];
 function pauseNav(){
-  if(!paused){ pausePage = 0; return; }
-  if(keyPulse.KeyM || keys.KeyM && !_pnPrev.m){ _pnPrev.m = true; leaveToMenu(); return; } _pnPrev.m = !!keys.KeyM;
+  if(!paused){ pausePage = 0; _pauseLeave = false; return; }
+  if(_pauseLeave || keys.KeyM && !_pnPrev.m){ _pauseLeave = false; _pnPrev.m = true; leaveToMenu(); return; } _pnPrev.m = !!keys.KeyM;
   for(let i=0;i<2;i++){
     const h = liveHeld[i] || {}, pv = _pnPrev[i];
     if(h.left && !pv.left) pausePage = (pausePage + PAUSE_PAGES.length - 1) % PAUSE_PAGES.length;
@@ -20606,7 +20623,7 @@ function drawModeSelect(){
   ctx.fillText('SELECT MODE', W/2, 58); }
   ctx.font=`500 12px 'Rajdhani',sans-serif`;
   ctx.fillStyle='rgba(180,175,165,0.6)';
-  ctx.fillText(NET.role==='local' ? 'A / D to choose  ·  F or SPACE to confirm  ·  ESC to leave' : 'A / D or ← / → to choose  ·  SPACE / ENTER / CLICK to confirm', W/2, 78);
+  ctx.fillText(NET.role==='local' ? 'A / D or MOUSE to choose  ·  F, SPACE or CLICK to confirm  ·  ESC or RIGHT CLICK to leave' : 'A / D or ← / → to choose  ·  SPACE / ENTER / CLICK to confirm', W/2, 78);
 
   const modes = [
     { id:'normal',  label:'NORMAL',  sub:'3 lives — KO\'d fighter drops back in' },
@@ -20839,7 +20856,7 @@ function drawCharSelect(){
   ctx.fillStyle = '#d6b64a'; ctx.beginPath(); ctx.moveTo(W/2-210, 8); ctx.lineTo(W/2+210, 8); ctx.lineTo(W/2+196, 40); ctx.lineTo(W/2-196, 40); ctx.closePath(); ctx.fill();
   ctx.fillStyle = '#17120a'; ctx.font = `700 22px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText(solo ? 'TRAINING · CHOOSE YOUR FIGHTER' : ARC.on ? 'ARCADE · CHOOSE YOUR FIGHTER' : CPU.on ? (p1Confirmed ? `PICK THE CPU'S FIGHTER · ${CPU_LEVELS[CPU.lvl].label}` : 'VS CPU · CHOOSE YOUR FIGHTER') : 'CHOOSE YOUR FIGHTER', W/2, 32);
   ctx.font = `600 10px 'Rajdhani',sans-serif`; ctx.fillStyle = 'rgba(220,214,200,0.6)'; ctx.textAlign = 'left';
-  const twoP = NET.role==='local' && !solo && !CPU.on, k1 = twoP ? 'P1: WASD move · F lock' : 'Arrows / WASD move · SPACE / CLICK lock', k2 = twoP ? 'P2: arrows move · / lock' : 'ESC back';
+  const twoP = NET.role==='local' && !solo && !CPU.on, k1 = twoP ? 'P1: WASD move · F lock' : 'Arrows / WASD / MOUSE move · SPACE / CLICK lock', k2 = twoP ? 'P2: arrows move · / lock' : 'ESC / RIGHT CLICK back';
   ctx.fillText(k1, 14, 22); ctx.fillText(k2, 14, 35);
   if(bans){ ctx.textAlign = 'right'; ctx.fillStyle = '#ff8a8a'; ctx.fillText(`BANS ON · ${NET.role==='local' ? 'P1 T / P2 R-SHIFT' : 'T'} bans the hovered fighter`, W-14, 22); }
   // portrait grid
@@ -22039,6 +22056,8 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   try{
     for(const c of CHARACTERS){ const sec = document.querySelector(`#wiki section[data-p="${c.type}"]`), st = playstyleOf(c.type); if(!sec || sec.querySelector('.wk-style')) continue;
       const el = document.createElement('p'); el.className = 'wk-style'; el.innerHTML = `<span style="background:${PLAYSTYLE_COL[st]}">${PLAYSTYLE_NAME[st].toUpperCase()}</span> ${PLAYSTYLE_DESC[st]}`;
+      // Nov 16: the balance multipliers are shown, so the damage numbers on the page can be reconciled with what a hit really does
+      { const o = BAL.out[c.type] || 1, i = BAL.in[c.type] || 1; if(o!==1 || i!==1) el.innerHTML += `<br><span class="wk-bal" style="background:#d6b64a">BALANCE</span> Damage listed on this page is the base value.${o!==1 ? ` ${c.name} deals <b>×${o.toFixed(2)}</b> of it.` : ''}${i!==1 ? ` Takes <b>×${i.toFixed(2)}</b> damage.` : ''}`; }
       const lead = sec.querySelector('.lead') || sec.querySelector('h1'); lead.insertAdjacentElement('afterend', el); }
     const box = $('wkStyles'); if(box) box.innerHTML = Object.keys(PLAYSTYLE_NAME).map(st => `<h2><span class="wk-chip" style="background:${PLAYSTYLE_COL[st]}">${PLAYSTYLE_NAME[st].toUpperCase()}</span></h2><p>${PLAYSTYLE_DESC[st]}</p><p><b>Fighters:</b> ` +
       CHARACTERS.filter(c => playstyleOf(c.type)===st).map(c => `<a data-p="${c.type}" style="color:${c.color};cursor:pointer">${c.name}</a>`).join(' · ') + '</p>').join('');
@@ -22055,7 +22074,8 @@ addEventListener('beforeunload', () => { try{ for(const c of NET.conns) c.relay 
   $('auFile').onclick = () => { audInit(); if(AUD.userAudio){ musClearFile(); auSync(); } else $('auFileIn').click(); };
   $('auFileIn').onchange = e => { const f = e.target.files && e.target.files[0]; if(f){ musLoadFile(f); auSync(); } e.target.value = ''; };
   addEventListener('keydown', e => {
-    if(e.code==='KeyM' && document.activeElement && document.activeElement.tagName!=='INPUT'){ AUD.on.music = !AUD.on.music; audApply(); auSync(); showTxt(AUD.on.music ? 'MUSIC ON' : 'MUSIC OFF', 600); }
+    if(e.code==='KeyM' && paused && phase==='fight'){ _pauseLeave = true; }   // Nov 16: latched here, a quick tap between two frames used to be missed (and it no longer toggles the music as well)
+    else if(e.code==='KeyM' && document.activeElement && document.activeElement.tagName!=='INPUT'){ AUD.on.music = !AUD.on.music; audApply(); auSync(); showTxt(AUD.on.music ? 'MUSIC ON' : 'MUSIC OFF', 600); }
   });
   auSync();
   $('wkClose').onclick = () => { wiki.hidden = true; };
@@ -22133,12 +22153,15 @@ const inArena = () => phase==='fight' || phase==='roundend' || phase==='end';
 
 function logicModeSelect(){
   if(MI1.back && NET.role==='local'){ netReset(); backToLobby('', false); return; }
+  { let h = -1; withView(() => { h = menuHover(2, i => [W/2 - 320 + i*340, H/2 - 90, 300, 200]); }); if(h >= 0) modeSelectIdx = h; }
   if(MI1.left)  modeSelectIdx = Math.max(0, modeSelectIdx-1);
   if(MI1.right) modeSelectIdx = Math.min(1, modeSelectIdx+1);
   if(MI1.confirm){ gameMode = modeSelectIdx===0 ? 'normal' : 'endless'; phase = 'mapSelect'; mapSelectIdx = 0; }
 }
 function logicMapSelect(){
   const list = mapChoices(), n = list.length + 1;
+  { const W = VW, gap = 12, cw = Math.min(150, Math.floor((W - 40 - (n-1)*gap)/n)), ch = cw*VH/VW + 22, x0 = W/2 - (n*cw + (n-1)*gap)/2, y0 = 52 + 600*VH/VW + 14;
+    const h = menuHover(n, i => [x0 + i*(cw+gap), y0, cw, ch]); if(h >= 0) mapSelectIdx = h; }
   if(MI1.left)  mapSelectIdx = (mapSelectIdx - 1 + n) % n;
   if(MI1.right) mapSelectIdx = (mapSelectIdx + 1) % n;
   if(MI1.back){ if(isTraining()){ netReset(); backToLobby('', false); return; } phase = 'modeSelect'; return; }
@@ -22156,6 +22179,8 @@ function logicCharSelect(dt){
   if(isTraining() && p1Confirmed && !p2Confirmed){ p2CharIdx = p1CharIdx; p2Confirmed = true; MI1 = {}; }
   if(ARC.on && p1Confirmed){ if(csIsRand(p1CharIdx) && csRoll[1]===null) csRoll[1] = csRollFighter(); arcRoll(csPick(1)); return; }   // Arcade: the ladder picks the opponents
   if(ARC.on && MI1.back){ arcQuit(); return; }
+  { let h = -1; withView(() => { h = menuHover(L, i => { const q = csTileXY(i); return [q.x, q.y, CS_TW, CS_TH]; }); });   // mouse: point at a tile to move your cursor there (menus are laid out in view units, not the stage's)
+    if(h >= 0){ if(!p1Confirmed) p1CharIdx = h; else if(CPU.on && !p2Confirmed) p2CharIdx = h; } }
   if(CPU.on && p1Confirmed && !p2Confirmed){ MI2 = MI1; MI1 = {}; }   // VS CPU: you pick the CPU's fighter next
   // grid cursor: left / right step, up / down jump a row
   const nav = (M, idx) => { if(M.left) idx = (idx-1+L)%L; if(M.right) idx = (idx+1)%L;
@@ -22231,7 +22256,7 @@ function drawWaitingFor(){
 function drawMapSelect(){
   ctx.save(); drawMenuBackdrop('CHOOSE A STAGE'); ctx.textAlign='center';
   ctx.font=`600 11px 'Rajdhani',sans-serif`; ctx.fillStyle='rgba(220,214,200,0.6)';
-  ctx.fillText(NET.role==='local' ? 'A / D choose  ·  F or SPACE confirm  ·  ESC back' : 'A / D or ← / → choose  ·  SPACE / ENTER / CLICK confirm  ·  ESC back', W/2, H-12);
+  ctx.fillText(NET.role==='local' ? 'A / D or MOUSE choose  ·  F, SPACE or CLICK confirm  ·  ESC or RIGHT CLICK back' : 'A / D or ← / → choose  ·  SPACE / ENTER / CLICK confirm  ·  ESC back', W/2, H-12);
   const list = mapChoices(), n = list.length + 1;
   // the highlighted stage, big
   { const mi = list[mapSelectIdx], bw = 600, bh = bw*VH/VW, bx = W/2 - bw/2, by = 52;
@@ -22620,6 +22645,9 @@ function loopFrame(ts){
     MI1 = LI.pressed; MI2 = rp;
   }
   }
+  menuMouseStep();
+  // Nov 16: a confirm press cannot carry over into the screen it just opened (ENTER on a home button used to confirm the mode screen behind it too)
+  if(phase!==_menuPh){ _menuPh = phase; if(phase!=='fight'){ MI1.confirm = false; MI1.click = false; MI2.confirm = false; } }   // only the frame the screen opened on
   keyPulse = {};
   const sim = NET.role!=='guest';
 
