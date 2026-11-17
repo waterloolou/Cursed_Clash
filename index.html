@@ -3855,7 +3855,7 @@ function drawHanamiBody(pl){
 //  lingOut / lingIn: only damage from things that keep going on their own (shikigami, projectiles, walls, entities),
 //  i.e. hits that land while the attacker is not in a move or a domain
 const BAL = {
-  out:    {choso:1.228, dagon:1.04, geto:0.775, gojo:1.308, hakari:0.741, hanami:0.80, higuruma:1.336, jogo:1.182, mahito:0.952, mechamaru:1.15, megumi:0.836, meimei:1.008, naoya:1.06, ryu:0.941, sukuna:1.042, takaba:1.153, todo:0.914, toji:0.865, yuji:1.672, yuki:1.566, yuta:1.17},
+  out:    {choso:1.228, dagon:1.04, geto:0.775, gojo:1.308, hakari:0.741, hanami:0.80, higuruma:1.336, jogo:1.182, mahito:0.952, mechamaru:1.15, megumi:0.836, meimei:1.008, naoya:1.06, ryu:0.941, sukuna:1.042, takaba:1.153, todo:0.914, toji:0.93, yuji:1.672, yuki:1.566, yuta:1.17},
   in:     {dagon:0.85, geto:1.03, higuruma:0.92, mahito:1.12, yuji:0.9},   // Nov 17: Geto takes 8% more (his damage cut barely moved him), Mahito 1.25 → 1.2
   lingOut:{megumi:0.8},
   lingIn: {todo:0.85},
@@ -20131,7 +20131,8 @@ const CPU_BOT = (function(){
     if(X.scope){ if(!m.scT0) m.scT0 = S.t;
       const tx = S.op.cx + (S.op.vx||0)*6, ty = S.op.cy, ex = tx - (X.scX ?? me.cx), ey = ty - (X.scY ?? me.cy);
       if(Math.abs(ex) > 6) S.hold(ex > 0 ? 'right' : 'left'); if(Math.abs(ey) > 6) S.hold(ey > 0 ? 'down' : 'jump');
-      if(Math.abs(ex) < 12 && Math.abs(ey) < 20 && S.t - m.scT0 > 600){ S.tap('atk'); m.scT0 = 0; }
+      // Nov 17: fire once on target, or take the best shot available after 3.5 s (it used to wait out most of the 10 s, untouchable)
+      if((Math.abs(ex) < 14 && Math.abs(ey) < 22 && S.t - m.scT0 > 600) || (S.t - m.scT0 > 3500 && Math.abs(ex) < 40 && Math.abs(ey) < 50) || S.t - m.scT0 > 5000){ S.tap('atk'); m.scT0 = 0; }
       return; }
     m.scT0 = 0;
     if(/tojiflurry|tojirush|tojifin|tojiscope/.test(me.state)) return;
@@ -20275,6 +20276,11 @@ const CPU_BOT = (function(){
     const ATTACK_SUPER = {sukuna:1, gojo:1, yuji:1, todo:1, choso:1, hakari:1, jogo:1, dagon:1, hanami:1, megumi:1, naoya:1};
     if(m.speechT && S.t - m.speechT < 4500 && S.op.state === 'stun' && S.special >= 1 && ATTACK_SUPER[me.type] && !S.busy && (S.ax < 300 || me.type === 'megumi' || me.type === 'todo')){
       face(S); if(facing(S)){ S.tap('ab3'); m.speechT = 0; setAim(S, 1500, 0.3); } return finish(S); }
+    // Nov 17: Toji is lining up the Scope on me — do what a player does: keep moving and change direction so the crosshair can't settle
+    if(S.op && S.op.x_ && S.op.x_.scope && !S.busy && !S.locked){
+      if(!m.evT || S.t - m.evT > 380 + (m.evN||0)%3*140){ m.evT = S.t; m.evN = (m.evN||0) + 1; m.evDir = (m.evN % 2 ? 1 : -1) * (S.me.cx < 200 ? -1 : S.me.cx > W - 200 ? 1 : 1); }
+      S.hold(m.evDir > 0 ? 'right' : 'left'); if(m.evN % 3 === 0 && S.me.onGround) S.tap('jump'); if(m.evN % 4 === 1) S.tap('dash');
+      return finish(S); }
     const plan = P[me.type] || P[String(me.type).replace(/c$/, '')] || ((S) => brawl(S, 60));
     // Oct 30: the playstyle gets the first say (spacing, hit-and-run, kiting, going home to my traps)
     if(stylePre(S)) return finish(S);
