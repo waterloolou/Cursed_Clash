@@ -3140,7 +3140,7 @@ function drawMeiMei(){
   }
   for(const c of crows){
     const flap = Math.sin(c.t*(c.dash ? 0.05 : 0.025));
-    ctx.save(); ctx.translate(c.x, c.y);
+    ctx.save(); ctx.translate(c.x, c.y); { const fi = fxIn(c, 120); ctx.globalAlpha *= fi; ctx.scale(0.5 + 0.5*fi, 0.5 + 0.5*fi); }   // Nov 17: crows fade and grow in
     if(c.dash){ ctx.rotate(Math.atan2(c.vy, Math.abs(c.vx)) * (c.vx<0 ? -1 : 1)); }
     ctx.scale(c.dir||1, 1);
     if(c.dash){ ctx.globalAlpha = 0.35; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(-12, 0); ctx.stroke(); ctx.globalAlpha = 1; }
@@ -3574,7 +3574,7 @@ function drawDagon(){
     ctx.strokeStyle = `rgba(200,240,255,${a})`; ctx.lineWidth = 5*a+1; ctx.beginPath(); ctx.moveTo(j.x, j.y); ctx.lineTo(j.ex, j.ey); ctx.stroke();
     ctx.restore();
   }
-  for(let i=0;i<fishes.length;i++){ const fi = fishes[i]; drawShark(fi.x, fi.y, Math.atan2(fi.vy, fi.vx), 0.2, i, 0.7); }
+  for(let i=0;i<fishes.length;i++){ const fi = fishes[i], k = fxIn(fi, 120); ctx.save(); ctx.globalAlpha *= k; drawShark(fi.x, fi.y, Math.atan2(fi.vy, fi.vx), 0.2*(0.5 + 0.5*k), i, 0.7); ctx.restore(); }   // Nov 17: fade and grow in
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -4983,9 +4983,9 @@ function drawMechLasers(){
   ctx.globalCompositeOperation = 'lighter';
   ctx.lineCap = 'round';
   for(const L of mechLasers){
-    const pts = [...L.trail, {x:L.x, y:L.y}];
+    const pts = [...L.trail, {x:L.x, y:L.y}], fin = fxIn(L, 100);   // Nov 17: lasers fade in
     for(let k=1;k<pts.length;k++){
-      const a = k/pts.length;
+      const a = k/pts.length*fin;
       ctx.strokeStyle = L.col; ctx.globalAlpha = a*0.55; ctx.lineWidth = 14*a;
       ctx.beginPath(); ctx.moveTo(pts[k-1].x, pts[k-1].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke();
       ctx.strokeStyle = '#fff'; ctx.globalAlpha = a*0.9; ctx.lineWidth = 4*a;
@@ -6921,7 +6921,9 @@ function addHollowExplosion(x, y, sc){ sfxLocal('boom', x); sc = sc||1;
 }
 // Nov 17 (VFX): ghost trails behind thrown and fired objects. Positions live in a WeakMap (nothing extra goes over the network);
 // each object keeps its last 7 spots and they are drawn as fading, shrinking discs in the technique's colour, under the object itself.
-const _trails = new WeakMap(), drawTojiScopeT = new WeakMap();
+const _trails = new WeakMap(), drawTojiScopeT = new WeakMap(), _born = new WeakMap();
+// Nov 17 (VFX): 0 → 1 over ms since this object was first drawn (visual clock only, nothing is stored on the object)
+function fxIn(o, ms){ let t = _born.get(o); if(t===undefined){ t = performance.now(); _born.set(o, t); } return Math.min(1, (performance.now() - t)/ms); }
 const TRAIL_SRC = () => [[hollowShots, '#a040ff', 18], [reversalShots, '#ff4a4a', 11], [bloodRings, '#c0182c', 9], [gavelThrows, '#e8c860', 8], [pachinkoBalls, '#7fffd0', 6], [crows, '#4a3a6a', 6], [hanaBuds, '#ff8fb8', 6]];
 // Nov 17 (VFX): start tells. A domain cast shows rings of the caster's colour closing in on them and light gathering at the hand sign
 // from the first frame; Fuga's bow-draw shows embers gathering at the hand for its whole wind-up.
@@ -6938,6 +6940,28 @@ function drawCastTells(){
       ctx.save(); for(let j = 0; j < 7; j++){ const a = j*0.9 + now*0.004, r = (1 - ((now*0.002 + j/7) % 1))*40*(1.2 - k*0.6);
         ctx.globalAlpha = 0.25 + 0.6*k; ctx.fillStyle = j % 2 ? '#ffb347' : '#ff5a1f'; ctx.beginPath(); ctx.arc(h.x + Math.cos(a)*r, h.y + Math.sin(a)*r, 2 + 2*k, 0, Math.PI*2); ctx.fill(); }
       const g = ctx.createRadialGradient(h.x, h.y, 1, h.x, h.y, 8 + 14*k); g.addColorStop(0, 'rgba(255,240,200,0.95)'); g.addColorStop(1, 'rgba(255,90,30,0)'); ctx.globalAlpha = 0.5 + 0.5*k; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(h.x, h.y, 8 + 14*k, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
+  }
+}
+// Nov 17 (VFX): exit fades. When a Garuda, a Maximum Output shot, a laser, a Granite Blast or a truck disappears, it is drawn a few more
+// frames at falling opacity instead of vanishing in one frame. Its own draw function is re-used: the array briefly holds only the ghost,
+// and every opacity it sets is multiplied by the fade (the game's state is not touched).
+const GHOST_SRC = () => [[garudas, drawYuki], [olShots, drawOlShots], [mechLasers, drawMechLasers], [ryuBeams, drawRyu], [trucks, drawTakaba]];
+const _ghPrev = new Map(), _ghosts = new Map(), GHOST_MS = 160;
+function drawGhosts(){
+  if(phase!=='fight') { _ghosts.clear(); _ghPrev.clear(); return; }
+  const now = performance.now(), GA = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'globalAlpha');
+  for(const [arr, fn] of GHOST_SRC()){
+    const prev = _ghPrev.get(arr), cur = new Set(arr); let gl = _ghosts.get(arr) || [];
+    for(const o of cur) if(!_born.has(o)) _born.set(o, now);
+    if(prev) for(const o of prev) if(!cur.has(o) && _born.has(o) && now - _born.get(o) > 120) gl.push({o, t0:now});
+    _ghPrev.set(arr, cur); gl = gl.filter(g => now - g.t0 < GHOST_MS); _ghosts.set(arr, gl);
+    if(!gl.length) continue;
+    const keep = arr.splice(0, arr.length);
+    for(const g of gl){ const F = Math.max(0, 1 - (now - g.t0)/GHOST_MS);
+      arr.push(g.o); ctx.save();
+      Object.defineProperty(ctx, 'globalAlpha', {configurable:true, get(){ return GA.get.call(this)/F; }, set(v){ GA.set.call(this, v*F); }}); ctx.globalAlpha = 1;
+      try{ fn(); }catch(e){} finally { delete ctx.globalAlpha; ctx.restore(); arr.length = 0; } }
+    arr.push(...keep);
   }
 }
 function drawTrails(){
@@ -18521,7 +18545,7 @@ function drawGaruda(x, y, ang, s, tail){
 }
 function drawYuki(){
   for(const g of garudas){
-    const o = g.owner;
+    const o = g.owner, fin = fxIn(g, 120); ctx.save(); ctx.globalAlpha *= fin; try{
     if(g.kind==='grap'){
       const hx = o.x+PW/2, hy = o.y+PH*0.38;
       ctx.save(); ctx.strokeStyle = '#e9e2cf'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, hy);
@@ -18535,6 +18559,7 @@ function drawYuki(){
       drawGaruda(g.x, g.y, g.t < 600 ? -0.2 : Math.PI/2, 1.3, true);
       if(g.t >= 600){ ctx.save(); ctx.strokeStyle = 'rgba(242,211,107,0.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(g.x, g.y-60); ctx.lineTo(g.x, g.y-14); ctx.stroke(); ctx.restore(); }
     }
+    } finally { ctx.restore(); }
   }
 }
 // event-horizon radius: grows over the 4.2s until it covers half the map's width
@@ -22690,6 +22715,7 @@ function drawFight(dt){
     drawSlashMarks(); drawItems(); drawChoso(); drawHiguruma(); drawHakari(); drawKenjaku(); drawMeiMei(); drawJogo(); drawDagon(); drawHanami(); drawMahito(); drawOlShots(); drawTakaba(); drawNaoya(); drawGarden(p1); drawGarden(p2); drawZones(); drawRika(p1); drawRika(p2); drawShikis(); drawYuki(); drawGeto(); drawRyu(); drawToji(); drawYujiProj(); drawMeiBlasts(); drawYutaBeams(); drawBrothers();
     p1.draw(); p2.draw(); drawPuppet(); drawSteam();
     drawBlackFlashes(); drawPiercingBeams(); drawMechLasers();
+    drawGhosts();
     drawCourtUI(); drawClash(); drawGambleReels();
     drawDmgNums();
 }
