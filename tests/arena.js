@@ -10,6 +10,9 @@
     p1 = buildPlayer(idx(tA), 170, 1, ctrlFor(1), 1); p2 = buildPlayer(idx(tB), 690, -1, ctrlFor(2), 2);
     p1lives = lives || startLivesFor(p1); p2lives = lives || startLivesFor(p2); p1kills = 0; p2kills = 0; clearProjectiles(); bloodPools.length = 0;
     buildTerrain(mapIdx); terrainReset();
+    // nothing may leak from the previous match: clocks, item timers, the mouse
+    try{ resetItems(); }catch(e){} _itemSeq = 0; terRespawnTick = 0; terDebrisBudget = 0; shakeMag = 0; roundDelay = 0;
+    try{ mouseW.in = false; mouseW.x = 0; mouseW.y = 0; mouseW.t = 0; }catch(e){} try{ mstReset(); }catch(e){} try{ NET.remote = {h:0, p:0}; }catch(e){}
     // spread the fighters across bigger maps the way the game does (a third / two thirds)
     activeDomain = null; domainClash = null; domainFlash = 0; timeScale = 1; winner = null; roundWinner = null; phase = 'fight';
   }
