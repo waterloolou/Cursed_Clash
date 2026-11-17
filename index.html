@@ -1913,10 +1913,13 @@ function drawItems(){
     ctx.fillStyle='rgba(0,0,0,0.55)'; const tw = ctx.measureText(d.short).width + 10; ctx.fillRect(it.x-tw/2, y-36, tw, 13);
     ctx.fillStyle = d.col; ctx.fillText(d.short, it.x, y-26); ctx.restore();
   }
-  for(const s of speechFx){
+  const _placed = [];   // Nov 16: bubbles that would overlap are pushed up so every line stays readable
+  for(let si=speechFx.length-1; si>=0; si--){ const s = speechFx[si];
     const a = Math.min(1, s.life/300), rise = (1 - s.life/s.max)*16;
     ctx.save(); ctx.globalAlpha = a; ctx.font=`700 14px 'Rajdhani',sans-serif`; ctx.textAlign='center';
-    const tw = ctx.measureText(s.text).width + 16, bx = s.x - tw/2, by = s.y - 26 - rise;
+    const tw = ctx.measureText(s.text).width + 16; let bx = s.x - tw/2, by = s.y - 26 - rise;
+    for(let g=0; g<6; g++){ const hit = _placed.find(q => bx < q.x+q.w+4 && bx+tw+4 > q.x && by < q.y+26 && by+26 > q.y); if(!hit) break; by = hit.y - 34; }
+    _placed.push({x:bx, y:by, w:tw});
     const dk = s.col!=='#fff' && bubbleLight(s.col);   // light text (yellow, peach, pale blue…) is unreadable on white: use a dark bubble for it
     ctx.fillStyle = dk ? 'rgba(18,16,26,0.94)' : 'rgba(255,255,255,0.95)'; ctx.strokeStyle = dk ? s.col : '#111'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.rect(bx, by, tw, 22); ctx.fill(); ctx.stroke();
@@ -5551,9 +5554,51 @@ function drawTheaterLight(t){
   ctx.imageSmoothingEnabled = sm; ctx.restore();
 }
 let _thrLight = null;
+// Nov 16: a lighting pass over every stage (the theater already had one). Each is painted once into a quarter-size layer and
+// stretched over the world, so it costs one blit per frame. High graphics only: nothing in it matters for play.
+const _foreLayers = {};
+const FORE_PAINT = {
+  0(g, w, h, gnd){   // Shibuya: cold station gloom, warm pools under the street lamps, purple curse haze low down
+    const v = g.createLinearGradient(0, 0, 0, h); v.addColorStop(0, 'rgba(10,8,24,0.42)'); v.addColorStop(0.35, 'rgba(10,8,24,0.05)'); v.addColorStop(0.8, 'rgba(10,8,24,0.08)'); v.addColorStop(1, 'rgba(30,8,44,0.40)');
+    g.fillStyle = v; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'lighter';
+    for(let x = 260; x < w; x += 520){ const y = SHB.street - 40, r = g.createRadialGradient(x, y - 120, 10, x, y, 260); r.addColorStop(0, 'rgba(255,214,150,0.16)'); r.addColorStop(1, 'rgba(255,214,150,0)'); g.fillStyle = r; g.fillRect(x - 280, y - 300, 560, 420); }
+    g.globalCompositeOperation = 'source-over';
+  },
+  1(g, w, h, gnd){   // Sister School: low sun from the left, long shafts through the cedars, ground mist
+    g.globalCompositeOperation = 'lighter';
+    for(let k = 0; k < 9; k++){ const x0 = -200 + k*(w/7.5), ww = 70 + (k*53 % 90); const sh = g.createLinearGradient(x0, 0, x0 + 420, gnd); sh.addColorStop(0, 'rgba(255,226,160,0.13)'); sh.addColorStop(1, 'rgba(255,226,160,0)');
+      g.fillStyle = sh; g.beginPath(); g.moveTo(x0, -40); g.lineTo(x0 + ww, -40); g.lineTo(x0 + ww + 520, gnd); g.lineTo(x0 + 380, gnd); g.closePath(); g.fill(); }
+    const m = g.createLinearGradient(0, gnd - 110, 0, gnd + 10); m.addColorStop(0, 'rgba(230,240,235,0)'); m.addColorStop(1, 'rgba(230,240,235,0.16)'); g.fillStyle = m; g.fillRect(0, gnd - 110, w, 120);
+    g.globalCompositeOperation = 'source-over';
+    const v = g.createLinearGradient(0, 0, w, 0); v.addColorStop(0, 'rgba(255,200,120,0.06)'); v.addColorStop(1, 'rgba(10,24,30,0.26)'); g.fillStyle = v; g.fillRect(0, 0, w, h);
+  },
+  2(g, w, h, gnd){   // Shinjuku: smoke hanging over the rubble, fire glow from the ground, dark upper sky
+    const v = g.createLinearGradient(0, 0, 0, h); v.addColorStop(0, 'rgba(14,10,10,0.40)'); v.addColorStop(0.45, 'rgba(14,10,10,0.04)'); v.addColorStop(1, 'rgba(14,10,10,0.30)'); g.fillStyle = v; g.fillRect(0, 0, w, h);
+    for(let k = 0; k < 14; k++){ const x = (k*397 % w), y = gnd - 150 - (k*71 % 190), r = 150 + (k*37 % 120), sm = g.createRadialGradient(x, y, 10, x, y, r); sm.addColorStop(0, 'rgba(60,54,52,0.20)'); sm.addColorStop(1, 'rgba(60,54,52,0)'); g.fillStyle = sm; g.fillRect(x - r, y - r, r*2, r*2); }
+    g.globalCompositeOperation = 'lighter';
+    const f = g.createLinearGradient(0, gnd - 170, 0, gnd + 20); f.addColorStop(0, 'rgba(255,120,40,0)'); f.addColorStop(1, 'rgba(255,120,40,0.15)'); g.fillStyle = f; g.fillRect(0, gnd - 170, w, 190);
+    g.globalCompositeOperation = 'source-over';
+  },
+  4(g, w, h, gnd){   // Sendai: cold light pouring out of the torn sky, everything away from it falls into blue dusk
+    const d = g.createRadialGradient(1750, 260, 120, 1750, 260, 1500); d.addColorStop(0, 'rgba(8,14,34,0)'); d.addColorStop(0.5, 'rgba(8,14,34,0.20)'); d.addColorStop(1, 'rgba(8,14,34,0.48)'); g.fillStyle = d; g.fillRect(0, 0, w, h);
+    g.globalCompositeOperation = 'lighter';
+    for(let k = -3; k <= 3; k++){ const a = Math.PI/2 + k*0.2, L = 900; const sh = g.createLinearGradient(1750, 260, 1750 + Math.cos(a)*L, 260 + Math.sin(a)*L); sh.addColorStop(0, 'rgba(150,205,255,0.13)'); sh.addColorStop(1, 'rgba(150,205,255,0)');
+      g.fillStyle = sh; g.beginPath(); g.moveTo(1750 - 14, 260); g.lineTo(1750 + 14, 260); g.lineTo(1750 + Math.cos(a + 0.07)*L, 260 + Math.sin(a + 0.07)*L); g.lineTo(1750 + Math.cos(a - 0.07)*L, 260 + Math.sin(a - 0.07)*L); g.closePath(); g.fill(); }
+    g.globalCompositeOperation = 'source-over';
+  },
+};
+function drawStageLight(i, t){
+  const P = FORE_PAINT[i]; if(!P || GFX.low) return;
+  let c = _foreLayers[i];
+  if(!c || c._w!==W || c._h!==H){ const K = 4; c = document.createElement('canvas'); c.width = Math.ceil(W/K); c.height = Math.ceil(H/K); c._w = W; c._h = H;
+    const g = c.getContext('2d'); g.scale(1/K, 1/K); try{ P(g, W, H, GND); }catch(e){} _foreLayers[i] = c; }
+  ctx.save(); ctx.globalAlpha = 0.92 + 0.08*Math.sin(t*0.0011); ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(c, 0, 0, c.width*4, c.height*4); ctx.restore();
+}
 function drawMapFore(i){
   if(activeDomain) return;
-  if(i===5) drawTheaterLight(Date.now());
+  if(i===5) drawTheaterLight(Date.now()); else drawStageLight(i, Date.now());
 }
 const MAPS = [
   { name:'SHIBUYA STATION', sub:'Street to B5F · the Shibuya Incident', w:SHB.W, h:SHB.H, gnd:SHB.GND,
@@ -13173,14 +13218,16 @@ class Player {
     const y=16,bw=278,bh=20,bx=flip?x-bw:x;
     ctx.fillStyle='rgba(0,0,0,.6)'; ctx.fillRect(bx-2,y-2,bw+4,bh+4);
     const pct=this.hp/this.maxHp;
-    const col=pct>.5?'#888':pct>.25?'#666':'#444';
-    ctx.fillStyle=col; ctx.fillRect(flip?bx+bw-Math.floor(bw*pct):bx,y,Math.floor(bw*pct),bh);
+    const col=pct>.5?'#1f7a3a':pct>.25?'#8a6500':'#a52a22';   // Nov 16: green / amber / red, each dark enough for white text (4.5:1+)
+    const hw=Math.floor(bw*pct), hx0=flip?bx+bw-hw:bx;
+    ctx.fillStyle=col; ctx.fillRect(hx0,y,hw,bh);
+    ctx.fillStyle='rgba(255,255,255,0.10)'; ctx.fillRect(hx0,y,hw,5);
     ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.lineWidth=1; ctx.strokeRect(bx,y,bw,bh);
     if(this.soulMax){ const sp = Math.max(0, this.soul/this.soulMax); ctx.fillStyle = 'rgba(20,10,36,0.9)'; ctx.fillRect(bx, y+bh-5, bw, 5);
       ctx.fillStyle = sp < 0.5 ? '#ff5aa8' : '#b07cff'; ctx.fillRect(flip?bx+bw-Math.floor(bw*sp):bx, y+bh-5, Math.floor(bw*sp), 5);
       ctx.save(); ctx.font = `700 8px 'Rajdhani',sans-serif`; ctx.fillStyle = '#e8dcff'; ctx.textAlign = flip ? 'left' : 'right'; ctx.fillText(`SOUL ${Math.ceil(this.soul)}/${this.soulMax}`, flip ? bx+4 : bx+bw-4, y+bh-7); ctx.restore(); }
-    ctx.fillStyle='#ccc'; ctx.font=`700 13px 'Rajdhani',sans-serif`;
-    ctx.textAlign=flip?'right':'left'; ctx.fillText(this.name + (CPU.on && this===p2 ? ` · CPU ${CPU_LEVELS[CPU.lvl].label}` : ''),flip?bx+bw-5:bx+5,y+14);
+    ctx.fillStyle='#fff'; ctx.font=`700 13px 'Rajdhani',sans-serif`; ctx.strokeStyle='rgba(8,8,12,0.85)'; ctx.lineWidth=3; ctx.lineJoin='round';
+    ctx.textAlign=flip?'right':'left'; { const nm = this.name + (CPU.on && this===p2 ? ` · CPU ${CPU_LEVELS[CPU.lvl].label}` : ''); ctx.strokeText(nm,flip?bx+bw-5:bx+5,y+14); ctx.fillText(nm,flip?bx+bw-5:bx+5,y+14); }
     // Account name + equipped feats / vows
     if(this.lo){
       const tags = [];
@@ -13188,8 +13235,11 @@ class Player {
       if(this._feat('kenjaku')) tags.push(this.type==='kenjaku' ? `KENJAKU [${keyLbl(this,'feat')}] ON` : `KENJAKU [${keyLbl(this,'feat')}]`);
       for(const v of (this.lo.vows||[])) if(SHOP.vows[v]) tags.push(v==='overtime' ? (this._overtimeMult() > 1 ? 'VOW: OVERTIME ×1.25 (CLOCKED OUT)' : 'VOW: OVERTIME ×0.8 (ON THE CLOCK)') : 'VOW: '+SHOP.vows[v].name.toUpperCase());
       ctx.save(); ctx.font = `700 9px 'Rajdhani',sans-serif`; ctx.textAlign = flip ? 'left' : 'right';
-      ctx.fillStyle = 'rgba(230,220,200,0.9)'; ctx.fillText((this.lo.name||'').toUpperCase(), flip ? bx+5 : bx+bw-5, y+9);
-      if(tags.length){ ctx.fillStyle = '#c9a0ff'; ctx.fillText(tags.join(' · '), flip ? bx+5 : bx+bw-5, y+18); }
+      // Nov 16: the account name sits above the bar (it used to be printed over the health fill), feats and vows keep the inside line with an outline
+      ctx.strokeStyle = 'rgba(8,8,12,0.9)'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+      const an = (this.lo.name||'').toUpperCase(), ax = flip ? bx+5 : bx+bw-5;
+      if(an){ ctx.fillStyle = '#efe6d0'; ctx.strokeText(an, ax, y-5); ctx.fillText(an, ax, y-5); }
+      if(tags.length){ const tg = tags.join(' · '); ctx.fillStyle = '#e6d4ff'; ctx.strokeText(tg, ax, y+13); ctx.fillText(tg, ax, y+13); }
       ctx.restore();
     }
     if(olOn()) drawOlHud(this, bx, y, bw, bh, flip);
