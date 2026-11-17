@@ -218,14 +218,14 @@ canvas {
   text-shadow:0 2px 6px rgba(0,0,0,0.85), 0 0 12px rgba(120,80,200,0.35); transition:color .12s, transform .12s; }
 .hm-it.hm-small { font-size:17px; padding:5px 30px; }
 .hm-it.hm-back { font-size:18px; color:rgba(226,218,240,0.92); margin-top:8px; }
-.hm-it.off { opacity:0.45; text-decoration:line-through; }
+.hm-it.off { opacity:0.78; text-decoration:line-through; }   /* Nov 17: still reads as off, and stays above 4.5:1 */
 .hm-it::before, .hm-it::after { content:''; position:absolute; left:8%; right:8%; height:1px; opacity:0; transition:opacity .12s;
   background:linear-gradient(90deg, transparent, #e8d27a 18%, #fff2b8 50%, #e8d27a 82%, transparent); }
 .hm-it::before { top:0; } .hm-it::after { bottom:0; }
 .hm-it.sel, .hm-it:focus-visible { color:#f4d77c; transform:scale(1.06); outline:none; text-shadow:0 0 14px rgba(255,210,120,0.55), 0 2px 6px rgba(0,0,0,0.85); }
 .hm-it.sel::before, .hm-it.sel::after, .hm-it:focus-visible::before, .hm-it:focus-visible::after { opacity:1; }
-.hm-it.sel > i { display:inline-block; }
-.hm-it > i { display:none; position:absolute; right:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; border:2px solid #7fb0ff; border-radius:50%;
+.hm-it.sel > i { display:inline-block; }   /* Nov 17: the pad hint sits just outside the gold frame, not on the label */
+.hm-it > i { display:none; position:absolute; right:-28px; top:50%; transform:translateY(-50%); width:18px; height:18px; border:2px solid #7fb0ff; border-radius:50%;
   font:700 11px/14px 'Rajdhani',sans-serif; color:#9fc8ff; font-style:normal; }
 .hm-join { width:min(360px, 92%); margin:6px auto 2px; }
 .hm-join input { background:rgba(10,8,22,0.6); border:1px solid rgba(232,210,122,0.4); color:#efe6ff; }
@@ -238,6 +238,8 @@ canvas {
 #lbHosting, #lbQueue { text-align:center; }
 #lbHosting .hm-it, #lbQueue .hm-it { display:block; margin:6px auto; }
 @media (max-width:600px){ .hm-logo { font-size:40px; } .hm-it { font-size:22px; padding:5px 34px; } }
+/* Nov 17: short windows (960×540 and below): a compact menu so the longest panel (Settings) fits without clipping */
+@media (max-height:620px){ .hm { padding:6px 16px 8px; } .hm-logo { font-size:40px !important; margin:2px 0 8px !important; } .hm-kick { font-size:10px !important; } .hm-it { font-size:19px !important; padding:3px 30px !important; } .hm-list:not([hidden]) { padding:8px 10px 10px; } .hm-head { font-size:13px; padding:2px 26px; margin-bottom:4px; } .hm-tip { margin-top:8px; } }
 .wk-style{font-size:13px;margin:-4px 0 12px}
 .wk-style span,.wk-chip{display:inline-block;color:#0c0c12;font-weight:700;font-size:11px;letter-spacing:.06em;padding:2px 8px;margin-right:6px;border-radius:2px}
 </style>
@@ -8437,7 +8439,7 @@ function drawRings(){
 // Damage numbers
 const dmgNums=[];
 function addDmg(x,y,val,col){ _fxDmgN++; _fxDmgAt.push(x, y);
-  for(let g=0; g<5; g++){ if(!dmgNums.some(d => d.life > 0.55 && Math.abs(d.x - x) < 34 && Math.abs(d.y - y) < 15)) break; y -= 16; }   // Nov 16: stack instead of printing over a fresh number
+  for(let g=0; g<8; g++){ if(!dmgNums.some(d => d.life > 0.15 && Math.abs(d.x - x) < 44 && Math.abs(d.y - y) < 20)) break; y -= 20; }   // against every live number where it is now   // Nov 16: stack instead of printing over a fresh number
   dmgNums.push({x,y,vy:-2,val,col,life:1}); if(typeof val==='string') return; const v = +val||0; sfxLocal(v>=20 ? 'heavy' : v>=9 ? 'hit2' : 'hit', x); }
 function tickDmgNums(){
   let w = 0;
@@ -8449,7 +8451,8 @@ function tickDmgNums(){
 }
 function drawDmgNums(){
   ctx.textAlign='center';
-  for(const d of dmgNums){ ctx.globalAlpha=d.life; ctx.fillStyle=d.col; ctx.font=`700 ${14+(1-d.life)*6}px 'Rajdhani',sans-serif`; ctx.fillText(typeof d.val==='string' ? d.val : `-${d.val}`,d.x,d.y); }
+  ctx.lineJoin='round'; ctx.strokeStyle='rgba(8,8,12,0.9)';
+  for(const d of dmgNums){ const t = typeof d.val==='string' ? d.val : `-${d.val}`, px = 14+(1-d.life)*6; ctx.globalAlpha=Math.min(1, d.life*1.6); ctx.font=`700 ${px}px 'Rajdhani',sans-serif`; ctx.lineWidth = Math.max(2.5, px*0.24); ctx.strokeText(t,d.x,d.y); ctx.fillStyle=d.col; ctx.fillText(t,d.x,d.y); }   // Nov 17: dark outline, and they stay solid longer before fading
   ctx.globalAlpha=1;
 }
 
@@ -14637,7 +14640,7 @@ function drawHUDOverlay(){
   // soft dark scrim behind both HUD blocks, so dimmed labels stay readable on the bright maps (Sister School, Shinjuku)
   if(!drawHUDOverlay._g || drawHUDOverlay._w!==W){ const g = ctx.createLinearGradient(0, 0, 0, 150); g.addColorStop(0, 'rgba(8,8,14,0.6)'); g.addColorStop(0.75, 'rgba(8,8,14,0.36)'); g.addColorStop(1, 'rgba(8,8,14,0)'); drawHUDOverlay._g = g; drawHUDOverlay._w = W; }
   ctx.fillStyle = drawHUDOverlay._g; ctx.fillRect(0, 0, W, 150);
-  ctx.fillStyle = 'rgba(8,8,14,0.66)'; ctx.fillRect(10, 0, 302, 136); if(!isTraining()) ctx.fillRect(W-312, 0, 302, 136);   // Nov 16: a solid backing under each HUD block, so stage signs and art never show between its rows
+  ctx.fillStyle = 'rgba(8,8,14,0.93)'; ctx.fillRect(10, 0, 302, 136); if(!isTraining()) ctx.fillRect(W-312, 0, 302, 136);   // Nov 16: a solid backing under each HUD block, so stage signs and art never show between its rows
   readableText(true);   // Nov 16: every HUD label gets a dark outline and at least 4.5:1 contrast (the faint "CURSED CLASH" watermark is gone)
   p1.drawHUD(22,false); if(!isTraining()) p2.drawHUD(W-22,true);
   drawCeHud(p1, 22, false); if(!isTraining()) drawCeHud(p2, W-22, true);
