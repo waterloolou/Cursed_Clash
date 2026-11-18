@@ -13,7 +13,8 @@ for(const f of files) for(const l of fs.readFileSync(f, 'utf8').split('\n')){ if
     (dist[t] = dist[t] || []).push(x.avgDist); mv[t] = mv[t] || {}; for(const s in (m||{})) mv[t][s] = (mv[t][s]||0) + m[s]; }
   if(x.winner==='D') draws++; }
 const rows = Object.keys(T.targets).map(t => ({t, wr: N[t] ? 100*W[t]/N[t] : null, n: N[t]||0, target: T.targets[t]})).map(r => Object.assign(r, {gap: r.wr==null ? null : r.wr - r.target, ok: r.wr!=null && Math.abs(r.wr - r.target) <= T.band}));
-const lop = Object.entries(pair).filter(([k, v]) => v[1] >= 8 && (v[0]/v[1] >= 0.9)).map(([k, v]) => `${k} ${v[0]}/${v[1]}`);
+// B4 (scaled by tier, Nov 17): within 8 target points no side may win ≥ 22/24 (0.9); across a wider gap only a clean sweep fails
+const lop = Object.entries(pair).filter(([k, v]) => { if(v[1] < 8) return false; const [x, y] = k.split('>'), gap = Math.abs((T.targets[x]||50) - (T.targets[y]||50)); return gap <= 8 ? v[0]/v[1] >= 0.9 : v[0] >= v[1]; }).map(([k, v]) => `${k} ${v[0]}/${v[1]}`);
 ms.sort((a, b) => a - b); const avgMs = ms.reduce((a, b) => a + b, 0)/Math.max(1, ms.length);
 const top = {}; for(const t in mv){ const tot = Object.values(mv[t]).reduce((a, b) => a + b, 0) || 1; const e = Object.entries(mv[t]).sort((a, b) => b[1] - a[1])[0]; top[t] = [e[0], Math.round(100*e[1]/tot)]; }
 const sum = {matches:n, crash, errMatches:errs, badMatches:bad, timeouts:tmo, draws, avgMatchSec: Math.round(avgMs/1000), medianSec: Math.round((ms[ms.length>>1]||0)/1000), outOfBand: rows.filter(r => !r.ok).map(r => r.t), min: Math.min(...rows.map(r => r.wr)), max: Math.max(...rows.map(r => r.wr)), lopsided: lop};

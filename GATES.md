@@ -92,7 +92,7 @@ and item sprites are ThEndNite's work: they are never edited here, and anything 
 | B1 | On ≥ 480 matches per fighter (5,040 total) on the final build, every fighter is within **±6** of their target. | 11 of 21 outside ±5 |
 | B2 | Every fighter wins between 34% and 66%. | 36–69% |
 | B3 | Tier order holds: special-grade average > grade-1 average > the rest. | — |
-| B4 | No matchup where one side wins ≥ 22 of 24. | — |
+| B4 | No matchup where one side wins ≥ 22 of 24 when the two fighters' targets are within 8 points of each other; for a wider tier gap, no more than 23 of 24 (no clean sweeps). *Scaled by tier on Nov 17 at the user's decision: with the requested 40–60 tier spread, a CPU 15 points stronger wins nearly every seeded game.* | — |
 | B5 | Median match 60–150 s; ≤ 1% time-outs. | 106 s · 0.2% |
 | B6 | Playstyles show up in the data: rangers, zoners and summoners stand further away on average than brawlers (≥ 30 px). | — |
 | B7 | Difficulty ladder: Hard beats Normal ≥ 60%, Normal beats Easy ≥ 60% (same fighters on both sides). | not measured |
