@@ -20160,6 +20160,8 @@ const CPU_BOT = (function(){
       return; }
     m.scT0 = 0;
     if(/tojiflurry|tojirush|tojifin|tojiscope/.test(me.state)) return;
+    // Nov 17: don't rush into a move that is already swinging or guarding (Yuta's slice / metal arm, counters) — step out and wait for it to end
+    if(/yutaslice|yutametal|takactr|counter/.test(S.op.state) && S.ax < 320){ S.hold(me.cx < S.op.cx ? 'left' : 'right'); if(S.ax < 140 && me.onGround) S.tap('jump'); return; }
     if(S.ult >= 1 && S.ax < 900){ S.tap('ult'); m.ultT = S.t; return; }
     // tool: the chain at range, the Spear against blockers / big pools, Playful Cloud up close
     const want = S.ax > 190 ? 1 : (S.op.state === 'block' || (S.op.ceMax||0) > 180) ? 0 : 2;
