@@ -5049,7 +5049,7 @@ function drawMechLasers(){
       ctx.beginPath(); ctx.arc(fx.x, fx.y, r, 0, Math.PI*2); ctx.fill();
       if(p < 0.15){ ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=(0.15-p)/0.15*0.7; ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H); }
     } else if(fx.kind==='crack'){
-      const a = Math.min(1, fx.life/600);
+      const gi = fxIn(fx, 90), a = Math.min(1, fx.life/600)*gi;   // Nov 17 (VFX): the crack spreads in over ~5 frames
       ctx.strokeStyle = `rgba(20,14,10,${0.9*a})`; ctx.lineWidth = 3;
       ctx.fillStyle = `rgba(0,0,0,${0.55*a})`;
       ctx.beginPath(); ctx.ellipse(fx.x, fx.y+3, 80, 7, 0, 0, Math.PI*2); ctx.fill();
@@ -5057,7 +5057,7 @@ function drawMechLasers(){
       for(const c of fx.cracks){
         ctx.moveTo(fx.x, fx.y+2);
         let cx = fx.x, cy = fx.y+2;
-        for(const s of c){ cx += s[0]; cy += s[1]; ctx.lineTo(cx, cy); }
+        for(const s of c){ cx += s[0]*gi; cy += s[1]*gi; ctx.lineTo(cx, cy); }
       }
       ctx.stroke();
       ctx.strokeStyle = `rgba(160,110,255,${0.6*a})`; ctx.lineWidth = 1; ctx.stroke();
@@ -6935,7 +6935,7 @@ function drawPunchSmear(pl, cx, sy, f, main){
   for(let j = 0; j < 3; j++){ ctx.lineWidth = (6 - j*2)*big; ctx.globalAlpha = fade*(0.35 + j*0.3); ctx.beginPath(); ctx.arc(sx, sy, r + j*2, a0 + (a1 - a0)*(1 - k)*0.6, a1, f < 0); ctx.stroke(); }
   ctx.restore();
 }
-const _tellEnd = new WeakMap();
+const _tellEnd = new WeakMap(), _mtStart = new WeakMap();
 function drawCastTells(){
   const now = Date.now();
   for(const pl of [p1, p2]){ if(!pl) continue;
@@ -6946,6 +6946,14 @@ function drawCastTells(){
       ctx.save(); ctx.globalAlpha = k*0.8; ctx.strokeStyle = e.col; ctx.lineWidth = 3*k; ctx.beginPath(); ctx.arc(e.x, e.y, 26 + (1-k)*40, 0, Math.PI*2); ctx.stroke();
       ctx.globalAlpha = k*0.7; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(e.x, e.y, 12*k + 2, 0, Math.PI*2); ctx.fill(); ctx.restore(); } } }
     if(pl.state===S.DEAD) continue;
+    // move tells for strikes that had nothing on screen before contact: a glow at the fist that swells in, and a streak behind a lunge
+    const MT = {[S.RYUPUNCH]:'#bfe6ff', [S.YUJIDIV]:'#f5a623', [S.REVERSAL]:'#ff4a4a'}[pl.state];
+    if(MT && !(pl.state===S.RYUPUNCH && pl.rpPh==='miss')){ let st = _mtStart.get(pl); if(!st || st.s!==pl.state || now - st.last > 120) st = {s:pl.state, t0:now}; st.last = now; _mtStart.set(pl, st);
+      const k = Math.min(1, (now - st.t0)/70), fx = h.x + (pl.facing||1)*4, fy = h.y, r = (pl.state===S.REVERSAL ? 10 : 8) + 8*k;
+      ctx.save(); const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, r); g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(0.45, MT); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = k; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI*2); ctx.fill();
+      if(Math.abs(pl.vx||0) > 2){ ctx.globalAlpha = 0.45*k; ctx.strokeStyle = MT; ctx.lineCap = 'round'; for(let j = 0; j < 3; j++){ const yy = pl.y + PH*(0.3 + j*0.18); ctx.lineWidth = 3 - j*0.6; ctx.beginPath(); ctx.moveTo(cx - Math.sign(pl.vx)*10, yy); ctx.lineTo(cx - Math.sign(pl.vx)*(34 + Math.abs(pl.vx)*3), yy); ctx.stroke(); } }
+      ctx.restore(); }
     if(pl.state===S.DOMAIN){ const k = Math.max(0, Math.min(1, pl.domainHandsign||0));
       ctx.save(); ctx.lineWidth = 2.5;
       for(let j = 0; j < 3; j++){ const q = ((now*0.0012 + j/3) % 1), r = 26 + (1 - q)*90; ctx.globalAlpha = Math.min(1, 0.15 + k)*Math.sin(q*Math.PI)*0.8; ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke(); }
@@ -13295,7 +13303,7 @@ class Player {
       if(cx!==0) this._hand = {x:hx, y:hy, sx:cx, sy:cy+neckY+bob};
       if(isAtk && this.type!=='yuta'){ ctx.fillStyle=main; ctx.beginPath(); ctx.arc(hx,hy,3.5,0,Math.PI*2); ctx.fill(); }
       // Nov 17 (VFX): a punch draws a short crescent smear in the fighter's colour (drawPunchSmear)
-      if(isAtk && this.type!=='yuta' && cx!==0) drawPunchSmear(this, cx, cy+neckY+16+bob, f, main);
+      if(isAtk && this.type!=='yuta') drawPunchSmear(this, cx, cy+neckY+16+bob, f, main);
       // Yuta melee: pink slash arc + sword tip glow
       if(isAtk && this.type==='yuta' && aa>0.05){
         const slashAlpha = Math.sin(aa*Math.PI)*0.8;
@@ -18055,9 +18063,11 @@ function drawRyuBody(pl){
   ctx.globalAlpha = 1; ctx.strokeStyle = '#c98a4b'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx, pl.y+HEAD_R*2+4); ctx.lineTo(cx, pl.y+PH*0.76); ctx.stroke();
   // charging fist / beam wind-up glow + dashed aim line
   if((pl.state===S.RYUBEAM && !pl.rbFired) || (pl.state===S.RYUPUNCH && pl.rpPh==='hold')){
-    const hx = cx + f*16, hy2 = pl.y+PH*0.42, r = (pl.rbBig ? 14 : 8) + 4*Math.sin(t*0.03);
-    ctx.globalAlpha = 0.85; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(hx, hy2, r, 0, Math.PI*2); ctx.fill();
-    ctx.globalAlpha = 0.4; ctx.fillStyle = '#6fb8ff'; ctx.beginPath(); ctx.arc(hx, hy2, r*1.8, 0, Math.PI*2); ctx.fill();
+    let gs = _mtStart.get(pl); const gk = pl.state + ':' + (pl.rpPh||''); if(!gs || gs.k!==gk || performance.now() - gs.last > 120) gs = {k:gk, t0:performance.now()}; gs.last = performance.now(); _mtStart.set(pl, gs);
+    const gi = Math.min(1, (performance.now() - gs.t0)/70);   // Nov 17 (VFX): the charge glow swells in over ~4 frames
+    const hx = cx + f*16, hy2 = pl.y+PH*0.42, r = ((pl.rbBig ? 14 : 8) + 4*Math.sin(t*0.03))*(0.4 + 0.6*gi);
+    ctx.globalAlpha = 0.85*gi; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(hx, hy2, r, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 0.4*gi; ctx.fillStyle = '#6fb8ff'; ctx.beginPath(); ctx.arc(hx, hy2, r*1.8, 0, Math.PI*2); ctx.fill();
     if(pl.state===S.RYUBEAM){ const a = pl.aimAng||0; ctx.globalAlpha = 0.7; ctx.setLineDash([10, 8]); ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(hx, hy2); ctx.lineTo(hx + f*Math.cos(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN), hy2 + Math.sin(a)*(pl.rbBig ? 900 : RYU_BEAM_LEN)); ctx.stroke(); ctx.setLineDash([]); }
   }
@@ -19018,6 +19028,7 @@ function drawSteam(){
   }
 }
 function drawTakaba(){ for(const tr of trucks) drawTruck(tr); }
+const _ctrFx = new WeakMap();
 function drawTakabaBody(pl){
   if(pl.state===S.DEAD || [S.RAGD,S.SLAM].includes(pl.state)) return;
   const cx = pl.x+PW/2, ny = pl.y+24;
@@ -19029,11 +19040,12 @@ function drawTakabaBody(pl){
   ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.arc(cx, ny, 2, 0, Math.PI*2); ctx.fill();
   // grin
   ctx.strokeStyle = '#3a2a10'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(cx+pl.facing*2, pl.y+12, 5, 0.2, Math.PI-0.2); ctx.stroke();
-  if(pl.state===S.TAKACTR){
-    ctx.globalAlpha = 0.6 + 0.4*Math.sin(Date.now()*0.03); ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.ellipse(cx, pl.y+PH/2, 26, PH*0.62, 0, 0, Math.PI*2); ctx.stroke();
-    ctx.fillStyle = '#ffe066'; ctx.font = `900 18px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!', cx, pl.y-8);
-  }
+  // Nov 17 (VFX): the Counter stance ring fades in and out over ~4 frames and throbs gently (it switched on and off and pulsed to 0.2)
+  { const now = performance.now(), st = _ctrFx.get(pl) || {k:0, t:now}; const target = pl.state===S.TAKACTR ? 1 : 0;
+    st.k = target > st.k ? Math.min(1, st.k + (now - st.t)/70) : Math.max(0, st.k - (now - st.t)/70); st.t = now; _ctrFx.set(pl, st);
+    if(st.k > 0){ ctx.globalAlpha = st.k*(0.8 + 0.2*Math.sin(now*0.02)); ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2.5;
+      const sc = 0.85 + 0.15*st.k; ctx.beginPath(); ctx.ellipse(cx, pl.y+PH/2, 26*sc, PH*0.62*sc, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.fillStyle = '#ffe066'; ctx.font = `900 18px 'Rajdhani',sans-serif`; ctx.textAlign = 'center'; ctx.fillText('!', cx, pl.y-8); } }
   if(pl.state===S.TAKAKAN && pl.sTimer < KAN_HIT_AT+120){
   }
   ctx.restore();
